@@ -51,3 +51,7 @@ sa-token:
 mybatis-plus:
   configuration:
     default-enum-type-handler: com.baomidou.mybatisplus.core.handlers.CompositeEnumTypeHandler
+sample:
+  iot:
+    # 开启设备密钥认证
+    enable-device-secret: true

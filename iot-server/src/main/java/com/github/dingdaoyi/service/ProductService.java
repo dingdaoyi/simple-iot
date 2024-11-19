@@ -2,10 +2,12 @@ package com.github.dingdaoyi.service;
 
 import com.github.dingdaoyi.entity.Product;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.github.dingdaoyi.model.vo.ProductVo;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface ProductService extends IService<Product>{
 
@@ -28,4 +30,8 @@ public interface ProductService extends IService<Product>{
      * @return 是否存在
      */
     boolean existsUnique( String model,  String manufacturer, Integer productTypeId);
+
+    Optional<ProductVo> details(Integer productId);
+
+    boolean existsById(Integer productId);
 }

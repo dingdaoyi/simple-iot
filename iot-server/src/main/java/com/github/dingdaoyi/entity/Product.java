@@ -52,4 +52,8 @@ public class Product {
     @TableField(value = "product_type_id")
     @Schema(description = "产品类型id")
     private Integer productTypeId;
+
+    @TableField(value = "product_key")
+    @Schema(description = "产品接入key")
+    private String productKey;
 }

@@ -10,6 +10,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
+import org.apache.commons.lang3.RandomStringUtils;
 
 /**
  * @author dingyunwei
@@ -57,6 +58,8 @@ public class ProductAddQuery implements ToEntity<Product> {
         product.setMark(mark);
         product.setProtocolId(protocolId);
         product.setProductTypeId(productTypeId);
+        //自定义串
+        product.setProductKey(RandomStringUtils.randomAlphanumeric(20));
         return product;
     }
 }
