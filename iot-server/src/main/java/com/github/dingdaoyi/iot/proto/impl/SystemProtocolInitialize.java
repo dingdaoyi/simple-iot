@@ -1,12 +1,10 @@
-package com.github.dingdaoyi.proto.impl;
+package com.github.dingdaoyi.iot.proto.impl;
 
 import com.github.dingdaoyi.entity.Protocol;
-import com.github.dingdaoyi.proto.ProtocolInitialize;
+import com.github.dingdaoyi.iot.proto.ProtocolInitialize;
 import com.github.dingdaoyi.proto.inter.ProtocolDecoder;
-import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import net.dreamlu.mica.core.spring.SpringContextUtil;
-import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
@@ -26,7 +24,8 @@ public class SystemProtocolInitialize implements ProtocolInitialize {
         for (Protocol protocol : protocols) {
             Class<? extends ProtocolDecoder> clazz;
             try {
-                clazz = (Class<? extends ProtocolDecoder>) Class.forName(protocol.getHandlerClass());
+                clazz =(Class<? extends ProtocolDecoder>) Thread.currentThread().getContextClassLoader()
+                        .loadClass(protocol.getHandlerClass());
             } catch (ClassNotFoundException e) {
                 log.error("加载系统协议失败,协议类不存在:{}", protocol.getHandlerClass());
                 continue;

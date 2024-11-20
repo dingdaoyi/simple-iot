@@ -2,7 +2,7 @@ package com.github.dingdaoyi.iot.impl;
 
 import com.github.dingdaoyi.iot.DataProcessingService;
 import com.github.dingdaoyi.iot.IoTDataProcessor;
-import com.github.dingdaoyi.proto.ProtocolFactory;
+import com.github.dingdaoyi.iot.proto.ProtocolFactory;
 import com.github.dingdaoyi.proto.inter.ProtocolDecoder;
 import com.github.dingdaoyi.proto.model.DecodeResult;
 import com.github.dingdaoyi.proto.model.DeviceRequest;

@@ -4,10 +4,10 @@ import lombok.Getter;
 
 @Getter
 public class ProtocolException extends Exception {
-    private final String deviceId;
+    private final String deviceKey;
 
-    public ProtocolException(String deviceId, String message) {
+    public ProtocolException(String deviceKey, String message) {
         super(message);
-        this.deviceId = deviceId;
+        this.deviceKey = deviceKey;
     }
 }

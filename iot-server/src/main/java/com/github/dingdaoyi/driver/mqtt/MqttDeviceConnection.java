@@ -36,7 +36,7 @@ public class MqttDeviceConnection implements DeviceConnection {
     }
 
     @Override
-    public void sendMessage(byte[] message) throws IOException {
+    public void sendMessage(String identifier, byte[] message) throws IOException {
         ChannelContext context = mqttTemplate.getChannelContext(deviceKey);
         if (context != null) {
             mqttTemplate.publish(deviceKey, MqttTopicConstants.getTopic(MqttTopicConstants.COMMAND_TOPIC, productKey)

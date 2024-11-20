@@ -25,23 +25,23 @@ public class MqttTopicConstants implements ApplicationContextAware {
     /**
      * 事件上报
      */
-    public static String EVENT_TOPIC = "ev/{productKey}";
+    public static String EVENT_TOPIC = "ev/{productKey}/{identifier}";
 
 
     /**
      * 指令下发
      */
-    public static String COMMAND_TOPIC = "cam/{productKey}";
+    public static String COMMAND_TOPIC = "cam/{productKey}/{identifier}";
 
     /**
      * 设备指令回复
      */
-    public static String COMMAND_RES_TOPIC = "cam_res/{productKey}";
+    public static String COMMAND_RES_TOPIC = "cam_res/{productKey}/{identifier}";
 
     /**
      * 上报属性
      */
-    public static String PROPERTY_TOPIC = "pro/{productKey}";
+    public static String PROPERTY_TOPIC = "pro/{productKey}/{identifier}";
 
     public static Pattern TOPIC_PARSE_PATTERN;
 
@@ -66,13 +66,13 @@ public class MqttTopicConstants implements ApplicationContextAware {
             TOPIC_MAP.put(COMMAND_TOPIC, topicPrefix + "/" + COMMAND_TOPIC);
             TOPIC_MAP.put(PROPERTY_TOPIC, topicPrefix + "/" + PROPERTY_TOPIC);
             TOPIC_MAP.put(COMMAND_RES_TOPIC, topicPrefix + "/" + COMMAND_RES_TOPIC);
-            TOPIC_PARSE_PATTERN = Pattern.compile("^" + topicPrefix + "/(\\w*)/(\\w*)$");
+            TOPIC_PARSE_PATTERN = Pattern.compile("^" + topicPrefix + "/(\\w*)/(\\w*)/(\\w*)$");
         } else {
             TOPIC_MAP.put(EVENT_TOPIC, EVENT_TOPIC);
             TOPIC_MAP.put(COMMAND_TOPIC, COMMAND_TOPIC);
             TOPIC_MAP.put(PROPERTY_TOPIC, PROPERTY_TOPIC);
             TOPIC_MAP.put(COMMAND_RES_TOPIC, COMMAND_RES_TOPIC);
-            TOPIC_PARSE_PATTERN = Pattern.compile("^(\\w*)/(\\w*)$");
+            TOPIC_PARSE_PATTERN = Pattern.compile("^(\\w*)/(\\w*)/(\\w*)$");
         }
         log.info("MqttTopicConstants 初始化成功!");
     }

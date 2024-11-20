@@ -1,7 +1,6 @@
 package com.github.dingdaoyi.proto.inter;
 
 import java.io.IOException;
-import java.nio.ByteBuffer;
 
 /**
  * 设备连接
@@ -20,7 +19,8 @@ public interface DeviceConnection {
 
     /**
      * 发送数据
-     * @param message
+     * @param identifier 标识符
+     * @param message 消息数据
      */
-    void sendMessage(byte[] message) throws IOException;
+    void sendMessage(String identifier,byte[] message) throws IOException;
 }

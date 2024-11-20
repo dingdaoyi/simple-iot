@@ -2,10 +2,10 @@ package com.github.dingdaoyi.entity.enu;
 
 import com.baomidou.mybatisplus.annotation.EnumValue;
 import com.fasterxml.jackson.annotation.JsonValue;
-import com.github.dingdaoyi.proto.ProtocolInitialize;
-import com.github.dingdaoyi.proto.impl.JavaProtocolInitialize;
-import com.github.dingdaoyi.proto.impl.ScriptProtocolInitialize;
-import com.github.dingdaoyi.proto.impl.SystemProtocolInitialize;
+import com.github.dingdaoyi.iot.proto.ProtocolInitialize;
+import com.github.dingdaoyi.iot.proto.impl.JavaProtocolInitialize;
+import com.github.dingdaoyi.iot.proto.impl.ScriptProtocolInitialize;
+import com.github.dingdaoyi.iot.proto.impl.SystemProtocolInitialize;
 import lombok.Getter;
 
 /**

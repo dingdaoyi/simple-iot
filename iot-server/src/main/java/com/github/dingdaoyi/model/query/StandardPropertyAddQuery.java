@@ -1,7 +1,7 @@
 package com.github.dingdaoyi.model.query;
 
 import com.github.dingdaoyi.entity.ModelProperty;
-import com.github.dingdaoyi.entity.enu.DataTypeEnum;
+import com.github.dingdaoyi.proto.model.DataTypeEnum;
 import com.github.dingdaoyi.entity.enu.ParamType;
 import com.github.dingdaoyi.entity.enu.PropertyAccessMode;
 import com.github.dingdaoyi.model.ToEntity;

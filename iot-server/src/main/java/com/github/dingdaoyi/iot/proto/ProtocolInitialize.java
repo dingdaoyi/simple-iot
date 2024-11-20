@@ -1,4 +1,4 @@
-package com.github.dingdaoyi.proto;
+package com.github.dingdaoyi.iot.proto;
 
 import com.github.dingdaoyi.entity.Protocol;
 import com.github.dingdaoyi.proto.inter.ProtocolDecoder;

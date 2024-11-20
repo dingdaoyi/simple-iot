@@ -5,7 +5,7 @@ import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.extension.handlers.JacksonTypeHandler;
-import com.github.dingdaoyi.entity.enu.DataTypeEnum;
+import com.github.dingdaoyi.proto.model.DataTypeEnum;
 import com.github.dingdaoyi.entity.enu.ParamType;
 import com.github.dingdaoyi.entity.enu.PropertyAccessMode;
 import io.swagger.v3.oas.annotations.media.Schema;

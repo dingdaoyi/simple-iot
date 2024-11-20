@@ -16,6 +16,11 @@ public class DeviceRequest {
     private Integer deviceId;
 
     /**
+     * 设备key
+     */
+    private String deviceKey;
+
+    /**
      * 通道连接
      */
     private DeviceConnection connection;
@@ -28,6 +33,11 @@ public class DeviceRequest {
      * 协议key
      */
     private String protoKey;
+
+    /**
+     * 标识符号
+     */
+    private String identifier;
 
     /**
      * 设备数据

@@ -1,8 +1,23 @@
 package com.github.dingdaoyi.proto.model;
 
+import lombok.Data;
+
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * @author dingyunwei
  */
+@Data
 public class DecodeResult {
 
+    /**
+     * 顺序数据
+     */
+    private List<DeviceData> dataList = new ArrayList<>();
+
+    /**
+     * 事件数据
+     */
+    private List<DataDecodeError> errors=new ArrayList<>();
 }

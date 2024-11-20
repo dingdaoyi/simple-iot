@@ -2,9 +2,8 @@ package com.github.dingdaoyi.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
-import com.github.dingdaoyi.entity.ModelService;
 import com.github.dingdaoyi.entity.Product;
-import com.github.dingdaoyi.entity.enu.DataTypeEnum;
+import com.github.dingdaoyi.proto.model.DataTypeEnum;
 import com.github.dingdaoyi.model.ToEntity;
 import com.github.dingdaoyi.model.enu.SysCodeEnum;
 import com.github.dingdaoyi.model.query.ModelPropertyUpdateQuery;
