@@ -1,10 +1,6 @@
 package com.github.dingdaoyi.model.query;
 
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableField;
-import com.baomidou.mybatisplus.annotation.TableId;
 import com.github.dingdaoyi.entity.Product;
-import com.github.dingdaoyi.entity.ProductType;
 import com.github.dingdaoyi.model.ToEntity;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;

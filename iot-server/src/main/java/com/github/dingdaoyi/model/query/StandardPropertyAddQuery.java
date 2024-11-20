@@ -1,7 +1,5 @@
 package com.github.dingdaoyi.model.query;
 
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableId;
 import com.github.dingdaoyi.entity.ModelProperty;
 import com.github.dingdaoyi.entity.enu.DataTypeEnum;
 import com.github.dingdaoyi.entity.enu.ParamType;

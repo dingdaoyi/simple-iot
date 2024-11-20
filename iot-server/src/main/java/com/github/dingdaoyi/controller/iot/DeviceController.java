@@ -36,7 +36,7 @@ public class DeviceController {
     @Operation(summary = "添加设备")
     public R<Boolean> save(@RequestBody @Valid DeviceAddQuery query) {
         if (!productService.existsById(query.getProductId())) {
-            return R.fail(SysCodeEnum.BAD_REQUEST, "产品已存在,请勿重复添加!");
+            return R.fail(SysCodeEnum.BAD_REQUEST, "产品不存在");
         }
         return R.success(deviceService.save(query.toEntity()));
     }

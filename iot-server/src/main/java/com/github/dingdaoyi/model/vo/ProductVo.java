@@ -1,6 +1,5 @@
 package com.github.dingdaoyi.model.vo;
 
-import com.github.dingdaoyi.entity.Device;
 import com.github.dingdaoyi.entity.Product;
 import com.github.dingdaoyi.entity.ProductType;
 import io.swagger.v3.oas.annotations.media.Schema;

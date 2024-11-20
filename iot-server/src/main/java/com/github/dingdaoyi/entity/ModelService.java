@@ -4,13 +4,11 @@ import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
-import com.baomidou.mybatisplus.extension.handlers.JacksonTypeHandler;
 import com.github.dingdaoyi.entity.enu.EventTypeEnum;
 import com.github.dingdaoyi.entity.enu.ServiceTypeEnum;
+import com.github.dingdaoyi.entity.enu.StatusEnum;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
-
-import java.util.List;
 
 /**
  * 物模型服务表
@@ -45,9 +43,9 @@ public class ModelService {
     /**
      * 功能状态,1 启用,0禁用
      */
-    @TableField(value = "func_status")
+    @TableField(value = "status")
     @Schema(description = "功能状态,1 启用,0禁用")
-    private Integer funcStatus;
+    private StatusEnum status;
 
     @TableField(value = "service_type")
     @Schema(description = "")
@@ -102,4 +100,8 @@ public class ModelService {
     @TableField(value = "required")
     @Schema(description = "是否必选")
     private Boolean required;
+
+    @TableField(value = "product_id")
+    @Schema(description = "产品id")
+    private Integer productId;
 }

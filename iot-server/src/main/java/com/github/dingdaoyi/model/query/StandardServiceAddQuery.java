@@ -3,7 +3,9 @@ package com.github.dingdaoyi.model.query;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.github.dingdaoyi.entity.ModelService;
 import com.github.dingdaoyi.entity.ServiceProperty;
-import com.github.dingdaoyi.entity.enu.*;
+import com.github.dingdaoyi.entity.enu.EventTypeEnum;
+import com.github.dingdaoyi.entity.enu.ServiceTypeEnum;
+import com.github.dingdaoyi.entity.enu.StatusEnum;
 import com.github.dingdaoyi.model.ToEntity;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
@@ -106,7 +108,7 @@ public class StandardServiceAddQuery implements ToEntity<ModelService> {
         modelService.setRequired(this.required);
         modelService.setIconId(this.iconId);
         modelService.setCustom(false);
-        modelService.setFuncStatus(0);
+        modelService.setStatus(StatusEnum.DISABLED);
         return modelService;
     }
 

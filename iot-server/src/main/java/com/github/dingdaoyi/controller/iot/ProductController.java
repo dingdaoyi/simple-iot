@@ -1,11 +1,13 @@
 package com.github.dingdaoyi.controller.iot;
 
 import com.github.dingdaoyi.entity.Product;
+import com.github.dingdaoyi.model.DTO.TslModelDTO;
 import com.github.dingdaoyi.model.enu.SysCodeEnum;
 import com.github.dingdaoyi.model.query.ProductAddQuery;
 import com.github.dingdaoyi.model.query.ProductUpdateQuery;
 import com.github.dingdaoyi.service.ProductService;
 import com.github.dingdaoyi.service.ProductTypeService;
+import com.github.dingdaoyi.service.TslModelService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -25,6 +27,7 @@ import java.util.List;
 public class ProductController {
     private final ProductService productService;
     private final ProductTypeService productTypeService;
+    private final TslModelService tslModelService;
     @GetMapping
     @Operation(summary = "根据产品类型和厂家获取")
     public R<List<Product>> list(@RequestParam Integer productTypeId,
@@ -38,7 +41,7 @@ public class ProductController {
         if (!productTypeService.existsById(query.getProductTypeId())) {
             return R.fail(SysCodeEnum.BAD_REQUEST,"产品类型不存在");
         }
-        if (!productService.existsUnique(query.getModel(), query.getManufacturer(), query.getProductTypeId())) {
+        if (productService.existsUnique(query.getModel(), query.getManufacturer(), query.getProductTypeId())) {
             return R.fail(SysCodeEnum.BAD_REQUEST,"产品已存在,请勿重复添加!");
         }
         return R.success(productService.add(query.toEntity()));
@@ -49,5 +52,17 @@ public class ProductController {
     public R<Boolean> update(@RequestBody ProductUpdateQuery query) {
         return R.success(productService.updateById(query.toEntity()));
     }
+
+    @GetMapping("tsl/{productId}")
+    @Operation(summary = "物模型")
+    public R<TslModelDTO> tslDetails(@PathVariable Integer productId) {
+        Product product = productService.getById(productId);
+        if (product == null) {
+            return R.fail(SysCodeEnum.BAD_REQUEST, "数据不存在");
+        }
+        return tslModelService.findByProductKey(product.getProductKey())
+                .map(R::success).orElse(R.fail("未查询到物模型信息"));
+    }
+
 
 }

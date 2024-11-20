@@ -6,16 +6,19 @@ import com.github.dingdaoyi.entity.enu.ParamType;
 import com.github.dingdaoyi.entity.enu.PropertyAccessMode;
 import com.github.dingdaoyi.model.ToEntity;
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 
 import java.util.HashMap;
-import java.util.List;
 
 /**
  * @author dingyunwei
  */
 @Data
 public class ModelPropertyUpdateQuery implements ToEntity<ModelProperty> {
+
+    @Schema(description = "id")
+    private Integer id;
 
     /**
      * 数据类型
@@ -121,6 +124,7 @@ public class ModelPropertyUpdateQuery implements ToEntity<ModelProperty> {
         modelProperty.setMin(min);
         modelProperty.setStep(step);
         modelProperty.setEnumMap(enumMap);
+        modelProperty.setId(id);
         return modelProperty;
     }
 }

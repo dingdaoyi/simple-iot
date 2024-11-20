@@ -2,7 +2,6 @@ package com.github.dingdaoyi.service;
 
 import com.github.dingdaoyi.entity.ProductType;
 import com.baomidou.mybatisplus.extension.service.IService;
-import jakarta.validation.constraints.NotNull;
 
 import java.util.List;
 

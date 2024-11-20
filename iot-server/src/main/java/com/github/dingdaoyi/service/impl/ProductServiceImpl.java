@@ -63,4 +63,10 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper, Product> impl
                 .<Product>lambdaQuery()
                 .eq(Product::getId, productId));
     }
+
+    @Override
+    public Optional<Product> getByProductKey(String productKey) {
+        return Optional.ofNullable(getOne(Wrappers.<Product>lambdaQuery()
+                .eq(Product::getProductKey, productKey)));
+    }
 }

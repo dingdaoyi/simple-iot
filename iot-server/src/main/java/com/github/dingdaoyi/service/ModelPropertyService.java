@@ -8,6 +8,9 @@ import com.github.dingdaoyi.model.query.StandardPropertyAddQuery;
 
 import java.util.List;
 
+/**
+ * @author dingyunwei
+ */
 public interface ModelPropertyService extends IService<ModelProperty> {
 
 
@@ -44,4 +47,12 @@ public interface ModelPropertyService extends IService<ModelProperty> {
     Boolean saveProductProperty(ProductPropertyAddQuery property);
 
     Boolean update(ModelPropertyUpdateQuery property);
+
+    /**
+     * 根据产品查询物模型的属性和参数信息
+     * @param productId
+     * @param productTypeId
+     * @return
+     */
+    List<ModelProperty> listByProduct(Integer productId, Integer productTypeId);
 }

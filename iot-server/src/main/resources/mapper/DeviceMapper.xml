@@ -1,17 +1,41 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.github.dingdaoyi.mapper.DeviceMapper">
-  <resultMap id="BaseResultMap" type="com.github.dingdaoyi.entity.Device">
-    <!--@mbg.generated-->
-    <!--@Table tb_device-->
-    <id column="id" property="id" />
-    <result column="product_id" property="productId" />
-    <result column="device_name" property="deviceName" />
-    <result column="device_key" property="deviceKey" />
-    <result column="device_secret" property="deviceSecret" />
-  </resultMap>
-  <sql id="Base_Column_List">
-    <!--@mbg.generated-->
-    id, product_id, device_name, device_key, device_secret
-  </sql>
+    <resultMap id="BaseResultMap" type="com.github.dingdaoyi.entity.Device">
+        <!--@mbg.generated-->
+        <!--@Table tb_device-->
+        <id column="id" property="id"/>
+        <result column="product_id" property="productId"/>
+        <result column="device_name" property="deviceName"/>
+        <result column="device_key" property="deviceKey"/>
+        <result column="device_secret" property="deviceSecret"/>
+    </resultMap>
+    <resultMap id="DTOResultMap" extends="BaseResultMap" type="com.github.dingdaoyi.model.DTO.DeviceDTO">
+        <result column="proto_key" property="protoKey"/>
+    </resultMap>
+    <sql id="Base_Column_List">
+        <!--@mbg.generated-->
+        id,
+        product_id,
+        device_name,
+        device_key,
+        device_secret
+    </sql>
+    <sql id="dvs_column_list">
+        dvs.id,
+        dvs.product_id,
+        dvs.device_name,
+        dvs.device_key,
+        dvs.device_secret
+    </sql>
+
+    <select id="findByDeviceKey" resultMap="DTOResultMap">
+        select
+        <include refid="dvs_column_list"/>,
+                                              proto.proto_key
+    from tb_device dvs
+             left join tb_product prod on prod.id = dvs.product_id
+             left join tb_protocol proto on proto.id = prod.protocol_id
+    where dvs.device_key = #{deviceKey}
+    </select>
 </mapper>

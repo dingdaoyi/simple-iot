@@ -24,6 +24,7 @@
     <modules>
         <module>iot-server</module>
         <module>iot-common</module>
+        <module>iot-common/iot-protocol-core</module>
     </modules>
     <scm>
         <connection/>

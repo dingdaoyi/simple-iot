@@ -30,4 +30,12 @@ public interface ModelServiceService extends IService<ModelService>{
      * @return
      */
     Boolean updateServiceStatus(Integer serviceId,Integer status);
+
+    /**
+     * 获取所有服务,事件
+     * @param productId
+     * @param productTypeId
+     * @return
+     */
+    List<ModelServiceVO> listAllByProduct(Integer productId, Integer productTypeId);
 }

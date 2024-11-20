@@ -20,7 +20,7 @@ public enum DataTypeEnum {
     STRUCT(8),
     ;
     @EnumValue
-    @JsonValue
+//    @JsonValue
     private final int value;
 
     DataTypeEnum(int value) {

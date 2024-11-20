@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.github.dingdaoyi.mapper.ProtocolMapper">
+  <resultMap id="BaseResultMap" type="com.github.dingdaoyi.entity.Protocol">
+    <!--@mbg.generated-->
+    <!--@Table tb_protocol-->
+    <id column="id" property="id" />
+    <result column="name" property="name" />
+    <result column="proto_type" property="protoType" />
+    <result column="url" property="url" />
+    <result column="mark" property="mark" />
+    <result column="proto_key" property="protoKey" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    <!--@mbg.generated-->
+    id, name, proto_type, url, mark, proto_key
+  </sql>
+</mapper>
