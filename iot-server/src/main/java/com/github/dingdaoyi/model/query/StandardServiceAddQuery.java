@@ -3,7 +3,7 @@ package com.github.dingdaoyi.model.query;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.github.dingdaoyi.entity.ModelService;
 import com.github.dingdaoyi.entity.ServiceProperty;
-import com.github.dingdaoyi.entity.enu.EventTypeEnum;
+import com.github.dingdaoyi.proto.model.tsl.EventTypeEnum;
 import com.github.dingdaoyi.entity.enu.ServiceTypeEnum;
 import com.github.dingdaoyi.entity.enu.StatusEnum;
 import com.github.dingdaoyi.model.ToEntity;

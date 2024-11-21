@@ -6,24 +6,9 @@ import lombok.Data;
  * @author dingyunwei
  */
 @Data
-public class MqttPopMessage implements MqttMessage{
-    /**
-     * 标识符
-     */
-    private String identifier;
-
+public class MqttPopMessage{
     /**
      * 参数值
      */
     private Object value;
-
-    /**
-     * 消息id
-     */
-    private Integer messageId;
-
-    @Override
-    public int getMessageId() {
-        return messageId;
-    }
 }

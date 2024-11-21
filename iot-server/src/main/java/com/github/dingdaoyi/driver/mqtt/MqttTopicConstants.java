@@ -25,23 +25,28 @@ public class MqttTopicConstants implements ApplicationContextAware {
     /**
      * 事件上报
      */
-    public static String EVENT_TOPIC = "ev/{productKey}/{identifier}";
+    public static String EVENT_TOPIC = "ev/{productKey}";
 
 
     /**
      * 指令下发
      */
-    public static String COMMAND_TOPIC = "cam/{productKey}/{identifier}";
+    public static String COMMAND_TOPIC = "cam/{productKey}";
 
     /**
      * 设备指令回复
      */
-    public static String COMMAND_RES_TOPIC = "cam_res/{productKey}/{identifier}";
+    public static String COMMAND_RES_TOPIC = "cam_res/{productKey}";
 
     /**
      * 上报属性
      */
-    public static String PROPERTY_TOPIC = "pro/{productKey}/{identifier}";
+    public static String PROPERTY_TOPIC = "pro/{productKey}";
+
+    /**
+     * 错误数据反馈topic
+     */
+    public static String ERROR_RESPONSE_TOPIC = "error/response";
 
     public static Pattern TOPIC_PARSE_PATTERN;
 
@@ -66,13 +71,15 @@ public class MqttTopicConstants implements ApplicationContextAware {
             TOPIC_MAP.put(COMMAND_TOPIC, topicPrefix + "/" + COMMAND_TOPIC);
             TOPIC_MAP.put(PROPERTY_TOPIC, topicPrefix + "/" + PROPERTY_TOPIC);
             TOPIC_MAP.put(COMMAND_RES_TOPIC, topicPrefix + "/" + COMMAND_RES_TOPIC);
-            TOPIC_PARSE_PATTERN = Pattern.compile("^" + topicPrefix + "/(\\w*)/(\\w*)/(\\w*)$");
+            TOPIC_MAP.put(ERROR_RESPONSE_TOPIC, topicPrefix + "/" + ERROR_RESPONSE_TOPIC);
+            TOPIC_PARSE_PATTERN = Pattern.compile("^" + topicPrefix + "/(\\w*)/(\\w*)$");
         } else {
             TOPIC_MAP.put(EVENT_TOPIC, EVENT_TOPIC);
             TOPIC_MAP.put(COMMAND_TOPIC, COMMAND_TOPIC);
             TOPIC_MAP.put(PROPERTY_TOPIC, PROPERTY_TOPIC);
             TOPIC_MAP.put(COMMAND_RES_TOPIC, COMMAND_RES_TOPIC);
-            TOPIC_PARSE_PATTERN = Pattern.compile("^(\\w*)/(\\w*)/(\\w*)$");
+            TOPIC_MAP.put(ERROR_RESPONSE_TOPIC, ERROR_RESPONSE_TOPIC);
+            TOPIC_PARSE_PATTERN = Pattern.compile("^(\\w*)/(\\w*)$");
         }
         log.info("MqttTopicConstants 初始化成功!");
     }

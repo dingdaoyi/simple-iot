@@ -1,4 +1,4 @@
-package com.github.dingdaoyi.entity.enu;
+package com.github.dingdaoyi.proto.model.tsl;
 
 import com.baomidou.mybatisplus.annotation.EnumValue;
 import com.fasterxml.jackson.annotation.JsonValue;

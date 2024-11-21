@@ -4,7 +4,7 @@ import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
-import com.github.dingdaoyi.entity.enu.EventTypeEnum;
+import com.github.dingdaoyi.proto.model.tsl.EventTypeEnum;
 import com.github.dingdaoyi.entity.enu.ServiceTypeEnum;
 import com.github.dingdaoyi.entity.enu.StatusEnum;
 import io.swagger.v3.oas.annotations.media.Schema;

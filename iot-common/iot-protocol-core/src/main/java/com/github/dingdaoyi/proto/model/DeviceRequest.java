@@ -35,10 +35,9 @@ public class DeviceRequest {
     private String protoKey;
 
     /**
-     * 标识符号
+     * 产品key
      */
-    private String identifier;
-
+    private String productKey;
     /**
      * 设备数据
      */

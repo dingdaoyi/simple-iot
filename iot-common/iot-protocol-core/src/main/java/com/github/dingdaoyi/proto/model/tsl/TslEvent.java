@@ -1,11 +1,8 @@
-package com.github.dingdaoyi.model.DTO;
+package com.github.dingdaoyi.proto.model.tsl;
 
 import com.baomidou.mybatisplus.annotation.TableField;
-import com.github.dingdaoyi.entity.ModelService;
-import com.github.dingdaoyi.entity.enu.EventTypeEnum;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
-import net.dreamlu.mica.core.utils.$;
 
 import java.util.List;
 
@@ -13,7 +10,7 @@ import java.util.List;
  * @author dingyunwei
  */
 @Data
-public class TslEventDTO {
+public class TslEvent {
     /**
      * id
      */
@@ -54,11 +51,10 @@ public class TslEventDTO {
     private Boolean required;
 
     @Schema(description = "出参")
-    public List<TslPropertyDTO> outputParams;
+    public List<TslProperty> outputParams;
 
 
-    public TslEventDTO(ModelService modelService, List<TslPropertyDTO> outputParams) {
-        $.copy(modelService,this);
+    public TslEvent(List<TslProperty> outputParams) {
         this.outputParams = outputParams;
     }
 }

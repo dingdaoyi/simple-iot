@@ -1,6 +1,6 @@
 package com.github.dingdaoyi.service;
 
-import com.github.dingdaoyi.model.DTO.TslModelDTO;
+import com.github.dingdaoyi.proto.model.tsl.TslModel;
 
 import java.util.Optional;
 
@@ -10,5 +10,5 @@ import java.util.Optional;
  */
 public interface TslModelService {
 
-    Optional<TslModelDTO> findByProductKey(String productKey);
+    Optional<TslModel> findByProductKey(String productKey);
 }

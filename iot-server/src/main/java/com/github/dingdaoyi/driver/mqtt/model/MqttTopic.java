@@ -20,10 +20,6 @@ public class MqttTopic {
      */
     private ProtoMessageType messageType;
 
-    /**
-     * 协议key
-     */
-    private String identifier;
 
     public static Optional<MqttTopic> parse(String topic) {
         final Matcher matcher = MqttTopicConstants.TOPIC_PARSE_PATTERN
@@ -34,7 +30,6 @@ public class MqttTopic {
         MqttTopic mqttTopic = new MqttTopic();
         mqttTopic.setMessageType(ProtoMessageType.fromCode(matcher.group(1)).orElse(null));
         mqttTopic.setProductKey(matcher.group(2));
-        mqttTopic.setProductKey(matcher.group(3));
         return Optional.of(mqttTopic);
     }
 

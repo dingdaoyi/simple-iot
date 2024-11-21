@@ -3,6 +3,7 @@ package com.github.dingdaoyi.proto.inter;
 import com.github.dingdaoyi.proto.model.DecodeResult;
 import com.github.dingdaoyi.proto.model.DeviceRequest;
 import com.github.dingdaoyi.proto.model.ProtocolException;
+import com.github.dingdaoyi.proto.model.tsl.TslModel;
 
 /**
  * @author dingyunwei
@@ -19,7 +20,7 @@ public interface ProtocolDecoder {
      * @param request
      * @return
      */
-    DecodeResult decode(DeviceRequest request) throws ProtocolException;
+    DecodeResult decode(DeviceRequest request, TslModel tslModel) throws ProtocolException;
 
     /**
      * 回复错误信息

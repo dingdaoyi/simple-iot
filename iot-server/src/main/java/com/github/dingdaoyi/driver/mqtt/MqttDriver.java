@@ -10,6 +10,9 @@ import lombok.extern.slf4j.Slf4j;
 import net.dreamlu.iot.mqtt.codec.MqttPublishMessage;
 import net.dreamlu.iot.mqtt.codec.MqttQoS;
 import net.dreamlu.iot.mqtt.core.server.event.IMqttMessageListener;
+import net.dreamlu.iot.mqtt.spring.server.MqttServerTemplate;
+import org.jetbrains.annotations.NotNull;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 import org.tio.core.ChannelContext;
 
@@ -27,6 +30,10 @@ public class MqttDriver implements IMqttMessageListener {
     @Resource
     private IoTDataProcessor dataProcessor;
 
+    @Resource
+    @Lazy
+    private MqttServerTemplate mqttServerTemplate;
+
     @Override
     public void onMessage(ChannelContext context, String clientId, String topic, MqttQoS qoS, MqttPublishMessage message) {
         log.info("topic:{},clientId:{},message:{}", topic, clientId, message);
@@ -41,12 +48,20 @@ public class MqttDriver implements IMqttMessageListener {
             log.error("上传数据的topic错误,无法进行后续解析:{}|{}", clientId, topic);
             return;
         }
-        MqttTopic mqttTopic = optionalMqttTopic.get();
+        DeviceRequest deviceRequest = getDeviceRequest(message, optionalMqttTopic.get(), device);
+        dataProcessor.messageUp(deviceRequest);
+    }
+
+    private @NotNull DeviceRequest getDeviceRequest(MqttPublishMessage message, MqttTopic mqttTopic, DeviceDTO device) {
         DeviceRequest deviceRequest = new DeviceRequest();
         deviceRequest.setDeviceId(device.getId());
         deviceRequest.setProtoKey(device.getProtoKey());
+        MqttDeviceConnection connection = new MqttDeviceConnection(device.getDeviceKey(),
+                mqttTopic.getProductKey(), mqttServerTemplate);
+        deviceRequest.setConnection(connection);
         deviceRequest.setMessageType(mqttTopic.getMessageType());
+        deviceRequest.setProductKey(mqttTopic.getProductKey());
         deviceRequest.setData(message.getPayload());
-        dataProcessor.messageUp(deviceRequest);
+        return deviceRequest;
     }
 }

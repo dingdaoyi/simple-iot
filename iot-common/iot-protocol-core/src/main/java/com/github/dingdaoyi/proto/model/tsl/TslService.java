@@ -1,9 +1,7 @@
-package com.github.dingdaoyi.model.DTO;
+package com.github.dingdaoyi.proto.model.tsl;
 
-import com.github.dingdaoyi.entity.ModelService;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
-import net.dreamlu.mica.core.utils.$;
 
 import java.util.List;
 
@@ -11,13 +9,11 @@ import java.util.List;
  * @author dingyunwei
  */
 @Data
-public class TslServiceDTO {
+public class TslService {
 
-    public TslServiceDTO(ModelService modelService, List<TslPropertyDTO> inputParams, List<TslPropertyDTO> outputParams) {
-        $.copy(modelService, this);
+    public TslService(List<TslProperty> inputParams, List<TslProperty> outputParams) {
         this.inputParams = inputParams;
         this.outputParams = outputParams;
-
     }
 
     /**
@@ -60,9 +56,9 @@ public class TslServiceDTO {
 
 
     @Schema(description = "入参")
-    public List<TslPropertyDTO> inputParams;
+    public List<TslProperty> inputParams;
 
 
     @Schema(description = "出参")
-    public List<TslPropertyDTO> outputParams;
+    public List<TslProperty> outputParams;
 }

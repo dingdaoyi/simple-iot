@@ -7,7 +7,8 @@ import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.extension.handlers.JacksonTypeHandler;
 import com.github.dingdaoyi.proto.model.DataTypeEnum;
 import com.github.dingdaoyi.entity.enu.ParamType;
-import com.github.dingdaoyi.entity.enu.PropertyAccessMode;
+import com.github.dingdaoyi.proto.model.tsl.PropertyAccessMode;
+import com.github.dingdaoyi.proto.model.tsl.TslProperty;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
@@ -171,4 +172,24 @@ public class ModelProperty {
     @TableField(value = "parent_id")
     @Schema(description = "父级id,当数据类型为struct的时候会有,默认-1")
     private Integer parentId = -1;
+
+    public TslProperty toTsl() {
+        TslProperty propertyDTO = new TslProperty();
+        propertyDTO.setId(this.getId());
+        propertyDTO.setDataType(this.getDataType());
+        propertyDTO.setMark(this.getMark());
+        propertyDTO.setIdentifier(this.getIdentifier());
+        propertyDTO.setName(this.getName());
+        propertyDTO.setAccessMode(this.getAccessMode());
+        propertyDTO.setBool0(this.getBool0());
+        propertyDTO.setBool1(this.getBool1());
+        propertyDTO.setLength(this.getLength());
+        propertyDTO.setUnit(this.getUnit());
+        propertyDTO.setUnitName(this.getUnitName());
+        propertyDTO.setMax(this.getMax());
+        propertyDTO.setMin(this.getMin());
+        propertyDTO.setStep(this.getStep());
+        propertyDTO.setEnumMap(this.getEnumMap());
+        return propertyDTO;
+    }
 }

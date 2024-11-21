@@ -17,3 +17,16 @@
 - [ ] 协议管理
 - [ ] 协议接入定义
 - [ ] 
+### mqtt 协议数据上报测试
+topic:sampleiot/pro/B29Gx0OpapnOtPrQXtb4
+```json
+{
+    "header": {
+        "msgId": 1,
+        "identifier": "pressure"
+    },
+    "body": {
+        "value":"20"
+    }
+}
+```

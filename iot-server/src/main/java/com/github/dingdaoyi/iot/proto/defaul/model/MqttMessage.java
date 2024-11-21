@@ -1,15 +1,39 @@
 package com.github.dingdaoyi.iot.proto.defaul.model;
 
+import lombok.Data;
+
 /**
- * mqtt顶级接口,暂留后续使用
+ * mqtt 消息
+ * @author dingyunwei
  */
-public interface MqttMessage {
+@Data
+public class MqttMessage<T> {
+
+    /**
+     * 头信息
+     */
+    private MqttHeader header;
+
+    /**
+     * 消息体
+     */
+    private T body;
+
+    public Integer messageId() {
+        if (header == null) {
+            return 0;
+        }
+        return header.getMsgId();
+    }
+
     /**
      * 获取标识符
      * @return
      */
-    String getIdentifier();
-
-    int getMessageId();
-
+    public String identifier() {
+        if (header == null) {
+            return "";
+        }
+        return header.getIdentifier();
+    }
 }

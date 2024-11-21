@@ -1,7 +1,7 @@
 package com.github.dingdaoyi.controller.iot;
 
 import com.github.dingdaoyi.entity.Product;
-import com.github.dingdaoyi.model.DTO.TslModelDTO;
+import com.github.dingdaoyi.proto.model.tsl.TslModel;
 import com.github.dingdaoyi.model.enu.SysCodeEnum;
 import com.github.dingdaoyi.model.query.ProductAddQuery;
 import com.github.dingdaoyi.model.query.ProductUpdateQuery;
@@ -55,7 +55,7 @@ public class ProductController {
 
     @GetMapping("tsl/{productId}")
     @Operation(summary = "物模型")
-    public R<TslModelDTO> tslDetails(@PathVariable Integer productId) {
+    public R<TslModel> tslDetails(@PathVariable Integer productId) {
         Product product = productService.getById(productId);
         if (product == null) {
             return R.fail(SysCodeEnum.BAD_REQUEST, "数据不存在");

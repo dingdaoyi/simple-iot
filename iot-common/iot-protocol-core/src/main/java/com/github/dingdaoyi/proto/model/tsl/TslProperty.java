@@ -1,8 +1,6 @@
-package com.github.dingdaoyi.model.DTO;
+package com.github.dingdaoyi.proto.model.tsl;
 
-import com.github.dingdaoyi.entity.ModelProperty;
 import com.github.dingdaoyi.proto.model.DataTypeEnum;
-import com.github.dingdaoyi.entity.enu.PropertyAccessMode;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
@@ -14,7 +12,7 @@ import java.util.List;
  */
 @Schema(description = "属性")
 @Data
-public class TslPropertyDTO {
+public class TslProperty {
     /**
      * id
      */
@@ -107,25 +105,6 @@ public class TslPropertyDTO {
     /**
      * 子级
      */
-    private List<TslPropertyDTO> children;
+    private List<TslProperty> children;
 
-    public static TslPropertyDTO of(ModelProperty property) {
-        TslPropertyDTO propertyDTO = new TslPropertyDTO();
-        propertyDTO.setId(property.getId());
-        propertyDTO.setDataType(property.getDataType());
-        propertyDTO.setMark(property.getMark());
-        propertyDTO.setIdentifier(property.getIdentifier());
-        propertyDTO.setName(property.getName());
-        propertyDTO.setAccessMode(property.getAccessMode());
-        propertyDTO.setBool0(property.getBool0());
-        propertyDTO.setBool1(property.getBool1());
-        propertyDTO.setLength(property.getLength());
-        propertyDTO.setUnit(property.getUnit());
-        propertyDTO.setUnitName(property.getUnitName());
-        propertyDTO.setMax(property.getMax());
-        propertyDTO.setMin(property.getMin());
-        propertyDTO.setStep(property.getStep());
-        propertyDTO.setEnumMap(property.getEnumMap());
-        return propertyDTO;
-    }
 }
