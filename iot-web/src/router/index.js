@@ -1,4 +1,4 @@
-import { createRouter, createWebHashHistory } from 'vue-router'
+import {createRouter, createWebHistory} from 'vue-router'
 import layoutRout from './modules/layoutRout'
 import login from '@/views/login'
 
@@ -6,7 +6,7 @@ import login from '@/views/login'
 // 固定菜单
 
 const router = createRouter({
-  history: createWebHashHistory(),
+  history: createWebHistory(),
   routes: [
     {
       path: '/',

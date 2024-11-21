@@ -11,17 +11,17 @@ const configProxy = {
   local: {
     iot: 'http://localhost:5010'
   },
-  ys: {
+  line: {
     iot: 'http://106.13.72.27:5010'
-  },
+  }
 }
 
 const getProxy = (name) => {
   return {
     '/iot': {
       target: configProxy[name].iot,
-      changeOrigin: true,
-    },
+      changeOrigin: true
+    }
   }
 }
 
@@ -29,12 +29,6 @@ export default defineConfig(({ command, mode }) => {
   let alias = {
     '@': fileURLToPath(new URL('./src', import.meta.url))
   }
-  if (mode === 'dwui') {
-    alias = {
-      '@': fileURLToPath(new URL('./src', import.meta.url)),
-    }
-  }
-
   return {
     plugins: [
       vue(),
@@ -66,7 +60,7 @@ export default defineConfig(({ command, mode }) => {
       host: '0.0.0.0',
       port: 9999,
       hmr: true, // 启动热更新
-      proxy: getProxy('local'), // test：测试， line: 线上， dyw：丁云伟
+      proxy: getProxy('local'), // local：本地， line: 线上
       fs: {
       // 可以为项目根目录的上一级提供服务
         allow: ['..']

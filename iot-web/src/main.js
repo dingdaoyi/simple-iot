@@ -20,11 +20,6 @@ import { setupStore } from './store'
 // 权限控制
 import './permission'
 
-/* 判断是否是dwyl-ui开发环境 */
-if (import.meta.env.MODE !== 'dwui') {
-  import('dwyl-ui/dist/style.css')
-}
-
 async function setupApp () {
   const app = createApp(App)
 

@@ -5,15 +5,7 @@
 </template>
 
 <script setup>
-// import { uploadMoreApi } from '@/api/newApi'
-// import { useThemeStore } from '@/store'
 import { useRouter, useRoute } from 'vue-router'
-/* 主题默认加载配置 */
-// const themeStore = useThemeStore()
-// themeStore.setDarkModel(themeStore.isDark)
-// themeStore.changeTheme(themeStore.themeJson.elColorPrimary)
-// themeStore.changeSliderTheme(themeStore.themeJson.dwSliderActiveBg)
-/* 主题默认加载配置 */
 
 /* dwyl-ui默认传递参数配置 */
 const projectConfig = {

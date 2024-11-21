@@ -1,7 +1,6 @@
 <template>
   <div class="header-box flex flex-row items-center bg-dwboxbg">
     <div class="flex items-center flex-1">
-      <!-- <img class="w-95px h-20px" src="@/assets/309455747895656448.png"> -->
       <div class="pl-20px text-22px title color-primary">消防大数据管理系统</div>
     </div>
     <div class="flex-center h-full">

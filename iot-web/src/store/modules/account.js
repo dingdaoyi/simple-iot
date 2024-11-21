@@ -8,7 +8,6 @@ export const useAccountStore = defineStore({
     authorization: getItem(TOKEN),
     userinfo: null,
     menuData: [], // 树列表
-    flatMenuData: [] // 扁片树
   }),
   getters: {},
   actions: {
@@ -22,10 +21,5 @@ export const useAccountStore = defineStore({
       this.userinfo = null
       removeItem(TOKEN)
     },
-    // 获取用户信息
-    async getUserinfo () {
-
-    }
-
   }
 })

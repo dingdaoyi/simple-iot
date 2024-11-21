@@ -9,7 +9,7 @@ import('@/router').then(({ router: r }) => {
 })
 
 const service = axios.create({
-  baseURL: '/',
+  baseURL: '/iot',
   timeout: 100000,
   withCredentials: true
 })

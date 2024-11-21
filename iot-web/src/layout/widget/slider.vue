@@ -5,15 +5,23 @@
 </template>
 
 <script lang="jsx" setup>
-import { computed, watchEffect, ref } from 'vue'
+import {computed, ref, watchEffect} from 'vue'
 import menuTree from '@/components/selectTree/menuTree'
-import { useAccountStore } from '@/store'
 import { useRoute } from 'vue-router'
 
 const route = useRoute()
 const path = computed(() => route.path)
-const { menuData } = useAccountStore()
 
+const menuData=ref(
+    [
+      {
+        id:1,
+        permissionUrl:"/home",
+        icon:"",
+        "permissionName":"首页"
+      }
+    ]
+)
 watchEffect(() => {
   const getTree2 = (data, id) => {
     data.forEach(item => {
