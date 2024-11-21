@@ -1,5 +1,6 @@
 import { createRouter, createWebHashHistory } from 'vue-router'
 import layoutRout from './modules/layoutRout'
+import login from '@/views/login'
 
 /* 菜单栏的路由 */
 // 固定菜单
@@ -10,6 +11,10 @@ const router = createRouter({
     {
       path: '/',
       redirect: '/home'
+    },
+    {
+      path: '/login',
+      component: login
     },
     ...layoutRout
   ],

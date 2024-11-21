@@ -7,4 +7,3 @@ export function setupStore (app) {
 
 export * from './modules/account'
 export * from './modules/theme'
-export * from './modules/dictionary'

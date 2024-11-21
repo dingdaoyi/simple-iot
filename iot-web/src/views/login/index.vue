@@ -4,7 +4,7 @@
       <div class="content flex flex-row">
         <div class="form-box flex-1 relative">
           <div class="account">
-            <div class="text-center text-28px mb-12px color-primary lh-40px">消防大数据管理系统</div>
+            <div class="text-center text-28px mb-12px color-primary lh-40px">简单的物联网平台</div>
             <el-form ref="loginForm" :model="form" :rules="rules" label-position="top">
               <el-form-item label="账号" prop="username">
                 <el-input v-model="form.username" placeholder="请输入账号" />

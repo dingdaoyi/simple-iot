@@ -15,7 +15,7 @@ import '@/styles/global.scss'
 import router from './router'
 import DwylUi from 'dwyl-ui'
 // 引入store
-// import { setupStore } from './store'
+import { setupStore } from './store'
 
 // 权限控制
 import './permission'
@@ -34,7 +34,7 @@ async function setupApp () {
 
   app.use(ElementPlus, { locale: zhCn })
   app.use(DwylUi)
-  // setupStore(app)
+  setupStore(app)
   app.use(router)
 
   app.mount('#app')
