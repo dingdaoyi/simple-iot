@@ -1,6 +1,11 @@
 package com.github.dingdaoyi.service.impl;
 
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.github.dingdaoyi.model.PageQuery;
+import com.github.dingdaoyi.model.PageResult;
+import com.github.dingdaoyi.utils.PageHelper;
+import net.dreamlu.mica.core.utils.$;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -36,5 +41,14 @@ public class ProductTypeServiceImpl extends ServiceImpl<ProductTypeMapper, Produ
     @Override
     public boolean existsById(Integer productTypeId) {
         return exists(Wrappers.<ProductType>lambdaQuery().eq(ProductType::getId, productTypeId));
+    }
+
+    @Override
+    public PageResult<ProductType> pageByQuery(PageQuery query) {
+        Page<ProductType> page = PageHelper.page(query);
+        Page<ProductType> result = baseMapper.selectPage(page, Wrappers
+                .<ProductType>lambdaQuery()
+                .like($.isNotBlank(query.getName()), ProductType::getName, query.getName()));
+        return PageHelper.result(result);
     }
 }

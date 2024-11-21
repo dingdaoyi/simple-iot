@@ -1,6 +1,8 @@
 package com.github.dingdaoyi.controller.iot;
 
 import com.github.dingdaoyi.entity.ProductType;
+import com.github.dingdaoyi.model.PageQuery;
+import com.github.dingdaoyi.model.PageResult;
 import com.github.dingdaoyi.model.query.ProductTypeAddQuery;
 import com.github.dingdaoyi.service.ProductTypeService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -29,6 +31,13 @@ public class ProductTypeController {
     public R<List<ProductType>> list(@RequestParam(defaultValue = "-1") Integer parentId) {
         return R.success(productTypeService.listByParentId(parentId));
     }
+
+    @PostMapping("page")
+    @Operation(summary = "获取产品类型")
+    public PageResult<ProductType> page(@RequestBody PageQuery query) {
+        return productTypeService.pageByQuery(query);
+    }
+
 
     @PostMapping
     @Operation(summary = "添加产品类型")

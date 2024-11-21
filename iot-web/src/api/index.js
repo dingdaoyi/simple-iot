@@ -12,3 +12,12 @@ export const Index = data => {
   })
 }
 
+export const productTypeListApi = params => {
+  return request({
+    url:   '/product/type',
+    method: 'get',
+    params
+  })
+}
+
+

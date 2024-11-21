@@ -5,10 +5,10 @@
       <slider/>
       <div class="flex-1 m-20px  overflow-hidden" >
         <router-view #default="{ Component, route }">
-<!--          <div class="flex flex-col h-full">-->
-<!--            <component :is="Component" :key="route.path" />-->
-<!--          </div>-->
-          <component :is="Component" :key="route.path" classz="flex flex-col h-full"/>
+          <div class="flex flex-col h-full">
+            <component :is="Component" :key="route.path" />
+          </div>
+<!--          <component :is="Component" :key="route.path" classz="flex flex-col h-full"/>-->
         </router-view>
       </div>
     </div>

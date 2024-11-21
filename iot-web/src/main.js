@@ -7,7 +7,7 @@ import ElementPlus from 'element-plus'
 import 'dayjs/locale/zh-cn'
 import zhCn from 'element-plus/es/locale/lang/zh-cn'
 import * as ElementPlusIconsVue from '@element-plus/icons-vue'
-
+import DwUi from 'dwyl-ui'
 import 'uno.css'
 import '@/styles/global.scss'
 
@@ -19,6 +19,8 @@ import { setupStore } from './store'
 // 权限控制
 import './permission'
 
+import 'dwyl-ui/dist/style.css'
+
 async function setupApp () {
   const app = createApp(App)
 
@@ -29,7 +31,7 @@ async function setupApp () {
   app.use(ElementPlus, { locale: zhCn })
   setupStore(app)
   app.use(router)
-
+  app.use(DwUi)
   app.mount('#app')
 }
 

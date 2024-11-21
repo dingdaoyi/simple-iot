@@ -1,11 +1,11 @@
 <template>
- <div :class="classz" >
-   <el-scrollbar class="sidebar-container">
+ <div>
+   <el-scrollbar class="sidebar-container ">
      <el-menu
          :default-active="activeMenu"
          class="el-menu-class"
          @select="handleSelect"
-         active-text-color="#ffd04b"
+         active-text-color="#ffffff"
          router
      >
        <template v-for="menu in menus" :key="menu.index">
@@ -43,7 +43,6 @@ import {useRoute, useRouter} from 'vue-router'
 // 路由对象
 const route = useRoute()
 const router = useRouter()
-const props = defineProps(['classz']);
 // 菜单数据
 const menus = ref([
   {
@@ -89,6 +88,7 @@ const handleSelect = (index) => {
   width: 200px;
   background-color: var(--el-bg-color);
   padding: 30px 10px;
+  margin: 0 0;
   overflow: auto;
 }
 
@@ -96,17 +96,18 @@ const handleSelect = (index) => {
   width: 100%;
   min-height: 400px;
 }
-
-// 选中项样式
-.el-menu-class .el-menu-item.is-active,
-.el-menu-class .el-sub-menu.is-active > .el-menu__title {
-  color: var(--el-color-primary) !important; // 文字颜色
-  border-radius: 4px;
+// 设置选中项的背景色
+.el-menu-class .el-menu-item.is-active {
+  background-color: var(--el-color-primary) !important; // 使用主题色变量
+  color: #fff !important; // 设置文字颜色
+  border-radius: 4px; // 圆角效果（可选）
 }
 
-//// 悬停和焦点样式
-//.el-menu-class .el-menu-item:hover,
-//.el-menu-class .el-menu-item:focus {
-//  color: var(--el-color-primary) !important;
-//}
+.el-menu-class .el-sub-menu.is-active > .el-menu__title {
+  background-color: var(--el-color-primary) !important;
+  color: #fff !important;
+  border-radius: 4px; // 圆角效果（可选）
+}
+
+
 </style>
