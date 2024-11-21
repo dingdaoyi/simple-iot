@@ -13,7 +13,6 @@ import '@/styles/global.scss'
 
 // 引入路由
 import router from './router'
-import DwylUi from 'dwyl-ui'
 // 引入store
 import { setupStore } from './store'
 
@@ -28,7 +27,6 @@ async function setupApp () {
   }
 
   app.use(ElementPlus, { locale: zhCn })
-  app.use(DwylUi)
   setupStore(app)
   app.use(router)
 

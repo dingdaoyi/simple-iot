@@ -1,53 +1,112 @@
 <template>
-  <el-scrollbar class="!w-200px bg-dwboxbg py-30px px-10px overflow-auto">
-    <menuTree :data="menuData" :actPath="path" />
-  </el-scrollbar>
+ <div :class="classz" >
+   <el-scrollbar class="sidebar-container">
+     <el-menu
+         :default-active="activeMenu"
+         class="el-menu-class"
+         @select="handleSelect"
+         active-text-color="#ffd04b"
+         router
+     >
+       <template v-for="menu in menus" :key="menu.index">
+         <el-sub-menu v-if="menu.children" :index="menu.index">
+           <template #title>
+             <el-icon>
+               <component :is="menu.icon"/>
+             </el-icon>
+             <span>{{ menu.title }}</span>
+           </template>
+           <el-menu-item
+               v-for="subItem in menu.children"
+               :key="subItem.index"
+               :index="subItem.index"
+           >
+             {{ subItem.title }}
+           </el-menu-item>
+         </el-sub-menu>
+         <el-menu-item v-else :index="menu.index">
+           <el-icon>
+             <component :is="menu.icon"/>
+           </el-icon>
+           <span>{{ menu.title }}</span>
+         </el-menu-item>
+       </template>
+     </el-menu>
+   </el-scrollbar>
+ </div>
 </template>
 
 <script lang="jsx" setup>
-import {computed, ref, watchEffect} from 'vue'
-import menuTree from '@/components/selectTree/menuTree'
-import { useRoute } from 'vue-router'
-
+import {ref, markRaw} from 'vue'
+import {Location} from '@element-plus/icons-vue'
+import {useRoute, useRouter} from 'vue-router'
+// 路由对象
 const route = useRoute()
-const path = computed(() => route.path)
-
-const menuData=ref(
-    [
+const router = useRouter()
+const props = defineProps(['classz']);
+// 菜单数据
+const menus = ref([
+  {
+    index: '/home', // 修改为字符串
+    title: '主页',
+    icon: markRaw(Location),
+    path: '/home',
+  },
+  {
+    index: '/product',
+    title: '产品管理',
+    icon: markRaw(Location),
+    path: '/product',
+    children: [
       {
-        id:1,
-        permissionUrl:"/home",
-        icon:"",
-        "permissionName":"首页"
-      }
-    ]
-)
-watchEffect(() => {
-  const getTree2 = (data, id) => {
-    data.forEach(item => {
-      if (item.id === id) {
-        item.showChild = true
-        if (item.parentId) {
-          getTree2(menuData, item.parentId)
-        }
-      } else {
-        item.children && getTree2(item.children, id)
-      }
-    })
-  }
-  const getTree = (data) => {
-    data.forEach(item => {
-      if (item.permissionUrl === path.value) {
-        getTree2(menuData, item.parentId)
-      } else {
-        item.children && getTree(item.children)
-      }
-    })
-  }
-  getTree(menuData)
-})
+        index: '/productType',
+        title: '产品类型管理',
+        icon: markRaw(Location),
+        path: '/productType',
+      },
+    ],
+  },
+])
 
+const activeMenu = ref('home');
+
+const handleSelect = (index) => {
+  activeMenu.value = index;
+  const selectedMenu = menus.value
+      .flatMap((menu) => [menu, ...(menu.children || [])])
+      .find((item) => item.index === index)
+  if (selectedMenu &&  selectedMenu.path && route.path!==selectedMenu.path) {
+    router.push({
+      path:selectedMenu.path
+    })
+  }
+}
 </script>
 
 <style lang="scss" scoped>
+
+.sidebar-container {
+  width: 200px;
+  background-color: var(--el-bg-color);
+  padding: 30px 10px;
+  overflow: auto;
+}
+
+.el-menu-class:not(.el-menu--collapse) {
+  width: 100%;
+  min-height: 400px;
+}
+
+// 选中项样式
+.el-menu-class .el-menu-item.is-active,
+.el-menu-class .el-sub-menu.is-active > .el-menu__title {
+  color: var(--el-color-primary) !important; // 文字颜色
+  border-radius: 4px;
+}
+
+//// 悬停和焦点样式
+//.el-menu-class .el-menu-item:hover,
+//.el-menu-class .el-menu-item:focus {
+//  color: var(--el-color-primary) !important;
+//}
 </style>

@@ -1,6 +1,5 @@
 import { defineStore } from 'pinia'
 import { getItem, setItem, removeItem } from '@/utils/storage' // getItem和setItem是封装的操作localStorage的方法
-import { lighten, darken } from '@/components/ThemeSet/set.js'
 import { kebabCase } from 'lodash'
 import { nextTick } from 'vue'
 
