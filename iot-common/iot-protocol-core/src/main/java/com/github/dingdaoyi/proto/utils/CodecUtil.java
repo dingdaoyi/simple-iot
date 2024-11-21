@@ -40,18 +40,6 @@ public final class CodecUtil {
         return bytesToHex(read).toUpperCase(Locale.ROOT);
     }
 
-    /**
-     * 从字节数组中读取无符号高低位long值。
-     */
-    public static long readUnsignedLongLE(byte[] data, int offset) {
-        ByteBuffer buffer = ByteBuffer.allocate(8);
-        // 读取前7字节
-        buffer.put(data, offset, 7);
-        // 填充1字节0
-        buffer.put((byte) 0);
-        buffer.flip();
-        return buffer.order(java.nio.ByteOrder.LITTLE_ENDIAN).getLong();
-    }
 
     /**
      * 判断字符串是否为有效IP。
@@ -73,13 +61,6 @@ public final class CodecUtil {
     public static String intToBinary(int num, int bitNum) {
         String binaryStr = Integer.toBinaryString(num);
         return String.format("%" + bitNum + "s", binaryStr).replace(' ', '0');
-    }
-
-    /**
-     * 转换小数为指定精度。
-     */
-    public static BigDecimal doubleValue(double data, int scale) {
-        return BigDecimal.valueOf(data).setScale(scale, RoundingMode.HALF_UP);
     }
 
 

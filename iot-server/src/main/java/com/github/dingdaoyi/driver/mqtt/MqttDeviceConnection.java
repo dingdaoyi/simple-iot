@@ -7,6 +7,7 @@ import net.dreamlu.iot.mqtt.spring.server.MqttServerTemplate;
 import org.tio.core.ChannelContext;
 
 import java.io.IOException;
+import java.util.Map;
 
 /**
  * mqtt 连接管理器
@@ -36,7 +37,7 @@ public class MqttDeviceConnection implements DeviceConnection {
     }
 
     @Override
-    public void sendMessage(String identifier, byte[] message) throws IOException {
+    public void sendMessage(Map<String,Object> metadata, byte[] message) throws IOException {
         ChannelContext context = mqttTemplate.getChannelContext(deviceKey);
         if (context != null) {
             mqttTemplate.publish(deviceKey, MqttTopicConstants.getTopic(MqttTopicConstants.COMMAND_TOPIC, productKey)

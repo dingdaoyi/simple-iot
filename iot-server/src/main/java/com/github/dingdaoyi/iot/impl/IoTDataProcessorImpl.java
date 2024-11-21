@@ -41,6 +41,7 @@ public class IoTDataProcessorImpl implements IoTDataProcessor {
             }
         } catch (ProtocolException e) {
             log.error("协议解析失败,原因:{}", e.getMessage());
+            decoder.responseError(request.getConnection(),e);
         }
     }
 }

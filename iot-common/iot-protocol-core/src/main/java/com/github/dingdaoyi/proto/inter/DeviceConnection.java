@@ -1,9 +1,11 @@
 package com.github.dingdaoyi.proto.inter;
 
 import java.io.IOException;
+import java.util.Map;
 
 /**
  * 设备连接
+ * @author dingyunwei
  */
 public interface DeviceConnection {
     /**
@@ -19,8 +21,8 @@ public interface DeviceConnection {
 
     /**
      * 发送数据
-     * @param identifier 标识符
+     * @param metadata 消息信息,按照每个协议自行定义
      * @param message 消息数据
      */
-    void sendMessage(String identifier,byte[] message) throws IOException;
+    void sendMessage(Map<String,Object> metadata, byte[] message) throws IOException;
 }

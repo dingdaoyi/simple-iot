@@ -17,4 +17,13 @@ public class MqttPopMessage implements MqttMessage{
      */
     private Object value;
 
+    /**
+     * 消息id
+     */
+    private Integer messageId;
+
+    @Override
+    public int getMessageId() {
+        return messageId;
+    }
 }

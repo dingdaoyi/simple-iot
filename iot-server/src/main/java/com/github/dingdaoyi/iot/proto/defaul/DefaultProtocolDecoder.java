@@ -1,5 +1,6 @@
 package com.github.dingdaoyi.iot.proto.defaul;
 
+import com.github.dingdaoyi.proto.inter.DeviceConnection;
 import com.github.dingdaoyi.proto.model.*;
 import com.github.dingdaoyi.iot.proto.defaul.model.MqttPopMessage;
 import com.github.dingdaoyi.model.DTO.TslModelDTO;
@@ -38,7 +39,7 @@ public class DefaultProtocolDecoder implements ProtocolDecoder {
         }
         Optional<TslModelDTO> optional = tslModelService.findByProductKey(request.getProtoKey());
         if (optional.isEmpty()) {
-            throw new ProtocolException(request.getDeviceKey(), "产品key不正确,忽略解析");
+            throw new ProtocolException(request.getDeviceKey(),ExceptionType.PRODUCT_NOT_FOUND);
         }
         TslModelDTO tslModelDTO = optional.get();
 
@@ -51,22 +52,29 @@ public class DefaultProtocolDecoder implements ProtocolDecoder {
                 if (proMessage != null) {
                     Optional<TslPropertyDTO> propertyDTO = tslModelDTO.propertyByIdentifier(identifier);
                     if (propertyDTO.isEmpty()) {
-                        throw new ProtocolException(request.getDeviceKey(), "未配置物模型属性,无法解析");
+                        throw new ProtocolException(request.getDeviceKey(), ExceptionType.TSL_MODEL_NOT_CONFIG,proMessage.getMessageId());
                     }
                     TslPropertyDTO tslPropertyDTO = propertyDTO.get();
                     DataTypeEnum dataType = tslPropertyDTO.getDataType();
                     if (proMessage.getValue() == null) {
-                        throw new ProtocolException(request.getDeviceKey(), "参数值不能为空");
+                        throw new ProtocolException(request.getDeviceKey(), ExceptionType.NULL_PARAM,proMessage.getMessageId());
                     }
                     try {
                         decodeResult.getDataList()
                                 .add(new DeviceData(identifier, dataType, dataType.parse(proMessage.getValue())));
                     } catch (IllegalArgumentException e) {
-                        throw new ProtocolException(request.getDeviceKey(), "参数值类型和物模型不一致");
+                        throw new ProtocolException(request.getDeviceKey(), ExceptionType.INVALID_PARAM,proMessage.getMessageId());
                     }
                 }
             }
         }
         return decodeResult;
+    }
+
+    @Override
+    public void responseError(DeviceConnection connection, ProtocolException e) {
+
+        connection.sendMessage();
+
     }
 }

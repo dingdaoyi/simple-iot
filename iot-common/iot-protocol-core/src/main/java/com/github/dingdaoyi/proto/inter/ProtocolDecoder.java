@@ -20,4 +20,11 @@ public interface ProtocolDecoder {
      * @return
      */
     DecodeResult decode(DeviceRequest request) throws ProtocolException;
+
+    /**
+     * 回复错误信息
+     * @param connection
+     * @param e
+     */
+    void responseError(DeviceConnection connection, ProtocolException e);
 }

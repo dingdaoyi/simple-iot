@@ -10,6 +10,6 @@ public interface MqttMessage {
      */
     String getIdentifier();
 
-
+    int getMessageId();
 
 }
