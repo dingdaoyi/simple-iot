@@ -1,0 +1,87 @@
+body,
+div,
+span,
+header,
+footer,
+nav,
+section,
+aside,
+article,
+ul,
+dl,
+dt,
+dd,
+li,
+a,
+p,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+i,
+b,
+textarea,
+button,
+input,
+select,
+figure,
+figcaption {
+  padding: 0;
+  margin: 0;
+  list-style: none;
+  font-style: normal;
+  text-decoration: none;
+  border: none;
+  font-family: 'Microsoft Yahei', sans-serif;
+  font-family: 'STKaiti';
+  font-family: "苹方";
+  font-family: 'PingFangSC-Regular, sans-serif';
+  font-family: pingfang SC, helvetica neue, arial, hiragino sans gb, microsoft yahei ui, microsoft yahei, simsun, sans-serif !important;
+  -webkit-tap-highlight-color: transparent;
+  -webkit-font-smoothing: antialiased;
+  box-sizing: border-box;
+  font-size: 14px;
+}
+
+button{
+  outline: none;
+  border: 0;
+  background-color: inherit;
+}
+
+img{
+  vertical-align: middle;
+}
+
+html {
+  background-color: var(--dw-bg);
+  // background-color: #f7f8fa;
+}
+
+input{
+  background:none;
+  outline:none;
+
+}
+input:focus{
+  border:none;
+}
+
+html, body {
+  min-width: 1440px;
+  min-height: 680px;
+}
+
+
+/* 浏览器自动回填，用户名密码输入框颜色更改 */
+// input:-webkit-autofill , textarea:-webkit-autofill, select:-webkit-autofill {
+//   -webkit-text-fill-color: #222 !important;
+//   background-color: transparent;
+//   background-image: none;
+//   transition: background-color 50000s ease-in-out 0s;
+// }
+// input {
+//   background-color:transparent;
+// }

@@ -1,0 +1,45 @@
+
+$mainColor: #409eff; // 网站主题色
+
+
+/* 暗色主题颜色配置 */
+
+html.dark {
+  /* 自定义深色背景颜色 */
+  --dw-bg: #101014;
+
+  --dw-box-bg: #18181c;
+
+
+  --dw-dialog-title-bg: #fff;
+  --dw-dialog-title-xbg: #fff;
+
+  --dw-table-header-color: #fff;
+  --dw-table-header-bg: #111;
+  --dw-table-column-bg: #ccc;
+  --el-dialog-bg-color: #2c2c32;
+  --el-bg-color: #2c2c32;
+
+  --dw-slider-color: #ccc;
+  --dw-slider-active-bg: #465D83;
+  --dw-slider-hover-bg: #2d2d30;
+
+  --dw-border-color: #4C4D4F;
+
+  --dw-hover-color: #333;
+
+  --dw-pmt-box-bg1: #222;
+  --dw-pmt-box-bg2: #2c2c32;
+
+
+  /* wangeditor富文本编辑器主题色 */
+  --w-e-textarea-bg-color: #2c2c32;
+  --w-e-textarea-color: #fff;
+
+  --w-e-toolbar-border-color: var(--dw-border-color);
+
+  --w-e-toolbar-color: #fff;
+  --w-e-toolbar-bg-color: #2c2c32;
+  --w-e-toolbar-active-color: var(--el-color-primary);
+  --w-e-toolbar-active-bg-color: #333;
+}
