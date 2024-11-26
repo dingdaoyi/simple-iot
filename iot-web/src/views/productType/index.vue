@@ -8,28 +8,43 @@
       <el-button type="success" @click="onAdd">添加</el-button>
     </div>
     <DwTable
-        ref="dwTable"
-        :column="column"
-        :params="params"
-        :isPage="false"
-        :api="productTypeListApi"
+      ref="dwTable"
+      row-key="id"
+      :column="column"
+      :params="params"
+      :isPage="false"
+      :api="productTypeListApi"
     >
       <template #cz="{ row }">
-        <dw-button type="primary" link @click="onEdit(row)">编辑</dw-button>
+        <!--        <dw-button type="primary" link @click="onEdit(row)">编辑</dw-button>-->
         <dw-button type="danger" link @click="onDelete(row)">删除</dw-button>
+        <dw-button v-if="row.parentId===-1" type="primary" link @click="onAddChild(row)">添加子级</dw-button>
       </template>
     </DwTable>
+    <EditDia
+      v-if="dialogVisible"
+      v-model="dialogVisible"
+      :title="diaTitle"
+      :parent-id="parentId"
+      :datas="currentItem"
+      @update="closeEdite"
+    />
   </div>
 </template>
 <script setup>
 import { dwHooks } from 'dwyl-ui'
-import {productTypeListApi} from "@/api/index.js";
+import { productTypeDelApi, productTypeListApi } from '@/api/index.js'
+import EditDia from '@/views/productType/widget/editDia.vue'
+import { nextTick, ref } from 'vue'
+
 const { useDwTable } = dwHooks
 
-
+const parentId = ref(-1)
 const column = [
   {
-    type:'selection',
+    prop: 'cz',
+    width: 70,
+    slot: 'expand'
   },
   {
     prop: 'name',
@@ -39,7 +54,7 @@ const column = [
     prop: 'status',
     label: '状态',
     formatter (row) {
-      return row.status?'启用':'禁用'
+      return row.status ? '启用' : '禁用'
     }
   },
   {
@@ -49,11 +64,10 @@ const column = [
   {
     prop: 'cz',
     slot: 'cz',
-    width: 120,
+    width: 220,
     label: '操作'
   }
 ]
-
 const {
   params,
   dialogVisible,
@@ -61,12 +75,27 @@ const {
   onSearch,
   dwTable,
   onDelete,
-  onEdit,
   onAdd,
   diaTitle,
   currentItem
 } = useDwTable({
-
+  deleteApi: productTypeDelApi,
+  diaName: '用户',
+  defParams: {
+    withChild: true
+  }
 })
 
+function closeEdite () {
+  updatePage()
+}
+
+function onAddChild (row) {
+  console.log('添加子级', row.id)
+  parentId.value = row.id
+  console.log(parentId.value, 'parentId')
+  nextTick(() => {
+    dialogVisible.value = true
+  })
+}
 </script>

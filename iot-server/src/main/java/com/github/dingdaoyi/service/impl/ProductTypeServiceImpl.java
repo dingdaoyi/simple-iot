@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.github.dingdaoyi.model.PageQuery;
 import com.github.dingdaoyi.model.PageResult;
+import com.github.dingdaoyi.model.vo.ProductTypeVo;
 import com.github.dingdaoyi.utils.PageHelper;
 import net.dreamlu.mica.core.utils.$;
 import org.springframework.stereotype.Service;
@@ -22,10 +23,15 @@ import com.github.dingdaoyi.service.ProductTypeService;
 public class ProductTypeServiceImpl extends ServiceImpl<ProductTypeMapper, ProductType> implements ProductTypeService {
 
     @Override
-    public List<ProductType> listByParentId(Integer parentId) {
-        return baseMapper.selectList(Wrappers
-                .<ProductType>lambdaQuery()
-                .eq(ProductType::getParentId, parentId));
+    public List<ProductTypeVo> listByParentId(Integer parentId,Boolean withChildren) {
+        List<ProductTypeVo> productTypeVoList = baseMapper.listByParentId(parentId);
+        //TODO 换成内存方式
+        if (parentId==-1 && $.isTrue(withChildren)) {
+            for (ProductTypeVo productTypeVo : productTypeVoList) {
+                productTypeVo.setChildren(baseMapper.listByParentId(productTypeVo.getId()));
+            }
+        }
+        return productTypeVoList;
     }
 
     @Override
@@ -50,5 +56,12 @@ public class ProductTypeServiceImpl extends ServiceImpl<ProductTypeMapper, Produ
                 .<ProductType>lambdaQuery()
                 .like($.isNotBlank(query.getName()), ProductType::getName, query.getName()));
         return PageHelper.result(result);
+    }
+
+    @Override
+    public boolean existsByParentId(Integer parentId) {
+        return exists(Wrappers
+        .<ProductType>lambdaQuery()
+                .eq(ProductType::getParentId, parentId));
     }
 }

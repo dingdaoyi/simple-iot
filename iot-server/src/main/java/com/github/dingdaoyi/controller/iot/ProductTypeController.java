@@ -4,6 +4,7 @@ import com.github.dingdaoyi.entity.ProductType;
 import com.github.dingdaoyi.model.PageQuery;
 import com.github.dingdaoyi.model.PageResult;
 import com.github.dingdaoyi.model.query.ProductTypeAddQuery;
+import com.github.dingdaoyi.model.vo.ProductTypeVo;
 import com.github.dingdaoyi.service.ProductTypeService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -28,8 +29,9 @@ public class ProductTypeController {
 
     @GetMapping
     @Operation(summary = "获取产品类型")
-    public R<List<ProductType>> list(@RequestParam(defaultValue = "-1") Integer parentId) {
-        return R.success(productTypeService.listByParentId(parentId));
+    public R<List<ProductTypeVo>> list(@RequestParam(defaultValue = "-1") Integer parentId,
+                                       @RequestParam(defaultValue = "false") Boolean withChild) {
+        return R.success(productTypeService.listByParentId(parentId, withChild));
     }
 
     @PostMapping("page")
@@ -52,6 +54,15 @@ public class ProductTypeController {
                                    Integer status,
                                    @PathVariable Integer id) {
         return R.success(productTypeService.updateStatusById(status, id));
+    }
+
+    @DeleteMapping("/{id}")
+    @Operation(summary = "修改产品类型状态")
+    public R<Boolean> delete(@PathVariable Integer id) {
+        if (productTypeService.existsByParentId(id)) {
+            return R.fail("存在子级类型,无法删除");
+        }
+        return R.success(productTypeService.removeById(id));
     }
 
 }

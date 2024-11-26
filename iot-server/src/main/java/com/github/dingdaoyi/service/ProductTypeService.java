@@ -4,6 +4,7 @@ import com.github.dingdaoyi.entity.ProductType;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.github.dingdaoyi.model.PageQuery;
 import com.github.dingdaoyi.model.PageResult;
+import com.github.dingdaoyi.model.vo.ProductTypeVo;
 
 import java.util.List;
 
@@ -15,7 +16,7 @@ public interface ProductTypeService extends IService<ProductType>{
      * @param parentId
      * @return
      */
-    List<ProductType> listByParentId(Integer parentId);
+    List<ProductTypeVo> listByParentId(Integer parentId,Boolean withChildren);
 
     boolean add(ProductType entity);
 
@@ -24,4 +25,6 @@ public interface ProductTypeService extends IService<ProductType>{
     boolean existsById(Integer productTypeId);
 
     PageResult<ProductType> pageByQuery(PageQuery query);
+
+    boolean existsByParentId(Integer parentId);
 }
