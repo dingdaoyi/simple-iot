@@ -3,6 +3,7 @@ package com.github.dingdaoyi.model.query;
 import com.github.dingdaoyi.entity.ModelProperty;
 import com.github.dingdaoyi.proto.model.DataTypeEnum;
 import com.github.dingdaoyi.entity.enu.ParamType;
+import com.github.dingdaoyi.proto.model.KeyValue;
 import com.github.dingdaoyi.proto.model.tsl.PropertyAccessMode;
 import com.github.dingdaoyi.model.ToEntity;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -122,7 +123,7 @@ public class ProductPropertyAddQuery implements ToEntity<ModelProperty> {
      * 枚举参对照表
      */
     @Schema(description = "枚举参对照表")
-    private HashMap<Integer, String> enumMap;
+    private List<KeyValue<Integer,String>> enums;
 
     /**
      * 0:未启用,1 启用
@@ -160,8 +161,7 @@ public class ProductPropertyAddQuery implements ToEntity<ModelProperty> {
         modelProperty.setMax(max);
         modelProperty.setMin(min);
         modelProperty.setStep(step);
-        modelProperty.setEnumMap(enumMap);
-        modelProperty.setFuncStatus(funcStatus);
+        modelProperty.setEnums(enums);
         modelProperty.setProductId(productId);
         return modelProperty;
     }

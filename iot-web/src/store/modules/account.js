@@ -7,7 +7,7 @@ export const useAccountStore = defineStore({
   state: () => ({
     authorization: getItem(TOKEN),
     userinfo: null,
-    menuData: [], // 树列表
+    menuData: [] // 树列表
   }),
   getters: {},
   actions: {
@@ -16,10 +16,10 @@ export const useAccountStore = defineStore({
       // 保存到localStorage
       setItem(TOKEN, data)
     },
-    clearToken (state) {
+    clearToken () {
       this.authorization = {}
       this.userinfo = null
       removeItem(TOKEN)
-    },
+    }
   }
 })

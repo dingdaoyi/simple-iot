@@ -14,7 +14,7 @@ import java.util.List;
 public interface ModelPropertyService extends IService<ModelProperty> {
 
 
-    List<ModelProperty> listByProductType(Integer productTypeId, Integer productId,Integer paramType);
+    List<ModelProperty> listByProductType(Integer productTypeId, Integer productId,Integer paramType,String search);
 
     /**
      * 根据父级id查询

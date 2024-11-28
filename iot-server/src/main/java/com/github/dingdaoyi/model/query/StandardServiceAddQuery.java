@@ -108,7 +108,6 @@ public class StandardServiceAddQuery implements ToEntity<ModelService> {
         modelService.setRequired(this.required);
         modelService.setIconId(this.iconId);
         modelService.setCustom(false);
-        modelService.setStatus(StatusEnum.DISABLED);
         return modelService;
     }
 

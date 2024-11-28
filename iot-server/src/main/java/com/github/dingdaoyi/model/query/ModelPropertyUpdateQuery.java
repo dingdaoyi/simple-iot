@@ -3,12 +3,13 @@ package com.github.dingdaoyi.model.query;
 import com.github.dingdaoyi.entity.ModelProperty;
 import com.github.dingdaoyi.proto.model.DataTypeEnum;
 import com.github.dingdaoyi.entity.enu.ParamType;
+import com.github.dingdaoyi.proto.model.KeyValue;
 import com.github.dingdaoyi.proto.model.tsl.PropertyAccessMode;
 import com.github.dingdaoyi.model.ToEntity;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
-import java.util.HashMap;
+import java.util.List;
 
 /**
  * @author dingyunwei
@@ -103,7 +104,7 @@ public class ModelPropertyUpdateQuery implements ToEntity<ModelProperty> {
      * 枚举参对照表
      */
     @Schema(description = "枚举参对照表")
-    private HashMap<Integer, String> enumMap;
+    private List<KeyValue<Integer,String>> enums;
 
     @Override
     public ModelProperty toEntity() {
@@ -122,7 +123,7 @@ public class ModelPropertyUpdateQuery implements ToEntity<ModelProperty> {
         modelProperty.setMax(max);
         modelProperty.setMin(min);
         modelProperty.setStep(step);
-        modelProperty.setEnumMap(enumMap);
+        modelProperty.setEnums(enums);
         modelProperty.setId(id);
         return modelProperty;
     }

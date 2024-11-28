@@ -7,7 +7,6 @@
         <id column="id" property="id"/>
         <result column="async" property="async"/>
         <result column="event_type" property="eventType"/>
-        <result column="status" property="status"/>
         <result column="service_type" property="serviceType"/>
         <result column="identifier" property="identifier"/>
         <result column="name" property="name"/>
@@ -22,7 +21,6 @@
         id,
         async,
         event_type,
-        status,
         service_type,
         identifier,
         "name",

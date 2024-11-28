@@ -1,6 +1,7 @@
 package com.github.dingdaoyi.proto.model.tsl;
 
 import com.github.dingdaoyi.proto.model.DataTypeEnum;
+import com.github.dingdaoyi.proto.model.KeyValue;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
@@ -100,7 +101,7 @@ public class TslProperty {
      * 枚举参对照表
      */
     @Schema(description = "枚举参对照表")
-    private HashMap<Integer, String> enumMap;
+    private List<KeyValue<Integer,String>> enums;
 
     /**
      * 子级

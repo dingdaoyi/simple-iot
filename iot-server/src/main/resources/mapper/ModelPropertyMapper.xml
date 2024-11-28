@@ -22,9 +22,9 @@
         <result column="max" property="max"/>
         <result column="min" property="min"/>
         <result column="step" property="step"/>
-        <result column="enum_map" property="enumMap"
+        <result column="enums" property="enums"
+                javaType="list"
                 typeHandler="com.baomidou.mybatisplus.extension.handlers.JacksonTypeHandler"/>
-        <result column="func_status" property="funcStatus"/>
         <result column="product_id" property="productId"/>
     </resultMap>
     <sql id="Base_Column_List">
@@ -47,8 +47,7 @@
         "max",
         "min",
         step,
-        enum_map,
-        func_status,
+        enums,
         product_id
     </sql>
 
@@ -72,8 +71,7 @@
                                       "max",
                                       "min",
                                       step,
-                                      enum_map,
-                                      func_status,
+        enums,
                                       product_id,
                                       parent_id)VALUES
         <foreach collection="list" item="element" index="index" separator=",">
@@ -95,8 +93,7 @@
              #{element.max},
              #{element.min},
              #{element.step},
-             #{element.enumMap,typeHandler=com.baomidou.mybatisplus.extension.handlers.JacksonTypeHandler},
-             #{element.funcStatus},
+             #{element.enums,typeHandler=com.baomidou.mybatisplus.extension.handlers.JacksonTypeHandler},
              #{element.productId},
              #{element.parentId})
         </foreach>

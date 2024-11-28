@@ -7,19 +7,22 @@ import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.extension.handlers.JacksonTypeHandler;
 import com.github.dingdaoyi.proto.model.DataTypeEnum;
 import com.github.dingdaoyi.entity.enu.ParamType;
+import com.github.dingdaoyi.proto.model.KeyValue;
 import com.github.dingdaoyi.proto.model.tsl.PropertyAccessMode;
 import com.github.dingdaoyi.proto.model.tsl.TslProperty;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 /**
  * @author dingyunwei
  */
 @Schema
 @Data
-@TableName(value = "tb_model_property")
+@TableName(value = "tb_model_property",autoResultMap = true)
 public class ModelProperty {
     /**
      * id
@@ -150,17 +153,9 @@ public class ModelProperty {
     /**
      * 枚举参对照表
      */
-    @TableField(value = "enum_map", typeHandler = JacksonTypeHandler.class)
+    @TableField(value = "enums",typeHandler = JacksonTypeHandler.class)
     @Schema(description = "枚举参对照表")
-    private HashMap<Integer, String> enumMap;
-
-    /**
-     * 0:未启用,1 启用
-     */
-    @TableField(value = "func_status")
-    @Schema(description = "0:未启用,1 启用")
-    private Integer funcStatus;
-
+    private List<KeyValue<Integer,String>> enums=new ArrayList<>();
     /**
      * 产品id
      */
@@ -189,7 +184,7 @@ public class ModelProperty {
         propertyDTO.setMax(this.getMax());
         propertyDTO.setMin(this.getMin());
         propertyDTO.setStep(this.getStep());
-        propertyDTO.setEnumMap(this.getEnumMap());
+        propertyDTO.setEnums(this.getEnums());
         return propertyDTO;
     }
 }

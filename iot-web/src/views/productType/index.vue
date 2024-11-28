@@ -18,6 +18,7 @@
       <template #cz="{ row }">
         <!--        <dw-button type="primary" link @click="onEdit(row)">编辑</dw-button>-->
         <dw-button type="danger" link @click="onDelete(row)">删除</dw-button>
+        <dw-button type="primary" link @click="tslConfig(row)">功能配置</dw-button>
         <dw-button v-if="row.parentId===-1" type="primary" link @click="onAddChild(row)">添加子级</dw-button>
       </template>
     </DwTable>
@@ -36,9 +37,11 @@ import { dwHooks } from 'dwyl-ui'
 import { productTypeDelApi, productTypeListApi } from '@/api/index.js'
 import EditDia from '@/views/productType/widget/editDia.vue'
 import { nextTick, ref } from 'vue'
+import { useRouter } from 'vue-router'
 
 const { useDwTable } = dwHooks
 
+const router = useRouter()
 const parentId = ref(-1)
 const column = [
   {
@@ -91,11 +94,13 @@ function closeEdite () {
 }
 
 function onAddChild (row) {
-  console.log('添加子级', row.id)
   parentId.value = row.id
-  console.log(parentId.value, 'parentId')
   nextTick(() => {
     dialogVisible.value = true
   })
 }
+const tslConfig = (row) => {
+  router.push(`/tslModel?typeId=${row.id}`)
+}
+
 </script>

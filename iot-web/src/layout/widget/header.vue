@@ -1,21 +1,9 @@
 <template>
   <div class="header-box flex flex-row items-center bg-dwboxbg">
     <div class="flex items-center flex-1">
-      <div class="pl-20px text-22px title color-primary">消防大数据管理系统</div>
+      <div class="pl-20px text-22px title color-primary">物联网管理平台</div>
     </div>
     <div class="flex-center h-full">
-      <el-tooltip
-        effect="dark"
-        content="主题模式"
-        placement="bottom"
-      >
-        <div class="flex-center cursor-pointer px-10px h-full mr-10px lightDark" @click="themeStore.toogleDarkModel">
-          <el-icon :size="20">
-            <Sunny v-if="themeStore.isDark" />
-            <Moon v-else />
-          </el-icon>
-        </div>
-      </el-tooltip>
       <el-dropdown>
         <span class="el-dropdown-link cursor-pointer">
           {{ userName }}
@@ -34,23 +22,16 @@
 </template>
 
 <script setup>
-import { computed } from 'vue'
 import { useRouter } from 'vue-router'
-import { useAccountStore, useThemeStore } from '@/store'
-import { signout } from '@/api'
+import { useAccountStore } from '@/store'
 const router = useRouter()
 const store = useAccountStore()
-const themeStore = useThemeStore()
-const userName = computed(() => store?.userinfo?.username)
+const userName = '管理员'
 
 const outLogin = () => {
-  signout().then(() => {
-    store.clearToken()
-    router.push('/login')
-  })
+  store.clearToken()
+  router.push('/login')
 }
-
-const isProd = computed(() => import.meta.env.MODE === 'production') // 是生产环境
 
 </script>
 
@@ -58,7 +39,7 @@ const isProd = computed(() => import.meta.env.MODE === 'production') // 是生�
 .header-box{height: 60px; padding: 0 20px; position: relative; z-index: 9;
   box-shadow: 0px 4px 10px 0px rgba(78, 89, 105, 0.15),0px 1px 0px 0px var(--dw-border-color);}
 .title {
-  font-family: PangMenZhengDao;
+  font-family: PangMenZhengDao,serif;
   letter-spacing: 2px;
 }
 .lightDark {

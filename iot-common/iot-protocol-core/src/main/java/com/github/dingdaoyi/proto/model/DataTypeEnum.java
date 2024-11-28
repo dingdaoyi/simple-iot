@@ -13,43 +13,43 @@ import java.time.format.DateTimeFormatter;
 
 @Getter
 public enum DataTypeEnum {
-    INT(1, Integer.class) {
+    INT(1, "整型", Integer.class) {
         @Override
         public Integer parse(Object value) throws IllegalArgumentException {
             return Integer.parseInt(value.toString());
         }
     },
-    FLOAT(2, Float.class) {
+    FLOAT(2, "float浮点型", Float.class) {
         @Override
         public Float parse(Object value) throws IllegalArgumentException {
             return Float.parseFloat(value.toString());
         }
     },
-    DOUBLE(3, Double.class) {
+    DOUBLE(3, "double浮点型", Double.class) {
         @Override
         public Double parse(Object value) throws IllegalArgumentException {
             return Double.parseDouble(value.toString());
         }
     },
-    ENUM(4, String.class) {
+    ENUM(4, "枚举型", String.class) {
         @Override
         public String parse(Object value) throws IllegalArgumentException {
             return value.toString();
         }
     },
-    TEXT(5, String.class) {
+    TEXT(5, "字符串", String.class) {
         @Override
         public String parse(Object value) throws IllegalArgumentException {
             return value.toString();
         }
     },
-    BOOL(6, Boolean.class) {
+    BOOL(6, "布尔", Boolean.class) {
         @Override
         public Boolean parse(Object value) throws IllegalArgumentException {
             return Boolean.parseBoolean(value.toString());
         }
     },
-    DATE(7, LocalDateTime.class) {
+    DATE(7, "日期", LocalDateTime.class) {
         @Override
         public LocalDateTime parse(Object value) throws IllegalArgumentException {
             try {
@@ -60,7 +60,7 @@ public enum DataTypeEnum {
             }
         }
     },
-    STRUCT(8, Object.class) {
+    STRUCT(8, "结构体", Object.class) {
         @Override
         public Object parse(Object value) throws IllegalArgumentException {
             return value;
@@ -70,10 +70,12 @@ public enum DataTypeEnum {
     @EnumValue
     @JsonValue
     private final int value;
+    private final String name;
     private final Class<?> targetType;
 
-    DataTypeEnum(int value, Class<?> targetType) {
+    DataTypeEnum(int value, String name, Class<?> targetType) {
         this.value = value;
+        this.name = name;
         this.targetType = targetType;
     }
 

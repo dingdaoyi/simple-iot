@@ -38,14 +38,19 @@ public class ModelPropertyServiceImpl extends ServiceImpl<ModelPropertyMapper, M
     private ProductService productService;
 
     @Override
-    public List<ModelProperty> listByProductType(Integer productTypeId, Integer productId, Integer paramType) {
+    public List<ModelProperty> listByProductType(Integer productTypeId, Integer productId, Integer paramType, String search) {
         return list(Wrappers
                 .<ModelProperty>lambdaQuery()
                 .eq(ModelProperty::getProductTypeId, productTypeId)
                 //标准物模型不查自定义部分,自定义物模型不查询custom字段
                 .eq($.isNull(productId), ModelProperty::getCustom, false)
                 .eq($.isNotNull(productId), ModelProperty::getProductId, productId)
-                .eq($.isNotNull(paramType), ModelProperty::getParamType, paramType));
+                .eq($.isNotNull(paramType), ModelProperty::getParamType, paramType)
+                .and($.isNotBlank(search), w -> w
+                        .like(ModelProperty::getName, search)
+                        .or()
+                        .eq(ModelProperty::getIdentifier, search)
+                ));
     }
 
     @Override

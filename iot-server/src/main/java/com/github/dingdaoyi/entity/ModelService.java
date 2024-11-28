@@ -40,12 +40,6 @@ public class ModelService {
     @Schema(description = "事件类型,INFO,WARN,FAULT")
     private EventTypeEnum eventType;
 
-    /**
-     * 功能状态,1 启用,0禁用
-     */
-    @TableField(value = "status")
-    @Schema(description = "功能状态,1 启用,0禁用")
-    private StatusEnum status;
 
     @TableField(value = "service_type")
     @Schema(description = "")

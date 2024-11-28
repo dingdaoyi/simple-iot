@@ -3,6 +3,7 @@ package com.github.dingdaoyi.model.query;
 import com.github.dingdaoyi.entity.ModelProperty;
 import com.github.dingdaoyi.proto.model.DataTypeEnum;
 import com.github.dingdaoyi.entity.enu.ParamType;
+import com.github.dingdaoyi.proto.model.KeyValue;
 import com.github.dingdaoyi.proto.model.tsl.PropertyAccessMode;
 import com.github.dingdaoyi.model.ToEntity;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -10,7 +11,6 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
-import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -58,7 +58,7 @@ public class StandardPropertyAddQuery implements ToEntity<ModelProperty> {
      * 产品类型
      */
     @Schema(description = "产品类型")
-    @NotBlank(message = "请选择产品类型")
+    @NotNull(message = "产品类型不能为空")
     private Integer productTypeId;
 
     /**
@@ -126,7 +126,7 @@ public class StandardPropertyAddQuery implements ToEntity<ModelProperty> {
      * 枚举参对照表
      */
     @Schema(description = "枚举参对照表")
-    private HashMap<Integer, String> enumMap;
+    private List<KeyValue<Integer,String>> enums;
 
     /**
      * 0:未启用,1 启用
@@ -157,8 +157,7 @@ public class StandardPropertyAddQuery implements ToEntity<ModelProperty> {
         modelProperty.setMax(max);
         modelProperty.setMin(min);
         modelProperty.setStep(step);
-        modelProperty.setEnumMap(enumMap);
-        modelProperty.setFuncStatus(funcStatus);
+        modelProperty.setEnums(enums);
         modelProperty.setId(id);
         return modelProperty;
     }

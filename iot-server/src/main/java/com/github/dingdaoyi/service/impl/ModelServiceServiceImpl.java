@@ -41,7 +41,6 @@ public class ModelServiceServiceImpl extends ServiceImpl<ModelServiceMapper, Mod
                 Wrappers.<ModelService>lambdaQuery()
                         .eq(ModelService::getProductTypeId, productTypeId)
                         .eq($.isNotNull(serviceType), ModelService::getServiceType, serviceType)
-                        .eq($.isNotNull(funcStatus), ModelService::getStatus, funcStatus)
         );
         if ($.isEmpty(modelServices)) {
             return List.of();
@@ -78,22 +77,10 @@ public class ModelServiceServiceImpl extends ServiceImpl<ModelServiceMapper, Mod
     }
 
     @Override
-    public Boolean updateServiceStatus(Integer serviceId, Integer status) {
-        boolean result = update(Wrappers.<ModelService>lambdaUpdate()
-                .eq(ModelService::getId, serviceId)
-                .set(ModelService::getStatus, status));
-        if (result) {
-            cacheService.clearCache(CacheService.TSL_MODEL_CACHE);
-        }
-        return result;
-    }
-
-    @Override
     public List<ModelServiceVO> listAllByProduct(Integer productId, Integer productTypeId) {
         LambdaQueryWrapper<ModelService> wrapper = Wrappers
                 .<ModelService>lambdaQuery()
                 .eq(ModelService::getProductTypeId, productTypeId)
-                .eq(ModelService::getStatus, StatusEnum.ENABLED)
                 .and(w -> w
                         .eq(ModelService::getCustom, false)
                         .or()

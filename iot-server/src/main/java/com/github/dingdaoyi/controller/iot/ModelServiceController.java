@@ -39,15 +39,6 @@ public class ModelServiceController {
         return R.success(modelServiceService.listByProductType(productTypeId,serviceType,status));
     }
 
-    @PutMapping("standard/enable")
-    @Operation(summary = "启用,禁用标准物模型")
-    public R<Boolean> updateServiceStatus(
-            @Parameter(description = "启用,禁用状态,1,启用,0 禁用", required = true, example = "1")
-            @Min(value = 0, message = "状态只能是0或1")
-            @Max(value = 1, message = "状态只能是0或1")  @RequestParam Integer status,
-            @RequestParam Integer serviceId) {
-        return R.success(modelServiceService.updateServiceStatus(serviceId,status));
-    }
 
 
 

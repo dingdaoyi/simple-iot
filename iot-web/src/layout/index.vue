@@ -1,22 +1,21 @@
 <template>
   <div class="flex flex-col wh-full">
-    <!--    <headers />-->
+    <headers />
     <div class="flex-1 flex overflow-hidden">
-      <slider/>
-      <div class="flex-1 m-20px  overflow-hidden" >
+      <slider />
+      <div class="flex-1 m-20px  overflow-hidden">
         <router-view #default="{ Component, route }">
           <div class="flex flex-col h-full">
             <component :is="Component" :key="route.path" />
           </div>
-<!--          <component :is="Component" :key="route.path" classz="flex flex-col h-full"/>-->
+          <!--          <component :is="Component" :key="route.path" classz="flex flex-col h-full"/>-->
         </router-view>
       </div>
     </div>
   </div>
 </template>
 <script lang="jsx" setup>
-import {ref, watch} from 'vue'
-// import headers from './widget/header.vue'
+import headers from './widget/header.vue'
 import slider from './widget/slider'
 
 </script>

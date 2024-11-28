@@ -56,6 +56,12 @@ public class ProductTypeController {
         return R.success(productTypeService.updateStatusById(status, id));
     }
 
+    @GetMapping("/{id}")
+    @Operation(summary = "详情")
+    public R<ProductType> details(@PathVariable Integer id) {
+        return R.success(productTypeService.getById(id));
+    }
+
     @DeleteMapping("/{id}")
     @Operation(summary = "修改产品类型状态")
     public R<Boolean> delete(@PathVariable Integer id) {

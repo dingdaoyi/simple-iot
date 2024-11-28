@@ -24,14 +24,6 @@ public interface ModelServiceService extends IService<ModelService>{
     Boolean save(StandardServiceAddQuery modelService);
 
     /**
-     * 修改状态
-     * @param serviceId 服务id
-     * @param status 状态
-     * @return
-     */
-    Boolean updateServiceStatus(Integer serviceId,Integer status);
-
-    /**
      * 获取所有服务,事件
      * @param productId
      * @param productTypeId

@@ -6,13 +6,6 @@
 
 
 
-.el-button--primary:focus {
-  background-color: var(--el-color-primary) !important;
-}
-
-.el-button--primary.is-link:focus {
-  background-color: transparent !important;
-}
 
 
 $primary: var(--el-color-primary);
