@@ -2,6 +2,9 @@ package com.github.dingdaoyi.service;
 
 import com.github.dingdaoyi.entity.Product;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.github.dingdaoyi.model.PageResult;
+import com.github.dingdaoyi.model.query.ProductPageQuery;
+import com.github.dingdaoyi.model.vo.ProductPageVo;
 import com.github.dingdaoyi.model.vo.ProductVo;
 
 import java.util.List;
@@ -34,4 +37,13 @@ public interface ProductService extends IService<Product>{
     boolean existsById(Integer productId);
 
     Optional<Product> getByProductKey(String productKey);
+
+    /**
+     * 分页查询
+     * @param pageQuery
+     * @return
+     */
+    PageResult<ProductPageVo> pageByQuery(ProductPageQuery pageQuery);
+
+    boolean existsByProtocol(Integer protocolId);
 }

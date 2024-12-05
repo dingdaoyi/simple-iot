@@ -3,16 +3,16 @@
     <div class="flex flex-row mb-12px">
       <dw-select
         v-model="params.productTypeId"
-        placeholder="请选择产品类型"
+        placeholder="请选择协议类型"
         class="w-200px mr-12px"
         filterable
         clearable
       >
         <dw-option
-          v-for="item in productTypeList"
-          :key="item.id"
-          :label="item.name"
-          :value="item.id"
+          v-for="item in protocolTypeOpt"
+          :key="item.value"
+          :label="item.label"
+          :value="item.value"
         />
       </dw-select>
       <div class="w-200px mr-12px">
@@ -30,19 +30,16 @@
       row-key="id"
       :column="column"
       :params="params"
-      :api="productPageApi"
+      :api="protocolListApi"
     >
       <template #cz="{ row }">
-        <dw-button type="danger" link @click="onDelete(row)">删除</dw-button>
-        <dw-button type="primary" link @click="tslConfig(row)">功能配置</dw-button>
-        <dw-button v-if="row.parentId===-1" type="primary" link @click="onAddChild(row)">添加子级</dw-button>
+        <dw-button v-if="row.protoType!==2" type="danger" link @click="onDelete(row)">删除</dw-button>
       </template>
     </DwTable>
     <EditDia
       v-if="dialogVisible"
       v-model="dialogVisible"
       :title="diaTitle"
-      :product-type-list="productTypeList"
       :datas="currentItem"
       @update="closeEdite"
     />
@@ -50,8 +47,8 @@
 </template>
 <script setup>
 import { dwHooks } from 'dwyl-ui'
-import { productDeleteApi, productPageApi, productTypeListApi } from '@/api/index.js'
-import EditDia from '@/views/product/widget/editDia.vue'
+import { protocolDeleteApi, protocolListApi } from '@/api/index.js'
+import EditDia from '@/views/protocol/widget/editDia.vue'
 import { nextTick, ref } from 'vue'
 import { useRouter } from 'vue-router'
 
@@ -59,28 +56,45 @@ const { useDwTable } = dwHooks
 
 const router = useRouter()
 const parentId = ref(-1)
-const productTypeList = ref([])
+
+const protocolTypeOpt = [
+  {
+    label: 'JAVA',
+    value: 1
+  },
+  {
+    label: '系统默认',
+    value: 2
+  },
+  {
+    label: 'JAVASCRIPT',
+    value: 3
+  }
+]
 const column = [
   {
-    prop: 'cz',
-    width: 70,
-    slot: 'expand'
+    prop: 'name',
+    label: '协议名称'
   },
   {
-    prop: 'productTypeName',
-    label: '品类名称'
+    prop: 'protoType',
+    label: '协议类型',
+    formatter (row) {
+      return protocolTypeOpt
+        .find(item => item.value === row.protoType)?.label
+    }
   },
   {
-    prop: 'model',
-    label: '型号'
+    prop: 'protoKey',
+    label: '协议protoKey'
   },
   {
-    prop: 'manufacturer',
-    label: '厂家'
+    prop: 'handlerClass',
+    label: '处理入口'
   },
   {
     prop: 'mark',
-    label: '备注信息'
+    label: '备注'
   },
   {
     prop: 'cz',
@@ -100,7 +114,7 @@ const {
   diaTitle,
   currentItem
 } = useDwTable({
-  deleteApi: productDeleteApi,
+  deleteApi: protocolDeleteApi,
   diaName: '协议',
   defParams: {
   }
@@ -119,8 +133,4 @@ function onAddChild (row) {
 const tslConfig = (row) => {
   router.push(`/tslModel?typeId=${row.id}`)
 }
-productTypeListApi()
-  .then(({ data }) => {
-    productTypeList.value = data
-  })
 </script>

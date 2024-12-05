@@ -2,6 +2,7 @@ package com.github.dingdaoyi.controller.iot;
 
 import com.github.dingdaoyi.model.enu.SysCodeEnum;
 import com.github.dingdaoyi.model.query.StandardServiceAddQuery;
+import com.github.dingdaoyi.model.query.StandardServiceUpdateQuery;
 import com.github.dingdaoyi.model.vo.ModelServiceVO;
 import com.github.dingdaoyi.service.ModelPropertyService;
 import com.github.dingdaoyi.service.ModelServiceService;
@@ -34,9 +35,9 @@ public class ModelServiceController {
     @GetMapping("standard")
     @Operation(summary = "根据产品id获取物模型数据")
     public R<List<ModelServiceVO>> list(@RequestParam(required = false) Integer serviceType,
-                                              @RequestParam(required = false) Integer status,
+                                              @RequestParam(required = false) String search,
                                               @RequestParam Integer productTypeId) {
-        return R.success(modelServiceService.listByProductType(productTypeId,serviceType,status));
+        return R.success(modelServiceService.listByProductType(productTypeId,serviceType,search));
     }
 
 
@@ -47,6 +48,13 @@ public class ModelServiceController {
     public R<Boolean> save(@RequestBody StandardServiceAddQuery modelService) {
         validateProperties(modelService);
         return R.success(modelServiceService.save(modelService));
+    }
+
+    @PutMapping("standard")
+    @Operation(summary = "修改标准物模型")
+    public R<Boolean> update(@RequestBody StandardServiceUpdateQuery modelService) {
+        validateProperties(modelService);
+        return R.success(modelServiceService.update(modelService));
     }
 
     private void validateProperties(StandardServiceAddQuery modelService) {

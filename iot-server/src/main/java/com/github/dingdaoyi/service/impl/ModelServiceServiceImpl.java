@@ -3,8 +3,8 @@ package com.github.dingdaoyi.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.github.dingdaoyi.entity.ServiceProperty;
-import com.github.dingdaoyi.entity.enu.StatusEnum;
 import com.github.dingdaoyi.model.query.StandardServiceAddQuery;
+import com.github.dingdaoyi.model.query.StandardServiceUpdateQuery;
 import com.github.dingdaoyi.model.vo.ModelServiceVO;
 import com.github.dingdaoyi.service.CacheService;
 import com.github.dingdaoyi.service.ServicePropertyService;
@@ -36,11 +36,16 @@ public class ModelServiceServiceImpl extends ServiceImpl<ModelServiceMapper, Mod
     private CacheService cacheService;
 
     @Override
-    public List<ModelServiceVO> listByProductType(Integer productTypeId, Integer serviceType, Integer funcStatus) {
+    public List<ModelServiceVO> listByProductType(Integer productTypeId, Integer serviceType, String search) {
         List<ModelService> modelServices = baseMapper.selectList(
                 Wrappers.<ModelService>lambdaQuery()
                         .eq(ModelService::getProductTypeId, productTypeId)
                         .eq($.isNotNull(serviceType), ModelService::getServiceType, serviceType)
+                        .and($.isNotBlank(search), w ->
+                                w.like(ModelService::getName, search)
+                                        .or()
+                                        .eq(ModelService::getIdentifier, search)
+                        )
         );
         if ($.isEmpty(modelServices)) {
             return List.of();
@@ -88,5 +93,31 @@ public class ModelServiceServiceImpl extends ServiceImpl<ModelServiceMapper, Mod
                         .eq(ModelService::getProductId, productId)
                 );
         return toListVo(list(wrapper));
+    }
+
+    @Override
+    public Boolean update(StandardServiceUpdateQuery modelService) {
+        ModelService serviceEntity = modelService.toEntity();
+        int insert = baseMapper.updateById(serviceEntity);
+        if (insert < 0) {
+            log.error("修改失败:{}", JsonUtil.toJson(modelService));
+            return false;
+        }
+        // 清理之前的绑定
+        servicePropertyService.removeByServiceId(serviceEntity.getId());
+        List<ServiceProperty> propertyList = modelService.getServiceProperties(serviceEntity.getId());
+        if ($.isNotEmpty(propertyList)) {
+            return servicePropertyService.saveBatch(propertyList);
+        }
+        //标准物模型都删了缓存
+        cacheService.clearCache(CacheService.TSL_MODEL_CACHE);
+        return true;
+    }
+
+    @Override
+    public boolean existsByProduct(Integer productId) {
+        return exists(Wrappers
+                .<ModelService>lambdaQuery()
+                .eq(ModelService::getProductId, productId));
     }
 }

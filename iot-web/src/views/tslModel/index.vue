@@ -6,7 +6,7 @@
         v-model="activeName"
         class="demo-tabs"
       >
-        <el-tab-pane label="User" name="first">User</el-tab-pane>
+        <el-tab-pane label="基础信息" name="first">User</el-tab-pane>
         <el-tab-pane label="服务定义" name="service">
           <service-config :typeId="productTypeId" />
         </el-tab-pane>

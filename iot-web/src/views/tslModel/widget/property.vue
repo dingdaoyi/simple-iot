@@ -31,7 +31,7 @@
   </div>
 </template>
 <script setup>
-import { productTypeDelApi, propertyListApi } from '@/api/index.js'
+import { propertyDeleteApi, propertyListApi } from '@/api/index.js'
 import { dwHooks } from 'dwyl-ui'
 import PropertyEdite from '@/views/tslModel/widget/propertyEdite.vue'
 
@@ -87,7 +87,7 @@ const {
   diaTitle,
   currentItem
 } = useDwTable({
-  deleteApi: productTypeDelApi,
+  deleteApi: propertyDeleteApi,
   diaName: '属性',
   defParams: {
     productTypeId: props.typeId

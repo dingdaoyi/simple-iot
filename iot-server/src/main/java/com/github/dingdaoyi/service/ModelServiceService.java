@@ -3,6 +3,7 @@ package com.github.dingdaoyi.service;
 import com.github.dingdaoyi.entity.ModelService;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.github.dingdaoyi.model.query.StandardServiceAddQuery;
+import com.github.dingdaoyi.model.query.StandardServiceUpdateQuery;
 import com.github.dingdaoyi.model.vo.ModelServiceVO;
 
 import java.util.List;
@@ -16,10 +17,10 @@ public interface ModelServiceService extends IService<ModelService>{
      *  查询标准物模型事件
      * @param productTypeId 品类id
      * @param serviceType  服务类型 可选
-     * @param funcStatus 状态,可选
+     * @param search 搜索条件
      * @return
      */
-    List<ModelServiceVO> listByProductType(Integer productTypeId, Integer serviceType, Integer funcStatus);
+    List<ModelServiceVO> listByProductType(Integer productTypeId, Integer serviceType, String search);
 
     Boolean save(StandardServiceAddQuery modelService);
 
@@ -30,4 +31,9 @@ public interface ModelServiceService extends IService<ModelService>{
      * @return
      */
     List<ModelServiceVO> listAllByProduct(Integer productId, Integer productTypeId);
+
+
+    Boolean update(StandardServiceUpdateQuery modelService);
+
+    boolean existsByProduct(Integer productId);
 }

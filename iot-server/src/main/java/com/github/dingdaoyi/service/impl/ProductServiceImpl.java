@@ -1,13 +1,23 @@
 package com.github.dingdaoyi.service.impl;
 
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.github.dingdaoyi.entity.ProductType;
+import com.github.dingdaoyi.model.PageResult;
+import com.github.dingdaoyi.model.enu.SysCodeEnum;
+import com.github.dingdaoyi.model.query.ProductPageQuery;
+import com.github.dingdaoyi.model.vo.ProductPageVo;
 import com.github.dingdaoyi.model.vo.ProductVo;
+import com.github.dingdaoyi.service.ModelPropertyService;
+import com.github.dingdaoyi.service.ModelServiceService;
 import com.github.dingdaoyi.service.ProductTypeService;
+import com.github.dingdaoyi.utils.PageHelper;
 import jakarta.annotation.Resource;
+import net.dreamlu.mica.core.exception.ServiceException;
 import net.dreamlu.mica.core.utils.$;
 import org.springframework.stereotype.Service;
 
+import java.io.Serializable;
 import java.util.List;
 import java.util.Optional;
 
@@ -68,5 +78,24 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper, Product> impl
     public Optional<Product> getByProductKey(String productKey) {
         return Optional.ofNullable(getOne(Wrappers.<Product>lambdaQuery()
                 .eq(Product::getProductKey, productKey)));
+    }
+
+    @Override
+    public PageResult<ProductPageVo> pageByQuery(ProductPageQuery pageQuery) {
+        Page<ProductPageVo> page = PageHelper.page(pageQuery);
+        Page<ProductPageVo> data = baseMapper.pageByQuery(page, pageQuery);
+        return PageHelper.result(data);
+    }
+
+    @Override
+    public boolean existsByProtocol(Integer protocolId) {
+        return exists(Wrappers.<Product>lambdaQuery()
+                .eq(Product::getProtocolId, protocolId));
+    }
+
+    @Override
+    public boolean removeById(Serializable id) {
+
+        return super.removeById(id);
     }
 }

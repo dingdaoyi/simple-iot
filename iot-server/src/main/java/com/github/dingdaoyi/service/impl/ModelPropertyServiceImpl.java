@@ -160,6 +160,12 @@ public class ModelPropertyServiceImpl extends ServiceImpl<ModelPropertyMapper, M
         return list(wrapper);
     }
 
+    @Override
+    public boolean existsByProduct(Integer productId) {
+        return exists(Wrappers.<ModelProperty>lambdaQuery()
+                .eq(ModelProperty::getProductId, productId));
+    }
+
     @Transactional(rollbackFor = Exception.class)
     @Override
     public boolean removeById(Serializable id) {

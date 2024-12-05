@@ -55,4 +55,6 @@ public interface ModelPropertyService extends IService<ModelProperty> {
      * @return
      */
     List<ModelProperty> listByProduct(Integer productId, Integer productTypeId);
+
+    boolean existsByProduct(Integer productId);
 }

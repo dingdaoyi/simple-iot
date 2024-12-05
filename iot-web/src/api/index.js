@@ -67,6 +67,17 @@ export const propertyListApi = params => {
   })
 }
 /**
+ * 属性列表
+ * @param id
+ * @returns {*}
+ */
+export const propertyDeleteApi = id => {
+  return request({
+    url: `/model/property/${id}`,
+    method: 'DELETE'
+  })
+}
+/**
  * 保存标准属性
  * @param data
  * @returns {*}
@@ -89,5 +100,129 @@ export const standardPropertyEditApi = data => {
     url: '/model/property/product',
     method: 'put',
     data
+  })
+}
+export const standardServiceListApi = params => {
+  return request({
+    url: '/model/service/standard',
+    method: 'get',
+    params
+  })
+}
+
+export const serviceAddApi = data => {
+  return request({
+    url: '/model/service/standard',
+    method: 'post',
+    data
+  })
+}
+
+export const serviceEditeApi = data => {
+  return request({
+    url: '/model/service/standard',
+    method: 'put',
+    data
+  })
+}
+
+/**
+ * 产品分页
+ * @param data
+ * @returns {*}
+ */
+export const productPageApi = data => {
+  return request({
+    url: '/product/page',
+    method: 'post',
+    data
+  })
+}
+
+/**
+ * 产品添加
+ * @param data
+ * @returns {*}
+ */
+export const productAddApi = data => {
+  return request({
+    url: '/product',
+    method: 'post',
+    data
+  })
+}
+/**
+ * 产品编辑
+ * @param data
+ * @returns {*}
+ */
+export const productEditeApi = data => {
+  return request({
+    url: '/product',
+    method: 'put',
+    data
+  })
+}
+
+/**
+ * 产品删除
+ * @param id
+ * @returns {*}
+ */
+export const productDeleteApi = id => {
+  return request({
+    url: `/product/${id}`,
+    method: 'DELETE',
+    id
+  })
+}
+
+/**
+ * 协议列表
+ * @param params
+ * @returns {*}
+ */
+export const protocolListApi = params => {
+  return request({
+    url: '/protocol',
+    method: 'get',
+    params
+  })
+}
+
+/**
+ * 协议添加
+ * @param data
+ * @returns {*}
+ */
+export const protocolAddApi = data => {
+  return request({
+    url: '/protocol',
+    method: 'POST',
+    data
+  })
+}
+/**
+ * 协议添加
+ * @param data
+ * @returns {*}
+ */
+export const protocolEditApi = data => {
+  return request({
+    url: '/protocol',
+    method: 'put',
+    data
+  })
+}
+
+/**
+ * 协议添加
+ * @param id
+ * @returns {*}
+ */
+export const protocolDeleteApi = id => {
+  return request({
+    url: `/protocol/${id}`,
+    method: 'delete'
   })
 }

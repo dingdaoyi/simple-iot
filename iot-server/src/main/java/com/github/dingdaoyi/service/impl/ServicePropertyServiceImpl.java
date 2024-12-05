@@ -1,5 +1,6 @@
 package com.github.dingdaoyi.service.impl;
 
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -16,5 +17,13 @@ public class ServicePropertyServiceImpl extends ServiceImpl<ServicePropertyMappe
     @Override
     public List<Integer> listByServiceId(Integer serviceId,int paramType) {
         return baseMapper.listPropertyIdByServiceIdAndParamType(serviceId, paramType);
+    }
+
+    @Override
+    public void removeByServiceId(Integer serviceId) {
+        baseMapper
+                .delete(Wrappers
+                        .<ServiceProperty>lambdaQuery()
+                        .eq(ServiceProperty::getServiceId, serviceId));
     }
 }

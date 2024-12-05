@@ -1,45 +1,45 @@
 <template>
- <div>
-   <el-scrollbar class="sidebar-container ">
-     <el-menu
-         :default-active="activeMenu"
-         class="el-menu-class"
-         @select="handleSelect"
-         active-text-color="#ffffff"
-         router
-     >
-       <template v-for="menu in menus" :key="menu.index">
-         <el-sub-menu v-if="menu.children" :index="menu.index">
-           <template #title>
-             <el-icon>
-               <component :is="menu.icon"/>
-             </el-icon>
-             <span>{{ menu.title }}</span>
-           </template>
-           <el-menu-item
-               v-for="subItem in menu.children"
-               :key="subItem.index"
-               :index="subItem.index"
-           >
-             {{ subItem.title }}
-           </el-menu-item>
-         </el-sub-menu>
-         <el-menu-item v-else :index="menu.index">
-           <el-icon>
-             <component :is="menu.icon"/>
-           </el-icon>
-           <span>{{ menu.title }}</span>
-         </el-menu-item>
-       </template>
-     </el-menu>
-   </el-scrollbar>
- </div>
+  <div>
+    <el-scrollbar class="sidebar-container ">
+      <el-menu
+        :default-active="activeMenu"
+        class="el-menu-class"
+        active-text-color="#ffffff"
+        router
+        @select="handleSelect"
+      >
+        <template v-for="menu in menus" :key="menu.index">
+          <el-sub-menu v-if="menu.children" :index="menu.index">
+            <template #title>
+              <el-icon>
+                <component :is="menu.icon" />
+              </el-icon>
+              <span>{{ menu.title }}</span>
+            </template>
+            <el-menu-item
+              v-for="subItem in menu.children"
+              :key="subItem.index"
+              :index="subItem.index"
+            >
+              {{ subItem.title }}
+            </el-menu-item>
+          </el-sub-menu>
+          <el-menu-item v-else :index="menu.index">
+            <el-icon>
+              <component :is="menu.icon" />
+            </el-icon>
+            <span>{{ menu.title }}</span>
+          </el-menu-item>
+        </template>
+      </el-menu>
+    </el-scrollbar>
+  </div>
 </template>
 
 <script lang="jsx" setup>
-import {ref, markRaw} from 'vue'
-import {Location} from '@element-plus/icons-vue'
-import {useRoute, useRouter} from 'vue-router'
+import { ref, markRaw } from 'vue'
+import { Location } from '@element-plus/icons-vue'
+import { useRoute, useRouter } from 'vue-router'
 // 路由对象
 const route = useRoute()
 const router = useRouter()
@@ -49,34 +49,42 @@ const menus = ref([
     index: '/home', // 修改为字符串
     title: '主页',
     icon: markRaw(Location),
-    path: '/home',
+    path: '/home'
   },
   {
-    index: '/product',
+    index: '/productIndex',
     title: '产品管理',
     icon: markRaw(Location),
-    path: '/product',
     children: [
       {
         index: '/productType',
         title: '产品类型管理',
-        icon: markRaw(Location),
-        path: '/productType',
+        path: '/productType'
       },
-    ],
-  },
+      {
+        index: '/protocol',
+        title: '协议管理',
+        path: '/protocol'
+      },
+      {
+        index: '/product',
+        title: '产品',
+        path: '/product'
+      }
+    ]
+  }
 ])
 
-const activeMenu = ref('home');
+const activeMenu = ref('home')
 
 const handleSelect = (index) => {
-  activeMenu.value = index;
+  activeMenu.value = index
   const selectedMenu = menus.value
-      .flatMap((menu) => [menu, ...(menu.children || [])])
-      .find((item) => item.index === index)
-  if (selectedMenu &&  selectedMenu.path && route.path!==selectedMenu.path) {
+    .flatMap((menu) => [menu, ...(menu.children || [])])
+    .find((item) => item.index === index)
+  if (selectedMenu && selectedMenu.path && route.path !== selectedMenu.path) {
     router.push({
-      path:selectedMenu.path
+      path: selectedMenu.path
     })
   }
 }
@@ -108,6 +116,5 @@ const handleSelect = (index) => {
   color: #fff !important;
   border-radius: 4px; // 圆角效果（可选）
 }
-
 
 </style>

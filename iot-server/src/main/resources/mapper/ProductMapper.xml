@@ -1,18 +1,53 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.github.dingdaoyi.mapper.ProductMapper">
-  <resultMap id="BaseResultMap" type="com.github.dingdaoyi.entity.Product">
-    <!--@mbg.generated-->
-    <!--@Table tb_product-->
-    <id column="id" property="id" />
-    <result column="model" property="model" />
-    <result column="manufacturer" property="manufacturer" />
-    <result column="mark" property="mark" />
-    <result column="protocol_id" property="protocolId" />
-    <result column="product_type_id" property="productTypeId" />
-  </resultMap>
-  <sql id="Base_Column_List">
-    <!--@mbg.generated-->
-    id, model, manufacturer, mark, protocol_id, product_type_id
-  </sql>
+    <resultMap id="BaseResultMap" type="com.github.dingdaoyi.entity.Product">
+        <!--@mbg.generated-->
+        <!--@Table tb_product-->
+        <id column="id" property="id"/>
+        <result column="model" property="model"/>
+        <result column="manufacturer" property="manufacturer"/>
+        <result column="mark" property="mark"/>
+        <result column="protocol_id" property="protocolId"/>
+        <result column="product_type_id" property="productTypeId"/>
+    </resultMap>
+    <resultMap id="PageVoResultMap" type="com.github.dingdaoyi.model.vo.ProductPageVo" extends="BaseResultMap">
+        <result column="product_type_name" property="productTypeName"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        <!--@mbg.generated-->
+        id,
+        model,
+        manufacturer,
+        mark,
+        protocol_id,
+        product_type_id
+    </sql>
+    <sql id="PageVo_Column_List">
+        pro.id,
+        pro.model,
+        pro.manufacturer,
+        pro.mark,
+        pro.protocol_id,
+        pro.product_type_id,
+        pt.name as productTypeName
+    </sql>
+
+    <select id="pageByQuery" resultType="com.github.dingdaoyi.model.vo.ProductPageVo">
+        select
+        <include refid="PageVo_Column_List"/>
+        from tb_product pro,
+             tb_product_type pt
+        where pro.product_type_id = pt.id
+        <if test="pageQuery.productTypeId != null">
+            and pro.product_type_id = #{pageQuery.productTypeId}
+        </if>
+        <if test="pageQuery.model != null and pageQuery.model != ''">
+            and pro.model like CONCAT('%', #{pageQuery.model}::text, '%')
+        </if>
+        <if test="pageQuery.manufacturer != null and pageQuery.manufacturer != ''">
+            and pro.manufacturer like CONCAT('%', #{pageQuery.manufacturer}::text, '%')
+        </if>
+    </select>
 </mapper>
