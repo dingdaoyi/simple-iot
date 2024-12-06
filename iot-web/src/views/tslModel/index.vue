@@ -18,7 +18,7 @@
 <script setup>
 import Breadcrumb from '@/components/Breadcrumb.vue'
 import { ref } from 'vue'
-import { productTypeDetailApi } from '@/api/index.js'
+import { productDetailApi, productTypeDetailApi } from '@/api/index.js'
 import { useRoute } from 'vue-router'
 import ServiceConfig from '@/views/tslModel/widget/serviceConfig.vue'
 const activeName = ref('service')
@@ -37,15 +37,43 @@ const breadcrumbs = ref(
     }
   ]
 )
+const productDetails = ref({})
 const productTypeId = route.query.typeId
-const loadDetails = (id) => {
-  productTypeDetailApi(id)
-    .then(res => {
-      const data = res.data
-      breadcrumbs.value[2].label = data.name
-    })
+const productId = route.query.productId
+const loadDetails = () => {
+  if (productId) {
+    productDetailApi(productId)
+      .then(({ data }) => {
+        // const data = res.data
+        productDetails.value = data
+        breadcrumbs.value[2].label = data.name
+        breadcrumbs.value = [
+          {
+            label: data.productType.name,
+            path: '/product'
+          },
+          {
+            label: data.model
+          },
+          {
+            label: '物模型'
+          }
+        ]
+      })
+  } else {
+    productTypeDetailApi(productTypeId)
+      .then(res => {
+        const data = res.data
+        breadcrumbs.value[2].label = data.name
+      })
+  }
+
+  if (productId) {
+    // 产品的物模型
+
+  }
 }
-loadDetails(productTypeId)
+loadDetails()
 </script>
 <style scoped lang="scss">
 

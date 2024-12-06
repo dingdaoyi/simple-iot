@@ -178,6 +178,18 @@ export const productDeleteApi = id => {
 }
 
 /**
+ * 产品详情
+ * @param id
+ * @returns {*}
+ */
+export const productDetailApi = id => {
+  return request({
+    url: `/product/${id}`,
+    method: 'GET'
+  })
+}
+
+/**
  * 协议列表
  * @param params
  * @returns {*}
@@ -224,5 +236,63 @@ export const protocolDeleteApi = id => {
   return request({
     url: `/protocol/${id}`,
     method: 'delete'
+  })
+}
+
+/**
+ * 图标列表
+ * @param params
+ * @returns {*}
+ */
+export const iconListApi = params => {
+  return request({
+    url: '/icon',
+    method: 'get',
+    params
+  })
+}
+/**
+ * 图标添加
+ * @param data
+ * @returns {*}
+ */
+export const iconAddApi = data => {
+  return request({
+    url: '/icon',
+    method: 'post',
+    data
+  })
+}
+
+/**
+ * 图标修改
+ * @param data
+ * @returns {*}
+ */
+export const iconEditeApi = data => {
+  return request({
+    url: '/icon',
+    method: 'put',
+    data
+  })
+}
+
+/**
+ * 图标删除
+ * @param id
+ * @returns {*}
+ */
+export const iconDeleteApi = id => {
+  return request({
+    url: `/icon/${id}`,
+    method: 'delete'
+  })
+}
+
+export const uploadMoreApi = data => {
+  return request({
+    url: '/file/upload',
+    method: 'post',
+    data
   })
 }

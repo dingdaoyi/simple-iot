@@ -4,6 +4,7 @@ import com.github.dingdaoyi.entity.Product;
 import com.github.dingdaoyi.model.PageResult;
 import com.github.dingdaoyi.model.query.ProductPageQuery;
 import com.github.dingdaoyi.model.vo.ProductPageVo;
+import com.github.dingdaoyi.model.vo.ProductVo;
 import com.github.dingdaoyi.proto.model.tsl.TslModel;
 import com.github.dingdaoyi.model.enu.SysCodeEnum;
 import com.github.dingdaoyi.model.query.ProductAddQuery;
@@ -76,6 +77,14 @@ public class ProductController {
             throw new ServiceException(SysCodeEnum.BAD_REQUEST, "产品下存在物模型信息, 无法删除");
         }
         return R.success(productService.removeById(id));
+    }
+
+
+    @GetMapping("{id}")
+    @Operation(summary = "产品详情")
+    public R<ProductVo> details(@PathVariable Integer id) {
+        return productService.details(id).map(R::success)
+                .orElse(R.fail("产品不存在"));
     }
 
     @GetMapping("tsl/{productId}")

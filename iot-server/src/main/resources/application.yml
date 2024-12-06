@@ -7,7 +7,7 @@ spring:
   application:
     name: iot-server
   jackson:
-    default-property-inclusion: non_empty
+    default-property-inclusion: non_null
   cache:
     type: caffeine
     caffeine:
@@ -90,6 +90,9 @@ sample:
   iot:
     # 开启设备密钥认证
     enable-device-secret: true
+    localstorage:
+      local-dir: ./file/upload
+    storage-type: file
     driver:
       mqtt:
         mqtt-client-id-prefix: sample_

@@ -72,6 +72,18 @@ const menus = ref([
         path: '/product'
       }
     ]
+  },
+  {
+    index: '/system',
+    title: '系统管理',
+    icon: markRaw(Location),
+    children: [
+      {
+        index: '/icon',
+        title: '图标管理',
+        path: '/icon'
+      }
+    ]
   }
 ])
 

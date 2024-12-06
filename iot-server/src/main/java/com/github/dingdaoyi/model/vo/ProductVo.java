@@ -7,6 +7,9 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import net.dreamlu.mica.core.utils.$;
 
+/**
+ * @author dingyunwei
+ */
 @EqualsAndHashCode(callSuper = true)
 @Data
 public class ProductVo extends Product {

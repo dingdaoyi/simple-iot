@@ -15,4 +15,27 @@ public class IotConfigProperties {
      * 开启设备密钥认证
      */
     private boolean enableDeviceSecret;
+
+
+    /**
+     * 配置本地存储
+     */
+    private LocalStorage localstorage;
+
+    /**
+     * 存储类型
+     */
+    private StorageType storageType;
+
+    public static enum StorageType{
+        FILE,
+    }
+
+    @Data
+    public static class LocalStorage {
+        /**
+         * 本地存储目录
+         */
+        private String localDir;
+    }
 }

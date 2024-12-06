@@ -4,6 +4,7 @@ import productType from '@/views/productType'
 import product from '@/views/product'
 import protocol from '@/views/protocol'
 import tslModel from '@/views/tslModel'
+import icon from '@/views/system/icon'
 
 export default [
 
@@ -50,6 +51,14 @@ export default [
         component: protocol,
         meta: {
           title: '协议管理'
+        }
+      },
+      {
+        path: '/icon',
+        name: '图标管理',
+        component: icon,
+        meta: {
+          title: '图标管理'
         }
       }
     ]

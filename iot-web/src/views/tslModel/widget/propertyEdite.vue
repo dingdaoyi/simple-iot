@@ -143,6 +143,7 @@
           clearable
           placeholder="请输入备注信息" />
       </el-form-item>
+      <iconInput v-model:value="form.iconId" />
     </el-form>
   </dw-dialog>
 </template>
@@ -152,6 +153,7 @@ import { ref } from 'vue'
 import { standardPropertyAddApi, standardPropertyEditApi } from '@/api'
 import { dwHooks } from 'dwyl-ui'
 import { ElMessage } from 'element-plus'
+import IconInput from '@/components/IconInput.vue'
 
 const { useForm } = dwHooks
 

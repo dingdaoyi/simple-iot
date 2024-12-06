@@ -7,6 +7,7 @@ import lombok.extern.slf4j.Slf4j;
 import net.dreamlu.mica.core.exception.ServiceException;
 import net.dreamlu.mica.core.result.R;
 import net.dreamlu.mica.core.result.SystemCode;
+import org.apache.tomcat.util.http.fileupload.impl.FileSizeLimitExceededException;
 import org.postgresql.util.PSQLException;
 import org.springframework.context.MessageSourceResolvable;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
@@ -65,6 +66,18 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(value = ServiceException.class)
     public R<Object> serviceException(ServiceException e) {
         return e.getResult();
+    }
+
+    /**
+     * 异常捕捉
+     *
+     * @param e
+     * @return
+     */
+    @ResponseBody
+    @ExceptionHandler(value = FileSizeLimitExceededException.class)
+    public R<Object> fileSizeLimitExceededException(FileSizeLimitExceededException e) {
+        return R.fail("文件超过大小限制");
     }
 
     /**

@@ -117,7 +117,7 @@ function onAddChild (row) {
   })
 }
 const tslConfig = (row) => {
-  router.push(`/tslModel?typeId=${row.id}`)
+  router.push(`/tslModel?typeId=${row.productTypeId}&productId=${row.id}`)
 }
 productTypeListApi()
   .then(({ data }) => {

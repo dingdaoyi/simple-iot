@@ -6,6 +6,7 @@
 
 <script setup>
 import { useRouter, useRoute } from 'vue-router'
+import { uploadMoreApi } from '@/api/index.js'
 
 /* dwyl-ui默认传递参数配置 */
 const projectConfig = {
@@ -21,7 +22,7 @@ const projectConfig = {
     useRoute
   },
   upload: {
-    // uploadMoreApi
+    uploadMoreApi
   }
 }
 /* dwyl-ui默认传递参数配置 */
