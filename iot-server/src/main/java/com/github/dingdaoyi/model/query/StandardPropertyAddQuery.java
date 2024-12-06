@@ -19,8 +19,6 @@ import java.util.List;
 @Data
 public class StandardPropertyAddQuery implements ToEntity<ModelProperty> {
 
-    @Schema(description = "id")
-    private Integer id;
 
     /**
      * 数据类型
@@ -158,7 +156,6 @@ public class StandardPropertyAddQuery implements ToEntity<ModelProperty> {
         modelProperty.setMin(min);
         modelProperty.setStep(step);
         modelProperty.setEnums(enums);
-        modelProperty.setId(id);
         return modelProperty;
     }
 

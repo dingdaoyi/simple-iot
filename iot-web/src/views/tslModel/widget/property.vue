@@ -5,7 +5,7 @@
         <el-input v-model="params.search" clearable placeholder="请输入属性名称或标识符搜索" />
       </div>
       <el-button type="primary" @click="onSearch">搜索</el-button>
-      <el-button type="success" @click="onAdd">添加</el-button>
+      <el-button v-if="showEdite" type="success" @click="onAdd">添加</el-button>
     </div>
     <DwTable
       ref="dwTable"
@@ -16,8 +16,8 @@
       :api="propertyListApi"
     >
       <template #cz="{ row }">
-        <dw-button type="danger" link @click="onDelete(row)">删除</dw-button>
-        <dw-button type="primary" link @click="onEdit(row)">编辑定义</dw-button>
+        <dw-button v-if="showEdite" type="danger" link @click="onDelete(row)">删除</dw-button>
+        <dw-button v-if="showEdite" type="primary" link @click="onEdit(row)">编辑定义</dw-button>
       </template>
     </DwTable>
     <property-edite
@@ -25,6 +25,7 @@
       v-model="dialogVisible"
       :title="diaTitle"
       :type-id="typeId"
+      :product-id="productId"
       :datas="currentItem"
       @update="updatePage"
     />
@@ -37,7 +38,7 @@ import PropertyEdite from '@/views/tslModel/widget/propertyEdite.vue'
 
 const { useDwTable } = dwHooks
 
-const props = defineProps(['typeId'])
+const props = defineProps(['typeId', 'productId', 'showEdite'])
 
 const column = [
 
@@ -90,7 +91,8 @@ const {
   deleteApi: propertyDeleteApi,
   diaName: '属性',
   defParams: {
-    productTypeId: props.typeId
+    productTypeId: props.typeId,
+    productId: props.productId
   }
 })
 </script>

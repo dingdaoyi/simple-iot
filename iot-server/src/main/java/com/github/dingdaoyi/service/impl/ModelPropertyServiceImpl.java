@@ -38,8 +38,8 @@ public class ModelPropertyServiceImpl extends ServiceImpl<ModelPropertyMapper, M
     private ProductService productService;
 
     @Override
-    public List<ModelProperty> listByProductType(Integer productTypeId, Integer productId, Integer paramType, String search) {
-        return list(Wrappers
+    public List<ModelProperty> listByProductType(Integer productTypeId, Integer productId, Integer paramType, String search, Boolean all) {
+        LambdaQueryWrapper<ModelProperty> queryWrapper = Wrappers
                 .<ModelProperty>lambdaQuery()
                 .eq(ModelProperty::getProductTypeId, productTypeId)
                 //标准物模型不查自定义部分,自定义物模型不查询custom字段
@@ -50,7 +50,21 @@ public class ModelPropertyServiceImpl extends ServiceImpl<ModelPropertyMapper, M
                         .like(ModelProperty::getName, search)
                         .or()
                         .eq(ModelProperty::getIdentifier, search)
-                ));
+                );
+        LambdaQueryWrapper<ModelProperty> allQueryWrapper = Wrappers
+                .<ModelProperty>lambdaQuery()
+                .and(w->w.and(wr->
+                        wr.eq(ModelProperty::getProductTypeId, productTypeId)
+                                .eq(ModelProperty::getCustom, false))
+                        .or()
+                        .eq($.isNotNull(productId),ModelProperty::getProductId, productId))
+                .eq($.isNotNull(paramType), ModelProperty::getParamType, paramType)
+                .and($.isNotBlank(search), w -> w
+                        .like(ModelProperty::getName, search)
+                        .or()
+                        .eq(ModelProperty::getIdentifier, search)
+                );
+        return list(all ? allQueryWrapper : queryWrapper);
     }
 
     @Override

@@ -150,14 +150,14 @@
 
 <script lang="jsx" setup>
 import { ref } from 'vue'
-import { standardPropertyAddApi, standardPropertyEditApi } from '@/api'
+import { customPropertyAddApi, standardPropertyAddApi, standardPropertyEditApi } from '@/api'
 import { dwHooks } from 'dwyl-ui'
 import { ElMessage } from 'element-plus'
 import IconInput from '@/components/IconInput.vue'
 
 const { useForm } = dwHooks
 
-const props = defineProps(['datas', 'typeId'])
+const props = defineProps(['datas', 'typeId', 'productId'])
 const emits = defineEmits(['update'])
 
 const rules = ref({
@@ -168,6 +168,7 @@ const rules = ref({
 })
 const form = ref({
   productTypeId: props.typeId,
+  productId: props.productId,
   enums: [{
     key: 1,
     value: ''
@@ -184,7 +185,9 @@ const onSubmit = async () => {
       loading.value = true
       let func = props.datas
         ? standardPropertyEditApi
-        : standardPropertyAddApi
+        : props.productId
+          ? customPropertyAddApi
+          : standardPropertyAddApi
       func(form.value).then(rs => {
         loading.value = false
         ElMessage({

@@ -20,6 +20,7 @@
     "echarts": "^5.5.1",
     "element-plus": "^2.8.8",
     "lodash": "^4.17.21",
+    "monaco-editor": "0.51.0",
     "pinia": "^2.2.6",
     "vue": "^3.5.13",
     "vue-echarts": "^7.0.3",
@@ -39,6 +40,7 @@
     "unocss": "^0.64.1",
     "unplugin-vue-define-options": "^1.5.2",
     "vite": "^5.4.11",
+    "vite-plugin-monaco-editor": "1.0.12",
     "vite-plugin-svg-icons": "^2.0.1"
   }
 }

@@ -138,7 +138,7 @@ import { dwHooks } from 'dwyl-ui'
 
 const { useForm } = dwHooks
 
-const props = defineProps(['datas', 'typeId', 'properties'])
+const props = defineProps(['datas', 'typeId', 'properties', 'productId'])
 const emits = defineEmits(['update'])
 
 const serviceTypeOpt = [
@@ -177,6 +177,8 @@ const rules = ref({
 const { editRef, onSubmit, form, loading, onClose, dwDialogRef, onReset } = useForm({
   defForm: {
     productTypeId: props.typeId,
+    productId: props.productId,
+    custom: props.productId != null,
     outputParamIds: [],
     inputParamIds: []
   },
@@ -187,7 +189,7 @@ const { editRef, onSubmit, form, loading, onClose, dwDialogRef, onReset } = useF
 })
 
 const changeServiceType = (value) => {
-  console.log('change value', value)
+  currentType.value = value
 }
 if (props.datas) {
   form.value = props.datas

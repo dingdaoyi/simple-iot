@@ -1,16 +1,13 @@
 package com.github.dingdaoyi.controller.iot;
 
 import com.github.dingdaoyi.model.enu.SysCodeEnum;
-import com.github.dingdaoyi.model.query.StandardServiceAddQuery;
-import com.github.dingdaoyi.model.query.StandardServiceUpdateQuery;
+import com.github.dingdaoyi.model.query.ServiceAddQuery;
+import com.github.dingdaoyi.model.query.ServiceUpdateQuery;
 import com.github.dingdaoyi.model.vo.ModelServiceVO;
 import com.github.dingdaoyi.service.ModelPropertyService;
 import com.github.dingdaoyi.service.ModelServiceService;
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.validation.constraints.Max;
-import jakarta.validation.constraints.Min;
 import lombok.AllArgsConstructor;
 import net.dreamlu.mica.core.exception.ServiceException;
 import net.dreamlu.mica.core.result.R;
@@ -41,23 +38,30 @@ public class ModelServiceController {
     }
 
 
+    @GetMapping("custom")
+    @Operation(summary = "获取自定义服务")
+    public R<List<ModelServiceVO>> customList(@RequestParam(required = false) Integer serviceType,
+                                        @RequestParam(required = false) String search,
+                                        @RequestParam Integer productId) {
+        return R.success(modelServiceService.listByProduct(productId,serviceType,search));
+    }
 
 
-    @PostMapping("standard")
-    @Operation(summary = "新增标准物模型")
-    public R<Boolean> save(@RequestBody StandardServiceAddQuery modelService) {
+    @PostMapping
+    @Operation(summary = "新增服务")
+    public R<Boolean> save(@RequestBody ServiceAddQuery modelService) {
         validateProperties(modelService);
         return R.success(modelServiceService.save(modelService));
     }
 
-    @PutMapping("standard")
-    @Operation(summary = "修改标准物模型")
-    public R<Boolean> update(@RequestBody StandardServiceUpdateQuery modelService) {
+    @PutMapping
+    @Operation(summary = "修改服务")
+    public R<Boolean> update(@RequestBody ServiceUpdateQuery modelService) {
         validateProperties(modelService);
         return R.success(modelServiceService.update(modelService));
     }
 
-    private void validateProperties(StandardServiceAddQuery modelService) {
+    private void validateProperties(ServiceAddQuery modelService) {
         if ($.isNotEmpty(modelService.getInputParamIds())) {
             if (!modelPropertyService.allExists(modelService.getInputParamIds())) {
                 throw new ServiceException(SysCodeEnum.BAD_REQUEST,"请确保入参id");
@@ -65,4 +69,9 @@ public class ModelServiceController {
         }
     }
 
+    @DeleteMapping("{id}")
+    @Operation(summary = "根据产品id获取物模型数据")
+    public R<Boolean> delete(@PathVariable  Integer id) {
+        return R.success(modelServiceService.removeById(id));
+    }
 }

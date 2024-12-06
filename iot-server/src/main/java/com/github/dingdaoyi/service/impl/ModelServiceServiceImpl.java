@@ -3,8 +3,8 @@ package com.github.dingdaoyi.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.github.dingdaoyi.entity.ServiceProperty;
-import com.github.dingdaoyi.model.query.StandardServiceAddQuery;
-import com.github.dingdaoyi.model.query.StandardServiceUpdateQuery;
+import com.github.dingdaoyi.model.query.ServiceAddQuery;
+import com.github.dingdaoyi.model.query.ServiceUpdateQuery;
 import com.github.dingdaoyi.model.vo.ModelServiceVO;
 import com.github.dingdaoyi.service.CacheService;
 import com.github.dingdaoyi.service.ServicePropertyService;
@@ -14,6 +14,7 @@ import net.dreamlu.mica.core.utils.$;
 import net.dreamlu.mica.core.utils.JsonUtil;
 import org.springframework.stereotype.Service;
 
+import java.io.Serializable;
 import java.util.List;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -54,6 +55,25 @@ public class ModelServiceServiceImpl extends ServiceImpl<ModelServiceMapper, Mod
         return toListVo(modelServices);
     }
 
+    @Override
+    public List<ModelServiceVO> listByProduct(Integer productId, Integer serviceType, String search) {
+        List<ModelService> modelServices = baseMapper.selectList(
+                Wrappers.<ModelService>lambdaQuery()
+                        .eq(ModelService::getProductId, productId)
+                        .eq(ModelService::getCustom,true)
+                        .eq($.isNotNull(serviceType), ModelService::getServiceType, serviceType)
+                        .and($.isNotBlank(search), w ->
+                                w.like(ModelService::getName, search)
+                                        .or()
+                                        .eq(ModelService::getIdentifier, search)
+                        )
+        );
+        if ($.isEmpty(modelServices)) {
+            return List.of();
+        }
+        // 设置出参, 入参
+        return toListVo(modelServices);
+    }
     private List<ModelServiceVO> toListVo(List<ModelService> modelServices) {
         return modelServices.stream().map(modelService -> {
             ModelServiceVO serviceVO = ModelServiceVO.build(modelService);
@@ -65,7 +85,7 @@ public class ModelServiceServiceImpl extends ServiceImpl<ModelServiceMapper, Mod
 
     @Transactional(rollbackFor = Exception.class)
     @Override
-    public Boolean save(StandardServiceAddQuery modelService) {
+    public Boolean save(ServiceAddQuery modelService) {
         ModelService serviceEntity = modelService.toEntity();
         int insert = baseMapper.insert(serviceEntity);
         if (insert < 0) {
@@ -96,7 +116,7 @@ public class ModelServiceServiceImpl extends ServiceImpl<ModelServiceMapper, Mod
     }
 
     @Override
-    public Boolean update(StandardServiceUpdateQuery modelService) {
+    public Boolean update(ServiceUpdateQuery modelService) {
         ModelService serviceEntity = modelService.toEntity();
         int insert = baseMapper.updateById(serviceEntity);
         if (insert < 0) {
@@ -115,9 +135,20 @@ public class ModelServiceServiceImpl extends ServiceImpl<ModelServiceMapper, Mod
     }
 
     @Override
+    public boolean removeById(Serializable id) {
+        try {
+            return super.removeById(id);
+        } finally {
+            //标准物模型都删了缓存
+            cacheService.clearCache(CacheService.TSL_MODEL_CACHE);
+        }
+    }
+
+    @Override
     public boolean existsByProduct(Integer productId) {
         return exists(Wrappers
                 .<ModelService>lambdaQuery()
                 .eq(ModelService::getProductId, productId));
     }
+
 }

@@ -35,6 +35,9 @@ importers:
       lodash:
         specifier: ^4.17.21
         version: 4.17.21
+      monaco-editor:
+        specifier: 0.51.0
+        version: 0.51.0
       pinia:
         specifier: ^2.2.6
         version: 2.2.6(vue@3.5.13)
@@ -87,6 +90,9 @@ importers:
       vite:
         specifier: ^5.4.11
         version: 5.4.11(@types/node@22.9.1)(sass@1.81.0)
+      vite-plugin-monaco-editor:
+        specifier: 1.0.12
+        version: 1.0.12(monaco-editor@0.51.0)
       vite-plugin-svg-icons:
         specifier: ^2.0.1
         version: 2.0.1(vite@5.4.11(@types/node@22.9.1)(sass@1.81.0))
@@ -2265,6 +2271,9 @@ packages:
   mlly@1.7.3:
     resolution: {integrity: sha512-xUsx5n/mN0uQf4V548PKQ+YShA4/IW0KI1dZhrNrPCLG+xizETbHTkOa1f8/xut9JRPp8kQuMnz0oqwkTiLo/A==}
 
+  monaco-editor@0.51.0:
+    resolution: {integrity: sha512-xaGwVV1fq343cM7aOYB6lVE4Ugf0UyimdD/x5PWcWBMKENwectaEu77FAN7c5sFiyumqeJdX1RPTh1ocioyDjw==}
+
   mrmime@2.0.0:
     resolution: {integrity: sha512-eu38+hdgojoyq63s+yTpN4XMBdt5l8HhMhc4VKLO9KM5caLIBvUm4thi7fFaxyTmCKeNnXZ5pAlBwCUnhA09uw==}
     engines: {node: '>=10'}
@@ -2874,6 +2883,11 @@ packages:
   vary@1.1.2:
     resolution: {integrity: sha512-BNGbWLfd0eUPabhkXUVm0j8uuvREyTh5ovRa/dyow/BqAbZJyC+5fU+IzQOzmAKzYqYRAISoRhdQr3eIZ/PXqg==}
     engines: {node: '>= 0.8'}
+
+  vite-plugin-monaco-editor@1.0.12:
+    resolution: {integrity: sha512-r7f6we2eiyk45EmpoD76rKez18aEr1dwYqxqdsP0zObpPun/ukmop8kv86qZGd14GjEncjE5+9eky+edyPPdxA==}
+    peerDependencies:
+      monaco-editor: '>=0.33.0'
 
   vite-plugin-svg-icons@2.0.1:
     resolution: {integrity: sha512-6ktD+DhV6Rz3VtedYvBKKVA2eXF+sAQVaKkKLDSqGUfnhqXl3bj5PPkVTl3VexfTuZy66PmINi8Q6eFnVfRUmA==}
@@ -5328,6 +5342,8 @@ snapshots:
       pkg-types: 1.2.1
       ufo: 1.5.4
 
+  monaco-editor@0.51.0: {}
+
   mrmime@2.0.0: {}
 
   ms@2.0.0: {}
@@ -6065,6 +6081,10 @@ snapshots:
       base64-arraybuffer: 1.0.2
 
   vary@1.1.2: {}
+
+  vite-plugin-monaco-editor@1.0.12(monaco-editor@0.51.0):
+    dependencies:
+      monaco-editor: 0.51.0
 
   vite-plugin-svg-icons@2.0.1(vite@5.4.11(@types/node@22.9.1)(sass@1.81.0)):
     dependencies:

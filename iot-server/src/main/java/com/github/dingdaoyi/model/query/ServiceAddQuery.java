@@ -5,7 +5,6 @@ import com.github.dingdaoyi.entity.ModelService;
 import com.github.dingdaoyi.entity.ServiceProperty;
 import com.github.dingdaoyi.proto.model.tsl.EventTypeEnum;
 import com.github.dingdaoyi.entity.enu.ServiceTypeEnum;
-import com.github.dingdaoyi.entity.enu.StatusEnum;
 import com.github.dingdaoyi.model.ToEntity;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
@@ -20,7 +19,7 @@ import java.util.List;
  * @author dingyunwei
  */
 @Data
-public class StandardServiceAddQuery implements ToEntity<ModelService> {
+public class ServiceAddQuery implements ToEntity<ModelService> {
 
 
     /**
@@ -90,10 +89,14 @@ public class StandardServiceAddQuery implements ToEntity<ModelService> {
     /**
      * 是否必选
      */
-    @TableField(value = "required")
     @Schema(description = "是否必选")
     private Boolean required;
 
+    @Schema(description = "产品id")
+    private Integer productId;
+
+    @Schema(description = "产品id")
+    private Boolean custom=Boolean.FALSE;
 
     @Override
     public ModelService toEntity() {
@@ -107,7 +110,8 @@ public class StandardServiceAddQuery implements ToEntity<ModelService> {
         modelService.setAsync(this.async);
         modelService.setRequired(this.required);
         modelService.setIconId(this.iconId);
-        modelService.setCustom(false);
+        modelService.setProductId(this.productId);
+        modelService.setCustom(this.custom);
         return modelService;
     }
 

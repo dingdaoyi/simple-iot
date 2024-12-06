@@ -5,7 +5,7 @@
         <el-input v-model="params.search" clearable placeholder="请输入服务名称或标识符搜索" />
       </div>
       <el-button type="primary" @click="onSearch">搜索</el-button>
-      <el-button type="success" @click="onAdd">添加</el-button>
+      <el-button v-if="showEdite" type="success" @click="onAdd">添加</el-button>
     </div>
     <DwTable
       ref="dwTable"
@@ -13,11 +13,11 @@
       :column="column"
       :params="params"
       :isPage="false"
-      :api="standardServiceListApi"
+      :api="productId?customServiceListApi:standardServiceListApi"
     >
       <template #cz="{ row }">
-        <dw-button type="danger" link @click="onDelete(row)">删除</dw-button>
-        <dw-button type="primary" link @click="onEdit(row)">编辑定义</dw-button>
+        <dw-button v-if="showEdite" type="danger" link @click="onDelete(row)">删除</dw-button>
+        <dw-button v-if="showEdite" type="primary" link @click="onEdit(row)">编辑定义</dw-button>
       </template>
     </DwTable>
     <service-edite
@@ -25,6 +25,7 @@
       v-model="dialogVisible"
       :title="diaTitle"
       :type-id="typeId"
+      :product-id="productId"
       :datas="currentItem"
       :properties="propertiesDct"
       @update="updatePage"
@@ -39,17 +40,21 @@
   </div>
 </template>
 <script lang="jsx" setup>
-import { productTypeDelApi, propertyListApi, standardServiceListApi } from '@/api/index.js'
+import {
+  customServiceListApi,
+  propertyListApi,
+  serviceDeleteApi,
+  standardServiceListApi
+} from '@/api/index.js'
 import { dwHooks } from 'dwyl-ui'
 import ServiceEdite from '@/views/tslModel/widget/serviceEdite.vue'
 import { ElButton } from 'element-plus'
-import { ZoomIn } from '@element-plus/icons-vue'
 import { h, ref } from 'vue'
 import ParamShow from '@/views/tslModel/widget/paramShow.vue' // 引入图标
 
 const { useDwTable } = dwHooks
 
-const props = defineProps(['typeId'])
+const props = defineProps(['typeId', 'productId', 'showEdite'])
 const propertiesDct = ref([])
 const dialogVisibleParams = ref(false)
 const showDetailRow = ref()
@@ -118,16 +123,19 @@ const {
   diaTitle,
   currentItem
 } = useDwTable({
-  deleteApi: productTypeDelApi,
+  deleteApi: serviceDeleteApi,
   diaName: '服务',
   defParams: {
-    productTypeId: props.typeId
+    productTypeId: props.typeId,
+    productId: props.productId
   }
 })
 
 const loadPropertiesDict = () => {
   propertyListApi({
-    productTypeId: props.typeId
+    productTypeId: props.typeId,
+    productId: props.productId,
+    all: props.productId != null
   })
     .then(({ data }) => {
       propertiesDct.value = data

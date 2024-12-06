@@ -32,8 +32,9 @@ public class ModelPropertyController {
     public R<List<ModelPropertyVo>> list(@RequestParam(required = false) Integer paramType,
                                          @RequestParam Integer productTypeId,
                                          @RequestParam(required = false) Integer productId,
-                                         @RequestParam(required = false) String search) {
-        return R.success(modelPropertyService.listByProductType(productTypeId, productId, paramType,search)
+                                         @RequestParam(required = false) String search,
+                                         @RequestParam(defaultValue = "false") Boolean all) {
+        return R.success(modelPropertyService.listByProductType(productTypeId, productId, paramType,search,all)
                 .stream()
                 .map(ModelPropertyVo::new).toList());
     }

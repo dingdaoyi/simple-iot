@@ -14,7 +14,16 @@ import java.util.List;
 public interface ModelPropertyService extends IService<ModelProperty> {
 
 
-    List<ModelProperty> listByProductType(Integer productTypeId, Integer productId,Integer paramType,String search);
+    /**
+     *
+     * @param productTypeId
+     * @param productId
+     * @param paramType
+     * @param search
+     * @param all 是否查询全部, 在产品属性查询时, 判断是否查询所有包函产品类型的数据
+     * @return
+     */
+    List<ModelProperty> listByProductType(Integer productTypeId, Integer productId,Integer paramType,String search,Boolean all);
 
     /**
      * 根据父级id查询

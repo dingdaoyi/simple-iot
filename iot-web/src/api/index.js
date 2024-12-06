@@ -91,6 +91,19 @@ export const standardPropertyAddApi = data => {
 }
 
 /**
+ * 保存自定义属性
+ * @param data
+ * @returns {*}
+ */
+export const customPropertyAddApi = data => {
+  return request({
+    url: '/model/property/product',
+    method: 'post',
+    data
+  })
+}
+
+/**
  * 修改标准属性
  * @param data
  * @returns {*}
@@ -109,18 +122,32 @@ export const standardServiceListApi = params => {
     params
   })
 }
+export const customServiceListApi = params => {
+  return request({
+    url: '/model/service/custom',
+    method: 'get',
+    params
+  })
+}
 
 export const serviceAddApi = data => {
   return request({
-    url: '/model/service/standard',
+    url: '/model/service',
     method: 'post',
     data
+  })
+}
+export const serviceDeleteApi = id => {
+  return request({
+    url: '/model/service',
+    method: 'delete',
+    id
   })
 }
 
 export const serviceEditeApi = data => {
   return request({
-    url: '/model/service/standard',
+    url: '/model/service',
     method: 'put',
     data
   })
@@ -294,5 +321,12 @@ export const uploadMoreApi = data => {
     url: '/file/upload',
     method: 'post',
     data
+  })
+}
+
+export const loadTslData = productId => {
+  return request({
+    url: `/product/tsl/${productId}`,
+    method: 'get'
   })
 }

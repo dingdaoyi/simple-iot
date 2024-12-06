@@ -1,14 +1,17 @@
 <template>
   <div class="wh-full flex flex-col">
     <Breadcrumb :breadcrumbs="breadcrumbs" />
-    <div class="p-20px">
+    <div class="p-20px flex-1">
       <el-tabs
         v-model="activeName"
         class="demo-tabs"
       >
         <el-tab-pane label="基础信息" name="first">User</el-tab-pane>
         <el-tab-pane label="服务定义" name="service">
-          <service-config :typeId="productTypeId" />
+          <service-config :typeId="productTypeId" :product-id="productId" />
+        </el-tab-pane>
+        <el-tab-pane v-if="productId" label="TSL" name="tsl">
+          <tslexpoert v-if="activeName==='tsl'" :typeId="productTypeId" :product-id="productId" />
         </el-tab-pane>
       </el-tabs>
     </div>
@@ -21,6 +24,8 @@ import { ref } from 'vue'
 import { productDetailApi, productTypeDetailApi } from '@/api/index.js'
 import { useRoute } from 'vue-router'
 import ServiceConfig from '@/views/tslModel/widget/serviceConfig.vue'
+import tslexpoert from '@/views/tslModel/widget/tslexpoert.vue'
+
 const activeName = ref('service')
 const route = useRoute()
 const breadcrumbs = ref(
@@ -66,11 +71,6 @@ const loadDetails = () => {
         const data = res.data
         breadcrumbs.value[2].label = data.name
       })
-  }
-
-  if (productId) {
-    // 产品的物模型
-
   }
 }
 loadDetails()
