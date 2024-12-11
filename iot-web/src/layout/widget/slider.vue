@@ -1,71 +1,65 @@
 <script lang="jsx" setup>
 import { Location } from '@element-plus/icons-vue'
-import { markRaw, ref } from 'vue'
+import { ElMenuItem, ElSubMenu } from 'element-plus'
+import { computed, h } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
+
 // 路由对象
 const route = useRoute()
 const router = useRouter()
 
-// 菜单数据
-const menus = ref([
-  {
-    index: '/home', // 修改为字符串
-    title: '主页',
-    icon: markRaw(Location),
-    path: '/home',
-  },
-  {
-    index: '/productIndex',
-    title: '产品管理',
-    icon: markRaw(Location),
-    children: [
-      {
-        index: '/productType',
-        title: '产品类型管理',
-        path: '/productType',
-      },
-      {
-        index: '/protocol',
-        title: '协议管理',
-        path: '/protocol',
-      },
-      {
-        index: '/product',
-        title: '产品',
-        path: '/product',
-      },
-      {
-        index: '/device',
-        title: '设备管理',
-        path: '/device',
-      },
-    ],
-  },
-  {
-    index: '/system',
-    title: '系统管理',
-    icon: markRaw(Location),
-    children: [
-      {
-        index: '/icon',
-        title: '图标管理',
-        path: '/icon',
-      },
-    ],
-  },
-])
+const menuTree = computed(() => {
+  const allRoutes = router.options.routes
+  const loyoutChild = allRoutes.find(item => item.name === 'layout')
+  return loyoutChild.children
+})
 
-const activeMenu = ref('home')
+function handleMenuItem(item) {
+  router.push({
+    path: item.index,
+  })
+}
 
-function handleSelect(index) {
-  activeMenu.value = index
-  const selectedMenu = menus.value
-    .flatMap(menu => [menu, ...(menu.children || [])])
-    .find(item => item.index === index)
-  if (selectedMenu && selectedMenu.path && route.path !== selectedMenu.path) {
-    router.push({
-      path: selectedMenu.path,
-    })
+const currRoute = computed(() => route.path)
+
+function renderMenu(item, index) {
+  if (item.children && item.children.length > 0) {
+    return !item.meta.hidden && h(
+      ElSubMenu,
+      { index },
+      {
+        title: () =>
+          h('div', {
+            class: 'flex-y-center gap-1',
+          }, [
+            h(
+              <el-icon size="20">
+                <Location />
+              </el-icon>,
+              // <SvgIcon icon={item.icon} size="6" color={setStore.themeColor} />,
+            ),
+            h('span', null, item.meta.title),
+          ]),
+        default: () => {
+          return item.children.reduce((res, child) => {
+            if (!child.meta.hidden) {
+              res.push(renderMenu(child, String(child.path)))
+            }
+            return res
+          }, [])
+        },
+      },
+    )
+  }
+  else {
+    return h(
+      ElMenuItem,
+      {
+        index,
+        onClick: handleMenuItem,
+      },
+      { default: () => item.name },
+    )
   }
 }
 </script>
@@ -74,34 +68,10 @@ function handleSelect(index) {
   <div>
     <el-scrollbar class="sidebar-container ">
       <el-menu
-        :default-active="activeMenu"
-        class="el-menu-class"
-        active-text-color="#ffffff"
-        router
-        @select="handleSelect"
+        :default-active="currRoute"
       >
-        <template v-for="menu in menus" :key="menu.index">
-          <el-sub-menu v-if="menu.children" :index="menu.index">
-            <template #title>
-              <el-icon>
-                <component :is="menu.icon" />
-              </el-icon>
-              <span>{{ menu.title }}</span>
-            </template>
-            <el-menu-item
-              v-for="subItem in menu.children"
-              :key="subItem.index"
-              :index="subItem.index"
-            >
-              {{ subItem.title }}
-            </el-menu-item>
-          </el-sub-menu>
-          <el-menu-item v-else :index="menu.index">
-            <el-icon>
-              <component :is="menu.icon" />
-            </el-icon>
-            <span>{{ menu.title }}</span>
-          </el-menu-item>
+        <template v-for="item in menuTree" :key="item.path">
+          <component :is="renderMenu(item, String(item.path))" />
         </template>
       </el-menu>
     </el-scrollbar>
