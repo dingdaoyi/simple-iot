@@ -3,7 +3,7 @@ import Property from '@/views/tslModel/widget/property.vue'
 import Service from '@/views/tslModel/widget/service.vue'
 import { ref } from 'vue'
 
-const props = defineProps(['typeId', 'productId'])
+defineProps(['typeId', 'productId'])
 const radioGroup = ref('property')
 </script>
 
@@ -22,7 +22,7 @@ const radioGroup = ref('property')
         标准物模型
       </div>
       <Property v-if="radioGroup === 'property'" :key="radioGroup + typeId" :show-edite="!productId" :type-id="typeId" />
-      <Service v-if="radioGroup === 'service'" :key="radioGroup + typeId" :type-id="typeId" />
+      <Service v-if="radioGroup === 'service'" :key="radioGroup + typeId" :show-edite="!productId" :type-id="typeId" />
     </div>
 
     <div v-if="productId" class="flex flex-col">

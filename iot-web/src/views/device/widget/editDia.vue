@@ -18,7 +18,12 @@ const rules = ref({
   productId: [{ required: true, message: '产品型号不能为空', trigger: 'change' }],
   deviceKey: [{ required: true, message: '设备编号不能为空', trigger: 'blur' }],
 })
-
+const { form, onSubmit, editRef, loading, onClose, dwDialogRef, onReset } = useForm({
+  api: props.datas ? deviceEditeApi : deviceAddApi,
+  callback: () => {
+    emits('update')
+  },
+})
 async function changeProductType() {
   if (form.value.productTypeId) {
     const { data } = await manufacturerListApi({
@@ -43,13 +48,6 @@ function changeManufacturer() {
       productListOpt.value = data
     })
 }
-
-const { form, onSubmit, editRef, loading, onClose, dwDialogRef, onReset } = useForm({
-  api: props.datas ? deviceEditeApi : deviceAddApi,
-  callback: () => {
-    emits('update')
-  },
-})
 
 if (props?.datas) {
   form.value = props.datas
