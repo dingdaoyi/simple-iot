@@ -15,6 +15,7 @@ import jakarta.annotation.Resource;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Service;
 
+import java.io.Serializable;
 import java.util.Optional;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -56,4 +57,9 @@ public class DeviceServiceImpl extends ServiceImpl<DeviceMapper, Device> impleme
         return PageHelper.result(baseMapper.pageByQuery(page,query));
     }
 
+    @Override
+    public boolean removeById(Serializable id) {
+        //TODO 判断子设备,是否可以删除
+        return super.removeById(id);
+    }
 }

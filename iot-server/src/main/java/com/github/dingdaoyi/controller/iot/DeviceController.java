@@ -4,6 +4,7 @@ import com.github.dingdaoyi.model.PageResult;
 import com.github.dingdaoyi.model.enu.SysCodeEnum;
 import com.github.dingdaoyi.model.query.DeviceAddQuery;
 import com.github.dingdaoyi.model.query.DevicePageQuery;
+import com.github.dingdaoyi.model.query.DeviceUpdateQuery;
 import com.github.dingdaoyi.model.vo.DevicePageVo;
 import com.github.dingdaoyi.model.vo.DeviceVo;
 import com.github.dingdaoyi.service.DeviceService;
@@ -43,6 +44,20 @@ public class DeviceController {
         }
         return R.success(deviceService.save(query.toEntity()));
     }
+
+
+    @PutMapping
+    @Operation(summary = "修改设备")
+    public R<Boolean> update(@RequestBody @Valid DeviceUpdateQuery query) {
+        return R.success(deviceService.updateById(query.toEntity()));
+    }
+
+    @DeleteMapping("{id}")
+    @Operation(summary = "修改设备")
+    public R<Boolean> update(@PathVariable Integer id) {
+        return R.success(deviceService.removeById(id));
+    }
+
 
     @PostMapping("page")
     @Operation(summary = "设备分页列表")

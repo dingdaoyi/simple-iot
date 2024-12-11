@@ -375,3 +375,27 @@ export const devicePageApi = data => {
     data
   })
 }
+/**
+ * 设备编辑
+ * @param data
+ * @returns {*}
+ */
+export const deviceEditeApi = data => {
+  return request({
+    url: '/device',
+    method: 'put',
+    data
+  })
+}
+/**
+ * 设备编辑
+ * @param data
+ * @returns {*}
+ */
+export const deviceAddApi = data => {
+  return request({
+    url: '/device',
+    method: 'post',
+    data
+  })
+}

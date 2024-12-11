@@ -24,6 +24,7 @@
           class="w-full"
           filterable
           clearable
+          @change="changeProductType"
         >
           <dw-option
             v-for="item in productTypeList"
@@ -34,28 +35,58 @@
         </dw-select>
       </el-form-item>
       <el-form-item
-        label="型号"
-        prop="model">
-        <el-input
-          v-model="form.model"
-          clearable
-          placeholder="请输入产品型号" />
-      </el-form-item>
-      <el-form-item
         label="厂家"
         prop="manufacturer">
-        <el-input
+        <dw-select
           v-model="form.manufacturer"
+          placeholder="请选择厂家"
+          class="w-full"
+          filterable
           clearable
-          placeholder="请输入设备厂家" />
+          @change="changeManufacturer"
+        >
+          <dw-option
+            v-for="item in manufacturerListOpt"
+            :key="item"
+            :label="item"
+            :value="item"
+          />
+        </dw-select>
       </el-form-item>
       <el-form-item
-        label="备注"
-        prop="mark">
-        <el-input
-          v-model="form.mark"
+        label="型号"
+        prop="productId">
+        <dw-select
+          v-model="form.productId"
+          placeholder="请选择型号"
+          class="w-full"
+          filterable
           clearable
-          placeholder="请输入户主地址" />
+          @change="changeManufacturer"
+        >
+          <dw-option
+            v-for="item in productListOpt"
+            :key="item.id"
+            :label="item.model"
+            :value="item.id"
+          />
+        </dw-select>
+      </el-form-item>
+      <el-form-item
+        label="设备编号"
+        prop="deviceKey">
+        <el-input
+          v-model="form.deviceKey"
+          clearable
+          placeholder="请输入设备编号" />
+      </el-form-item>
+      <el-form-item
+        label="设备名称"
+        prop="deviceName">
+        <el-input
+          v-model="form.deviceName"
+          clearable
+          placeholder="请输入设备名称" />
       </el-form-item>
     </el-form>
   </dw-dialog>
@@ -63,21 +94,49 @@
 
 <script lang="jsx" setup>
 import { ref } from 'vue'
-import { productAddApi, productEditeApi } from '@/api'
+import { deviceAddApi, deviceEditeApi, manufacturerListApi, productListApi } from '@/api'
 import { dwHooks } from 'dwyl-ui'
 
 const { useForm } = dwHooks
 
 const props = defineProps(['datas', 'productTypeList'])
 const emits = defineEmits(['update'])
+const manufacturerListOpt = ref([])
+const productListOpt = ref([])
 
 const rules = ref({
   productTypeId: [{ required: true, message: '产品类型不能为空', trigger: 'change' }],
-  model: [{ required: true, message: '产品型号不能为空', trigger: 'blur' }]
+  manufacturer: [{ required: true, message: '厂家不能为空', trigger: 'change' }],
+  productId: [{ required: true, message: '产品型号不能为空', trigger: 'change' }],
+  deviceKey: [{ required: true, message: '设备编号不能为空', trigger: 'blur' }]
 })
 
+const changeProductType = async () => {
+  if (form.value.productTypeId) {
+    const { data } = await manufacturerListApi({
+      productTypeId: form.value.productTypeId
+    })
+    manufacturerListOpt.value = data
+  } else {
+    manufacturerListOpt.value = []
+  }
+}
+const changeManufacturer = () => {
+  if (!form.value.manufacturer) {
+    productListOpt.value = []
+    return
+  }
+  productListApi({
+    productTypeId: form.value.productTypeId,
+    manufacturer: form.value.manufacturer
+  })
+    .then(({ data }) => {
+      productListOpt.value = data
+    })
+}
+
 const { form, onSubmit, editRef, loading, onClose, dwDialogRef, onReset } = useForm({
-  api: props.datas ? productEditeApi : productAddApi,
+  api: props.datas ? deviceEditeApi : deviceAddApi,
   callback: () => {
     emits('update')
   }
@@ -85,6 +144,8 @@ const { form, onSubmit, editRef, loading, onClose, dwDialogRef, onReset } = useF
 
 if (props?.datas) {
   form.value = props.datas
+  changeProductType()
+    .then(() => changeManufacturer())
 }
 </script>
 

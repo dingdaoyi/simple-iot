@@ -60,7 +60,7 @@
     >
       <template #cz="{ row }">
         <dw-button type="danger" link @click="onDelete(row)">删除</dw-button>
-        <dw-button type="danger" link @click="onEdit(row)">编辑</dw-button>
+        <dw-button type="primary" link @click="onEdit(row)">编辑</dw-button>
         <dw-button type="primary" link @click="showDetails(row)">设备详情</dw-button>
       </template>
     </DwTable>
@@ -77,7 +77,7 @@
 <script  setup>
 import { dwHooks } from 'dwyl-ui'
 import { deviceDeleteApi, devicePageApi, manufacturerListApi, productListApi, productTypeListApi } from '@/api/index.js'
-import EditDia from '@/views/product/widget/editDia.vue'
+import EditDia from '@/views/device/widget/editDia.vue'
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { activateOpts, onlineOpts } from '@/utils/base.jsx'

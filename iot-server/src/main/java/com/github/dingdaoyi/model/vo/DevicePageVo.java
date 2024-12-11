@@ -17,6 +17,11 @@ public class DevicePageVo extends Device {
     private String productTypeName;
 
     /**
+     * 产品类型id
+     */
+    private Integer productTypeId;
+
+    /**
      * 产品型号
      */
     private String productModel;

@@ -55,6 +55,7 @@
         select
         <include refid="dvs_column_list"/>,
         pt.name as product_type_name,
+        pt.id as productTypeId,
         pd.model as product_model,
         pd.manufacturer as manufacturer
         from tb_device dvs
@@ -71,7 +72,7 @@
                 and pd.manufacturer =#{query.manufacturer}
             </if>
             <if test="query.deviceKey != null and query.deviceKey != ''">
-                and dvs.device_key like CONCAT('%', #{query.deviceKey}, '%')
+                and dvs.device_key like CONCAT('%', #{query.deviceKey}::text, '%')
             </if>
             <if test="query.parentId != null">
                 and dvs.parentid = #{query.parentId}
