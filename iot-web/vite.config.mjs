@@ -45,6 +45,7 @@ export default defineConfig(({ command, mode }) => {
     css: {
       preprocessorOptions: {
         scss: {
+          api: 'modern-compiler',
           // additionalData: '@import "./src/styles/var.scss";' // 全局变量
         }
       }
@@ -60,7 +61,7 @@ export default defineConfig(({ command, mode }) => {
       host: '0.0.0.0',
       port: 9999,
       hmr: true, // 启动热更新
-      proxy: getProxy('local'), // local：本地， line: 线上
+      proxy: getProxy('line'), // local：本地， line: 线上
       fs: {
       // 可以为项目根目录的上一级提供服务
         allow: ['..']

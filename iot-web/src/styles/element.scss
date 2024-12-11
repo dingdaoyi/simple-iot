@@ -1,5 +1,5 @@
-@import url('element-plus/dist/index.css');
-@import url('element-plus/theme-chalk/dark/css-vars.css');
+@use 'element-plus/dist/index.css';
+@use 'element-plus/theme-chalk/dark/css-vars.css';
 
 :root {
   --el-color-primary: #167EFF;
