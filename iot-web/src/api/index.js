@@ -1,22 +1,22 @@
 import request from '@/utils/request'
 
 // 登录接口
-export const Index = data => {
+export function Index(data) {
   return request({
     headers: {
-      noToken: 1
+      noToken: 1,
     },
     url: '/user/login',
     method: 'post',
-    data
+    data,
   })
 }
 
-export const productTypeListApi = params => {
+export function productTypeListApi(params) {
   return request({
     url: '/product/type',
     method: 'get',
-    params
+    params,
   })
 }
 
@@ -25,32 +25,32 @@ export const productTypeListApi = params => {
  * @param data
  * @returns {*}
  */
-export const productTypeEditeApi = data => {
+export function productTypeEditeApi(data) {
   return request({
     url: '/product/type',
     method: 'put',
-    data
+    data,
   })
 }
 
-export const productTypeAddApi = data => {
+export function productTypeAddApi(data) {
   console.log('添加参数:', data)
   return request({
     url: '/product/type',
     method: 'post',
-    data
+    data,
   })
 }
-export const productTypeDelApi = id => {
+export function productTypeDelApi(id) {
   return request({
     url: `/product/type/${id}`,
-    method: 'delete'
+    method: 'delete',
   })
 }
-export const productTypeDetailApi = id => {
+export function productTypeDetailApi(id) {
   return request({
     url: `/product/type/${id}`,
-    method: 'get'
+    method: 'get',
   })
 }
 
@@ -59,11 +59,11 @@ export const productTypeDetailApi = id => {
  * @param params
  * @returns {*}
  */
-export const propertyListApi = params => {
+export function propertyListApi(params) {
   return request({
     url: '/model/property/product/type',
     method: 'get',
-    params
+    params,
   })
 }
 /**
@@ -71,10 +71,10 @@ export const propertyListApi = params => {
  * @param id
  * @returns {*}
  */
-export const propertyDeleteApi = id => {
+export function propertyDeleteApi(id) {
   return request({
     url: `/model/property/${id}`,
-    method: 'DELETE'
+    method: 'DELETE',
   })
 }
 /**
@@ -82,11 +82,11 @@ export const propertyDeleteApi = id => {
  * @param data
  * @returns {*}
  */
-export const standardPropertyAddApi = data => {
+export function standardPropertyAddApi(data) {
   return request({
     url: '/model/property/product/type',
     method: 'post',
-    data
+    data,
   })
 }
 
@@ -95,11 +95,11 @@ export const standardPropertyAddApi = data => {
  * @param data
  * @returns {*}
  */
-export const customPropertyAddApi = data => {
+export function customPropertyAddApi(data) {
   return request({
     url: '/model/property/product',
     method: 'post',
-    data
+    data,
   })
 }
 
@@ -108,48 +108,48 @@ export const customPropertyAddApi = data => {
  * @param data
  * @returns {*}
  */
-export const standardPropertyEditApi = data => {
+export function standardPropertyEditApi(data) {
   return request({
     url: '/model/property/product',
     method: 'put',
-    data
+    data,
   })
 }
-export const standardServiceListApi = params => {
+export function standardServiceListApi(params) {
   return request({
     url: '/model/service/standard',
     method: 'get',
-    params
+    params,
   })
 }
-export const customServiceListApi = params => {
+export function customServiceListApi(params) {
   return request({
     url: '/model/service/custom',
     method: 'get',
-    params
+    params,
   })
 }
 
-export const serviceAddApi = data => {
+export function serviceAddApi(data) {
   return request({
     url: '/model/service',
     method: 'post',
-    data
+    data,
   })
 }
-export const serviceDeleteApi = id => {
+export function serviceDeleteApi(id) {
   return request({
     url: '/model/service',
     method: 'delete',
-    id
+    id,
   })
 }
 
-export const serviceEditeApi = data => {
+export function serviceEditeApi(data) {
   return request({
     url: '/model/service',
     method: 'put',
-    data
+    data,
   })
 }
 
@@ -158,11 +158,11 @@ export const serviceEditeApi = data => {
  * @param data
  * @returns {*}
  */
-export const productPageApi = data => {
+export function productPageApi(data) {
   return request({
     url: '/product/page',
     method: 'post',
-    data
+    data,
   })
 }
 
@@ -171,13 +171,13 @@ export const productPageApi = data => {
  * @param data
  * @returns {*}
  */
-export const manufacturerListApi = ({ productTypeId }) => {
+export function manufacturerListApi({ productTypeId }) {
   return request({
     url: '/manufacturer',
     method: 'get',
     params: {
-      productTypeId
-    }
+      productTypeId,
+    },
   })
 }
 /**
@@ -185,14 +185,14 @@ export const manufacturerListApi = ({ productTypeId }) => {
  * @param data
  * @returns {*}
  */
-export const productListApi = ({ productTypeId, manufacturer }) => {
+export function productListApi({ productTypeId, manufacturer }) {
   return request({
     url: '/product',
     method: 'get',
     params: {
       productTypeId,
-      manufacturer
-    }
+      manufacturer,
+    },
   })
 }
 
@@ -201,11 +201,11 @@ export const productListApi = ({ productTypeId, manufacturer }) => {
  * @param data
  * @returns {*}
  */
-export const productAddApi = data => {
+export function productAddApi(data) {
   return request({
     url: '/product',
     method: 'post',
-    data
+    data,
   })
 }
 /**
@@ -213,11 +213,11 @@ export const productAddApi = data => {
  * @param data
  * @returns {*}
  */
-export const productEditeApi = data => {
+export function productEditeApi(data) {
   return request({
     url: '/product',
     method: 'put',
-    data
+    data,
   })
 }
 
@@ -226,11 +226,11 @@ export const productEditeApi = data => {
  * @param id
  * @returns {*}
  */
-export const productDeleteApi = id => {
+export function productDeleteApi(id) {
   return request({
     url: `/product/${id}`,
     method: 'DELETE',
-    id
+    id,
   })
 }
 
@@ -239,10 +239,10 @@ export const productDeleteApi = id => {
  * @param id
  * @returns {*}
  */
-export const productDetailApi = id => {
+export function productDetailApi(id) {
   return request({
     url: `/product/${id}`,
-    method: 'GET'
+    method: 'GET',
   })
 }
 
@@ -251,11 +251,11 @@ export const productDetailApi = id => {
  * @param params
  * @returns {*}
  */
-export const protocolListApi = params => {
+export function protocolListApi(params) {
   return request({
     url: '/protocol',
     method: 'get',
-    params
+    params,
   })
 }
 
@@ -264,11 +264,11 @@ export const protocolListApi = params => {
  * @param data
  * @returns {*}
  */
-export const protocolAddApi = data => {
+export function protocolAddApi(data) {
   return request({
     url: '/protocol',
     method: 'POST',
-    data
+    data,
   })
 }
 /**
@@ -276,11 +276,11 @@ export const protocolAddApi = data => {
  * @param data
  * @returns {*}
  */
-export const protocolEditApi = data => {
+export function protocolEditApi(data) {
   return request({
     url: '/protocol',
     method: 'put',
-    data
+    data,
   })
 }
 
@@ -289,10 +289,10 @@ export const protocolEditApi = data => {
  * @param id
  * @returns {*}
  */
-export const protocolDeleteApi = id => {
+export function protocolDeleteApi(id) {
   return request({
     url: `/protocol/${id}`,
-    method: 'delete'
+    method: 'delete',
   })
 }
 
@@ -301,11 +301,11 @@ export const protocolDeleteApi = id => {
  * @param params
  * @returns {*}
  */
-export const iconListApi = params => {
+export function iconListApi(params) {
   return request({
     url: '/icon',
     method: 'get',
-    params
+    params,
   })
 }
 /**
@@ -313,11 +313,11 @@ export const iconListApi = params => {
  * @param data
  * @returns {*}
  */
-export const iconAddApi = data => {
+export function iconAddApi(data) {
   return request({
     url: '/icon',
     method: 'post',
-    data
+    data,
   })
 }
 
@@ -326,11 +326,11 @@ export const iconAddApi = data => {
  * @param data
  * @returns {*}
  */
-export const iconEditeApi = data => {
+export function iconEditeApi(data) {
   return request({
     url: '/icon',
     method: 'put',
-    data
+    data,
   })
 }
 
@@ -339,40 +339,40 @@ export const iconEditeApi = data => {
  * @param id
  * @returns {*}
  */
-export const iconDeleteApi = id => {
+export function iconDeleteApi(id) {
   return request({
     url: `/icon/${id}`,
-    method: 'delete'
+    method: 'delete',
   })
 }
 
-export const uploadMoreApi = data => {
+export function uploadMoreApi(data) {
   return request({
     url: '/file/upload',
     method: 'post',
-    data
+    data,
   })
 }
 
-export const loadTslData = productId => {
+export function loadTslData(productId) {
   return request({
     url: `/product/tsl/${productId}`,
-    method: 'get'
+    method: 'get',
   })
 }
 
-export const deviceDeleteApi = id => {
+export function deviceDeleteApi(id) {
   return request({
     url: `/device/${id}`,
-    method: 'DELETE'
+    method: 'DELETE',
   })
 }
 
-export const devicePageApi = data => {
+export function devicePageApi(data) {
   return request({
     url: '/device/page',
     method: 'post',
-    data
+    data,
   })
 }
 /**
@@ -380,11 +380,11 @@ export const devicePageApi = data => {
  * @param data
  * @returns {*}
  */
-export const deviceEditeApi = data => {
+export function deviceEditeApi(data) {
   return request({
     url: '/device',
     method: 'put',
-    data
+    data,
   })
 }
 /**
@@ -392,10 +392,10 @@ export const deviceEditeApi = data => {
  * @param data
  * @returns {*}
  */
-export const deviceAddApi = data => {
+export function deviceAddApi(data) {
   return request({
     url: '/device',
     method: 'post',
-    data
+    data,
   })
 }

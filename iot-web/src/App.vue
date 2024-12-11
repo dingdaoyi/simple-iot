@@ -1,12 +1,6 @@
-<template>
-  <DwProjectConfig :config="projectConfig">
-    <router-view />
-  </DwProjectConfig>
-</template>
-
 <script setup>
-import { useRouter, useRoute } from 'vue-router'
 import { uploadMoreApi } from '@/api/index.js'
+import { useRoute, useRouter } from 'vue-router'
 /* dwyl-ui默认传递参数配置 */
 const projectConfig = {
   table: {
@@ -14,18 +8,24 @@ const projectConfig = {
     limitField: 'size',
     totalField: 'total',
     dataField: 'data',
-    defaultLimit: 20 // 默认展示多少条
+    defaultLimit: 20, // 默认展示多少条
   },
   vueRouter: {
     useRouter,
-    useRoute
+    useRoute,
   },
   upload: {
-    uploadMoreApi
-  }
+    uploadMoreApi,
+  },
 }
 /* dwyl-ui默认传递参数配置 */
 </script>
+
+<template>
+  <DwProjectConfig :config="projectConfig">
+    <router-view />
+  </DwProjectConfig>
+</template>
 
 <style lang="scss">
 html,

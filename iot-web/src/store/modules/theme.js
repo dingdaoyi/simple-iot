@@ -1,6 +1,6 @@
-import { defineStore } from 'pinia'
-import { getItem, setItem, removeItem } from '@/utils/storage' // getItem和setItem是封装的操作localStorage的方法
+import { getItem, setItem } from '@/utils/storage' // getItem和setItem是封装的操作localStorage的方法
 import { kebabCase } from 'lodash'
+import { defineStore } from 'pinia'
 import { nextTick } from 'vue'
 
 const themeKey = 'theme'
@@ -8,14 +8,14 @@ const key = 'primary'
 
 const defaultConfig = {
   elColorPrimary: '#167EFF',
-  dwSliderActiveBg: '#465D83'
+  dwSliderActiveBg: '#465D83',
 }
 
 /** 添加css vars至html */
-function addThemeCssVarsToHtml (themeVars) {
+function addThemeCssVarsToHtml(themeVars) {
   const keys = Object.keys(themeVars)
   const style = []
-  keys.forEach(key => {
+  keys.forEach((key) => {
     style.push(`--${kebabCase(key)}: ${themeVars[key]}`)
   })
   const styleStr = style.join(';')
@@ -26,37 +26,39 @@ export const useThemeStore = defineStore({
   id: 'theme',
   state: () => ({
     isDark: getItem('vueuse-color-scheme') === true || false,
-    themeJson: getItem(themeKey) || defaultConfig
+    themeJson: getItem(themeKey) || defaultConfig,
   }),
   getters: {},
   actions: {
     /* 设置主题模式 */
-    setDarkModel (model) {
+    setDarkModel(model) {
       nextTick(() => {
         this.isDark = model
         if (this.isDark) {
           document.documentElement.classList.add('dark')
-        } else {
+        }
+        else {
           document.documentElement.classList.remove('dark')
         }
         setItem('vueuse-color-scheme', this.isDark)
       })
     },
     /* 切换主题模式 */
-    toogleDarkModel () {
+    toogleDarkModel() {
       if (this.isDark) {
         this.setDarkModel(false)
-      } else {
+      }
+      else {
         this.setDarkModel(true)
       }
     },
     /* 设置系统主题 */
-    changeTheme (colorVal) {
+    changeTheme(colorVal) {
       const el = document.documentElement
       el.style.setProperty(`--el-color-${key}`, colorVal)
 
       const resData = {
-        elColorPrimary: colorVal
+        elColorPrimary: colorVal,
       }
 
       for (let i = 1; i <= 9; i++) {
@@ -74,10 +76,10 @@ export const useThemeStore = defineStore({
       setItem(themeKey, this.themeJson)
     },
     /* 设置侧边栏主题 */
-    changeSliderTheme (val) {
+    changeSliderTheme(val) {
       document.documentElement.style.cssText += `--dw-slider-active-bg:${val}`
       this.themeJson.dwSliderActiveBg = val
       setItem(themeKey, this.themeJson)
-    }
-  }
+    },
+  },
 })

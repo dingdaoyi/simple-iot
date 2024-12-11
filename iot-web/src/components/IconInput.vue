@@ -1,3 +1,27 @@
+<script setup>
+import { iconListApi } from '@/api/index.js'
+import { ref } from 'vue'
+
+const props = defineProps({
+  value: String,
+})
+const emit = defineEmits(['update:value'])
+const list = ref([])
+const actIcon = ref(null)
+iconListApi().then((rs) => {
+  list.value = rs.data
+  rs.data.forEach((item) => {
+    if (item.id === props.value) {
+      actIcon.value = item
+    }
+  })
+})
+function change(e) {
+  actIcon.value = e
+  emit('update:value', e.id)
+}
+</script>
+
 <template>
   <div class="inline-block">
     <el-form-item label="图标" prop="icon">
@@ -26,33 +50,12 @@
   </div>
 </template>
 
-<script setup>
-import { iconListApi } from '@/api/index.js'
-import { ref } from 'vue'
-
-const props = defineProps({
-  value: String
-})
-const emit = defineEmits(['update:value'])
-const list = ref([])
-const actIcon = ref(null)
-iconListApi().then(rs => {
-  list.value = rs.data
-  rs.data.forEach(item => {
-    if (item.id === props.value) {
-      actIcon.value = item
-    }
-  })
-})
-const change = e => {
-  actIcon.value = e
-  emit('update:value', e.id)
-}
-</script>
-
 <style lang="scss" scoped>
-::v-deep(.el-dropdown-menu__item:hover){
+::v-deep(.el-dropdown-menu__item:hover) {
   background: #eee;
 }
-.el-dropdown-link{cursor: pointer; line-height: 32px;}
+.el-dropdown-link {
+  cursor: pointer;
+  line-height: 32px;
+}
 </style>

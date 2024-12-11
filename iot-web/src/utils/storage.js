@@ -1,14 +1,14 @@
-
-export const getItem = name => {
+export function getItem(name) {
   const data = window.localStorage.getItem(name)
   try {
     return JSON.parse(data)
-  } catch (err) {
+  }
+  catch (err) {
     return data
   }
 }
 
-export const setItem = (name, value) => {
+export function setItem(name, value) {
   if (typeof value === 'object') {
     value = JSON.stringify(value)
   }
@@ -16,7 +16,7 @@ export const setItem = (name, value) => {
   window.localStorage.setItem(name, value)
 }
 
-export const removeItem = name => {
+export function removeItem(name) {
   console.log('删除token')
   window.localStorage.removeItem(name)
 }

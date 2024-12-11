@@ -1,3 +1,16 @@
+<script lang="jsx" setup>
+const props = defineProps({
+  startColor: {
+    type: String,
+    default: '#28aff0',
+  },
+  endColor: {
+    type: String,
+    default: '#120fc4',
+  },
+})
+</script>
+
 <template>
   <svg height="1337" width="1337">
     <defs>
@@ -17,17 +30,4 @@
   </svg>
 </template>
 
-<script lang="jsx" setup>
-const props = defineProps({
-  startColor: {
-    type: String,
-    default: '#28aff0'
-  },
-  endColor: {
-    type: String,
-    default: '#120fc4'
-  }
-})
-
-</script>
 <style scoped></style>

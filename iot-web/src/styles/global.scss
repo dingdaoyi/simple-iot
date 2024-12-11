@@ -3,11 +3,6 @@
 @use './reset.scss';
 @use './var.scss';
 
-
-
-
-
-
 $primary: var(--el-color-primary);
 
 .form-two-column {
@@ -48,9 +43,6 @@ $primary: var(--el-color-primary);
   }
 }
 
-
-
-
 .dw_animate {
   transition: all 0.3s;
 }
@@ -80,5 +72,6 @@ $primary: var(--el-color-primary);
   box-orient: vertical;
 }
 
-
-.customMsgCls { z-index: 4000 !important; }
+.customMsgCls {
+  z-index: 4000 !important;
+}

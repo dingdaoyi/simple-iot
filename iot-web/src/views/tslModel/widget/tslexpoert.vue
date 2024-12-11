@@ -1,12 +1,6 @@
-<template>
-  <div class="editorContainer">
-    <div ref="editorContainer" class="wh-full"></div>
-  </div>
-</template>
-
 <script setup>
-import { ref, onBeforeUnmount } from 'vue'
 import * as monaco from 'monaco-editor'
+import { onBeforeUnmount, ref } from 'vue'
 import { loadTslData } from '../../../api/index.js'
 
 const props = defineProps(['productId'])
@@ -15,8 +9,8 @@ const jsonData = ref({
   name: 'DeviceModel',
   properties: [
     { name: 'temperature', type: 'float', unit: '°C' },
-    { name: 'status', type: 'string', enum: ['on', 'off'] }
-  ]
+    { name: 'status', type: 'string', enum: ['on', 'off'] },
+  ],
 })
 
 const editorContainer = ref(null)
@@ -36,13 +30,19 @@ loadTslData(props.productId)
       language: 'json',
       theme: 'vs-dark',
       readOnly: true,
-      automaticLayout: true
+      automaticLayout: true,
     })
   })
   .catch((error) => {
     console.error('Failed to load TSL data:', error)
   })
 </script>
+
+<template>
+  <div class="editorContainer">
+    <div ref="editorContainer" class="wh-full" />
+  </div>
+</template>
 
 <style>
 .editorContainer {

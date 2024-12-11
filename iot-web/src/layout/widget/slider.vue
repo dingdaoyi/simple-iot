@@ -1,3 +1,75 @@
+<script lang="jsx" setup>
+import { Location } from '@element-plus/icons-vue'
+import { markRaw, ref } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
+// 路由对象
+const route = useRoute()
+const router = useRouter()
+
+// 菜单数据
+const menus = ref([
+  {
+    index: '/home', // 修改为字符串
+    title: '主页',
+    icon: markRaw(Location),
+    path: '/home',
+  },
+  {
+    index: '/productIndex',
+    title: '产品管理',
+    icon: markRaw(Location),
+    children: [
+      {
+        index: '/productType',
+        title: '产品类型管理',
+        path: '/productType',
+      },
+      {
+        index: '/protocol',
+        title: '协议管理',
+        path: '/protocol',
+      },
+      {
+        index: '/product',
+        title: '产品',
+        path: '/product',
+      },
+      {
+        index: '/device',
+        title: '设备管理',
+        path: '/device',
+      },
+    ],
+  },
+  {
+    index: '/system',
+    title: '系统管理',
+    icon: markRaw(Location),
+    children: [
+      {
+        index: '/icon',
+        title: '图标管理',
+        path: '/icon',
+      },
+    ],
+  },
+])
+
+const activeMenu = ref('home')
+
+function handleSelect(index) {
+  activeMenu.value = index
+  const selectedMenu = menus.value
+    .flatMap(menu => [menu, ...(menu.children || [])])
+    .find(item => item.index === index)
+  if (selectedMenu && selectedMenu.path && route.path !== selectedMenu.path) {
+    router.push({
+      path: selectedMenu.path,
+    })
+  }
+}
+</script>
+
 <template>
   <div>
     <el-scrollbar class="sidebar-container ">
@@ -36,81 +108,7 @@
   </div>
 </template>
 
-<script lang="jsx" setup>
-import { ref, markRaw } from 'vue'
-import { Location } from '@element-plus/icons-vue'
-import { useRoute, useRouter } from 'vue-router'
-// 路由对象
-const route = useRoute()
-const router = useRouter()
-
-
-// 菜单数据
-const menus = ref([
-  {
-    index: '/home', // 修改为字符串
-    title: '主页',
-    icon: markRaw(Location),
-    path: '/home'
-  },
-  {
-    index: '/productIndex',
-    title: '产品管理',
-    icon: markRaw(Location),
-    children: [
-      {
-        index: '/productType',
-        title: '产品类型管理',
-        path: '/productType'
-      },
-      {
-        index: '/protocol',
-        title: '协议管理',
-        path: '/protocol'
-      },
-      {
-        index: '/product',
-        title: '产品',
-        path: '/product'
-      },
-      {
-        index: '/device',
-        title: '设备管理',
-        path: '/device'
-      }
-    ]
-  },
-  {
-    index: '/system',
-    title: '系统管理',
-    icon: markRaw(Location),
-    children: [
-      {
-        index: '/icon',
-        title: '图标管理',
-        path: '/icon'
-      }
-    ]
-  }
-])
-
-const activeMenu = ref('home')
-
-const handleSelect = (index) => {
-  activeMenu.value = index
-  const selectedMenu = menus.value
-    .flatMap((menu) => [menu, ...(menu.children || [])])
-    .find((item) => item.index === index)
-  if (selectedMenu && selectedMenu.path && route.path !== selectedMenu.path) {
-    router.push({
-      path: selectedMenu.path
-    })
-  }
-}
-</script>
-
 <style lang="scss" scoped>
-
 .sidebar-container {
   width: 200px;
   background-color: var(--el-bg-color);
@@ -135,5 +133,4 @@ const handleSelect = (index) => {
   color: #fff !important;
   border-radius: 4px; // 圆角效果（可选）
 }
-
 </style>

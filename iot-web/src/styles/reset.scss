@@ -36,22 +36,30 @@ figcaption {
   border: none;
   font-family: 'Microsoft Yahei', sans-serif;
   font-family: 'STKaiti';
-  font-family: "苹方";
+  font-family: '苹方';
   font-family: 'PingFangSC-Regular, sans-serif';
-  font-family: pingfang SC, helvetica neue, arial, hiragino sans gb, microsoft yahei ui, microsoft yahei, simsun, sans-serif !important;
+  font-family:
+    pingfang SC,
+    helvetica neue,
+    arial,
+    hiragino sans gb,
+    microsoft yahei ui,
+    microsoft yahei,
+    simsun,
+    sans-serif !important;
   -webkit-tap-highlight-color: transparent;
   -webkit-font-smoothing: antialiased;
   box-sizing: border-box;
   font-size: 14px;
 }
 
-button{
+button {
   outline: none;
   border: 0;
   background-color: inherit;
 }
 
-img{
+img {
   vertical-align: middle;
 }
 
@@ -60,20 +68,19 @@ html {
   // background-color: #f7f8fa;
 }
 
-input{
-  background:none;
-  outline:none;
-
+input {
+  background: none;
+  outline: none;
 }
-input:focus{
-  border:none;
+input:focus {
+  border: none;
 }
 
-html, body {
+html,
+body {
   min-width: 1440px;
   min-height: 680px;
 }
-
 
 /* 浏览器自动回填，用户名密码输入框颜色更改 */
 // input:-webkit-autofill , textarea:-webkit-autofill, select:-webkit-autofill {

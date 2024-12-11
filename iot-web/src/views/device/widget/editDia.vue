@@ -1,23 +1,86 @@
+<script lang="jsx" setup>
+import { deviceAddApi, deviceEditeApi, manufacturerListApi, productListApi } from '@/api'
+import { dwHooks } from 'dwyl-ui'
+import { ref } from 'vue'
+
+const props = defineProps(['datas', 'productTypeList'])
+
+const emits = defineEmits(['update'])
+
+const { useForm } = dwHooks
+
+const manufacturerListOpt = ref([])
+const productListOpt = ref([])
+
+const rules = ref({
+  productTypeId: [{ required: true, message: '产品类型不能为空', trigger: 'change' }],
+  manufacturer: [{ required: true, message: '厂家不能为空', trigger: 'change' }],
+  productId: [{ required: true, message: '产品型号不能为空', trigger: 'change' }],
+  deviceKey: [{ required: true, message: '设备编号不能为空', trigger: 'blur' }],
+})
+
+async function changeProductType() {
+  if (form.value.productTypeId) {
+    const { data } = await manufacturerListApi({
+      productTypeId: form.value.productTypeId,
+    })
+    manufacturerListOpt.value = data
+  }
+  else {
+    manufacturerListOpt.value = []
+  }
+}
+function changeManufacturer() {
+  if (!form.value.manufacturer) {
+    productListOpt.value = []
+    return
+  }
+  productListApi({
+    productTypeId: form.value.productTypeId,
+    manufacturer: form.value.manufacturer,
+  })
+    .then(({ data }) => {
+      productListOpt.value = data
+    })
+}
+
+const { form, onSubmit, editRef, loading, onClose, dwDialogRef, onReset } = useForm({
+  api: props.datas ? deviceEditeApi : deviceAddApi,
+  callback: () => {
+    emits('update')
+  },
+})
+
+if (props?.datas) {
+  form.value = props.datas
+  changeProductType()
+    .then(() => changeManufacturer())
+}
+</script>
+
 <template>
   <dw-dialog
     ref="dwDialogRef"
     :title="datas?.id ? '编辑' : '新增'"
     width="1042px"
-    showFooter
-    :footerType="datas?.id ? 'edit' : 'add'"
-    :leftLoading="loading"
-    @leftBtn="onSubmit"
+    show-footer
+    :footer-type="datas?.id ? 'edit' : 'add'"
+    :left-loading="loading"
+    @left-btn="onSubmit"
     @close="onClose"
-    @reset="onReset">
+    @reset="onReset"
+  >
     <el-form
       ref="editRef"
       :rules="rules"
       :model="form"
-      :label-width="100">
+      :label-width="100"
+    >
       <el-form-item
         label="产品类型"
         prop="productTypeId"
-        class="is-required">
+        class="is-required"
+      >
         <dw-select
           v-model="form.productTypeId"
           placeholder="请选择产品类型"
@@ -36,7 +99,8 @@
       </el-form-item>
       <el-form-item
         label="厂家"
-        prop="manufacturer">
+        prop="manufacturer"
+      >
         <dw-select
           v-model="form.manufacturer"
           placeholder="请选择厂家"
@@ -55,7 +119,8 @@
       </el-form-item>
       <el-form-item
         label="型号"
-        prop="productId">
+        prop="productId"
+      >
         <dw-select
           v-model="form.productId"
           placeholder="请选择型号"
@@ -74,80 +139,27 @@
       </el-form-item>
       <el-form-item
         label="设备编号"
-        prop="deviceKey">
+        prop="deviceKey"
+      >
         <el-input
           v-model="form.deviceKey"
           clearable
-          placeholder="请输入设备编号" />
+          placeholder="请输入设备编号"
+        />
       </el-form-item>
       <el-form-item
         label="设备名称"
-        prop="deviceName">
+        prop="deviceName"
+      >
         <el-input
           v-model="form.deviceName"
           clearable
-          placeholder="请输入设备名称" />
+          placeholder="请输入设备名称"
+        />
       </el-form-item>
     </el-form>
   </dw-dialog>
 </template>
-
-<script lang="jsx" setup>
-import { ref } from 'vue'
-import { deviceAddApi, deviceEditeApi, manufacturerListApi, productListApi } from '@/api'
-import { dwHooks } from 'dwyl-ui'
-
-const { useForm } = dwHooks
-
-const props = defineProps(['datas', 'productTypeList'])
-const emits = defineEmits(['update'])
-const manufacturerListOpt = ref([])
-const productListOpt = ref([])
-
-const rules = ref({
-  productTypeId: [{ required: true, message: '产品类型不能为空', trigger: 'change' }],
-  manufacturer: [{ required: true, message: '厂家不能为空', trigger: 'change' }],
-  productId: [{ required: true, message: '产品型号不能为空', trigger: 'change' }],
-  deviceKey: [{ required: true, message: '设备编号不能为空', trigger: 'blur' }]
-})
-
-const changeProductType = async () => {
-  if (form.value.productTypeId) {
-    const { data } = await manufacturerListApi({
-      productTypeId: form.value.productTypeId
-    })
-    manufacturerListOpt.value = data
-  } else {
-    manufacturerListOpt.value = []
-  }
-}
-const changeManufacturer = () => {
-  if (!form.value.manufacturer) {
-    productListOpt.value = []
-    return
-  }
-  productListApi({
-    productTypeId: form.value.productTypeId,
-    manufacturer: form.value.manufacturer
-  })
-    .then(({ data }) => {
-      productListOpt.value = data
-    })
-}
-
-const { form, onSubmit, editRef, loading, onClose, dwDialogRef, onReset } = useForm({
-  api: props.datas ? deviceEditeApi : deviceAddApi,
-  callback: () => {
-    emits('update')
-  }
-})
-
-if (props?.datas) {
-  form.value = props.datas
-  changeProductType()
-    .then(() => changeManufacturer())
-}
-</script>
 
 <style lang="scss" scoped>
 

@@ -1,24 +1,24 @@
+<script lang="jsx" setup>
+import headers from './widget/header.vue'
+import slider from './widget/slider'
+</script>
+
 <template>
   <div class="flex flex-col wh-full">
     <headers />
     <div class="flex-1 flex overflow-hidden">
       <slider />
       <div class="flex-1 m-20px  overflow-hidden">
-        <router-view #default="{ Component, route }">
+        <router-view v-slot="{ Component, route }">
           <div class="flex flex-col h-full">
             <component :is="Component" :key="route.path" />
           </div>
-          <!--          <component :is="Component" :key="route.path" classz="flex flex-col h-full"/>-->
+          <!--          <component :is="Component" :key="route.path" classz="flex flex-col h-full"/> -->
         </router-view>
       </div>
     </div>
   </div>
 </template>
-<script lang="jsx" setup>
-import headers from './widget/header.vue'
-import slider from './widget/slider'
-
-</script>
 
 <style lang="scss" scoped>
 .wrapper {
