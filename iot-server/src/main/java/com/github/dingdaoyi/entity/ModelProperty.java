@@ -6,7 +6,7 @@ import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.extension.handlers.JacksonTypeHandler;
 import com.github.dingdaoyi.proto.model.DataTypeEnum;
-import com.github.dingdaoyi.entity.enu.ParamType;
+import com.github.dingdaoyi.proto.model.ParamType;
 import com.github.dingdaoyi.proto.model.KeyValue;
 import com.github.dingdaoyi.proto.model.tsl.PropertyAccessMode;
 import com.github.dingdaoyi.proto.model.tsl.TslProperty;
@@ -14,7 +14,6 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -169,22 +168,23 @@ public class ModelProperty {
     private Integer parentId = -1;
 
     public TslProperty toTsl() {
-        TslProperty propertyDTO = new TslProperty();
-        propertyDTO.setId(this.getId());
-        propertyDTO.setDataType(this.getDataType());
-        propertyDTO.setMark(this.getMark());
-        propertyDTO.setIdentifier(this.getIdentifier());
-        propertyDTO.setName(this.getName());
-        propertyDTO.setAccessMode(this.getAccessMode());
-        propertyDTO.setBool0(this.getBool0());
-        propertyDTO.setBool1(this.getBool1());
-        propertyDTO.setLength(this.getLength());
-        propertyDTO.setUnit(this.getUnit());
-        propertyDTO.setUnitName(this.getUnitName());
-        propertyDTO.setMax(this.getMax());
-        propertyDTO.setMin(this.getMin());
-        propertyDTO.setStep(this.getStep());
-        propertyDTO.setEnums(this.getEnums());
-        return propertyDTO;
+        TslProperty tslProperty = new TslProperty();
+        tslProperty.setId(this.getId());
+        tslProperty.setDataType(this.getDataType());
+        tslProperty.setMark(this.getMark());
+        tslProperty.setIdentifier(this.getIdentifier());
+        tslProperty.setName(this.getName());
+        tslProperty.setAccessMode(this.getAccessMode());
+        tslProperty.setBool0(this.getBool0());
+        tslProperty.setBool1(this.getBool1());
+        tslProperty.setLength(this.getLength());
+        tslProperty.setUnit(this.getUnit());
+        tslProperty.setUnitName(this.getUnitName());
+        tslProperty.setMax(this.getMax());
+        tslProperty.setMin(this.getMin());
+        tslProperty.setStep(this.getStep());
+        tslProperty.setEnums(this.getEnums());
+        tslProperty.setParamType(this.getParamType());
+        return tslProperty;
     }
 }

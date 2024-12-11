@@ -2,7 +2,7 @@ package com.github.dingdaoyi.service.impl;
 
 import com.github.dingdaoyi.entity.ModelProperty;
 import com.github.dingdaoyi.entity.Product;
-import com.github.dingdaoyi.entity.enu.ParamType;
+import com.github.dingdaoyi.proto.model.ParamType;
 import com.github.dingdaoyi.entity.enu.ServiceTypeEnum;
 import com.github.dingdaoyi.proto.model.tsl.TslEvent;
 import com.github.dingdaoyi.proto.model.tsl.TslModel;

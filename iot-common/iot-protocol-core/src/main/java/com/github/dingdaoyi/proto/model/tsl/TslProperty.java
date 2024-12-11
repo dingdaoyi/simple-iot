@@ -2,10 +2,10 @@ package com.github.dingdaoyi.proto.model.tsl;
 
 import com.github.dingdaoyi.proto.model.DataTypeEnum;
 import com.github.dingdaoyi.proto.model.KeyValue;
+import com.github.dingdaoyi.proto.model.ParamType;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
-import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -101,11 +101,24 @@ public class TslProperty {
      * 枚举参对照表
      */
     @Schema(description = "枚举参对照表")
-    private List<KeyValue<Integer,String>> enums;
+    private List<KeyValue<Integer, String>> enums;
 
     /**
      * 子级
      */
     private List<TslProperty> children;
 
+    /**
+     * 参数类型,1属性, 2 参数(事件和服务的出入参数)
+     */
+    @Schema(description = "数类型,1属性, 2 参数(事件和服务的出入参数)")
+    private ParamType paramType;
+
+    public Object parsePropertyValue(Object value) {
+        return this.dataType.parse(value, this);
+    }
+
+    public boolean isProperty() {
+        return paramType==ParamType.PROPERTY;
+    }
 }

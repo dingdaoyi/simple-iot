@@ -12,9 +12,14 @@ import java.util.List;
 public class DecodeResult {
 
     /**
-     * 顺序数据
+     * 属性数据
      */
     private List<DeviceData> dataList = new ArrayList<>();
+
+    /**
+     * 事件类型
+     */
+    private List<DeviceEventData> eventList = new ArrayList<>();
 
     /**
      * 事件数据

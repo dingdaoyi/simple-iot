@@ -2,7 +2,7 @@ package com.github.dingdaoyi.model.query;
 
 import com.github.dingdaoyi.entity.ModelProperty;
 import com.github.dingdaoyi.proto.model.DataTypeEnum;
-import com.github.dingdaoyi.entity.enu.ParamType;
+import com.github.dingdaoyi.proto.model.ParamType;
 import com.github.dingdaoyi.proto.model.KeyValue;
 import com.github.dingdaoyi.proto.model.tsl.PropertyAccessMode;
 import com.github.dingdaoyi.model.ToEntity;
@@ -10,7 +10,6 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
-import java.util.HashMap;
 import java.util.List;
 
 /**

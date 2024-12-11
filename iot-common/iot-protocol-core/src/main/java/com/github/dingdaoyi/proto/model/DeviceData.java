@@ -24,4 +24,5 @@ public class DeviceData {
      * 数据值
      */
     private Object value;
+
 }
