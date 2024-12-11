@@ -167,6 +167,36 @@ export const productPageApi = data => {
 }
 
 /**
+ * 产品列表
+ * @param data
+ * @returns {*}
+ */
+export const manufacturerListApi = ({ productTypeId }) => {
+  return request({
+    url: '/manufacturer',
+    method: 'get',
+    params: {
+      productTypeId
+    }
+  })
+}
+/**
+ * 产品列表
+ * @param data
+ * @returns {*}
+ */
+export const productListApi = ({ productTypeId, manufacturer }) => {
+  return request({
+    url: '/product',
+    method: 'get',
+    params: {
+      productTypeId,
+      manufacturer
+    }
+  })
+}
+
+/**
  * 产品添加
  * @param data
  * @returns {*}
@@ -328,5 +358,20 @@ export const loadTslData = productId => {
   return request({
     url: `/product/tsl/${productId}`,
     method: 'get'
+  })
+}
+
+export const deviceDeleteApi = id => {
+  return request({
+    url: `/device/${id}`,
+    method: 'DELETE'
+  })
+}
+
+export const devicePageApi = data => {
+  return request({
+    url: '/device/page',
+    method: 'post',
+    data
   })
 }

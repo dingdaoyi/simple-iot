@@ -100,16 +100,14 @@ public class TslModelServiceImpl implements TslModelService {
     }
 
     private void addPropToMap(Map<Integer, TslProperty> paramsMap, ModelProperty property) {
-        paramsMap.compute(property.getParentId(), (parentId, parentDTO) -> {
-            if (parentDTO == null) {
-                parentDTO = property.toTsl();
-            } else {
-                List<TslProperty> children = Optional.ofNullable(parentDTO.getChildren())
-                        .orElseGet(ArrayList::new);
-                children.add(property.toTsl());
-                parentDTO.setChildren(children);
-            }
-            return parentDTO;
-        });
+        if (paramsMap.containsKey(property.getParentId())) {
+            TslProperty tslProperty = paramsMap.get(property.getParentId());
+            List<TslProperty> children = Optional.ofNullable(tslProperty.getChildren())
+                    .orElseGet(ArrayList::new);
+            children.add(property.toTsl());
+            tslProperty.setChildren(children);
+        } else {
+            paramsMap.put(property.getId(), property.toTsl());
+        }
     }
 }

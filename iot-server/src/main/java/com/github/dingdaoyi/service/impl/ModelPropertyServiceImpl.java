@@ -53,11 +53,11 @@ public class ModelPropertyServiceImpl extends ServiceImpl<ModelPropertyMapper, M
                 );
         LambdaQueryWrapper<ModelProperty> allQueryWrapper = Wrappers
                 .<ModelProperty>lambdaQuery()
-                .and(w->w.and(wr->
-                        wr.eq(ModelProperty::getProductTypeId, productTypeId)
-                                .eq(ModelProperty::getCustom, false))
+                .and(w -> w.and(wr ->
+                                wr.eq(ModelProperty::getProductTypeId, productTypeId)
+                                        .eq(ModelProperty::getCustom, false))
                         .or()
-                        .eq($.isNotNull(productId),ModelProperty::getProductId, productId))
+                        .eq($.isNotNull(productId), ModelProperty::getProductId, productId))
                 .eq($.isNotNull(paramType), ModelProperty::getParamType, paramType)
                 .and($.isNotBlank(search), w -> w
                         .like(ModelProperty::getName, search)
@@ -161,17 +161,14 @@ public class ModelPropertyServiceImpl extends ServiceImpl<ModelPropertyMapper, M
 
     @Override
     public List<ModelProperty> listByProduct(Integer productId, Integer productTypeId) {
-        LambdaQueryWrapper<ModelProperty> wrapper = Wrappers
+        LambdaQueryWrapper<ModelProperty> allQueryWrapper = Wrappers
                 .<ModelProperty>lambdaQuery()
-                .eq(ModelProperty::getProductTypeId, productTypeId)
-                .and(w -> w
-                        .eq(ModelProperty::getCustom, false)
+                .and(w -> w.and(wr ->
+                                wr.eq(ModelProperty::getProductTypeId, productTypeId)
+                                        .eq(ModelProperty::getCustom, false))
                         .or()
-                        .eq(ModelProperty::getCustom, true)
-                        .eq(ModelProperty::getProductId, productId)
-                )
-                .orderByAsc(ModelProperty::getId);
-        return list(wrapper);
+                        .eq($.isNotNull(productId), ModelProperty::getProductId, productId));
+        return list(allQueryWrapper);
     }
 
     @Override

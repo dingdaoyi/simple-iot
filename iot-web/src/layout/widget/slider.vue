@@ -70,6 +70,11 @@ const menus = ref([
         index: '/product',
         title: '产品',
         path: '/product'
+      },
+      {
+        index: '/device',
+        title: '设备管理',
+        path: '/device'
       }
     ]
   },

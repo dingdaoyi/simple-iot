@@ -68,7 +68,7 @@ const column = [
   },
   {
     prop: 'productTypeName',
-    label: '品类名称'
+    label: '产品类型'
   },
   {
     prop: 'model',

@@ -54,10 +54,9 @@ sa-token:
 
 mybatis-plus:
   configuration:
+
     default-enum-type-handler: com.baomidou.mybatisplus.core.handlers.CompositeEnumTypeHandler
     log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
-  type-handlers-package: com.baomidou.mybatisplus.extension.handlers
-
 mqtt:
   server:
     enabled: true

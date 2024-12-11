@@ -6,7 +6,9 @@
         v-model="activeName"
         class="demo-tabs"
       >
-        <el-tab-pane label="基础信息" name="first">User</el-tab-pane>
+        <el-tab-pane label="基础信息" name="first">
+          <product-info :typeId="productTypeId" :product-id="productId" />
+        </el-tab-pane>
         <el-tab-pane label="服务定义" name="service">
           <service-config :typeId="productTypeId" :product-id="productId" />
         </el-tab-pane>
@@ -25,6 +27,7 @@ import { productDetailApi, productTypeDetailApi } from '@/api/index.js'
 import { useRoute } from 'vue-router'
 import ServiceConfig from '@/views/tslModel/widget/serviceConfig.vue'
 import tslexpoert from '@/views/tslModel/widget/tslexpoert.vue'
+import ProductInfo from "@/views/tslModel/widget/productInfo.vue";
 
 const activeName = ref('service')
 const route = useRoute()

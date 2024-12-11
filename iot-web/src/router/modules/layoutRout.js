@@ -5,6 +5,7 @@ import product from '@/views/product'
 import protocol from '@/views/protocol'
 import tslModel from '@/views/tslModel'
 import icon from '@/views/system/icon'
+import device from '@/views/device'
 
 export default [
 
@@ -43,6 +44,14 @@ export default [
         component: product,
         meta: {
           title: '产品管理'
+        }
+      },
+      {
+        path: '/device',
+        name: '设备管理',
+        component: device,
+        meta: {
+          title: '设备管理'
         }
       },
       {

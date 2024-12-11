@@ -1,7 +1,10 @@
 package com.github.dingdaoyi.controller.iot;
 
+import com.github.dingdaoyi.model.PageResult;
 import com.github.dingdaoyi.model.enu.SysCodeEnum;
 import com.github.dingdaoyi.model.query.DeviceAddQuery;
+import com.github.dingdaoyi.model.query.DevicePageQuery;
+import com.github.dingdaoyi.model.vo.DevicePageVo;
 import com.github.dingdaoyi.model.vo.DeviceVo;
 import com.github.dingdaoyi.service.DeviceService;
 import com.github.dingdaoyi.service.ProductService;
@@ -39,6 +42,12 @@ public class DeviceController {
             return R.fail(SysCodeEnum.BAD_REQUEST, "产品不存在");
         }
         return R.success(deviceService.save(query.toEntity()));
+    }
+
+    @PostMapping("page")
+    @Operation(summary = "设备分页列表")
+    public PageResult<DevicePageVo> page(@RequestBody @Valid DevicePageQuery query) {
+        return deviceService.pageByQuery(query);
     }
 
 }

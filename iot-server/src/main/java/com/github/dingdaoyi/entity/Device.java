@@ -7,6 +7,9 @@ import com.baomidou.mybatisplus.annotation.TableName;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
+/**
+ * @author dingyunwei
+ */
 @Schema
 @Data
 @TableName(value = "tb_device")
@@ -45,4 +48,19 @@ public class Device {
     @TableField(value = "device_secret")
     @Schema(description = "设备密钥")
     private String deviceSecret;
+
+    /**
+     * 在线状态
+     */
+    @TableField(value = "online")
+    @Schema(description = "在线状态")
+    private Boolean online;
+
+
+    /**
+     * 激活状态
+     */
+    @TableField(value = "active_status")
+    @Schema(description = "激活状态")
+    private Boolean activeStatus;
 }

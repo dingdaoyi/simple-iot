@@ -9,9 +9,17 @@
         <result column="device_name" property="deviceName"/>
         <result column="device_key" property="deviceKey"/>
         <result column="device_secret" property="deviceSecret"/>
+        <result column="online" property="online"/>
+        <result column="active_status" property="activeStatus"/>
     </resultMap>
     <resultMap id="DTOResultMap" extends="BaseResultMap" type="com.github.dingdaoyi.model.DTO.DeviceDTO">
         <result column="proto_key" property="protoKey"/>
+    </resultMap>
+
+    <resultMap id="PageVoResultMap" extends="BaseResultMap" type="com.github.dingdaoyi.model.vo.DevicePageVo">
+        <result column="product_type_name" property="productTypeName"/>
+        <result column="product_model" property="productModel"/>
+        <result column="manufacturer" property="manufacturer"/>
     </resultMap>
     <sql id="Base_Column_List">
         <!--@mbg.generated-->
@@ -19,14 +27,18 @@
         product_id,
         device_name,
         device_key,
-        device_secret
+        device_secret,
+        online,
+        active_status
     </sql>
     <sql id="dvs_column_list">
         dvs.id,
         dvs.product_id,
         dvs.device_name,
         dvs.device_key,
-        dvs.device_secret
+        dvs.device_secret,
+        dvs.online,
+        dvs.active_status
     </sql>
 
     <select id="findByDeviceKey" resultMap="DTOResultMap">
@@ -37,5 +49,33 @@
              left join tb_product prod on prod.id = dvs.product_id
              left join tb_protocol proto on proto.id = prod.protocol_id
     where dvs.device_key = #{deviceKey}
+    </select>
+
+    <select id="pageByQuery" resultMap="PageVoResultMap">
+        select
+        <include refid="dvs_column_list"/>,
+        pt.name as product_type_name,
+        pd.model as product_model,
+        pd.manufacturer as manufacturer
+        from tb_device dvs
+                 left join tb_product pd on pd.id = dvs.product_id
+                 left join tb_product_type pt on pd.product_type_id = pt.id
+        <where>
+            <if test="query.productTypeId != null">
+                pt.id=#{query.productTypeId}
+            </if>
+            <if test="query.productId != null">
+                and pd.id =#{query.productId}
+            </if>
+            <if test="query.manufacturer != null and query.manufacturer != ''">
+                and pd.manufacturer =#{query.manufacturer}
+            </if>
+            <if test="query.deviceKey != null and query.deviceKey != ''">
+                and dvs.device_key like CONCAT('%', #{query.deviceKey}, '%')
+            </if>
+            <if test="query.parentId != null">
+                and dvs.parentid = #{query.parentId}
+            </if>
+        </where>
     </select>
 </mapper>
