@@ -58,7 +58,7 @@ public class MqttTopicConstants implements ApplicationContextAware {
      * @return
      */
     public static String getTopic(String topicName, String productKey) {
-        return TOPIC_MAP.get(topicName).replace("productKey", productKey);
+        return TOPIC_MAP.get(topicName).replace("{productKey}", productKey);
     }
 
     @Override

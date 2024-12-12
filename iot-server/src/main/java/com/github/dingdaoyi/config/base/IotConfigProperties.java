@@ -27,7 +27,17 @@ public class IotConfigProperties {
      */
     private StorageType storageType;
 
-    public static enum StorageType{
+    /**
+     * 设备通道管理类型
+     */
+    private DeviceChannelType deviceChannelType;
+
+
+    public enum DeviceChannelType {
+        PARTITION,SINGLE
+    }
+
+    public enum StorageType{
         FILE,
     }
 

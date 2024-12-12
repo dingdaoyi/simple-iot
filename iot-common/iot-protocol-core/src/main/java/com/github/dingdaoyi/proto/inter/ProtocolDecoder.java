@@ -1,8 +1,6 @@
 package com.github.dingdaoyi.proto.inter;
 
-import com.github.dingdaoyi.proto.model.DecodeResult;
-import com.github.dingdaoyi.proto.model.DeviceRequest;
-import com.github.dingdaoyi.proto.model.ProtocolException;
+import com.github.dingdaoyi.proto.model.*;
 import com.github.dingdaoyi.proto.model.tsl.TslModel;
 
 /**
@@ -21,6 +19,14 @@ public interface ProtocolDecoder {
      * @return
      */
     DecodeResult decode(DeviceRequest request, TslModel tslModel) throws ProtocolException;
+
+
+    /**
+     * 协议解析
+     * @param message 消息
+     */
+    EncoderResult encode(EncoderMessage message, TslModel tslModel) throws ProtocolException;
+
 
     /**
      * 回复错误信息

@@ -61,4 +61,8 @@ public class TslService {
 
     @Schema(description = "出参")
     public List<TslProperty> outputParams;
+
+    public boolean isAsync() {
+        return async != null && async;
+    }
 }

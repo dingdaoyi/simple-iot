@@ -10,11 +10,6 @@ import lombok.Data;
 @Data
 public class DeviceRequest {
 
-    /*
-    设备编号
-     */
-    private Integer deviceId;
-
     /**
      * 设备key
      */

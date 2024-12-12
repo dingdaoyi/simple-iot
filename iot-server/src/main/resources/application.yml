@@ -96,3 +96,4 @@ sample:
       mqtt:
         mqtt-client-id-prefix: sample_
         topic-prefix: sampleiot
+    device-channel-type: single

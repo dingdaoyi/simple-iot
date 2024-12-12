@@ -15,6 +15,7 @@ public enum SysCodeEnum implements IResultCode {
     UN_AUTHORIZED(401,"用户未登录"),
     UNAUTHORIZED(403,"无权限操作"),
     BAD_REQUEST(400,"请求参数错误"),
+    PROTO_NOT_EXIST(20001,"设备协议不存在"),
     NPE_ERROR(9999999,"数据异常"),
     ;
     private final int code;

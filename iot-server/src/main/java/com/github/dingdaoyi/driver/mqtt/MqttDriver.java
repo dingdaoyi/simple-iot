@@ -2,6 +2,7 @@ package com.github.dingdaoyi.driver.mqtt;
 
 
 import com.github.dingdaoyi.driver.mqtt.model.MqttTopic;
+import com.github.dingdaoyi.iot.DeviceChannelManager;
 import com.github.dingdaoyi.iot.IoTDataProcessor;
 import com.github.dingdaoyi.model.DTO.DeviceDTO;
 import com.github.dingdaoyi.proto.model.DeviceRequest;
@@ -31,8 +32,7 @@ public class MqttDriver implements IMqttMessageListener {
     private IoTDataProcessor dataProcessor;
 
     @Resource
-    @Lazy
-    private MqttServerTemplate mqttServerTemplate;
+    private DeviceChannelManager deviceChannelManager;
 
     @Override
     public void onMessage(ChannelContext context, String clientId, String topic, MqttQoS qoS, MqttPublishMessage message) {
@@ -54,11 +54,9 @@ public class MqttDriver implements IMqttMessageListener {
 
     private @NotNull DeviceRequest getDeviceRequest(MqttPublishMessage message, MqttTopic mqttTopic, DeviceDTO device) {
         DeviceRequest deviceRequest = new DeviceRequest();
-        deviceRequest.setDeviceId(device.getId());
         deviceRequest.setProtoKey(device.getProtoKey());
-        MqttDeviceConnection connection = new MqttDeviceConnection(device.getDeviceKey(),
-                mqttTopic.getProductKey(), mqttServerTemplate);
-        deviceRequest.setConnection(connection);
+        deviceRequest.setDeviceKey(device.getDeviceKey());
+        deviceRequest.setConnection(deviceChannelManager.getConnection(device.getDeviceKey()));
         deviceRequest.setMessageType(mqttTopic.getMessageType());
         deviceRequest.setProductKey(mqttTopic.getProductKey());
         deviceRequest.setData(message.getPayload());

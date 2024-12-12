@@ -8,6 +8,7 @@ import lombok.Getter;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author dingyunwei
@@ -18,11 +19,21 @@ import java.util.List;
 public enum DataTypeEnum {
     INT(1, "整型", Integer.class) {
         @Override
+        public boolean validType(Object value) {
+            return value instanceof Integer;
+        }
+
+        @Override
         public Integer parse(Object value, TslProperty tslProperty) throws IllegalArgumentException {
             return Integer.parseInt(value.toString());
         }
     },
     FLOAT(2, "float浮点型", Float.class) {
+        @Override
+        public boolean validType(Object value) {
+            return value instanceof Float;
+        }
+
         @Override
         public Float parse(Object value, TslProperty tslProperty) throws IllegalArgumentException {
             return Float.parseFloat(value.toString());
@@ -30,11 +41,21 @@ public enum DataTypeEnum {
     },
     DOUBLE(3, "double浮点型", Double.class) {
         @Override
+        public boolean validType(Object value) {
+            return value instanceof Double;
+        }
+
+        @Override
         public Double parse(Object value, TslProperty tslProperty) throws IllegalArgumentException {
             return Double.parseDouble(value.toString());
         }
     },
     ENUM(4, "枚举型", String.class) {
+        @Override
+        public boolean validType(Object value) {
+            return value instanceof Integer;
+        }
+
         @Override
         public String parse(Object value, TslProperty tslProperty) throws IllegalArgumentException {
             List<KeyValue<Integer, String>> enums = tslProperty.getEnums();
@@ -49,17 +70,32 @@ public enum DataTypeEnum {
     },
     TEXT(5, "字符串", String.class) {
         @Override
+        public boolean validType(Object value) {
+            return value instanceof String;
+        }
+
+        @Override
         public String parse(Object value, TslProperty tslProperty) throws IllegalArgumentException {
             return value.toString();
         }
     },
     BOOL(6, "布尔", Boolean.class) {
         @Override
+        public boolean validType(Object value) {
+            return value instanceof Boolean;
+        }
+
+        @Override
         public Boolean parse(Object value, TslProperty tslProperty) throws IllegalArgumentException {
             return Boolean.parseBoolean(value.toString());
         }
     },
     DATE(7, "日期", LocalDateTime.class) {
+        @Override
+        public boolean validType(Object value) {
+            return value instanceof LocalDateTime;
+        }
+
         @Override
         public LocalDateTime parse(Object value, TslProperty tslProperty) throws IllegalArgumentException {
             try {
@@ -71,6 +107,11 @@ public enum DataTypeEnum {
         }
     },
     STRUCT(8, "结构体", Object.class) {
+        @Override
+        public boolean validType(Object value) {
+            return value instanceof Map<?,?>;
+        }
+
         @Override
         public Object parse(Object value, TslProperty tslProperty) throws IllegalArgumentException {
             //TODO 结构体数据解析暂时不做
@@ -91,4 +132,6 @@ public enum DataTypeEnum {
     }
 
     public abstract <T> T parse(Object value, TslProperty tslProperty) throws IllegalArgumentException;
+
+    public abstract boolean validType(Object value);
 }

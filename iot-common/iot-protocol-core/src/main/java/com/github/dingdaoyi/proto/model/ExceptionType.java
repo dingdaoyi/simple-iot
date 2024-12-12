@@ -11,6 +11,7 @@ public enum ExceptionType {
     INVALID_PARAM(2003,"参数错误,无法解析"),
     NULL_PARAM(2004,"参数值为空"),
     NULL_CONFIGURED_PARAMETER(2005,"参数未配置对应物模型"),
+    DEVICE_NOT_CONNECTED(2006,"设备未连接或连接已关闭"),
     ;
 
     public final int code;

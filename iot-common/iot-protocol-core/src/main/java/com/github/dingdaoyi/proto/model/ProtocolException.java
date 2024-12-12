@@ -20,4 +20,12 @@ public class ProtocolException extends Exception {
     public ProtocolException(String deviceKey, ExceptionType type) {
         this(deviceKey, type, null);
     }
+
+    @Override
+    public String getMessage() {
+        if (messageId != null) {
+            return type.msg + deviceKey + ":" + messageId;
+        }
+        return type.msg + ":" + deviceKey;
+    }
 }

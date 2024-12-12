@@ -1,5 +1,7 @@
 package com.github.dingdaoyi.proto.inter;
 
+import com.github.dingdaoyi.proto.model.ProtocolException;
+
 import java.io.IOException;
 import java.util.Map;
 
@@ -24,5 +26,5 @@ public interface DeviceConnection {
      * @param metadata 消息信息,按照每个协议自行定义
      * @param message 消息数据
      */
-    void sendMessage(Map<String,Object> metadata, byte[] message) throws IOException;
+    void sendMessage(Map<String,Object> metadata, byte[] message) throws ProtocolException;
 }

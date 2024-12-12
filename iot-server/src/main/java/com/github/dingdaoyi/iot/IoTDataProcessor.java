@@ -13,4 +13,5 @@ public interface IoTDataProcessor {
      * @param request
      */
     void messageUp(DeviceRequest request);
+
 }

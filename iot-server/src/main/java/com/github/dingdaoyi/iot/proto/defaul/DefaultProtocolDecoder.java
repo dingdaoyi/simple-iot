@@ -9,6 +9,7 @@ import com.github.dingdaoyi.proto.model.tsl.TslEvent;
 import com.github.dingdaoyi.proto.model.tsl.TslModel;
 import com.github.dingdaoyi.proto.model.tsl.TslProperty;
 import com.github.dingdaoyi.proto.inter.ProtocolDecoder;
+import com.github.dingdaoyi.proto.model.tsl.TslService;
 import lombok.extern.slf4j.Slf4j;
 import net.dreamlu.mica.core.utils.$;
 import net.dreamlu.mica.core.utils.JsonUtil;
@@ -41,7 +42,7 @@ public class DefaultProtocolDecoder implements ProtocolDecoder {
         }
         byte[] data = request.getData();
         DecodeResult decodeResult = new DecodeResult();
-        Integer messageId=-1;
+        Integer messageId = -1;
         try {
             switch (request.getMessageType()) {
                 case PROPERTY -> {
@@ -77,35 +78,80 @@ public class DefaultProtocolDecoder implements ProtocolDecoder {
                         DeviceEventData eventData = new DeviceEventData(tslEvent.getIdentifier(), tslEvent.getEventType());
                         if ($.isNotEmpty(outputParams)) {
                             MqttEventMessage message = mqttMessage.getBody();
-                            if (message == null ||  $.isNotEmpty(message.getData())) {
+                            if (message == null || $.isEmpty(message.getData())) {
                                 throw new ProtocolException(request.getDeviceKey(), ExceptionType.NULL_PARAM, mqttMessage.messageId());
                             }
-                            Map<String,TslProperty> propertiesMap = outputParams.stream().collect(Collectors.toMap(TslProperty::getIdentifier,v->v));
+                            Map<String, TslProperty> propertiesMap = outputParams.stream().collect(Collectors.toMap(TslProperty::getIdentifier, v -> v));
                             for (Map.Entry<String, Object> entry : message.getData().entrySet()) {
                                 TslProperty tslProperty = propertiesMap.get(entry.getKey());
                                 if (tslProperty == null) {
                                     throw new ProtocolException(request.getDeviceKey(), ExceptionType.NULL_CONFIGURED_PARAMETER, mqttMessage.messageId());
                                 }
-                                DeviceData deviceData = new DeviceData(mqttMessage.identifier(), tslProperty.getDataType(), tslProperty.parsePropertyValue(entry.getValue()));
+                                decodeResult.setEventData(eventData);
+                                DeviceData deviceData = new DeviceData(tslProperty.getIdentifier(), tslProperty.getDataType(), tslProperty.parsePropertyValue(entry.getValue()));
                                 eventData.getParams().add(deviceData);
                                 if (tslProperty.isProperty()) {
-//                                    decodeResult.getDataList().add(deviceData.clone());
+                                    decodeResult.getDataList().add(deviceData);
                                 }
                             }
                         }
-
-
                     }
                 }
                 case SERVICE_RES -> {
-
+                    MqttMessage<MqttServiceResMessage> mqttMessage = JsonUtil.readValue(data, new TypeReference<>() {
+                    });
+                    if (mqttMessage != null) {
+                        messageId = mqttMessage.getHeader().getMsgId();
+                        Optional<TslService> tslServiceOpt = tslModel.serviceByIdentifier(mqttMessage.identifier());
+                        if (tslServiceOpt.isEmpty()) {
+                            throw new ProtocolException(request.getDeviceKey(), ExceptionType.TSL_MODEL_NOT_CONFIG, mqttMessage.messageId());
+                        }
+                        TslService tslService = tslServiceOpt.get();
+                        List<TslProperty> outputParams = tslService.getOutputParams();
+                        DeviceServiceResData serviceResData = new DeviceServiceResData(tslService.getIdentifier());
+                        if ($.isNotEmpty(outputParams)) {
+                            MqttServiceResMessage message = mqttMessage.getBody();
+                            if (message == null || $.isEmpty(message.getData())) {
+                                throw new ProtocolException(request.getDeviceKey(), ExceptionType.NULL_PARAM, mqttMessage.messageId());
+                            }
+                            Map<String, TslProperty> propertiesMap = outputParams.stream().collect(Collectors.toMap(TslProperty::getIdentifier, v -> v));
+                            for (Map.Entry<String, Object> entry : message.getData().entrySet()) {
+                                TslProperty tslProperty = propertiesMap.get(entry.getKey());
+                                if (tslProperty == null) {
+                                    throw new ProtocolException(request.getDeviceKey(), ExceptionType.NULL_CONFIGURED_PARAMETER, mqttMessage.messageId());
+                                }
+                                DeviceData deviceData = new DeviceData(tslProperty.getIdentifier(), tslProperty.getDataType(), tslProperty.parsePropertyValue(entry.getValue()));
+                                serviceResData.getResultData().add(deviceData);
+                                if (tslProperty.isProperty()) {
+                                    decodeResult.getDataList().add(deviceData);
+                                }
+                                decodeResult.setServiceResData(serviceResData);
+                            }
+                        }
+                    }
                 }
             }
+            decodeResult.setMessageId(messageId);
             decodeResult.setRowData(new String(data, StandardCharsets.UTF_8));
         } catch (IllegalArgumentException e) {
             throw new ProtocolException(request.getDeviceKey(), ExceptionType.INVALID_PARAM, messageId);
         }
         return decodeResult;
+    }
+
+    @Override
+    public EncoderResult encode(EncoderMessage message, TslModel tslModel) throws ProtocolException {
+        MqttMessage<MqttServiceMessage> mqttMessage = new MqttMessage<>();
+        MqttHeader header = new MqttHeader(message.getIdentifier());
+        mqttMessage.setHeader(header);
+        mqttMessage.setBody(new MqttServiceMessage(message.getParams()));
+        EncoderResult encoderResult = new EncoderResult();
+        encoderResult.setMessageId(header.getMsgId());
+        encoderResult.setMessage(JsonUtil.toJsonAsBytes(mqttMessage));
+        HashMap<String, Object> meta = new HashMap<>();
+        meta.put("topic", MqttTopicConstants.getTopic(MqttTopicConstants.COMMAND_TOPIC, message.getProductKey()));
+        encoderResult.setMetadata(meta);
+        return encoderResult;
     }
 
     @Override
@@ -119,7 +165,7 @@ public class DefaultProtocolDecoder implements ProtocolDecoder {
             message.setHeader(header);
             message.setBody(new MqttErrors(e));
             connection.sendMessage(params, JsonUtil.toJsonAsBytes(message));
-        } catch (IOException ex) {
+        } catch (ProtocolException ex) {
             log.warn("消息发送异常:{}", ex.getMessage());
         }
     }

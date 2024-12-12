@@ -15,4 +15,9 @@ public class DeviceDTO extends Device {
      * 协议key
      */
     private String protoKey;
+
+    /**
+     * 产品key
+     */
+    private String productKey;
 }

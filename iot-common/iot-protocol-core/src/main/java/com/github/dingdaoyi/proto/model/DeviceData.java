@@ -1,28 +1,11 @@
 package com.github.dingdaoyi.proto.model;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-
 /**
+ * @param identifier 标识符
+ * @param dataType   数据类型
+ * @param value      数据值
  * @author dingyunwei
  */
-@Data
-@AllArgsConstructor
-public class DeviceData {
-
-    /**
-     * 标识符
-     */
-    private String identifier;
-
-    /**
-     * 数据类型
-     */
-    private DataTypeEnum dataType;
-
-    /**
-     * 数据值
-     */
-    private Object value;
+public record DeviceData(String identifier, DataTypeEnum dataType, Object value) {
 
 }

@@ -14,6 +14,7 @@
     </resultMap>
     <resultMap id="DTOResultMap" extends="BaseResultMap" type="com.github.dingdaoyi.model.DTO.DeviceDTO">
         <result column="proto_key" property="protoKey"/>
+        <result column="product_key" property="productKey"/>
     </resultMap>
 
     <resultMap id="PageVoResultMap" extends="BaseResultMap" type="com.github.dingdaoyi.model.vo.DevicePageVo">
@@ -44,7 +45,8 @@
     <select id="findByDeviceKey" resultMap="DTOResultMap">
         select
         <include refid="dvs_column_list"/>,
-                                              proto.proto_key
+                                              proto.proto_key,
+                                              prod.product_key as product_key
     from tb_device dvs
              left join tb_product prod on prod.id = dvs.product_id
              left join tb_protocol proto on proto.id = prod.protocol_id

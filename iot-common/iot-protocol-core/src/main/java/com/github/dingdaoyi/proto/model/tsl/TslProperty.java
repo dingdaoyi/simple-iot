@@ -118,6 +118,9 @@ public class TslProperty {
         return this.dataType.parse(value, this);
     }
 
+    public boolean validType(Object value) {
+        return this.dataType.validType(value);
+    }
     public boolean isProperty() {
         return paramType==ParamType.PROPERTY;
     }
