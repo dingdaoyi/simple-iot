@@ -10,7 +10,7 @@
         <result column="service_type" property="serviceType"/>
         <result column="identifier" property="identifier"/>
         <result column="name" property="name"/>
-        <result column="mark" property="mark"/>
+        <result column="remark" property="remark"/>
         <result column="product_type_id" property="productTypeId"/>
         <result column="icon_id" property="iconId"/>
         <result column="custom" property="custom"/>
@@ -24,7 +24,7 @@
         service_type,
         identifier,
         "name",
-        mark,
+        remark,
         product_type_id,
         icon_id,
         custom,

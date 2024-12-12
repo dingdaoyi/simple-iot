@@ -40,9 +40,9 @@ public class ModelProperty {
     /**
      * 备注
      */
-    @TableField(value = "mark")
+    @TableField(value = "remark")
     @Schema(description = "备注")
-    private String mark;
+    private String remark;
 
     /**
      * 标识符
@@ -171,7 +171,7 @@ public class ModelProperty {
         TslProperty tslProperty = new TslProperty();
         tslProperty.setId(this.getId());
         tslProperty.setDataType(this.getDataType());
-        tslProperty.setMark(this.getMark());
+        tslProperty.setRemark(this.getRemark());
         tslProperty.setIdentifier(this.getIdentifier());
         tslProperty.setName(this.getName());
         tslProperty.setAccessMode(this.getAccessMode());

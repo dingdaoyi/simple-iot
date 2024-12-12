@@ -21,13 +21,13 @@ public class ProductUpdateQuery implements ToEntity<Product> {
      * 描述
      */
     @Schema(description = "描述")
-    private String mark;
+    private String remark;
 
 
     @Override
     public Product toEntity() {
         Product product = new Product();
-        product.setMark(mark);
+        product.setRemark(remark);
         product.setId(id);
         return product;
     }

@@ -41,7 +41,7 @@ public class TslEvent {
      * 备注
      */
     @Schema(description = "备注")
-    private String mark;
+    private String remark;
 
     /**
      * 是否必选

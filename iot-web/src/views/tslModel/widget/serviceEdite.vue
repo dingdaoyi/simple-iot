@@ -139,10 +139,10 @@ if (props.datas) {
       </el-form-item>
       <el-form-item
         label="备注"
-        prop="mark"
+        prop="remark"
       >
         <el-input
-          v-model="form.mark"
+          v-model="form.remark"
           clearable
           placeholder="请输入备注信息"
         />

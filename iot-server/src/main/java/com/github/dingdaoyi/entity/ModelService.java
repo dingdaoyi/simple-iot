@@ -62,9 +62,9 @@ public class ModelService {
     /**
      * 备注
      */
-    @TableField(value = "mark")
+    @TableField(value = "remark")
     @Schema(description = "备注")
-    private String mark;
+    private String remark;
 
     /**
      * 产品类型id

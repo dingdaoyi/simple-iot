@@ -7,7 +7,6 @@ import com.github.dingdaoyi.entity.enu.ServiceTypeEnum;
 import com.github.dingdaoyi.proto.model.tsl.TslEvent;
 import com.github.dingdaoyi.proto.model.tsl.TslModel;
 import com.github.dingdaoyi.proto.model.tsl.TslProperty;
-import com.github.dingdaoyi.proto.model.tsl.TslService;
 import com.github.dingdaoyi.model.vo.ModelServiceVO;
 import com.github.dingdaoyi.service.ModelPropertyService;
 import com.github.dingdaoyi.service.ModelServiceService;
@@ -65,20 +64,16 @@ public class TslModelServiceImpl implements TslModelService {
         allProperties.putAll(paramsMap);
 
         tslModelDTO.setProperties(new ArrayList<>(propertiesMap.values()));
-        tslModelDTO.setServices(mapServicesToDTOs(servicesMap, ServiceTypeEnum.SERVICE, allProperties,
-                (svc, params) -> {
-                    TslService tslServiceDTO = new TslService(getTslPropertyDTOS(allProperties, svc.getInputParamIds()), params);
-                    $.copy(svc, tslServiceDTO);
-                    return tslServiceDTO;
-                }));
-        tslModelDTO.setEvents(mapServicesToDTOs(servicesMap, ServiceTypeEnum.EVENT, allProperties, (modelServiceVO, tslPropertyDTOS) -> {
+        tslModelDTO.setServices(mapTslServices(servicesMap, ServiceTypeEnum.SERVICE, allProperties,
+                (svc, params) -> svc.toTsl(getTslProperty(allProperties, svc.getInputParamIds()), params)));
+        tslModelDTO.setEvents(mapTslServices(servicesMap, ServiceTypeEnum.EVENT, allProperties, (modelServiceVO, tslPropertyDTOS) -> {
             TslEvent tslEventDTO = new TslEvent(tslPropertyDTOS);
             $.copy(modelServiceVO, tslEventDTO);
             return tslEventDTO;
         }));
     }
 
-    private static List<TslProperty> getTslPropertyDTOS(Map<Integer, TslProperty> paramsMap, List<Integer> outputParamIds) {
+    private static List<TslProperty> getTslProperty(Map<Integer, TslProperty> paramsMap, List<Integer> outputParamIds) {
         return paramsMap.entrySet()
                 .stream()
                 .filter(entry -> outputParamIds.contains(entry.getKey()))
@@ -86,14 +81,14 @@ public class TslModelServiceImpl implements TslModelService {
                 .toList();
     }
 
-    private <T> List<T> mapServicesToDTOs(Map<ServiceTypeEnum, List<ModelServiceVO>> servicesMap,
-                                          ServiceTypeEnum type,
-                                          Map<Integer, TslProperty> allProperties,
-                                          BiFunction<ModelServiceVO, List<TslProperty>, T> mapper) {
+    private <T> List<T> mapTslServices(Map<ServiceTypeEnum, List<ModelServiceVO>> servicesMap,
+                                       ServiceTypeEnum type,
+                                       Map<Integer, TslProperty> allProperties,
+                                       BiFunction<ModelServiceVO, List<TslProperty>, T> mapper) {
         return servicesMap.getOrDefault(type, List.of())
                 .stream()
                 .map(svc -> {
-                    List<TslProperty> params = getTslPropertyDTOS(allProperties, svc.getOutputParamIds());
+                    List<TslProperty> params = getTslProperty(allProperties, svc.getOutputParamIds());
                     return mapper.apply(svc, params);
                 })
                 .toList();

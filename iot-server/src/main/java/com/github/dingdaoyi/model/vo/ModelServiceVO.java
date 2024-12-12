@@ -2,6 +2,8 @@ package com.github.dingdaoyi.model.vo;
 
 
 import com.github.dingdaoyi.entity.ModelService;
+import com.github.dingdaoyi.proto.model.tsl.TslProperty;
+import com.github.dingdaoyi.proto.model.tsl.TslService;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -25,5 +27,16 @@ public class ModelServiceVO extends ModelService {
         ModelServiceVO modelServiceVO = new ModelServiceVO();
         $.copy(modelService, modelServiceVO);
         return modelServiceVO;
+    }
+
+    public TslService toTsl(List<TslProperty> inputParams, List<TslProperty> outputParams) {
+        TslService tslService = new TslService(inputParams, outputParams);
+        tslService.setId(this.getId());
+        tslService.setAsync(this.getAsync());
+        tslService.setIdentifier(this.getIdentifier());
+        tslService.setName(this.getName());
+        tslService.setRemark(this.getRemark());
+        tslService.setRequired(this.getRequired());
+        return tslService;
     }
 }

@@ -30,7 +30,7 @@ public class TslProperty {
      * 备注
      */
     @Schema(description = "备注")
-    private String mark;
+    private String remark;
 
     /**
      * 标识符

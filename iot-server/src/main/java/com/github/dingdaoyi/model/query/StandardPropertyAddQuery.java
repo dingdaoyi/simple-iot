@@ -31,7 +31,7 @@ public class StandardPropertyAddQuery implements ToEntity<ModelProperty> {
      * 备注
      */
     @Schema(description = "备注")
-    private String mark;
+    private String remark;
 
     /**
      * 标识符
@@ -139,7 +139,7 @@ public class StandardPropertyAddQuery implements ToEntity<ModelProperty> {
     public ModelProperty toEntity() {
         ModelProperty modelProperty = new ModelProperty();
         modelProperty.setDataType(dataType);
-        modelProperty.setMark(mark);
+        modelProperty.setRemark(remark);
         modelProperty.setIdentifier(identifier);
         modelProperty.setName(name);
         modelProperty.setAccessMode(accessMode);

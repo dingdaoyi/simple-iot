@@ -28,7 +28,7 @@ const form = ref({
 
 const { editRef, loading, onClose, dwDialogRef, onReset } = useForm({})
 async function onSubmit() {
-  await editRef.value.validate((valid, fields) => {
+  await editRef.value.validate((valid) => {
     if (valid) {
       if (loading.value) {
         return
@@ -39,7 +39,7 @@ async function onSubmit() {
         : props.productId
           ? customPropertyAddApi
           : standardPropertyAddApi
-      func(form.value).then((rs) => {
+      func(form.value).then(() => {
         loading.value = false
         ElMessage({
           message: '操作成功',
@@ -49,9 +49,6 @@ async function onSubmit() {
       }).catch(() => {
         loading.value = false
       })
-    }
-    else {
-      console.log('error submit!', fields)
     }
   })
 }
@@ -112,7 +109,7 @@ function addEnumValue() {
       value: '',
     }]
   }
-  console.log('form.enums', enums)
+
   const key = enums.length === 0 ? 1 : enums[enums.length - 1].key + 1
   form.value.enums.push({ key, value: '' })
 }
@@ -298,10 +295,10 @@ if (props?.datas) {
       </el-form-item>
       <el-form-item
         label="备注"
-        prop="mark"
+        prop="remark"
       >
         <el-input
-          v-model="form.mark"
+          v-model="form.remark"
           clearable
           placeholder="请输入备注信息"
         />

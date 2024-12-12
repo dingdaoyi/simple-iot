@@ -6,7 +6,7 @@
         <!--@Table tb_model_property-->
         <id column="id" property="id"/>
         <result column="data_type" property="dataType"/>
-        <result column="mark" property="mark"/>
+        <result column="remark" property="remark"/>
         <result column="identifier" property="identifier"/>
         <result column="name" property="name"/>
         <result column="access_mode" property="accessMode"/>
@@ -31,7 +31,7 @@
         <!--@mbg.generated-->
         id,
         data_type,
-        mark,
+        remark,
         identifier,
         "name",
         access_mode,
@@ -55,7 +55,7 @@
     <insert id="insertList">
         INSERT INTO tb_model_property(id,
                                       data_type,
-                                      mark,
+                                      remark,
                                       identifier,
                                       "name",
                                       access_mode,
@@ -76,26 +76,26 @@
                                       parent_id)VALUES
         <foreach collection="list" item="element" index="index" separator=",">
             (#{element.id},
-             #{element.dataType},
-             #{element.mark},
-             #{element.identifier},
-             #{element.name},
-             #{element.accessMode},
-             #{element.productTypeId},
-             #{element.iconId},
-             #{element.custom},
-             #{element.bool0},
-             #{element.bool1},
-             #{element.length},
-             #{element.paramType},
-             #{element.unit},
-             #{element.unitName},
-             #{element.max},
-             #{element.min},
-             #{element.step},
-             #{element.enums,typeHandler=com.baomidou.mybatisplus.extension.handlers.JacksonTypeHandler},
-             #{element.productId},
-             #{element.parentId})
+            #{element.dataType},
+            #{element.remark},
+            #{element.identifier},
+            #{element.name},
+            #{element.accessMode},
+            #{element.productTypeId},
+            #{element.iconId},
+            #{element.custom},
+            #{element.bool0},
+            #{element.bool1},
+            #{element.length},
+            #{element.paramType},
+            #{element.unit},
+            #{element.unitName},
+            #{element.max},
+            #{element.min},
+            #{element.step},
+            #{element.enums,typeHandler=com.baomidou.mybatisplus.extension.handlers.JacksonTypeHandler},
+            #{element.productId},
+            #{element.parentId})
         </foreach>
     </insert>
 </mapper>

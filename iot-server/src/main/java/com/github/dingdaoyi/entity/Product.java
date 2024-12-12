@@ -38,9 +38,9 @@ public class Product {
     /**
      * 描述
      */
-    @TableField(value = "mark")
+    @TableField(value = "remark")
     @Schema(description = "描述")
-    private String mark;
+    private String remark;
 
     /**
      * 协议id

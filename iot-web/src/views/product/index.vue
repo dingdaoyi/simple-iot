@@ -29,7 +29,7 @@ const column = [
     label: '厂家',
   },
   {
-    prop: 'mark',
+    prop: 'remark',
     label: '备注信息',
   },
   {

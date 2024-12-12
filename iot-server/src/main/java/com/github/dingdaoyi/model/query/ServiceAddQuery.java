@@ -63,7 +63,7 @@ public class ServiceAddQuery implements ToEntity<ModelService> {
      * 备注
      */
     @Schema(description = "备注")
-    private String mark;
+    private String remark;
 
     /**
      * 出参
@@ -103,7 +103,7 @@ public class ServiceAddQuery implements ToEntity<ModelService> {
         ModelService modelService = new ModelService();
         modelService.setIdentifier(this.identifier);
         modelService.setName(this.name);
-        modelService.setMark(this.mark);
+        modelService.setRemark(this.remark);
         modelService.setProductTypeId(this.productTypeId);
         modelService.setServiceType(this.serviceType);
         modelService.setEventType(this.eventType);

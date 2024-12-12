@@ -7,7 +7,7 @@
         <id column="id" property="id"/>
         <result column="model" property="model"/>
         <result column="manufacturer" property="manufacturer"/>
-        <result column="mark" property="mark"/>
+        <result column="remark" property="remark"/>
         <result column="protocol_id" property="protocolId"/>
         <result column="product_type_id" property="productTypeId"/>
     </resultMap>
@@ -20,7 +20,7 @@
         id,
         model,
         manufacturer,
-        mark,
+        remark,
         protocol_id,
         product_type_id
     </sql>
@@ -28,7 +28,7 @@
         pro.id,
         pro.model,
         pro.manufacturer,
-        pro.mark,
+        pro.remark,
         pro.protocol_id,
         pro.product_type_id,
         pt.name as productTypeName

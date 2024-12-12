@@ -33,7 +33,7 @@ public class ProductAddQuery implements ToEntity<Product> {
      * 描述
      */
     @Schema(description = "描述")
-    private String mark;
+    private String remark;
 
     /**
      * 协议id
@@ -51,7 +51,7 @@ public class ProductAddQuery implements ToEntity<Product> {
         Product product = new Product();
         product.setModel(model);
         product.setManufacturer(manufacturer);
-        product.setMark(mark);
+        product.setRemark(remark);
         product.setProtocolId(protocolId);
         product.setProductTypeId(productTypeId);
         //自定义串

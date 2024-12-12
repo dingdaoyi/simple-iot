@@ -399,3 +399,17 @@ export function deviceAddApi(data) {
     data,
   })
 }
+
+/**
+ * 字典查询
+ * @param group 分组名称
+ */
+export function dictListApi(group) {
+  return request({
+    url: '/device',
+    method: 'post',
+    params: {
+      group,
+    },
+  })
+}
