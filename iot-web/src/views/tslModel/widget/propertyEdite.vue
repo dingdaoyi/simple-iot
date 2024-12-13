@@ -1,5 +1,5 @@
 <script lang="jsx" setup>
-import { customPropertyAddApi, standardPropertyAddApi, standardPropertyEditApi } from '@/api'
+import { customPropertyAddApi, dictListApi, standardPropertyAddApi, standardPropertyEditApi } from '@/api'
 import IconInput from '@/components/IconInput.vue'
 import { dwHooks } from 'dwyl-ui'
 import { ElMessage } from 'element-plus'
@@ -25,7 +25,7 @@ const form = ref({
     value: '',
   }],
 })
-
+const unitListOpt = ref([])
 const { editRef, loading, onClose, dwDialogRef, onReset } = useForm({})
 async function onSubmit() {
   await editRef.value.validate((valid) => {
@@ -121,6 +121,13 @@ function removeEnumValue(index) {
 if (props?.datas) {
   form.value = props.datas
   currentType.value = dataTypeOpt.find(item => item.value === props.datas.dataType).type
+}
+dictListApi('analog_quantity')
+  .then(({ data }) => {
+    unitListOpt.value = data
+  })
+function changeUnit(value) {
+  form.value.unitName = unitListOpt.value.find(item => item.value === value)?.label || ''
 }
 </script>
 
@@ -234,6 +241,25 @@ if (props?.datas) {
           clearable
           placeholder="请输入最小值"
         />
+      </el-form-item>
+      <el-form-item
+        label="单位"
+        prop="unit"
+        class="is-required"
+        v-if="currentType === 'number'"
+      >
+        <dw-select
+          v-model="form.unit"
+          placeholder="请选择"
+          class="w-full"
+          @change="changeUnit"
+        >
+          <dw-option
+            v-for="item in unitListOpt" :key="item.value"
+            :label="`${item.label}:${item.value}`"
+            :value="item.value"
+          />
+        </dw-select>
       </el-form-item>
       <el-form-item v-if="currentType === 'enum'" label="枚举值" prop="enums">
         <div class="flex flex-col">

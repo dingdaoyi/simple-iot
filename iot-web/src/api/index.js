@@ -406,8 +406,8 @@ export function deviceAddApi(data) {
  */
 export function dictListApi(group) {
   return request({
-    url: '/device',
-    method: 'post',
+    url: '/dict/list',
+    method: 'get',
     params: {
       group,
     },

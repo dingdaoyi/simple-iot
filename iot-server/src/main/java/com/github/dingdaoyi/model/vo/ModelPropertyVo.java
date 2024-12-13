@@ -22,7 +22,8 @@ public class ModelPropertyVo extends ModelProperty {
 
     private String parseDataDefinitions(DataTypeEnum dataType, ModelProperty modelProperty) {
         return switch (dataType) {
-            case INT, DOUBLE, FLOAT -> String.format("取值范围 :%d-%d", modelProperty.getMin(), modelProperty.getMax());
+            case INT, DOUBLE, FLOAT -> String.format("取值范围 :%d-%d%s", modelProperty.getMin(), modelProperty.getMax(),
+                    modelProperty.getUnitStr());
             case TEXT -> String.format("长度:%d", modelProperty.getLength());
             case ENUM -> "枚举值 :" + modelProperty.getEnums()
                     .stream()

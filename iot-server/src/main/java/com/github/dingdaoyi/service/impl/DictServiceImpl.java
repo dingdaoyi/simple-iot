@@ -30,6 +30,6 @@ public class DictServiceImpl extends ServiceImpl<DictMapper, Dict> implements Di
                 .eq(Dict::getDictGroup, group)
                 .not(w -> w.eq(Dict::getLabel, "-1"))
                 .orderByAsc(Dict::getSort)
-                .select(Dict::getLabel, Dict::getValue, Dict::getSort));
+                .select(Dict::getLabel,Dict::getValue, Dict::getSort));
     }
 }
