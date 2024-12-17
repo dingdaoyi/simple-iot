@@ -9,5 +9,5 @@ import com.github.dingdaoyi.proto.model.DecodeResult;
  */
 public interface DataProcessor {
 
-    void process(DecodeResult message);
+    void process(DecodeResult message, String deviceKey);
 }

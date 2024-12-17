@@ -97,3 +97,10 @@ sample:
         mqtt-client-id-prefix: sample_
         topic-prefix: sampleiot
     device-channel-type: single
+    influxdb:
+      url: http://106.13.72.27:8086
+      token: Evc2GMqMqWSGKZhwb2iTU4OeSJBg6K4QaAzmsbXpDyWnqMtM65zQa-olSUQFEoWMN96715qBv_xgJ56DfURGXw==
+      org: sample
+      bucket: sample
+      prop-database: prop_data
+      event-database: even_data

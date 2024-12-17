@@ -32,7 +32,44 @@ public class IotConfigProperties {
      */
     private DeviceChannelType deviceChannelType;
 
+    /**
+     * influxdb配置
+     */
+    private InfluxDbProperties influxdb;
 
+    @Data
+    public static class InfluxDbProperties {
+
+        /**
+         * 地址
+         */
+        private String url;
+
+        /**
+         * token
+         */
+        private String token;
+
+        /**
+         * org
+         */
+        private String org;
+
+        /**
+         * buket
+         */
+        private String bucket;
+
+        /**
+         * 属性数据数据库
+         */
+        private String propDatabase;
+
+        /**
+         * 事件
+         */
+        private String eventDatabase;
+    }
     public enum DeviceChannelType {
         PARTITION,SINGLE
     }
