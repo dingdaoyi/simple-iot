@@ -81,7 +81,7 @@ function closeEdite() {
 }
 
 function showDetails(row) {
-  console.log('设备详情', row.id)
+  router.push(`/deviceDetails?id=${row.id}`)
 }
 function changeProductType() {
   if (params.productTypeId) {

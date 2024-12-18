@@ -1,5 +1,6 @@
 import layout from '@/layout'
 import device from '@/views/device'
+import deviceDetails from '@/views/device/widget/details.vue'
 import home from '@/views/home'
 import product from '@/views/product'
 import productType from '@/views/productType'
@@ -69,6 +70,15 @@ export default [
             meta: {
               hidden: true,
               title: '物模型配置',
+            },
+          },
+          {
+            path: '/deviceDetails',
+            name: '设备详情',
+            component: deviceDetails,
+            meta: {
+              hidden: true,
+              title: '设备详情',
             },
           },
         ],

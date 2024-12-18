@@ -109,6 +109,11 @@ public class TslProperty {
     private List<TslProperty> children;
 
     /**
+     * 图标
+     */
+    private String icon;
+
+    /**
      * 参数类型,1属性, 2 参数(事件和服务的出入参数)
      */
     @Schema(description = "数类型,1属性, 2 参数(事件和服务的出入参数)")

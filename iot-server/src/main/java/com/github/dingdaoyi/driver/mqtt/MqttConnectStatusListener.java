@@ -1,6 +1,7 @@
 package com.github.dingdaoyi.driver.mqtt;
 
 import com.github.dingdaoyi.iot.DeviceChannelManager;
+import com.github.dingdaoyi.iot.IoTDataProcessor;
 import com.github.dingdaoyi.model.DTO.DeviceDTO;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
@@ -21,6 +22,8 @@ public class MqttConnectStatusListener implements IMqttConnectStatusListener {
     @Resource
     @Lazy
     private MqttServerTemplate mqttServerTemplate;
+    @Resource
+    private IoTDataProcessor dataProcessor;
 
     @Override
     public void online(ChannelContext context, String clientId, String username) {
@@ -30,7 +33,8 @@ public class MqttConnectStatusListener implements IMqttConnectStatusListener {
             return;
         }
         device.setOnline(true);
-        deviceChannelManager.addConnection(clientId,new MqttDeviceConnection(clientId,device.getProductKey(),mqttServerTemplate));
+        dataProcessor.oline(clientId);
+        deviceChannelManager.addConnection(clientId, new MqttDeviceConnection(clientId, device.getProductKey(), mqttServerTemplate));
     }
 
     @Override
@@ -41,6 +45,7 @@ public class MqttConnectStatusListener implements IMqttConnectStatusListener {
         }
         device.setOnline(false);
         log.info("offline: {}", clientId);
+        dataProcessor.offline(clientId);
         deviceChannelManager.removeConnection(clientId);
 
     }

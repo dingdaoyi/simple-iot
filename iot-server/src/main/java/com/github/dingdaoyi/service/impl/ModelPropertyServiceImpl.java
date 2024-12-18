@@ -26,6 +26,8 @@ import com.github.dingdaoyi.entity.ModelProperty;
 import com.github.dingdaoyi.service.ModelPropertyService;
 import org.springframework.transaction.annotation.Transactional;
 
+import static com.github.dingdaoyi.service.CacheService.TSL_MODEL_CACHE;
+
 /**
  * @author dingyunwei
  */
@@ -151,9 +153,8 @@ public class ModelPropertyServiceImpl extends ServiceImpl<ModelPropertyMapper, M
             throw new ServiceException("属性不存在,无法修改!");
         }
         boolean result = baseMapper.updateById(property.toEntity()) > 0;
-        if (result && modelProperty.getProductId() != null) {
-            Product product = productService.getById(modelProperty.getProductId());
-            cacheService.evictTslModel(product.getProductKey());
+        if (result) {
+            cacheService.clearCache(TSL_MODEL_CACHE);
         }
         //TODO 暂时未对于结构体字段的增加删除兼容
         return result;

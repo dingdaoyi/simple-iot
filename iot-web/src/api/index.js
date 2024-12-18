@@ -375,6 +375,12 @@ export function devicePageApi(data) {
     data,
   })
 }
+export function deviceDetailApi(id) {
+  return request({
+    url: `/device/${id}`,
+    method: 'get',
+  })
+}
 /**
  * 设备编辑
  * @param data
@@ -411,5 +417,16 @@ export function dictListApi(group) {
     params: {
       group,
     },
+  })
+}
+
+/**
+ * 字典查询
+ * @param deviceKey 设备编号
+ */
+export function deviceDataLast(deviceKey) {
+  return request({
+    url: `/device/data/property/last/${deviceKey}`,
+    method: 'get',
   })
 }

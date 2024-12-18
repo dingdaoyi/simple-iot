@@ -14,4 +14,15 @@ public interface IoTDataProcessor {
      */
     void messageUp(DeviceRequest request);
 
+    /**
+     * 设备上线
+     * @param deviceKey 设备编号
+     */
+    void oline(String deviceKey);
+
+    /**
+     * 设备离线
+     * @param deviceKey 设备编号
+     */
+    void offline(String deviceKey);
 }

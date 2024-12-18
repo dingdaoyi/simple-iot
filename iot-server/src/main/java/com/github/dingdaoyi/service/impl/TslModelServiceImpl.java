@@ -8,10 +8,7 @@ import com.github.dingdaoyi.proto.model.tsl.TslEvent;
 import com.github.dingdaoyi.proto.model.tsl.TslModel;
 import com.github.dingdaoyi.proto.model.tsl.TslProperty;
 import com.github.dingdaoyi.model.vo.ModelServiceVO;
-import com.github.dingdaoyi.service.ModelPropertyService;
-import com.github.dingdaoyi.service.ModelServiceService;
-import com.github.dingdaoyi.service.ProductService;
-import com.github.dingdaoyi.service.TslModelService;
+import com.github.dingdaoyi.service.*;
 import lombok.AllArgsConstructor;
 import net.dreamlu.mica.core.utils.$;
 import org.springframework.cache.annotation.Cacheable;
@@ -30,6 +27,7 @@ public class TslModelServiceImpl implements TslModelService {
     private final ProductService productService;
     private final ModelServiceService modelServiceService;
     private final ModelPropertyService modelPropertyService;
+    private final IconService iconService;
 
     @Cacheable(value = "tslModelCache", key = "#productKey")
     @Override
@@ -99,10 +97,10 @@ public class TslModelServiceImpl implements TslModelService {
             TslProperty tslProperty = paramsMap.get(property.getParentId());
             List<TslProperty> children = Optional.ofNullable(tslProperty.getChildren())
                     .orElseGet(ArrayList::new);
-            children.add(property.toTsl());
+            children.add(property.toTsl(iconService.path(property.getIconId())));
             tslProperty.setChildren(children);
         } else {
-            paramsMap.put(property.getId(), property.toTsl());
+            paramsMap.put(property.getId(), property.toTsl(iconService.path(property.getIconId())));
         }
     }
 }

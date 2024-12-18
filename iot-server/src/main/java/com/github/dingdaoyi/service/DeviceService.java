@@ -24,4 +24,6 @@ public interface DeviceService extends IService<Device>{
     Optional<DeviceDTO> getByDeviceKey(String deviceKey);
 
     PageResult<DevicePageVo> pageByQuery(@Valid DevicePageQuery query);
+
+    void updateOlinStatus(String deviceKey, boolean online);
 }

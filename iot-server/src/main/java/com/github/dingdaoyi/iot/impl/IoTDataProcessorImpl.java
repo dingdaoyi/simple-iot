@@ -11,6 +11,7 @@ import com.github.dingdaoyi.model.enu.SysCodeEnum;
 import com.github.dingdaoyi.proto.inter.ProtocolDecoder;
 import com.github.dingdaoyi.proto.model.*;
 import com.github.dingdaoyi.proto.model.tsl.TslModel;
+import com.github.dingdaoyi.service.DeviceService;
 import com.github.dingdaoyi.service.TslModelService;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
@@ -42,6 +43,9 @@ public class IoTDataProcessorImpl implements IoTDataProcessor, IotCommandProcess
     @Resource
     private ResponseRegister responseRegister;
 
+    @Resource
+    private DeviceService deviceService;
+
     @Override
     public void messageUp(DeviceRequest request) {
         Optional<TslModel> tslOptional = tslModelService.findByProductKey(request.getProductKey());
@@ -70,6 +74,16 @@ public class IoTDataProcessorImpl implements IoTDataProcessor, IotCommandProcess
             log.error("协议解析失败,原因:{}", e.getMessage());
             decoder.responseError(request.getConnection(),e);
         }
+    }
+
+    @Override
+    public void oline(String deviceKey) {
+        deviceService.updateOlinStatus(deviceKey,true);
+    }
+
+    @Override
+    public void offline(String deviceKey) {
+        deviceService.updateOlinStatus(deviceKey,false);
     }
 
     @Override

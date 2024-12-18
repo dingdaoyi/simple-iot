@@ -9,7 +9,9 @@ import com.github.dingdaoyi.model.query.DevicePageQuery;
 import com.github.dingdaoyi.model.vo.DevicePageVo;
 import com.github.dingdaoyi.model.vo.DeviceVo;
 import com.github.dingdaoyi.model.vo.ProductVo;
+import com.github.dingdaoyi.proto.model.tsl.TslModel;
 import com.github.dingdaoyi.service.ProductService;
+import com.github.dingdaoyi.service.TslModelService;
 import com.github.dingdaoyi.utils.PageHelper;
 import jakarta.annotation.Resource;
 import org.jetbrains.annotations.NotNull;
@@ -30,6 +32,8 @@ public class DeviceServiceImpl extends ServiceImpl<DeviceMapper, Device> impleme
     @Resource
     private ProductService productService;
 
+    @Resource
+    private TslModelService tslModelService;
     @Override
     public Optional<DeviceVo> details(Integer id) {
         Device device = baseMapper.selectById(id);
@@ -42,7 +46,12 @@ public class DeviceServiceImpl extends ServiceImpl<DeviceMapper, Device> impleme
     private @NotNull Optional<DeviceVo> getDeviceVo(Device device) {
         DeviceVo deviceVo = DeviceVo.build(device);
         Optional<ProductVo> productVo = productService.details(deviceVo.getProductId());
-        productVo.ifPresent(deviceVo::setProductVo);
+        if (productVo.isPresent()) {
+            ProductVo product = productVo.get();
+            deviceVo.setProductVo(product);
+            Optional<TslModel> tslModelOptional = tslModelService.findByProductKey(product.getProductKey());
+            tslModelOptional.ifPresent(deviceVo::setTslModel);
+        }
         return Optional.of(deviceVo);
     }
 
@@ -55,6 +64,16 @@ public class DeviceServiceImpl extends ServiceImpl<DeviceMapper, Device> impleme
     public PageResult<DevicePageVo> pageByQuery(DevicePageQuery query) {
         Page<DevicePageVo> page = PageHelper.page(query);
         return PageHelper.result(baseMapper.pageByQuery(page,query));
+    }
+
+    @Override
+    public void updateOlinStatus(String deviceKey, boolean online) {
+        baseMapper
+                .update(Wrappers
+                        .<Device>lambdaUpdate()
+                        .eq(Device::getDeviceKey, deviceKey)
+                        .set(Device::getOnline, online)
+                        .set(online,Device::getActiveStatus,true));
     }
 
     @Override

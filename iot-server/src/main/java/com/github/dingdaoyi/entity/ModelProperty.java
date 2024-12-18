@@ -168,7 +168,7 @@ public class ModelProperty {
     @Schema(description = "父级id,当数据类型为struct的时候会有,默认-1")
     private Integer parentId = -1;
 
-    public TslProperty toTsl() {
+    public TslProperty toTsl(String icon) {
         TslProperty tslProperty = new TslProperty();
         tslProperty.setId(this.getId());
         tslProperty.setDataType(this.getDataType());
@@ -186,6 +186,7 @@ public class ModelProperty {
         tslProperty.setStep(this.getStep());
         tslProperty.setEnums(this.getEnums());
         tslProperty.setParamType(this.getParamType());
+        tslProperty.setIcon(icon);
         return tslProperty;
     }
 

@@ -25,7 +25,7 @@ public class DeviceDataController {
     @Resource
     private DeviceDataService deviceDataService;
 
-    @GetMapping("last/{deviceKey}")
+    @GetMapping("property/last/{deviceKey}")
     @Operation(summary = "设备最后日志")
     public R<List<KeyValue<String, Object>>> lastPropData(@PathVariable String deviceKey) {
         List<KeyValue<String, Object>> latestData = deviceDataService.getLatestData(deviceKey);
