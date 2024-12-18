@@ -9,7 +9,7 @@ import { createSvgIconsPlugin } from 'vite-plugin-svg-icons'
 
 const configProxy = {
   local: {
-    iot: 'http://localhost:5010',
+    iot: 'http://192.168.0.103:5010',
   },
   line: {
     iot: 'http://106.13.72.27:5010',

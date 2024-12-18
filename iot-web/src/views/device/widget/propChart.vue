@@ -13,28 +13,77 @@ const params = ref({
   beginTime: DateUtils.formatDate(DateUtils.getStartOfDay()),
   endTime: DateUtils.formatDate(DateUtils.getEndOfDay()),
 })
-const option = ref({
-  xAxis: {
+const options = ref({
+  tooltip: {
+    trigger: 'axis',
+  },
+  grid: {
+    top: '25%',
+    bottom: '15%',
+    left: '8%',
+    right: '8%',
+  },
+  xAxis: [{
     type: 'category',
-    data: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
-  },
-  yAxis: {
-    type: 'value',
-  },
-  series: [
-    {
-      data: [10, 11, 12, 13, 14, 15, 16],
-      type: 'line',
-      smooth: true,
+    name: '日期',
+    axisTick: {
+      alignWithLabel: true,
     },
-  ],
+    axisLine: {
+      lineStyle: {
+        color: 'rgb(186,231,255)', // 设置x轴轴线颜色
+      },
+    },
+    axisLabel: {
+      color: '##76889F', // 设置x轴标签文字颜色
+    },
+    data: ['2024-01-01', '2024-02-01', '2024-03-01', '2024-04-01', '2024-05-01', '2024-06-01'],
+  }],
+  yAxis: [{
+    type: 'value',
+    name: '指标',
+    nameTextStyle: {
+      color: '#76889F',
+    },
+    position: 'left',
+    axisLine: {
+      show: true,
+      lineStyle: {
+        color: 'rgb(186,231,255)', // 设置x轴轴线颜色
+      },
+    },
+    splitLine: {
+      show: true,
+      lineStyle: {
+        type: 'dashed',
+        color: 'rgba(255, 255, 255, 0.2)',
+      },
+    },
+    axisLabel: {
+      color: '#76889F', // 设置右y轴标签文字颜色
+      // formatter: '{value} %'
+    },
+  }],
+  series: [{
+    name: '同比',
+    type: 'line',
+    smooth: true,
+    showSymbol: false,
+    lineStyle: {
+      normal: {
+        width: 2,
+        color: '#FE9022',
+      },
+    },
+    data: [40, 50, 45, 48, 38, 42],
+  }],
 })
 function loadChartDate() {
   deviceDataMetric(params.value)
     .then(({ data }) => {
-      option.value.xAxis.data = data.map(item => item.key)
-      option.value.series[0].data = data.map(item => item.value || 0)
-      console.log(option.value, 'freferfre')
+      options.value.xAxis[0].data = data.map(item => item.key)
+      options.value.series[0].data = data.map(item => item.value || 0)
+      console.log(options.value, 'freferfre')
     })
 }
 const renderChart = ref(false)
@@ -57,7 +106,7 @@ loadChartDate()
         </div>
         <div>
           <DwPicker
-            v-model:start="params.startTime"
+            v-model:start="params.beginTime"
             v-model:end="params.endTime"
             class="mr-12px picker"
           />
@@ -66,8 +115,8 @@ loadChartDate()
           </el-button>
         </div>
       </div>
-      <div class="ml-40px w-1000px h-400px">
-        <VCharts v-if="renderChart" style="height: 900px;width: 400px" :options="option" />
+      <div class="w-full h-400px">
+        <VCharts v-if="renderChart" :option="options" />
       </div>
     </div>
   </dw-dialog>
