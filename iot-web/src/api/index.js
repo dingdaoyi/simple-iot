@@ -421,12 +421,24 @@ export function dictListApi(group) {
 }
 
 /**
- * 字典查询
- * @param deviceKey 设备编号
+ * 设备日志最后数据
+ * @param deviceKey 设备日志最后数据
  */
 export function deviceDataLast(deviceKey) {
   return request({
     url: `/device/data/property/last/${deviceKey}`,
     method: 'get',
+  })
+}
+
+/**
+ * 设备指标
+ * @param data 参数上
+ */
+export function deviceDataMetric(data) {
+  return request({
+    url: `/device/data/property/metric`,
+    method: 'post',
+    data,
   })
 }

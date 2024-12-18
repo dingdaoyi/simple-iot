@@ -31,7 +31,7 @@ public class DeviceDataController {
         List<KeyValue<String, Object>> latestData = deviceDataService.getLatestData(deviceKey);
         return R.success(latestData);
     }
-    @PostMapping("metric")
+    @PostMapping("property/metric")
     @Operation(summary = "设备指标统计")
     public R<List<KeyValue<String, Object>>> metric(@RequestBody DeviceDataQuery query) {
         List<KeyValue<String, Object>> latestData = deviceDataService.metric(query);

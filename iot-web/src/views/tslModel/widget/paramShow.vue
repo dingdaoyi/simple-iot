@@ -1,10 +1,7 @@
 <script lang="jsx" setup>
-import { dwHooks } from 'dwyl-ui'
 import { ref } from 'vue'
 
 const props = defineProps(['datas', 'properties'])
-
-const { useForm } = dwHooks
 
 const inputParam = ref([])
 const outPutParam = ref([])
@@ -18,7 +15,6 @@ outPutParam.value = props.datas?.outputParamIds?.map(id => findItem(id)) || []
 
 <template>
   <dw-dialog
-    ref="dwDialogRef"
     title="参数列表"
     width="620px"
   >

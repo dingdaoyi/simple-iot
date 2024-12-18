@@ -3,6 +3,7 @@ import { deviceDataLast, deviceDetailApi } from '@/api/index.js'
 import Breadcrumb from '@/components/Breadcrumb.vue'
 import { onlineOpts } from '@/utils/base.jsx'
 import LabelItem from '@/views/device/widget/LabelItem.vue'
+import PropChart from '@/views/device/widget/propChart.vue'
 import PropMetric from '@/views/device/widget/PropMetric.vue'
 import { ref } from 'vue'
 import { useRoute } from 'vue-router'
@@ -11,6 +12,8 @@ const activeName = ref('基础信息')
 const route = useRoute()
 const id = route.query.id
 const deviceDetail = ref({})
+const propDialogShow = ref(false)
+
 const devicePropData = ref(null)
 async function loadData() {
   const { data } = await deviceDetailApi(id)
@@ -21,6 +24,12 @@ async function loadData() {
 function dictTsl(identifier) {
   const properties = deviceDetail.value.tslModel?.properties
   return properties?.find(item => item.identifier === identifier)
+}
+
+const tslPropOpt = ref(null)
+function showPro(identifier) {
+  tslPropOpt.value = dictTsl(identifier)
+  propDialogShow.value = true
 }
 const breadcrumbs = ref(
   [
@@ -58,7 +67,7 @@ loadData()
     </div>
     <div v-if="devicePropData" class="flex gap-20px justify-center">
       <div v-for="item in devicePropData" :key="item.key" class="w-180px">
-        <PropMetric :value="item.value" :tsl-prop="dictTsl(item.key)" />
+        <PropMetric :value="item.value" :tsl-prop="dictTsl(item.key)" @click="showPro(item.key)" />
       </div>
     </div>
     <div class=" flex-1">
@@ -73,6 +82,7 @@ loadData()
         </el-tab-pane>
       </el-tabs>
     </div>
+    <PropChart v-if="propDialogShow" v-model="propDialogShow" :device-key="deviceDetail.deviceKey" :tsl-prop-opt="tslPropOpt" />
   </div>
 </template>
 
