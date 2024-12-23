@@ -10,6 +10,9 @@ import com.github.dingdaoyi.model.vo.ProductVo;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * @author dingyunwei
+ */
 public interface ProductService extends IService<Product>{
 
 
@@ -46,4 +49,6 @@ public interface ProductService extends IService<Product>{
     PageResult<ProductPageVo> pageByQuery(ProductPageQuery pageQuery);
 
     boolean existsByProtocol(Integer protocolId);
+
+    String getTypeModel(Integer id);
 }

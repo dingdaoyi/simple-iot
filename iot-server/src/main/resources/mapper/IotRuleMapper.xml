@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.github.dingdaoyi.mapper.IotRuleMapper">
+  <resultMap id="BaseResultMap" type="com.github.dingdaoyi.entity.IotRule">
+    <!--@mbg.generated-->
+    <!--@Table tb_iot_rule-->
+    <id column="id" property="id" />
+    <result column="name" property="name" />
+    <result column="rule_type" property="ruleType" />
+    <result column="script" property="script" />
+    <result column="remark" property="remark" />
+    <result column="input_type" property="inputType" />
+    <result column="source_type" property="sourceType" />
+    <result column="source_id" property="sourceId" />
+    <result column="target_type" property="targetType" />
+    <result column="target_id" property="targetId" />
+  </resultMap>
+  <resultMap id="PageVo_Result_Map" type="com.github.dingdaoyi.model.vo.RulePageVo" extends="BaseResultMap">
+
+  </resultMap>
+  <sql id="Base_Column_List">
+    <!--@mbg.generated-->
+    id, "name", rule_type, script, remark, input_type, source_type, source_id, target_type, 
+    target_id
+  </sql>
+
+  <select id="pageByQuery" resultMap="PageVo_Result_Map">
+    select
+    <include refid="Base_Column_List"/> from tb_iot_rule
+    <where>
+      <if test="pageQuery.name != null and pageQuery.name != ''">
+        name like CONCAT('%', #{pageQuery.name}::text, '%')
+      </if>
+    </where>
+    </select>
+</mapper>

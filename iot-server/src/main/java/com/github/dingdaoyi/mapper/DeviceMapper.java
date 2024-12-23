@@ -18,4 +18,9 @@ public interface DeviceMapper extends BaseMapper<Device> {
     Optional<DeviceDTO> findByDeviceKey(@Param("deviceKey") String deviceKey);
 
     Page<DevicePageVo> pageByQuery(Page<DevicePageVo> page, @Param("query") DevicePageQuery query);
+
+
+    String findDeviceKeyById(@Param("id")Integer id);
+
+
 }

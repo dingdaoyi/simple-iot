@@ -50,4 +50,11 @@
             and pro.manufacturer like CONCAT('%', #{pageQuery.manufacturer}::text, '%')
         </if>
     </select>
+
+    <select id="getTypeModel" resultType="java.lang.String">
+        select concat(tp.name, '-', pr.model)
+        from tb_product pr
+                 inner join tb_product_type tp on pr.product_type_id = tp.id
+        where pr.id = #{id}
+    </select>
 </mapper>

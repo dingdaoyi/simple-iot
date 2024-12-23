@@ -77,6 +77,11 @@ public class DeviceServiceImpl extends ServiceImpl<DeviceMapper, Device> impleme
     }
 
     @Override
+    public String getDeviceKey(Integer id) {
+        return baseMapper.findDeviceKeyById(id);
+    }
+
+    @Override
     public boolean removeById(Serializable id) {
         //TODO 判断子设备,是否可以删除
         return super.removeById(id);

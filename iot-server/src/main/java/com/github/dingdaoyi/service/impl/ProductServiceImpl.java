@@ -19,6 +19,7 @@ import org.springframework.stereotype.Service;
 
 import java.io.Serializable;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -93,6 +94,10 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper, Product> impl
                 .eq(Product::getProtocolId, protocolId));
     }
 
+    @Override
+    public String getTypeModel(Integer id) {
+        return baseMapper.getTypeModel(id);
+    }
     @Override
     public boolean removeById(Serializable id) {
 

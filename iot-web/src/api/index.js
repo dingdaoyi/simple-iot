@@ -442,3 +442,14 @@ export function deviceDataMetric(data) {
     data,
   })
 }
+/**
+ * 设备指标
+ * @param data 参数上
+ */
+export function rulePageApi(data) {
+  return request({
+    url: `/rule/page`,
+    method: 'post',
+    data,
+  })
+}

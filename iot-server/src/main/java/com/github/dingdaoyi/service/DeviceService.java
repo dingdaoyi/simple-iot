@@ -26,4 +26,11 @@ public interface DeviceService extends IService<Device>{
     PageResult<DevicePageVo> pageByQuery(@Valid DevicePageQuery query);
 
     void updateOlinStatus(String deviceKey, boolean online);
+
+    /**
+     * 获取设备key
+     * @param id id
+     * @return
+     */
+    String getDeviceKey(Integer id);
 }

@@ -7,6 +7,7 @@ import productType from '@/views/productType'
 import protocol from '@/views/protocol'
 import icon from '@/views/system/icon'
 import tslModel from '@/views/tslModel'
+import rule from '@/views/rule'
 
 export default [
 
@@ -53,6 +54,14 @@ export default [
             component: product,
             meta: {
               title: '产品管理',
+            },
+          },
+          {
+            path: '/rule',
+            name: '规则处理',
+            component: rule,
+            meta: {
+              title: '规则处理',
             },
           },
           {

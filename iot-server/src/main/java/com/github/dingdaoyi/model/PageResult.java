@@ -5,7 +5,9 @@ import lombok.Data;
 import net.dreamlu.mica.core.result.IResultCode;
 import net.dreamlu.mica.core.result.SystemCode;
 import net.dreamlu.mica.core.utils.$;
+import org.jetbrains.annotations.NotNull;
 
+import java.util.Iterator;
 import java.util.List;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -14,7 +16,7 @@ import java.util.stream.Collectors;
  * @author dwx
  */
 @Data
-public class PageResult<T> {
+public class PageResult<T> implements Iterable<T>{
 
     private int code;
 
@@ -90,5 +92,10 @@ public class PageResult<T> {
 
     public boolean isEmpty() {
         return $.isEmpty(data);
+    }
+
+    @Override
+    public @NotNull Iterator<T> iterator() {
+        return data.iterator();
     }
 }

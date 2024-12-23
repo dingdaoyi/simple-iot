@@ -13,4 +13,6 @@ import org.apache.ibatis.annotations.Param;
 public interface ProductMapper extends BaseMapper<Product> {
 
     Page<ProductPageVo> pageByQuery(Page<ProductPageVo> page, @Param("pageQuery") ProductPageQuery pageQuery);
+
+    String getTypeModel(@Param("id") Integer id);
 }
