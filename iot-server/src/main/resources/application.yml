@@ -17,10 +17,17 @@ spring:
       enabled: true
   datasource:
     driver-class-name: org.postgresql.Driver
-    url: jdbc:postgresql://${POSTGRES_HOST:106.13.72.27}:${POSTGRES_PORT:8432}/${DATABASE:sample}?stringtype=unspecified
-    username: ${POSTGRES_USERNAME:sample}
-    password: ${POSTGRES_PASSWORD:sampleiot123Dy}
-
+    url: jdbc:postgresql://${POSTGRES_HOST:127.0.0.1}:${POSTGRES_PORT:5432}/${DATABASE:sample}?stringtype=unspecified
+    username: ${POSTGRES_USERNAME:postgres}
+    password: ${POSTGRES_PASSWORD:postgres}
+  mail:
+    host: ${MAIL_HOST:smtp.example.com}
+    port: ${MAIL_PORT:587}
+    username: ${MAIL_USERNAME:your_email@example.com}
+    password: ${MAIL_PASSWORD:your_password}
+    protocol: smtp
+    test-connection: false
+    default-encoding: UTF-8
 # springdoc-openapi项目配置
 springdoc:
   swagger-ui:
@@ -85,6 +92,9 @@ mqtt:
       truststore-path:          # 可选参数：ssl 双向认证 truststore 目录，支持 classpath:/ 路径。
       truststore-pass:          # 可选参数：ssl 双向认证 truststore 密码
       client-auth: none         # 是否需要客户端认证（双向认证），默认：NONE（不需要）
+logging:
+  level:
+    root: info
 sample:
   iot:
     # 开启设备密钥认证
@@ -98,8 +108,8 @@ sample:
         topic-prefix: sampleiot
     device-channel-type: single
     influxdb:
-      url: http://106.13.72.27:8086
-      token: Evc2GMqMqWSGKZhwb2iTU4OeSJBg6K4QaAzmsbXpDyWnqMtM65zQa-olSUQFEoWMN96715qBv_xgJ56DfURGXw==
+      url: ${INFLUXDB_URL:http://127.0.0.1:8086}
+      token: ${INFLUXDB_TOKEN:Evc2GMqMqWS}
       org: sample
       bucket: sample
       prop-database: prop_data
