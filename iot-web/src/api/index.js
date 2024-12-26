@@ -41,12 +41,14 @@ export function productTypeAddApi(data) {
     data,
   })
 }
+
 export function productTypeDelApi(id) {
   return request({
     url: `/product/type/${id}`,
     method: 'delete',
   })
 }
+
 export function productTypeDetailApi(id) {
   return request({
     url: `/product/type/${id}`,
@@ -66,6 +68,7 @@ export function propertyListApi(params) {
     params,
   })
 }
+
 /**
  * 属性列表
  * @param id
@@ -77,6 +80,7 @@ export function propertyDeleteApi(id) {
     method: 'DELETE',
   })
 }
+
 /**
  * 保存标准属性
  * @param data
@@ -115,6 +119,7 @@ export function standardPropertyEditApi(data) {
     data,
   })
 }
+
 export function standardServiceListApi(params) {
   return request({
     url: '/model/service/standard',
@@ -122,6 +127,7 @@ export function standardServiceListApi(params) {
     params,
   })
 }
+
 export function customServiceListApi(params) {
   return request({
     url: '/model/service/custom',
@@ -137,6 +143,7 @@ export function serviceAddApi(data) {
     data,
   })
 }
+
 export function serviceDeleteApi(id) {
   return request({
     url: '/model/service',
@@ -180,6 +187,7 @@ export function manufacturerListApi({ productTypeId }) {
     },
   })
 }
+
 /**
  * 产品列表
  * @param data
@@ -208,6 +216,7 @@ export function productAddApi(data) {
     data,
   })
 }
+
 /**
  * 产品编辑
  * @param data
@@ -271,6 +280,7 @@ export function protocolAddApi(data) {
     data,
   })
 }
+
 /**
  * 协议添加
  * @param data
@@ -308,6 +318,7 @@ export function iconListApi(params) {
     params,
   })
 }
+
 /**
  * 图标添加
  * @param data
@@ -375,12 +386,14 @@ export function devicePageApi(data) {
     data,
   })
 }
+
 export function deviceDetailApi(id) {
   return request({
     url: `/device/${id}`,
     method: 'get',
   })
 }
+
 /**
  * 设备编辑
  * @param data
@@ -393,6 +406,7 @@ export function deviceEditeApi(data) {
     data,
   })
 }
+
 /**
  * 设备编辑
  * @param data
@@ -442,6 +456,7 @@ export function deviceDataMetric(data) {
     data,
   })
 }
+
 /**
  * 设备指标
  * @param data 参数上
@@ -451,5 +466,64 @@ export function rulePageApi(data) {
     url: `/rule/page`,
     method: 'post',
     data,
+  })
+}
+
+/**
+ * 添加消息接收者
+ * @param data 参数上
+ */
+export function messageReceiveAddApi(data) {
+  return request({
+    url: '/message/receive',
+    method: 'post',
+    data,
+  })
+}
+
+/**
+ * 编辑消息接收者
+ * @param data 参数上
+ */
+export function messageReceiveEditApi(data) {
+  return request({
+    url: '/message/receive',
+    method: 'put',
+    data,
+  })
+}
+
+/**
+ * 编辑消息接收者
+ * @param id id
+ */
+export function messageReceiveDeleteApi(id) {
+  return request({
+    url: `/message/receive/${id}`,
+    method: 'delete',
+  })
+}
+
+/**
+ * 编辑消息接收者
+ * @param data data
+ */
+export function messageReceivePageApi(data) {
+  return request({
+    url: `/message/receive/page`,
+    method: 'post',
+    data,
+  })
+}
+
+/**
+ * 编辑消息接收者
+ * @param params params
+ */
+export function messageReceiveListApi(params) {
+  return request({
+    url: `/message/receive`,
+    method: 'GET',
+    params,
   })
 }

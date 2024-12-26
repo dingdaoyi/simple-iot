@@ -5,9 +5,10 @@ import home from '@/views/home'
 import product from '@/views/product'
 import productType from '@/views/productType'
 import protocol from '@/views/protocol'
-import icon from '@/views/system/icon'
-import tslModel from '@/views/tslModel'
 import rule from '@/views/rule'
+import icon from '@/views/system/icon'
+import messageReceive from '@/views/system/messageReceive'
+import tslModel from '@/views/tslModel'
 
 export default [
 
@@ -105,6 +106,14 @@ export default [
             component: icon,
             meta: {
               title: '图标管理',
+            },
+          },
+          {
+            path: '/message',
+            name: '消息通知',
+            component: messageReceive,
+            meta: {
+              title: '消息通知',
             },
           },
         ],
