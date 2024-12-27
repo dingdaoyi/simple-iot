@@ -9,6 +9,7 @@ import com.github.dingdaoyi.model.vo.DevicePageVo;
 import com.github.dingdaoyi.model.vo.DeviceVo;
 import jakarta.validation.Valid;
 
+import java.util.List;
 import java.util.Optional;
 
 public interface DeviceService extends IService<Device>{
@@ -33,4 +34,13 @@ public interface DeviceService extends IService<Device>{
      * @return
      */
     String getDeviceKey(Integer id);
+
+    /**
+     * 条件查询,所有数据可能为空,最多返回100条
+     * @param productTypeId
+     * @param productId
+     * @param deviceKey
+     * @return
+     */
+    List<Device> list(Integer productTypeId, Integer productId, String deviceKey);
 }

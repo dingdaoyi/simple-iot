@@ -18,6 +18,7 @@ import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Service;
 
 import java.io.Serializable;
+import java.util.List;
 import java.util.Optional;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -79,6 +80,11 @@ public class DeviceServiceImpl extends ServiceImpl<DeviceMapper, Device> impleme
     @Override
     public String getDeviceKey(Integer id) {
         return baseMapper.findDeviceKeyById(id);
+    }
+
+    @Override
+    public List<Device> list(Integer productTypeId, Integer productId, String deviceKey) {
+        return baseMapper.listByProductAndDeviceKey(productTypeId,productId,deviceKey);
     }
 
     @Override

@@ -421,6 +421,18 @@ export function deviceAddApi(data) {
 }
 
 /**
+ * 设备搜索
+ * @param params
+ * @returns {*}
+ */
+export function deviceListApi(params) {
+  return request({
+    url: '/device/list',
+    method: 'get',
+    params,
+  })
+}
+/**
  * 字典查询
  * @param group 分组名称
  */

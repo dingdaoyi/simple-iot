@@ -1,5 +1,6 @@
 package com.github.dingdaoyi.controller.iot;
 
+import com.github.dingdaoyi.entity.Device;
 import com.github.dingdaoyi.model.PageResult;
 import com.github.dingdaoyi.model.enu.SysCodeEnum;
 import com.github.dingdaoyi.model.query.DeviceAddQuery;
@@ -16,6 +17,7 @@ import lombok.AllArgsConstructor;
 import net.dreamlu.mica.core.result.R;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -63,6 +65,13 @@ public class DeviceController {
     @Operation(summary = "设备分页列表")
     public PageResult<DevicePageVo> page(@RequestBody @Valid DevicePageQuery query) {
         return deviceService.pageByQuery(query);
+    }
+    @GetMapping("list")
+    @Operation(summary = "设备编号搜索")
+    public R<List<Device>> list(@RequestParam(required = false) Integer productId,
+                             @RequestParam(required = false) Integer productTypeId,
+                             @RequestParam(value = "deviceKey",required = false)String deviceKey) {
+        return R.success(deviceService.list(productTypeId,productId,deviceKey));
     }
 
 }

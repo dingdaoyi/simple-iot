@@ -88,4 +88,22 @@
         from tb_device
         where id=#{id}
     </select>
+
+    <select id="listByProductAndDeviceKey" resultMap="BaseResultMap">
+        select <include refid="dvs_column_list"/>
+        from tb_device dvs
+        join tb_product prd on prd.id=dvs.product_id
+        join tb_product_type tp on tp.id= prd.product_type_id
+        <where>
+            <if test="productTypeId != null">
+                tp.id =#{productTypeId}
+            </if>
+            <if test="productId != null">
+                and prd.id= #{productId}
+            </if>
+            <if test="deviceKey != null and deviceKey != ''">
+                and dvs.device_key like CONCAT('%', #{deviceKey}::text, '%')
+            </if>
+        </where>
+    </select>
 </mapper>

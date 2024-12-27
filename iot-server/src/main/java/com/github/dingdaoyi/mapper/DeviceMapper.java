@@ -8,6 +8,7 @@ import com.github.dingdaoyi.model.query.DevicePageQuery;
 import com.github.dingdaoyi.model.vo.DevicePageVo;
 import org.apache.ibatis.annotations.Param;
 
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -23,4 +24,7 @@ public interface DeviceMapper extends BaseMapper<Device> {
     String findDeviceKeyById(@Param("id")Integer id);
 
 
+    List<Device> listByProductAndDeviceKey(@Param("productTypeId") Integer productTypeId,
+                                           @Param("productId") Integer productId,
+                                           @Param("deviceKey") String deviceKey);
 }
