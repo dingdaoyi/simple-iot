@@ -1,11 +1,6 @@
 import { useAccountStore } from '@/store'
 import axios from 'axios'
 import { ElMessage } from 'element-plus'
-// import router from '@/router'
-let router = {}
-import('@/router').then(({ router: r }) => {
-  router = r
-})
 
 const service = axios.create({
   baseURL: '/iot',
@@ -51,6 +46,7 @@ service.interceptors.response.use(
   },
   // 响应失败进入第2个函数，该函数的参数是错误对象
   async (error) => {
+      console.log('error',error)
     const user = useAccountStore()
     const { data, status } = error.response
     if (status === 401) {
