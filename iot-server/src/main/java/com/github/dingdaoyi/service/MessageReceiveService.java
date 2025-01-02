@@ -20,4 +20,8 @@ public interface MessageReceiveService extends IService<MessageReceive>{
     PageResult<MessageReceive> pageByQuery(MessageRecivePageQuery pageQuery);
 
     Boolean deleteById(Integer id);
+
+    String getNameById(Integer id);
+
+
 }

@@ -480,6 +480,51 @@ export function rulePageApi(data) {
     data,
   })
 }
+/**
+ * 设备指标
+ * @param data 参数上
+ */
+export function ruleAddApi(data) {
+  return request({
+    url: `/rule`,
+    method: 'post',
+    data,
+  })
+}
+
+/**
+ * 设备指标
+ * @param data 参数上
+ */
+export function ruleEditApi(data) {
+  return request({
+    url: `/rule`,
+    method: 'put',
+    data,
+  })
+}
+
+
+/**
+ * 规则详情
+ * @param id 规则id
+ */
+export function ruleDetailsApi(id) {
+  return request({
+    url: `/rule/${id}`,
+    method: 'get',
+  })
+}
+
+/**
+ * 设备指标
+ */
+export function ruleDeleteApi(id) {
+  return request({
+    url: `/rule/${id}`,
+    method: 'delete',
+  })
+}
 
 /**
  * 添加消息接收者
@@ -534,7 +579,7 @@ export function messageReceivePageApi(data) {
  */
 export function messageReceiveListApi(params) {
   return request({
-    url: `/message/receive`,
+    url: '/message/receive/list',
     method: 'GET',
     params,
   })

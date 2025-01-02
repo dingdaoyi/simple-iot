@@ -5,7 +5,12 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import com.github.dingdaoyi.model.PageResult;
 import com.github.dingdaoyi.model.query.RuleAddQuery;
 import com.github.dingdaoyi.model.query.RulePageQuery;
+import com.github.dingdaoyi.model.query.RuleUpdateQuery;
+import com.github.dingdaoyi.model.vo.RuleDetailVo;
 import com.github.dingdaoyi.model.vo.RulePageVo;
+import net.dreamlu.mica.core.result.R;
+
+import java.util.List;
 
 /**
  * @author dingyunwei
@@ -20,4 +25,16 @@ public interface IotRuleService extends IService<IotRule>{
      * @return
      */
     boolean save(RuleAddQuery addQuery);
+
+    /**
+     *
+     * 修改
+     * @param updateQuery 参数
+     * @return
+     */
+    boolean update(RuleUpdateQuery updateQuery);
+
+    RuleDetailVo details(Integer id);
+
+    List<IotRule> queryByDeviceKey(String deviceKey);
 }

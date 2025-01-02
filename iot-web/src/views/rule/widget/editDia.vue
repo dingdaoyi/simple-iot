@@ -1,5 +1,13 @@
 <script lang="jsx" setup>
-import { deviceListApi, productListApi, productTypeListApi, protocolAddApi, protocolEditApi } from '@/api'
+import {
+  deviceListApi,
+  messageReceiveListApi,
+  productListApi,
+  productTypeListApi,
+  ruleAddApi,
+  ruleDetailsApi,
+  ruleEditApi,
+} from '@/api'
 import { dwHooks } from 'dwyl-ui'
 import { ref } from 'vue'
 
@@ -37,11 +45,34 @@ const inputTypeOpt = [
 const deviceList = ref([])
 const productTypeListOpt = ref([])
 const productListOpt = ref([])
+const targetListOpt = ref([])
 const searchDeviceLoading = ref(false)
 
 const rules = ref({
-  name: [{ required: true, message: '协议名称不能为空', trigger: 'blur' }],
+  name: [{ required: true, message: '规则名称不能为空', trigger: 'blur' }],
+  inputType: [{ required: true, message: '输入类型不能为空', trigger: 'change' }],
+  ruleType: [{ required: true, message: '处理类型不能为空', trigger: 'change' }],
+  sourceType: [{ required: true, message: '数据源类型不能为空', trigger: 'change' }],
+  productTypeId: [{ required: true, message: '产品类型不能为空', trigger: 'blur' }],
+  productId: [{ required: true, message: '产品不能为空', trigger: 'blur' }],
+  sourceId: [{ required: true, message: '数据源不能为空', trigger: 'blur' }],
+  script: [{ required: true, message: '处理脚本不能为空', trigger: 'blur' }],
 })
+
+const targetTypeOpt = [
+  {
+    label: 'HTTP推送',
+    value: 1,
+  },
+  {
+    label: 'MQTT推送',
+    value: 2,
+  },
+  {
+    label: '消息推送',
+    value: 3,
+  },
+]
 
 const sourceTypeOpt = [
   {
@@ -59,21 +90,32 @@ const sourceTypeOpt = [
 ]
 
 const { form, onSubmit, editRef, loading, onClose, dwDialogRef, onReset } = useForm({
-  api: props.datas ? protocolEditApi : protocolAddApi,
+  api: props.datas ? ruleEditApi : ruleAddApi,
   callback: () => {
     emits('update')
   },
 })
-function changeProduct(productId) {
+function changeProduct() {
   if (form.value.sourceType === 1) {
-    form.sourceId = productId
+    form.value.sourceId = form.value.productId
   }
 }
-function changeProductType() {
-  productListApi({ productTypeId: form.value.productTypeId })
-    .then(({ data }) => {
-      productListOpt.value = data
-    })
+
+async function changeTargetType(value) {
+  if (value === 3) {
+    const { data } = await messageReceiveListApi()
+    targetListOpt
+      .value = data.map((item) => {
+        return {
+          label: item.name,
+          value: item.id,
+        }
+      })
+  }
+}
+async function changeProductType() {
+  const { data } = await productListApi({ productTypeId: form.value.productTypeId })
+  productListOpt.value = data
 }
 
 async function searchDevice(query) {
@@ -92,13 +134,26 @@ async function searchDevice(query) {
     }
   }
 }
-if (props?.datas) {
-  form.value = props.datas
+async function loadData() {
+  loading.value = true
+  try {
+    const productTypeRes = await productTypeListApi()
+    productTypeListOpt.value = productTypeRes.data
+    if (!props?.datas) {
+      return
+    }
+    const { data } = await ruleDetailsApi(props?.datas.id)
+    form.value = data
+    await changeProductType()
+    changeProduct()
+    await changeTargetType(form.value.targetType)
+    await searchDevice(form.value.sourceName)
+  }
+  finally {
+    loading.value = false
+  }
 }
-productTypeListApi()
-  .then(({ data }) => {
-    productTypeListOpt.value = data
-  })
+loadData()
 </script>
 
 <template>
@@ -222,13 +277,13 @@ productTypeListApi()
           class="w-full"
           filterable
           clearable
+          @change="changeProduct"
         >
           <dw-option
             v-for="item in productListOpt"
             :key="item.id"
             :label="`${item.model}(${item.manufacturer})`"
             :value="item.id"
-            @change="changeProduct(item.id)"
           />
         </dw-select>
       </el-form-item>
@@ -257,11 +312,62 @@ productTypeListApi()
         </el-select>
       </el-form-item>
       <el-form-item
-        label="备注"
-        prop="mark"
+        label="输出类型"
+        prop="targetType"
+        class="is-required"
+      >
+        <dw-select
+          v-model="form.targetType"
+          placeholder="请选择输出类型"
+          class="w-full"
+          filterable
+          clearable
+          @change="changeTargetType"
+        >
+          <dw-option
+            v-for="item in targetTypeOpt"
+            :key="item.value"
+            :label="item.label"
+            :value="item.value"
+          />
+        </dw-select>
+      </el-form-item>
+      <el-form-item
+        label="接收者"
+        prop="targetId"
+        class="is-required"
+      >
+        <dw-select
+          v-model="form.targetId"
+          placeholder="请选择接收者"
+          class="w-full"
+          filterable
+          clearable
+        >
+          <dw-option
+            v-for="item in targetListOpt"
+            :key="item.value"
+            :label="item.label"
+            :value="item.value"
+          />
+        </dw-select>
+      </el-form-item>
+      <el-form-item
+        label="处理脚本"
+        prop="script"
       >
         <el-input
-          v-model="form.mark"
+          v-model="form.script"
+          clearable
+          placeholder="请输入脚本信息"
+        />
+      </el-form-item>
+      <el-form-item
+        label="备注"
+        prop="remark"
+      >
+        <el-input
+          v-model="form.remark"
           clearable
           placeholder="请输入备注信息"
         />

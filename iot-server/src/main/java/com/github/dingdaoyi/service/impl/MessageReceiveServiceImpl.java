@@ -34,4 +34,9 @@ public class MessageReceiveServiceImpl extends ServiceImpl<MessageReceiveMapper,
         //判断关联关系
         return super.removeById(id);
     }
+
+    @Override
+    public String getNameById(Integer id) {
+        return baseMapper.selectById(id).getName();
+    }
 }

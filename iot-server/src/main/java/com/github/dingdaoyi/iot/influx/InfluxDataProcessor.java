@@ -7,6 +7,7 @@ import com.github.dingdaoyi.proto.model.DecodeResult;
 import com.github.dingdaoyi.proto.model.DeviceData;
 import com.github.dingdaoyi.proto.model.DeviceEventData;
 import com.github.dingdaoyi.proto.model.KeyValue;
+import com.github.dingdaoyi.proto.model.tsl.TslModel;
 import com.github.dingdaoyi.service.DeviceDataService;
 import com.influxdb.client.BucketsApi;
 import com.influxdb.client.InfluxDBClient;
@@ -47,7 +48,7 @@ public class InfluxDataProcessor implements DataProcessor, DeviceDataService {
     }
 
     @Override
-    public void process(DecodeResult message, String deviceKey) {
+    public void process(DecodeResult message, String deviceKey, TslModel tslModel) {
         if ($.isNotEmpty(message.getDataList())) {
             this.saveProperties(message.getDataList(), deviceKey);
         }

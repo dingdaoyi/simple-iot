@@ -1,5 +1,5 @@
 <script setup>
-import { protocolDeleteApi, rulePageApi } from '@/api/index.js'
+import { ruleDeleteApi, rulePageApi } from '@/api/index.js'
 import EditDia from '@/views/rule/widget/editDia.vue'
 import { dwHooks } from 'dwyl-ui'
 
@@ -124,12 +124,13 @@ const {
   onSearch,
   dwTable,
   onDelete,
+  onEdit,
   onAdd,
   diaTitle,
   currentItem,
 } = useDwTable({
-  deleteApi: protocolDeleteApi,
-  diaName: '协议',
+  deleteApi: ruleDeleteApi,
+  diaName: '规则',
   defParams: {
   },
 })
@@ -176,6 +177,9 @@ function closeEdite() {
       <template #cz="{ row }">
         <dw-button type="danger" link @click="onDelete(row)">
           删除
+        </dw-button>
+        <dw-button type="primary" link @click="onEdit(row)">
+          编辑
         </dw-button>
       </template>
     </DwTable>

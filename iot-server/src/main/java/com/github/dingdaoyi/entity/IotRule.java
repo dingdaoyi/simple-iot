@@ -60,6 +60,9 @@ public class IotRule {
     @Schema(description = "输入类型")
     private RuleInputType inputType;
 
+    @TableField(value = "identifier")
+    @Schema(description = "标识符")
+    private String identifier;
     /**
      * 源数据类型,1,产品;2,设备分组,3, 特定设备
      */
@@ -87,4 +90,13 @@ public class IotRule {
     @TableField(value = "target_id")
     @Schema(description = "目标id")
     private Integer targetId;
+
+    /**
+     * 解析
+     * @param value 参数
+     * @return
+     */
+    public Object parse(Object value) {
+      return   this.getRuleType().ruleProcessor.parse(value,this.script);
+    }
 }

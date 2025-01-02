@@ -14,6 +14,7 @@
     <result column="source_id" property="sourceId" />
     <result column="target_type" property="targetType" />
     <result column="target_id" property="targetId" />
+    <result column="identifier" property="identifier" />
   </resultMap>
   <resultMap id="PageVo_Result_Map" type="com.github.dingdaoyi.model.vo.RulePageVo" extends="BaseResultMap">
 
@@ -21,7 +22,7 @@
   <sql id="Base_Column_List">
     <!--@mbg.generated-->
     id, "name", rule_type, script, remark, input_type, source_type, source_id, target_type, 
-    target_id
+    target_id,identifier
   </sql>
 
   <select id="pageByQuery" resultMap="PageVo_Result_Map">
@@ -33,4 +34,19 @@
       </if>
     </where>
     </select>
+
+  <select id="listByDeviceKey" resultMap="BaseResultMap">
+    select rl.*
+    from tb_iot_rule rl
+           inner join tb_device dvs on rl.source_id = dvs.id
+    where source_type = 3
+      and dvs.device_key = #{deviceKey}
+    union all
+    (
+    select rl.* from tb_iot_rule rl
+    inner join tb_device dvs on rl.source_id = dvs.product_id
+    where source_type=1
+    and dvs.device_key = #{deviceKey}
+    )
+  </select>
 </mapper>

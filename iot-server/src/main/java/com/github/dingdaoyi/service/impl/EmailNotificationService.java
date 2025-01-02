@@ -12,6 +12,7 @@ import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import lombok.extern.slf4j.Slf4j;
 import net.dreamlu.mica.core.exception.ServiceException;
+import net.dreamlu.mica.core.utils.JsonUtil;
 import org.springframework.boot.autoconfigure.mail.MailProperties;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
@@ -47,7 +48,8 @@ public class EmailNotificationService implements NotificationService {
     @Override
     public void sendMessage(String receiver, String templateId, Map<String, Object> model) {
         try {
-            String emailBody = generateEmailBody(templateId+".ftl",model);
+            log.info("发送邮件:{}:{}:{}", receiver,templateId, JsonUtil.toJson(model));
+            String emailBody = generateEmailBody(templateId,model);
             MimeMessage message = mailSender.createMimeMessage();
             MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
             helper.setFrom(mailProperties.getUsername());

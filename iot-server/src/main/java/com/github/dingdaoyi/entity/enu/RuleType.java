@@ -24,7 +24,10 @@ public enum RuleType {
     @JsonValue
     public final int value;
 
+    public final RuleProcessor ruleProcessor;
+
     RuleType(int value, RuleProcessor ruleProcessor) {
         this.value = value;
+        this.ruleProcessor = ruleProcessor;
     }
 }
