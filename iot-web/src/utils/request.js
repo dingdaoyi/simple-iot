@@ -13,6 +13,10 @@ service.interceptors.request.use(
   (config) => {
     if (config.headers.noToken !== 1) {
       const store = useAccountStore()
+      if (!store.authorization) {
+        // TODO 没有登录
+        return config
+      }
       const { tokenName, tokenValue } = store.authorization
       if (tokenValue) {
         config.headers[tokenName] = tokenValue
@@ -46,13 +50,12 @@ service.interceptors.response.use(
   },
   // 响应失败进入第2个函数，该函数的参数是错误对象
   async (error) => {
-      console.log('error',error)
     const user = useAccountStore()
     const { data, status } = error.response
     if (status === 401) {
       user.clearToken()
       // router.replace('/login')
-      window.location.href = '/admin/login'
+      window.location.href = '#/login'
       return
     }
     ElMessage.error(data?.msg || error?.message || '请求出错')

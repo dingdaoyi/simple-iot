@@ -1,7 +1,9 @@
 package com.github.dingdaoyi.config.satoken;
 
 import cn.dev33.satoken.interceptor.SaInterceptor;
+import cn.dev33.satoken.stp.StpUtil;
 import jakarta.annotation.Resource;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
@@ -15,6 +17,7 @@ import java.util.List;
  */
 @Configuration
 @Import(SsoProperties.class)
+@Slf4j
 public class SaTokenConfigure implements WebMvcConfigurer {
 
 
@@ -38,7 +41,8 @@ public class SaTokenConfigure implements WebMvcConfigurer {
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
-        registry.addInterceptor(new SaInterceptor()).addPathPatterns("/**")
+        SaInterceptor interceptor = new SaInterceptor(handle -> StpUtil.checkLogin());
+        registry.addInterceptor(interceptor).addPathPatterns("/**")
                 .excludePathPatterns(DEFAULT_SKIP_URL)
                 .excludePathPatterns(ssoProperties.getSkipUrl());
     }
