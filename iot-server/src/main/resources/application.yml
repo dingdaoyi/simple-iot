@@ -40,6 +40,8 @@ springdoc:
     - group: 'default'
       paths-to-match: '/**'
       packages-to-scan: com.github.dingdaoyi.controller
+      #https://gitee.com/xiaoym/knife4j/issues/IBI0DM swagger3.4.5bug暂时处理
+  override-with-generic-response: false
 knife4j:
   enable: true
   setting:

@@ -3,7 +3,9 @@ package com.github.dingdaoyi.iot.influx;
 import com.github.dingdaoyi.config.base.IotConfigProperties;
 import com.github.dingdaoyi.iot.DataProcessor;
 import com.github.dingdaoyi.model.DTO.DeviceDTO;
+import com.github.dingdaoyi.model.enu.SysCodeEnum;
 import com.github.dingdaoyi.model.query.DeviceDataQuery;
+import com.github.dingdaoyi.model.query.DeviceEventDataVo;
 import com.github.dingdaoyi.proto.model.DecodeResult;
 import com.github.dingdaoyi.proto.model.DeviceData;
 import com.github.dingdaoyi.proto.model.DeviceEventData;
@@ -16,14 +18,12 @@ import com.github.dingdaoyi.service.TslModelService;
 import com.influxdb.v3.client.InfluxDBClient;
 import com.influxdb.v3.client.Point;
 import com.influxdb.v3.client.PointValues;
-import com.influxdb.v3.client.internal.NanosecondConverter;
 import com.influxdb.v3.client.query.QueryOptions;
 import com.influxdb.v3.client.query.QueryType;
-import com.influxdb.v3.client.write.WritePrecision;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
+import net.dreamlu.mica.core.exception.ServiceException;
 import net.dreamlu.mica.core.utils.$;
-import net.dreamlu.mica.core.utils.DatePattern;
 import net.dreamlu.mica.core.utils.DateUtil;
 import net.dreamlu.mica.core.utils.JsonUtil;
 import org.springframework.stereotype.Service;
@@ -71,8 +71,9 @@ public class InfluxDataProcessor implements DataProcessor, DeviceDataService {
     }
 
     private void saveEvent(DeviceEventData eventData, String rowData, String deviceKey) {
-        Point point = Point.measurement(properties.getEventDatabase() + "_identifier")
+        Point point = Point.measurement(properties.getEventDatabase())
                 .setTag("deviceKey", deviceKey)
+                .setTag("identifier", eventData.getIdentifier())
                 .setTag("eventType", eventData.getEventType().getValue() + "")
                 .setField("value", JsonUtil.toJson(eventData.getParams()))
                 .setField("rowData", rowData)
@@ -152,21 +153,25 @@ public class InfluxDataProcessor implements DataProcessor, DeviceDataService {
         try (Stream<PointValues> stream = influxDBClient.queryPoints(sqlParams, Map.of("deviceKey", query.getDeviceKey(),
                 "beginTime", DateUtil.formatDateTime(query.getBeginTime()), "endTime",  DateUtil.formatDateTime(query.getEndTime())), queryOptions)) {
 
-            stream.forEach(row -> {
-                // 通过 Instant 转换为 LocalDateTime
-                // 将纳秒时间戳拆分为秒和纳秒部分
-                long influxTimestamp = row.getTimestamp().longValue();
-                long seconds = influxTimestamp / 1_000_000_000;  // 秒部分
-                long nanos = influxTimestamp % 1_000_000_000;    // 纳秒部分
-                Instant instant = Instant.ofEpochSecond(seconds, nanos);
-                LocalDateTime utcDateTime = instant.atZone(ZoneId.systemDefault())
-                        .toLocalDateTime();
-                String date = DateUtil.format(utcDateTime, DateUtil.PATTERN_DATETIME);
-                dataList.add(new KeyValue<>(date, row.getField("value")));
-            });
+            stream.forEach(row -> dataList.add(new KeyValue<>(TimeUtils.toDateTimeStr(row.getTimestamp()), row.getField("value"))));
         } catch (Exception e) {
             log.debug("查询出错:{}", e.getMessage());
         }
         return dataList;
+    }
+
+    @Override
+    public List<DeviceEventDataVo> eventLogs(DeviceDataQuery query) {
+        QueryOptions queryOptions = new QueryOptions(properties.getDatabase(), QueryType.SQL);
+        //TODO 需要解决分页等问题
+        String sqlParams = "select * from " + properties.getEventDatabase() + " where \"deviceKey\"=$deviceKey" +
+                           " and time> $beginTime and time<= $endTime order by time desc limit 100";
+        try (Stream<PointValues> stream = influxDBClient.queryPoints(sqlParams, Map.of("deviceKey", query.getDeviceKey(),
+                "beginTime", DateUtil.formatDateTime(query.getBeginTime()), "endTime",  DateUtil.formatDateTime(query.getEndTime())), queryOptions)) {
+           return stream.map(DeviceEventDataVo::fromPointValues).toList();
+        } catch (Exception e) {
+            log.error("查询出错:{}", e.getMessage());
+            throw new ServiceException(SysCodeEnum.BAD_REQUEST,"请求参数错误!");
+        }
     }
 }

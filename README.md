@@ -16,7 +16,7 @@
 - [X] 协议管理
 - [ ] 协议接入定义
 - 协议功能开发
-- [ ] MQTT协议system-default
+- [X] MQTT协议system-default
 ### 演示地址
 http://106.13.72.27:8962/#/login
 admin 123456
