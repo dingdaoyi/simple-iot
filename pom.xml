@@ -5,7 +5,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>3.4.1</version>
+        <version>3.4.5</version>
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <groupId>com.github.dingdaoyi</groupId>
@@ -37,10 +37,10 @@
         <maven.compiler.source>21</maven.compiler.source>
         <maven.compiler.target>21</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <mybatis-plus.version>3.5.9</mybatis-plus.version>
-        <sa-token.version>1.39.0</sa-token.version>
+        <mybatis-plus.version>3.5.12</mybatis-plus.version>
+        <sa-token.version>1.42.0</sa-token.version>
         <knife4j.version>4.5.0</knife4j.version>
-        <mica-mqtt.version>2.3.9</mica-mqtt.version>
+        <mica-mqtt.version>2.4.5</mica-mqtt.version>
         <influxdb-client.version>7.2.0</influxdb-client.version>
     </properties>
     <dependencyManagement>

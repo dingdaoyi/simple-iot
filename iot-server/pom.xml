@@ -54,6 +54,12 @@
         <dependency>
             <groupId>com.github.xiaoymin</groupId>
             <artifactId>knife4j-openapi3-jakarta-spring-boot-starter</artifactId>
+            <exclusions>
+                <exclusion>
+                    <artifactId>swagger-annotations-jakarta</artifactId>
+                    <groupId>io.swagger.core.v3</groupId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>org.projectlombok</groupId>
@@ -61,7 +67,7 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>net.dreamlu</groupId>
+            <groupId>org.dromara.mica-mqtt</groupId>
             <artifactId>mica-mqtt-server-spring-boot-starter</artifactId>
             <version>${mica-mqtt.version}</version>
         </dependency>
@@ -72,27 +78,10 @@
         </dependency>
         <dependency>
             <groupId>com.influxdb</groupId>
-            <artifactId>influxdb-client-java</artifactId>
-            <version>${influxdb-client.version}</version>
-            <exclusions>
-                <exclusion>
-                    <artifactId>annotations</artifactId>
-                    <groupId>org.jetbrains</groupId>
-                </exclusion>
-            </exclusions>
+            <artifactId>influxdb3-java</artifactId>
+            <version>1.0.0</version>
         </dependency>
 
-        <dependency>
-            <groupId>org.springframework.security</groupId>
-            <artifactId>spring-security-test</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.jetbrains</groupId>
-            <artifactId>annotations</artifactId>
-            <version>23.0.0</version>
-            <scope>compile</scope>
-        </dependency>
         <dependency>
             <groupId>com.github.dingdaoyi</groupId>
             <artifactId>iot-protocol-core</artifactId>

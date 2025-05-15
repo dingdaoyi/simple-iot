@@ -8,12 +8,9 @@ import com.github.dingdaoyi.model.DTO.DeviceDTO;
 import com.github.dingdaoyi.proto.model.DeviceRequest;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
-import net.dreamlu.iot.mqtt.codec.MqttPublishMessage;
-import net.dreamlu.iot.mqtt.codec.MqttQoS;
-import net.dreamlu.iot.mqtt.core.server.event.IMqttMessageListener;
-import net.dreamlu.iot.mqtt.spring.server.MqttServerTemplate;
-import org.jetbrains.annotations.NotNull;
-import org.springframework.context.annotation.Lazy;
+import org.dromara.mica.mqtt.codec.MqttPublishMessage;
+import org.dromara.mica.mqtt.codec.MqttQoS;
+import org.dromara.mica.mqtt.core.server.event.IMqttMessageListener;
 import org.springframework.stereotype.Component;
 import org.tio.core.ChannelContext;
 
@@ -52,7 +49,7 @@ public class MqttDriver implements IMqttMessageListener {
         dataProcessor.messageUp(deviceRequest);
     }
 
-    private @NotNull DeviceRequest getDeviceRequest(MqttPublishMessage message, MqttTopic mqttTopic, DeviceDTO device) {
+    private DeviceRequest getDeviceRequest(MqttPublishMessage message, MqttTopic mqttTopic, DeviceDTO device) {
         DeviceRequest deviceRequest = new DeviceRequest();
         deviceRequest.setProtoKey(device.getProtoKey());
         deviceRequest.setDeviceKey(device.getDeviceKey());

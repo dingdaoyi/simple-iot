@@ -6,7 +6,7 @@ import com.github.dingdaoyi.proto.model.ProtocolException;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
-import net.dreamlu.iot.mqtt.spring.server.MqttServerTemplate;
+import org.dromara.mica.mqtt.spring.server.MqttServerTemplate;
 import org.tio.core.ChannelContext;
 
 import java.io.IOException;

@@ -1,13 +1,12 @@
 package com.github.dingdaoyi.driver.mqtt;
 
 import com.github.dingdaoyi.config.base.IotConfigProperties;
-import com.github.dingdaoyi.entity.Device;
 import com.github.dingdaoyi.model.DTO.DeviceDTO;
 import com.github.dingdaoyi.service.DeviceService;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
-import net.dreamlu.iot.mqtt.core.server.auth.IMqttServerAuthHandler;
 import org.apache.commons.lang3.StringUtils;
+import org.dromara.mica.mqtt.core.server.auth.IMqttServerAuthHandler;
 import org.springframework.stereotype.Component;
 import org.tio.core.ChannelContext;
 

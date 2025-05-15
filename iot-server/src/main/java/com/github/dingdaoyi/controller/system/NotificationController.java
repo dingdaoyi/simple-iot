@@ -15,7 +15,7 @@ import java.util.Map;
  * @author dingyunwei
  */
 @RestController
-@Tag(name = "图标管理")
+@Tag(name = "消息通知")
 @RequestMapping("notification")
 public class NotificationController {
     @Resource

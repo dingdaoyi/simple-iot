@@ -5,7 +5,6 @@ import lombok.Data;
 import net.dreamlu.mica.core.result.IResultCode;
 import net.dreamlu.mica.core.result.SystemCode;
 import net.dreamlu.mica.core.utils.$;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.Iterator;
 import java.util.List;
@@ -95,7 +94,7 @@ public class PageResult<T> implements Iterable<T>{
     }
 
     @Override
-    public @NotNull Iterator<T> iterator() {
+    public Iterator<T> iterator() {
         return data.iterator();
     }
 }

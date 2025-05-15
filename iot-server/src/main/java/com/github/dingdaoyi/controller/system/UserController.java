@@ -45,10 +45,5 @@ public class UserController {
         }
         return R.fail(SysCodeEnum.BAD_REQUEST, "账号不存在");
     }
-    @GetMapping("/test")
-    @SaCheckLogin
-    public R<String> test() {
-        return R.success("你好");
-    }
 
 }

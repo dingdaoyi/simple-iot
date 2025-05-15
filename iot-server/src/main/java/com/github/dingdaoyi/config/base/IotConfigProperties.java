@@ -53,12 +53,8 @@ public class IotConfigProperties {
         /**
          * org
          */
-        private String org;
+        private String database;
 
-        /**
-         * buket
-         */
-        private String bucket;
 
         /**
          * 属性数据数据库

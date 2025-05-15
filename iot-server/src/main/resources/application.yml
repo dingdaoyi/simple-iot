@@ -113,7 +113,6 @@ sample:
     influxdb:
       url: ${INFLUXDB_URL:http://127.0.0.1:8086}
       token: ${INFLUXDB_TOKEN:Evc2GMqMqWS}
-      org: sample
-      bucket: sample
       prop-database: prop_data
       event-database: even_data
+      database: sample

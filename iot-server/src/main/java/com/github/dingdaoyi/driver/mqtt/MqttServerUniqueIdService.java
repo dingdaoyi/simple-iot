@@ -2,9 +2,8 @@ package com.github.dingdaoyi.driver.mqtt;
 
 import com.github.dingdaoyi.driver.DriverConfig;
 import jakarta.annotation.Resource;
-import net.dreamlu.iot.mqtt.core.server.auth.IMqttServerUniqueIdService;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.dromara.mica.mqtt.core.server.auth.IMqttServerUniqueIdService;
 import org.springframework.stereotype.Component;
 import org.tio.core.ChannelContext;
 

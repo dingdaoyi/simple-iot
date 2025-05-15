@@ -14,7 +14,6 @@ import com.github.dingdaoyi.service.ProductService;
 import com.github.dingdaoyi.service.TslModelService;
 import com.github.dingdaoyi.utils.PageHelper;
 import jakarta.annotation.Resource;
-import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Service;
 
 import java.io.Serializable;
@@ -44,7 +43,7 @@ public class DeviceServiceImpl extends ServiceImpl<DeviceMapper, Device> impleme
         return getDeviceVo(device);
     }
 
-    private @NotNull Optional<DeviceVo> getDeviceVo(Device device) {
+    private  Optional<DeviceVo> getDeviceVo(Device device) {
         DeviceVo deviceVo = DeviceVo.build(device);
         Optional<ProductVo> productVo = productService.details(deviceVo.getProductId());
         if (productVo.isPresent()) {
