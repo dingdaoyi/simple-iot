@@ -33,7 +33,7 @@ public class SqlParseTest {
         context.setVariable("dataList", decodeResult.getDataList());
         String expression = "#dataList.?[identifier == 'pressure' and value > 30]"; // 两个查询条件
         List<DeviceData> result = (List<DeviceData>) parser.parseExpression(expression).getValue(context);
-        result.forEach(device -> System.out.println(device.identifier() + " : " + device.value()));
+        result.forEach(device -> System.out.println(device.getIdentifier() + " : " + device.getValue()));
     }
 
     @Test
