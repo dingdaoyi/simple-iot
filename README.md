@@ -1,8 +1,4 @@
 # Simple IoT Platform 🚀
-
-[![MIT License](https://img.shields.io/badge/license-MIT-green.svg)](https://opensource.org/licenses/MIT)
-[![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.4.5-brightgreen)](https://spring.io/projects/spring-boot)
-
 > 一个轻量级物联网平台，采用单体架构设计，聚焦核心功能实现，降低分布式架构的复杂度，适合中小规模物联网场景。
 
 ## ✨ 功能特性
