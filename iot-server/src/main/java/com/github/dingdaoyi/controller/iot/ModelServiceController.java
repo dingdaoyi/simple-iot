@@ -1,6 +1,9 @@
 package com.github.dingdaoyi.controller.iot;
 
-import com.github.dingdaoyi.model.enu.SysCodeEnum;
+import cn.hutool.core.collection.CollectionUtil;
+import com.github.dingdaoyi.model.base.R;
+import com.github.dingdaoyi.model.enu.SystemCode;
+import com.github.dingdaoyi.model.exception.ServiceException;
 import com.github.dingdaoyi.model.query.ServiceAddQuery;
 import com.github.dingdaoyi.model.query.ServiceUpdateQuery;
 import com.github.dingdaoyi.model.vo.ModelServiceVO;
@@ -9,9 +12,6 @@ import com.github.dingdaoyi.service.ModelServiceService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AllArgsConstructor;
-import net.dreamlu.mica.core.exception.ServiceException;
-import net.dreamlu.mica.core.result.R;
-import net.dreamlu.mica.core.utils.$;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -32,8 +32,8 @@ public class ModelServiceController {
     @GetMapping("standard")
     @Operation(summary = "根据产品id获取物模型数据")
     public R<List<ModelServiceVO>> list(@RequestParam(required = false) Integer serviceType,
-                                              @RequestParam(required = false) String search,
-                                              @RequestParam Integer productTypeId) {
+                                        @RequestParam(required = false) String search,
+                                        @RequestParam Integer productTypeId) {
         return R.success(modelServiceService.listByProductType(productTypeId,serviceType,search));
     }
 
@@ -62,9 +62,9 @@ public class ModelServiceController {
     }
 
     private void validateProperties(ServiceAddQuery modelService) {
-        if ($.isNotEmpty(modelService.getInputParamIds())) {
+        if (CollectionUtil.isNotEmpty(modelService.getInputParamIds())) {
             if (!modelPropertyService.allExists(modelService.getInputParamIds())) {
-                throw new ServiceException(SysCodeEnum.BAD_REQUEST,"请确保入参id");
+                throw new ServiceException(SystemCode.BAD_REQUEST,"请确保入参id");
             }
         }
     }

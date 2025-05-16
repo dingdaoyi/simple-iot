@@ -1,12 +1,13 @@
 package com.github.dingdaoyi.service.impl;
 
+import cn.hutool.core.util.BooleanUtil;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.github.dingdaoyi.model.PageQuery;
 import com.github.dingdaoyi.model.PageResult;
 import com.github.dingdaoyi.model.vo.ProductTypeVo;
 import com.github.dingdaoyi.utils.PageHelper;
-import net.dreamlu.mica.core.utils.$;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -26,7 +27,7 @@ public class ProductTypeServiceImpl extends ServiceImpl<ProductTypeMapper, Produ
     public List<ProductTypeVo> listByParentId(Integer parentId,Boolean withChildren) {
         List<ProductTypeVo> productTypeVoList = baseMapper.listByParentId(parentId);
         //TODO 换成内存方式
-        if (parentId==-1 && $.isTrue(withChildren)) {
+        if (parentId==-1 && BooleanUtil.isTrue(withChildren)) {
             for (ProductTypeVo productTypeVo : productTypeVoList) {
                 productTypeVo.setChildren(baseMapper.listByParentId(productTypeVo.getId()));
             }
@@ -54,7 +55,7 @@ public class ProductTypeServiceImpl extends ServiceImpl<ProductTypeMapper, Produ
         Page<ProductType> page = PageHelper.page(query);
         Page<ProductType> result = baseMapper.selectPage(page, Wrappers
                 .<ProductType>lambdaQuery()
-                .like($.isNotBlank(query.getName()), ProductType::getName, query.getName()));
+                .like(StringUtils.isNotBlank(query.getName()), ProductType::getName, query.getName()));
         return PageHelper.result(result);
     }
 

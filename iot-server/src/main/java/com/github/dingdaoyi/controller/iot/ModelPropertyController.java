@@ -1,8 +1,7 @@
 package com.github.dingdaoyi.controller.iot;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.github.dingdaoyi.entity.ModelProperty;
-import com.github.dingdaoyi.model.enu.SysCodeEnum;
+import com.github.dingdaoyi.model.base.R;
+import com.github.dingdaoyi.model.enu.SystemCode;
 import com.github.dingdaoyi.model.query.ModelPropertyUpdateQuery;
 import com.github.dingdaoyi.model.query.ProductPropertyAddQuery;
 import com.github.dingdaoyi.model.query.StandardPropertyAddQuery;
@@ -12,7 +11,6 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
-import net.dreamlu.mica.core.result.R;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -43,7 +41,7 @@ public class ModelPropertyController {
     @Operation(summary = "保存标准物模型属性")
     public R<Boolean> saveStandardProperty(@Valid @RequestBody StandardPropertyAddQuery property) {
         if (modelPropertyService.exists(property.getIdentifier(), property.getProductTypeId())) {
-            return R.fail(SysCodeEnum.BAD_REQUEST, "标识符已占用!");
+            return R.fail(SystemCode.BAD_REQUEST, "标识符已占用!");
         }
         return R.success(modelPropertyService.saveStandardProperty(property));
     }
@@ -52,7 +50,7 @@ public class ModelPropertyController {
     @Operation(summary = "保存自定义属性")
     public R<Boolean> saveProductProperty(@RequestBody ProductPropertyAddQuery property) {
         if (modelPropertyService.exists(property.getIdentifier(), property.getProductTypeId(), property.getProductId())) {
-            return R.fail(SysCodeEnum.BAD_REQUEST, "标识符已占用!");
+            return R.fail(SystemCode.BAD_REQUEST, "标识符已占用!");
         }
         return R.success(modelPropertyService.saveProductProperty(property));
     }

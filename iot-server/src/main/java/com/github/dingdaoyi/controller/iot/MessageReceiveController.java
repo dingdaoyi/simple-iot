@@ -4,14 +4,14 @@ package com.github.dingdaoyi.controller.iot;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.github.dingdaoyi.entity.MessageReceive;
 import com.github.dingdaoyi.model.PageResult;
+import com.github.dingdaoyi.model.base.R;
 import com.github.dingdaoyi.model.query.*;
 import com.github.dingdaoyi.service.MessageReceiveService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.annotation.Resource;
 import jakarta.validation.Valid;
-import net.dreamlu.mica.core.result.R;
-import net.dreamlu.mica.core.utils.$;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -31,7 +31,7 @@ public class MessageReceiveController {
     public R<List<MessageReceive>> list(@RequestParam(required = false)  String name) {
         return R.success(messageReceiveService.list(Wrappers
                 .<MessageReceive>lambdaQuery()
-                .like($.isNotBlank(name), MessageReceive::getName, name)));
+                .like(StringUtils.isNotBlank(name), MessageReceive::getName, name)));
     }
 
     @PostMapping("page")

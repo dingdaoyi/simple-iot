@@ -1,6 +1,7 @@
 package com.github.dingdaoyi.controller.iot;
 
 
+import com.github.dingdaoyi.model.base.R;
 import com.github.dingdaoyi.service.StorageService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -8,7 +9,6 @@ import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.SneakyThrows;
-import net.dreamlu.mica.core.result.R;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.util.FileCopyUtils;

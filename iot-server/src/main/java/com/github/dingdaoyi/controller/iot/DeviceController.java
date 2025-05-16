@@ -2,7 +2,8 @@ package com.github.dingdaoyi.controller.iot;
 
 import com.github.dingdaoyi.entity.Device;
 import com.github.dingdaoyi.model.PageResult;
-import com.github.dingdaoyi.model.enu.SysCodeEnum;
+import com.github.dingdaoyi.model.base.R;
+import com.github.dingdaoyi.model.enu.SystemCode;
 import com.github.dingdaoyi.model.query.DeviceAddQuery;
 import com.github.dingdaoyi.model.query.DevicePageQuery;
 import com.github.dingdaoyi.model.query.DeviceUpdateQuery;
@@ -14,7 +15,6 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
-import net.dreamlu.mica.core.result.R;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -35,14 +35,14 @@ public class DeviceController {
     @Operation(summary = "设备详情")
     public R<DeviceVo> details(@PathVariable Integer id) {
         Optional<DeviceVo> optional = deviceService.details(id);
-        return optional.map(R::success).orElse(R.fail(SysCodeEnum.BAD_REQUEST, "设备不存在"));
+        return optional.map(R::success).orElse(R.fail(SystemCode.BAD_REQUEST, "设备不存在"));
     }
 
     @PostMapping
     @Operation(summary = "添加设备")
     public R<Boolean> save(@RequestBody @Valid DeviceAddQuery query) {
         if (!productService.existsById(query.getProductId())) {
-            return R.fail(SysCodeEnum.BAD_REQUEST, "产品不存在");
+            return R.fail(SystemCode.BAD_REQUEST, "产品不存在");
         }
         return R.success(deviceService.save(query.toEntity()));
     }

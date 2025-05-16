@@ -1,12 +1,12 @@
 package com.github.dingdaoyi.entity;
 
+import cn.hutool.core.util.BooleanUtil;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
-import net.dreamlu.mica.core.utils.$;
 
 /**
  * @author dingyunwei
@@ -44,7 +44,7 @@ public class User  {
     private Boolean credentialsNonExpired;
 
     public boolean isLocked() {
-        return $.isFalse(accountNonLocked);
+        return BooleanUtil.isFalse(accountNonLocked);
     }
 
 }

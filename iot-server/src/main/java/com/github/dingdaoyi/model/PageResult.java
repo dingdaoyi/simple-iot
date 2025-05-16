@@ -1,10 +1,10 @@
 package com.github.dingdaoyi.model;
 
+import cn.hutool.core.collection.CollectionUtil;
+import com.github.dingdaoyi.model.enu.SystemCode;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
-import net.dreamlu.mica.core.result.IResultCode;
-import net.dreamlu.mica.core.result.SystemCode;
-import net.dreamlu.mica.core.utils.$;
+
 
 import java.util.Iterator;
 import java.util.List;
@@ -68,7 +68,7 @@ public class PageResult<T> implements Iterable<T>{
         result.total = this.total;
         result.page = this.page;
         result.pageSize = this.pageSize;
-        if ($.isNotEmpty(data)) {
+        if (CollectionUtil.isNotEmpty(data)) {
             result.data = this.data
                     .stream()
                     .map(converter)
@@ -77,11 +77,11 @@ public class PageResult<T> implements Iterable<T>{
         return result;
     }
 
-    public static <E> PageResult<E> fail(IResultCode resultCode) {
+    public static <E> PageResult<E> fail(SystemCode resultCode) {
         return fail(resultCode, resultCode.getMsg());
     }
 
-    public static <E> PageResult<E> fail(IResultCode resultCode, String msg) {
+    public static <E> PageResult<E> fail(SystemCode resultCode, String msg) {
         PageResult<E> pageResult = new PageResult<>();
         pageResult.setCode(resultCode.getCode());
         pageResult.setSuccess(false);
@@ -90,7 +90,7 @@ public class PageResult<T> implements Iterable<T>{
     }
 
     public boolean isEmpty() {
-        return $.isEmpty(data);
+        return CollectionUtil.isEmpty(data);
     }
 
     @Override

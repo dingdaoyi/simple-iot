@@ -1,18 +1,14 @@
 package com.github.dingdaoyi.service.impl;
 
-import com.github.dingdaoyi.model.enu.SysCodeEnum;
+import com.github.dingdaoyi.model.enu.SystemCode;
+import com.github.dingdaoyi.model.exception.ServiceException;
 import com.github.dingdaoyi.service.StorageService;
-import lombok.AllArgsConstructor;
-import net.dreamlu.mica.core.exception.ServiceException;
-import net.dreamlu.mica.core.utils.FileUtil;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.io.OutputStream;
-import java.net.MalformedURLException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -42,7 +38,7 @@ public class LocalStorageService implements StorageService {
         try {
             Files.copy(file.getInputStream(), path);
         } catch (IOException e) {
-            throw new ServiceException(SysCodeEnum.BAD_REQUEST,"文件上传失败");
+            throw new ServiceException(SystemCode.BAD_REQUEST.getCode(),"文件上传失败");
         }
         return fileName;
     }
@@ -59,7 +55,7 @@ public class LocalStorageService implements StorageService {
         try {
             Files.deleteIfExists(paths);
         } catch (IOException e) {
-            throw new ServiceException(SysCodeEnum.BAD_REQUEST,"删除文件失败");
+            throw new ServiceException(SystemCode.BAD_REQUEST.getCode(),"删除文件失败");
         }
     }
 }

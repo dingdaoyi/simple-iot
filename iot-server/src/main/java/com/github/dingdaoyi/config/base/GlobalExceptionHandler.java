@@ -1,12 +1,12 @@
 package com.github.dingdaoyi.config.base;
 
 import com.baomidou.mybatisplus.core.toolkit.StringPool;
-import com.github.dingdaoyi.model.enu.SysCodeEnum;
+import com.github.dingdaoyi.model.base.R;
+import com.github.dingdaoyi.model.enu.SystemCode;
+import com.github.dingdaoyi.model.exception.ServiceException;
 import jakarta.validation.ConstraintViolationException;
 import lombok.extern.slf4j.Slf4j;
-import net.dreamlu.mica.core.exception.ServiceException;
-import net.dreamlu.mica.core.result.R;
-import net.dreamlu.mica.core.result.SystemCode;
+
 import org.apache.tomcat.util.http.fileupload.impl.FileSizeLimitExceededException;
 import org.postgresql.util.PSQLException;
 import org.springframework.context.MessageSourceResolvable;
@@ -44,7 +44,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(value = MethodArgumentTypeMismatchException.class)
     public R<Object> methodArgumentTypeMismatchException(MethodArgumentTypeMismatchException e) {
         final MethodParameter parameter = e.getParameter();
-        return R.fail(SysCodeEnum.BAD_REQUEST, "参数不存在:" + parameter.getParameterName());
+        return R.fail(SystemCode.BAD_REQUEST, "参数不存在:" + parameter.getParameterName());
     }
 
     @ResponseBody
@@ -105,7 +105,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(value = {HttpRequestMethodNotSupportedException.class})
     @ResponseStatus(HttpStatus.METHOD_NOT_ALLOWED)
     public R<Object> httpRequestMethodNotSupportedException(HttpRequestMethodNotSupportedException e) {
-        return R.fail(SystemCode.METHOD_NOT_SUPPORTED);
+        return R.fail(SystemCode.METHOD_NOT_ALLOWED);
     }
 
     /**
@@ -130,7 +130,7 @@ public class GlobalExceptionHandler {
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public R<Object> exceptionHandler(NullPointerException e) {
         log.error("sytem_error", e);
-        return R.fail(SysCodeEnum.NPE_ERROR,e.getMessage());
+        return R.fail(SystemCode.NPE_ERROR,e.getMessage());
     }
 
     @ResponseBody
@@ -138,7 +138,7 @@ public class GlobalExceptionHandler {
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public R<Object> exceptionHandler(PSQLException e) {
         log.error("sytem_error", e);
-        return R.fail(SystemCode.FAILURE,"服务器异常,请联系管理员");
+        return R.fail(SystemCode.INTERNAL_SERVER_ERROR,"服务器异常,请联系管理员");
     }
 
     @ResponseBody
@@ -146,7 +146,7 @@ public class GlobalExceptionHandler {
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public R<Object> exceptionHandler(DataAccessException e) {
         log.error("sytem_error", e);
-        return R.fail(SystemCode.FAILURE,"数据异常");
+        return R.fail(SystemCode.INTERNAL_SERVER_ERROR,"数据异常");
     }
 
     @ResponseBody
@@ -154,7 +154,7 @@ public class GlobalExceptionHandler {
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public R<Object> exceptionHandler(IllegalArgumentException e) {
         log.error("sytem_error", e);
-        return R.fail(SysCodeEnum.BAD_REQUEST,e.getMessage());
+        return R.fail(SystemCode.BAD_REQUEST,e.getMessage());
     }
     /**
      * 异常捕捉
@@ -167,7 +167,7 @@ public class GlobalExceptionHandler {
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public R<Object> exceptionHandler(Exception e) {
         log.error("sytem_error", e);
-        return R.fail(SystemCode.FAILURE);
+        return R.fail(SystemCode.INTERNAL_SERVER_ERROR);
     }
 
     /**
@@ -190,7 +190,7 @@ public class GlobalExceptionHandler {
     @ResponseBody
     @ExceptionHandler(value = HandlerMethodValidationException.class)
     public R<Object> monitorExceptionHandler(HandlerMethodValidationException e) {
-        List<String> collect = e.getAllValidationResults().stream().map(result -> {
+        List<String> collect = e.getValueResults().stream().map(result -> {
             List<String> list = result.getResolvableErrors().stream().map(MessageSourceResolvable::getDefaultMessage).toList();
             return list.getFirst();
         }).toList();

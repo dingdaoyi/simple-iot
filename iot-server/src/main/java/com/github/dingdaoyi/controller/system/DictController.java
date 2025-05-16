@@ -1,10 +1,10 @@
 package com.github.dingdaoyi.controller.system;
 
 import com.github.dingdaoyi.entity.Dict;
+import com.github.dingdaoyi.model.base.R;
 import com.github.dingdaoyi.service.DictService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import net.dreamlu.mica.core.result.R;
 import org.springframework.web.bind.annotation.*;
 
 import jakarta.annotation.Resource;

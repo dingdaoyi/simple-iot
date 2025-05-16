@@ -2,11 +2,13 @@ package com.github.dingdaoyi.controller.iot;
 
 import com.github.dingdaoyi.entity.Product;
 import com.github.dingdaoyi.model.PageResult;
+import com.github.dingdaoyi.model.base.R;
+import com.github.dingdaoyi.model.enu.SystemCode;
+import com.github.dingdaoyi.model.exception.ServiceException;
 import com.github.dingdaoyi.model.query.ProductPageQuery;
 import com.github.dingdaoyi.model.vo.ProductPageVo;
 import com.github.dingdaoyi.model.vo.ProductVo;
 import com.github.dingdaoyi.proto.model.tsl.TslModel;
-import com.github.dingdaoyi.model.enu.SysCodeEnum;
 import com.github.dingdaoyi.model.query.ProductAddQuery;
 import com.github.dingdaoyi.model.query.ProductUpdateQuery;
 import com.github.dingdaoyi.service.*;
@@ -14,8 +16,6 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
-import net.dreamlu.mica.core.exception.ServiceException;
-import net.dreamlu.mica.core.result.R;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -51,10 +51,10 @@ public class ProductController {
     @Operation(summary = "添加产品")
     public R<Boolean> save(@RequestBody @Valid ProductAddQuery query) {
         if (!productTypeService.existsById(query.getProductTypeId())) {
-            return R.fail(SysCodeEnum.BAD_REQUEST, "产品类型不存在");
+            return R.fail(SystemCode.BAD_REQUEST, "产品类型不存在");
         }
         if (productService.existsUnique(query.getModel(), query.getManufacturer(), query.getProductTypeId())) {
-            return R.fail(SysCodeEnum.BAD_REQUEST, "产品已存在,请勿重复添加!");
+            return R.fail(SystemCode.BAD_REQUEST, "产品已存在,请勿重复添加!");
         }
         return R.success(productService.add(query.toEntity()));
     }
@@ -71,10 +71,10 @@ public class ProductController {
     public R<Boolean> delete(@PathVariable Integer id) {
         // 判断能否删除
         if (modelServiceService.existsByProduct((Integer) id)) {
-            throw new ServiceException(SysCodeEnum.BAD_REQUEST, "产品下存在物模型信息, 无法删除");
+            throw new ServiceException(SystemCode.BAD_REQUEST, "产品下存在物模型信息, 无法删除");
         }
         if (modelPropertyService.existsByProduct((Integer) id)) {
-            throw new ServiceException(SysCodeEnum.BAD_REQUEST, "产品下存在物模型信息, 无法删除");
+            throw new ServiceException(SystemCode.BAD_REQUEST, "产品下存在物模型信息, 无法删除");
         }
         return R.success(productService.removeById(id));
     }
@@ -92,7 +92,7 @@ public class ProductController {
     public R<TslModel> tslDetails(@PathVariable Integer productId) {
         Product product = productService.getById(productId);
         if (product == null) {
-            return R.fail(SysCodeEnum.BAD_REQUEST, "数据不存在");
+            return R.fail(SystemCode.BAD_REQUEST, "数据不存在");
         }
         return tslModelService.findByProductKey(product.getProductKey())
                 .map(R::success).orElse(R.fail("未查询到物模型信息"));

@@ -1,20 +1,21 @@
 package com.github.dingdaoyi.service.impl;
 
+import cn.hutool.core.collection.CollectionUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.toolkit.ObjectUtils;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.github.dingdaoyi.entity.Product;
+import com.github.dingdaoyi.model.enu.SystemCode;
+import com.github.dingdaoyi.model.exception.ServiceException;
 import com.github.dingdaoyi.proto.model.DataTypeEnum;
 import com.github.dingdaoyi.model.ToEntity;
-import com.github.dingdaoyi.model.enu.SysCodeEnum;
 import com.github.dingdaoyi.model.query.ModelPropertyUpdateQuery;
 import com.github.dingdaoyi.model.query.ProductPropertyAddQuery;
 import com.github.dingdaoyi.model.query.StandardPropertyAddQuery;
 import com.github.dingdaoyi.service.CacheService;
 import com.github.dingdaoyi.service.ProductService;
 import jakarta.annotation.Resource;
-import net.dreamlu.mica.core.exception.ServiceException;
-import net.dreamlu.mica.core.result.SystemCode;
-import net.dreamlu.mica.core.utils.$;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
 import java.io.Serializable;
@@ -45,10 +46,10 @@ public class ModelPropertyServiceImpl extends ServiceImpl<ModelPropertyMapper, M
                 .<ModelProperty>lambdaQuery()
                 .eq(ModelProperty::getProductTypeId, productTypeId)
                 //标准物模型不查自定义部分,自定义物模型不查询custom字段
-                .eq($.isNull(productId), ModelProperty::getCustom, false)
-                .eq($.isNotNull(productId), ModelProperty::getProductId, productId)
-                .eq($.isNotNull(paramType), ModelProperty::getParamType, paramType)
-                .and($.isNotBlank(search), w -> w
+                .eq(ObjectUtils.isNull(productId), ModelProperty::getCustom, false)
+                .eq(ObjectUtils.isNotNull(productId), ModelProperty::getProductId, productId)
+                .eq(ObjectUtils.isNotNull(paramType), ModelProperty::getParamType, paramType)
+                .and(StringUtils.isNotBlank(search), w -> w
                         .like(ModelProperty::getName, search)
                         .or()
                         .eq(ModelProperty::getIdentifier, search)
@@ -59,9 +60,9 @@ public class ModelPropertyServiceImpl extends ServiceImpl<ModelPropertyMapper, M
                                 wr.eq(ModelProperty::getProductTypeId, productTypeId)
                                         .eq(ModelProperty::getCustom, false))
                         .or()
-                        .eq($.isNotNull(productId), ModelProperty::getProductId, productId))
-                .eq($.isNotNull(paramType), ModelProperty::getParamType, paramType)
-                .and($.isNotBlank(search), w -> w
+                        .eq(ObjectUtils.isNotNull(productId), ModelProperty::getProductId, productId))
+                .eq(ObjectUtils.isNotNull(paramType), ModelProperty::getParamType, paramType)
+                .and(StringUtils.isNotBlank(search), w -> w
                         .like(ModelProperty::getName, search)
                         .or()
                         .eq(ModelProperty::getIdentifier, search)
@@ -93,7 +94,7 @@ public class ModelPropertyServiceImpl extends ServiceImpl<ModelPropertyMapper, M
 
     private void insertChildren(List<? extends ToEntity<ModelProperty>> children, Integer parentId) {
 
-        if ($.isNotEmpty(children)) {
+        if (CollectionUtil.isNotEmpty(children)) {
             //保存子类模型
             List<ModelProperty> propertyList = children
                     .stream()
@@ -105,7 +106,7 @@ public class ModelPropertyServiceImpl extends ServiceImpl<ModelPropertyMapper, M
                     .toList();
             int result = baseMapper.insertList(propertyList);
             if (result != propertyList.size()) {
-                throw new ServiceException(SysCodeEnum.BAD_REQUEST, "子属性添加失败");
+                throw new ServiceException(SystemCode.BAD_REQUEST, "子属性添加失败");
             }
         }
     }
@@ -128,7 +129,7 @@ public class ModelPropertyServiceImpl extends ServiceImpl<ModelPropertyMapper, M
         return exists(Wrappers.<ModelProperty>lambdaQuery()
                 .eq(ModelProperty::getIdentifier, identifier)
                 .eq(ModelProperty::getProductTypeId, productTypeId)
-                .eq($.isNotNull(productId), ModelProperty::getProductId, productId));
+                .eq(ObjectUtils.isNotNull(productId), ModelProperty::getProductId, productId));
     }
 
     @Override
@@ -150,7 +151,7 @@ public class ModelPropertyServiceImpl extends ServiceImpl<ModelPropertyMapper, M
     public Boolean update(ModelPropertyUpdateQuery property) {
         ModelProperty modelProperty = getById(property.getId());
         if (modelProperty == null) {
-            throw new ServiceException("属性不存在,无法修改!");
+            throw new ServiceException(SystemCode.BAD_REQUEST,"属性不存在,无法修改!");
         }
         boolean result = baseMapper.updateById(property.toEntity()) > 0;
         if (result) {
@@ -168,7 +169,7 @@ public class ModelPropertyServiceImpl extends ServiceImpl<ModelPropertyMapper, M
                                 wr.eq(ModelProperty::getProductTypeId, productTypeId)
                                         .eq(ModelProperty::getCustom, false))
                         .or()
-                        .eq($.isNotNull(productId), ModelProperty::getProductId, productId));
+                        .eq(ObjectUtils.isNotNull(productId), ModelProperty::getProductId, productId));
         return list(allQueryWrapper);
     }
 

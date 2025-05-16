@@ -3,28 +3,14 @@ package com.github.dingdaoyi.controller.system;
 
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.github.dingdaoyi.entity.Icon;
+import com.github.dingdaoyi.model.base.R;
 import com.github.dingdaoyi.service.IconService;
-import com.github.dingdaoyi.service.StorageService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.annotation.Resource;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-import lombok.SneakyThrows;
-import net.dreamlu.mica.core.result.R;
-import net.dreamlu.mica.core.utils.$;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.util.FileCopyUtils;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
 import java.util.List;
 
 /**
@@ -44,7 +30,7 @@ public class IconController {
         return R.success(iconService.list(
                 Wrappers
                         .<Icon>lambdaQuery()
-                        .like($.isNotBlank(name), Icon::getName, name)
+                        .like(StringUtils.isNotBlank(name), Icon::getName, name)
         ));
     }
 

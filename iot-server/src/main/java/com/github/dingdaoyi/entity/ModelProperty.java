@@ -12,7 +12,7 @@ import com.github.dingdaoyi.proto.model.tsl.PropertyAccessMode;
 import com.github.dingdaoyi.proto.model.tsl.TslProperty;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
-import net.dreamlu.mica.core.utils.$;
+import org.apache.commons.lang3.StringUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -191,6 +191,6 @@ public class ModelProperty {
     }
 
     public String getUnitStr() {
-        return $.isBlank(unit)?"":unit;
+        return StringUtils.isBlank(unit)?"":unit;
     }
 }

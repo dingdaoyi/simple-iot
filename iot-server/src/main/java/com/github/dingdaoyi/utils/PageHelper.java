@@ -1,10 +1,10 @@
 package com.github.dingdaoyi.utils;
 
+import cn.hutool.core.collection.CollectionUtil;
 import com.baomidou.mybatisplus.core.metadata.OrderItem;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.github.dingdaoyi.model.PageQuery;
 import com.github.dingdaoyi.model.PageResult;
-import net.dreamlu.mica.core.utils.$;
 
 import java.util.stream.Collectors;
 
@@ -26,7 +26,7 @@ public class PageHelper {
 
     public static <E> Page<E> page(PageQuery pageQuery) {
         final Page<E> page = Page.of(pageQuery.getPage(), pageQuery.getSize());
-        if ($.isNotEmpty(pageQuery.getSortFields())) {
+        if (CollectionUtil.isNotEmpty(pageQuery.getSortFields())) {
             final PageQuery.Direction direction = pageQuery.getSortDirection();
             final boolean desc = direction == PageQuery.Direction.DESC;
             page.addOrder(pageQuery.getSortFields()

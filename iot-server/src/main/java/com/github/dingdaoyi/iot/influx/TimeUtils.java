@@ -1,6 +1,8 @@
 package com.github.dingdaoyi.iot.influx;
 
-import net.dreamlu.mica.core.utils.DateUtil;
+
+import cn.hutool.core.date.DatePattern;
+import cn.hutool.core.date.DateUtil;
 
 import java.time.Instant;
 import java.time.LocalDateTime;
@@ -23,6 +25,6 @@ public  class TimeUtils {
      * @return
      */
     public static String toDateTimeStr(Number time) {
-        return   DateUtil.format(toLocalDateTime(time), DateUtil.PATTERN_DATETIME);
+        return   DateUtil.format(toLocalDateTime(time), DatePattern.NORM_DATETIME_PATTERN);
     }
 }

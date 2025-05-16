@@ -3,11 +3,11 @@ package com.github.dingdaoyi.controller.iot;
 
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.github.dingdaoyi.entity.Product;
+import com.github.dingdaoyi.model.base.R;
 import com.github.dingdaoyi.service.ProductService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AllArgsConstructor;
-import net.dreamlu.mica.core.result.R;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;

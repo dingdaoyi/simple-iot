@@ -1,13 +1,13 @@
 package com.github.dingdaoyi.model.vo;
 
 
+import cn.hutool.core.bean.BeanUtil;
 import com.github.dingdaoyi.entity.ModelService;
 import com.github.dingdaoyi.proto.model.tsl.TslProperty;
 import com.github.dingdaoyi.proto.model.tsl.TslService;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import net.dreamlu.mica.core.utils.$;
 
 import java.util.List;
 
@@ -25,7 +25,7 @@ public class ModelServiceVO extends ModelService {
 
     public static ModelServiceVO build(ModelService modelService) {
         ModelServiceVO modelServiceVO = new ModelServiceVO();
-        $.copy(modelService, modelServiceVO);
+        BeanUtil.copyProperties(modelService, modelServiceVO);
         return modelServiceVO;
     }
 

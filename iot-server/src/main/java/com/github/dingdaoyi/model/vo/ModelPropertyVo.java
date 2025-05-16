@@ -1,10 +1,10 @@
 package com.github.dingdaoyi.model.vo;
 
+import cn.hutool.core.bean.BeanUtil;
 import com.github.dingdaoyi.entity.ModelProperty;
 import com.github.dingdaoyi.proto.model.DataTypeEnum;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import net.dreamlu.mica.core.utils.$;
 
 import java.util.stream.Collectors;
 
@@ -16,7 +16,7 @@ import java.util.stream.Collectors;
 public class ModelPropertyVo extends ModelProperty {
 
     public ModelPropertyVo(ModelProperty modelProperty) {
-        $.copy(modelProperty, this);
+        BeanUtil.copyProperties(modelProperty, this);
         this.definitions = parseDataDefinitions(modelProperty.getDataType(), modelProperty);
     }
 

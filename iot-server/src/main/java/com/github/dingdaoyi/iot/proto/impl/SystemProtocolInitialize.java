@@ -1,10 +1,10 @@
 package com.github.dingdaoyi.iot.proto.impl;
 
+import cn.hutool.extra.spring.SpringUtil;
 import com.github.dingdaoyi.entity.Protocol;
 import com.github.dingdaoyi.iot.proto.ProtocolInitialize;
 import com.github.dingdaoyi.proto.inter.ProtocolDecoder;
 import lombok.extern.slf4j.Slf4j;
-import net.dreamlu.mica.core.spring.SpringContextUtil;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
@@ -30,7 +30,7 @@ public class SystemProtocolInitialize implements ProtocolInitialize {
                 log.error("加载系统协议失败,协议类不存在:{}", protocol.getHandlerClass());
                 continue;
             }
-            result.put(protocol.getProtoKey(), SpringContextUtil.getBean(clazz));
+            result.put(protocol.getProtoKey(), SpringUtil.getBean(clazz));
         }
 
         return result;

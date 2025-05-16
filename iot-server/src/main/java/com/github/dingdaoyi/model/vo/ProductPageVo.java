@@ -1,11 +1,8 @@
 package com.github.dingdaoyi.model.vo;
 
 import com.github.dingdaoyi.entity.Product;
-import com.github.dingdaoyi.entity.ProductType;
-import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import net.dreamlu.mica.core.utils.$;
 
 /**
  * @author dingyunwei

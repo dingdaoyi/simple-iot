@@ -1,5 +1,6 @@
 package com.github.dingdaoyi.service.impl;
 
+import cn.hutool.core.bean.BeanUtil;
 import com.github.dingdaoyi.entity.ModelProperty;
 import com.github.dingdaoyi.entity.Product;
 import com.github.dingdaoyi.proto.model.ParamType;
@@ -10,7 +11,6 @@ import com.github.dingdaoyi.proto.model.tsl.TslProperty;
 import com.github.dingdaoyi.model.vo.ModelServiceVO;
 import com.github.dingdaoyi.service.*;
 import lombok.AllArgsConstructor;
-import net.dreamlu.mica.core.utils.$;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
@@ -66,7 +66,7 @@ public class TslModelServiceImpl implements TslModelService {
                 (svc, params) -> svc.toTsl(getTslProperty(allProperties, svc.getInputParamIds()), params)));
         tslModelDTO.setEvents(mapTslServices(servicesMap, ServiceTypeEnum.EVENT, allProperties, (modelServiceVO, tslPropertyDTOS) -> {
             TslEvent tslEventDTO = new TslEvent(tslPropertyDTOS);
-            $.copy(modelServiceVO, tslEventDTO);
+            BeanUtil.copyProperties(modelServiceVO, tslEventDTO);
             return tslEventDTO;
         }));
     }

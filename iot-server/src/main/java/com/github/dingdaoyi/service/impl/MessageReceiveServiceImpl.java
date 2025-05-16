@@ -1,14 +1,12 @@
 package com.github.dingdaoyi.service.impl;
 
+import com.baomidou.mybatisplus.core.toolkit.ObjectUtils;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.github.dingdaoyi.model.PageResult;
 import com.github.dingdaoyi.model.query.MessageRecivePageQuery;
-import com.github.dingdaoyi.model.query.ProductPageQuery;
 import com.github.dingdaoyi.utils.PageHelper;
-import net.dreamlu.mica.core.utils.$;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
-import org.springframework.beans.factory.annotation.Autowired;
-import java.util.List;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.github.dingdaoyi.mapper.MessageReceiveMapper;
 import com.github.dingdaoyi.entity.MessageReceive;
@@ -24,9 +22,9 @@ public class MessageReceiveServiceImpl extends ServiceImpl<MessageReceiveMapper,
         return PageHelper.result(page(PageHelper.page(pageQuery),
                 Wrappers
                         .<MessageReceive>lambdaQuery()
-                        .eq($.isNotBlank(pageQuery.getReceiver()), MessageReceive::getReceiver, pageQuery.getReceiver())
-                        .eq($.isNotNull(pageQuery.getNotifyType()), MessageReceive::getNotifyType, pageQuery.getNotifyType())
-                        .like($.isNotBlank(pageQuery.getName()), MessageReceive::getName, pageQuery.getName())));
+                        .eq(StringUtils.isNotBlank(pageQuery.getReceiver()), MessageReceive::getReceiver, pageQuery.getReceiver())
+                        .eq(ObjectUtils.isNotNull(pageQuery.getNotifyType()), MessageReceive::getNotifyType, pageQuery.getNotifyType())
+                        .like(StringUtils.isNotBlank(pageQuery.getName()), MessageReceive::getName, pageQuery.getName())));
     }
 
     @Override

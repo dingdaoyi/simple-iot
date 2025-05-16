@@ -3,6 +3,7 @@ package com.github.dingdaoyi.controller.iot;
 import com.github.dingdaoyi.entity.ProductType;
 import com.github.dingdaoyi.model.PageQuery;
 import com.github.dingdaoyi.model.PageResult;
+import com.github.dingdaoyi.model.base.R;
 import com.github.dingdaoyi.model.query.ProductTypeAddQuery;
 import com.github.dingdaoyi.model.vo.ProductTypeVo;
 import com.github.dingdaoyi.service.ProductTypeService;
@@ -12,7 +13,6 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import lombok.AllArgsConstructor;
-import net.dreamlu.mica.core.result.R;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;

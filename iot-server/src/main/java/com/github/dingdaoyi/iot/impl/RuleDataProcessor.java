@@ -1,5 +1,9 @@
 package com.github.dingdaoyi.iot.impl;
 
+import cn.hutool.core.collection.CollectionUtil;
+import cn.hutool.core.date.DatePattern;
+import cn.hutool.core.date.DateUtil;
+import cn.hutool.json.JSONUtil;
 import com.github.dingdaoyi.entity.Device;
 import com.github.dingdaoyi.entity.IotRule;
 import com.github.dingdaoyi.entity.MessageReceive;
@@ -13,10 +17,7 @@ import com.github.dingdaoyi.proto.model.tsl.TslProperty;
 import com.github.dingdaoyi.service.*;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
-import net.dreamlu.mica.core.utils.$;
-import net.dreamlu.mica.core.utils.DatePattern;
-import net.dreamlu.mica.core.utils.DateUtil;
-import net.dreamlu.mica.core.utils.JsonUtil;
+
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
@@ -55,7 +56,7 @@ public class RuleDataProcessor implements DataProcessor {
     public void process(DecodeResult message, String deviceKey,TslModel tslModel) {
         Device device = deviceService.getByDeviceKey(deviceKey).get();
         List<IotRule> rules= rulesService.queryByDeviceKey(deviceKey);
-       if ($.isEmpty(rules)) {
+       if (CollectionUtil.isEmpty(rules)) {
            return;
        }
         List<DeviceData> dataList = message.getDataList();
@@ -70,7 +71,7 @@ public class RuleDataProcessor implements DataProcessor {
                        switch (rule.getRuleType()) {
                            case FILTER -> {
                                if ((Boolean) resultValue) {
-                                   log.info("命中属性过滤:{}|{}",deviceKey, JsonUtil.toJson(deviceData));
+                                   log.info("命中属性过滤:{}|{}",deviceKey, JSONUtil.toJsonStr(deviceData));
                                    tslModel.getProperties().stream().filter(item -> item.getIdentifier().equals(rule.getIdentifier()))
                                            .findAny().ifPresent(tslProperty ->doFilterHitRule(deviceData,deviceKey,rule,device,tslProperty) );
                                }
@@ -103,7 +104,7 @@ public class RuleDataProcessor implements DataProcessor {
                     HashMap<String, Object> params = new HashMap<>();
                     params.put("deviceKey", deviceKey);
                     params.put("deviceName", device.getDeviceName());
-                    params.put("eventTime", DateUtil.format(Instant.now(),DatePattern.NORM_DATETIME_PATTERN));
+                    params.put("eventTime", DateUtil.format(LocalDateTime.now(), DatePattern.NORM_DATETIME_PATTERN));
                     params.put("eventTypeName", rule.getName());
                     HashMap<String, String> eventContent = new HashMap<>();
                     eventContent.put(tslProperty.getName(), deviceData.value() + tslProperty.getUnit());

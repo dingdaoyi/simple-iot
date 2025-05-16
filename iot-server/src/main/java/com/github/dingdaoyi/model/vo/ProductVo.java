@@ -1,11 +1,11 @@
 package com.github.dingdaoyi.model.vo;
 
+import cn.hutool.core.bean.BeanUtil;
 import com.github.dingdaoyi.entity.Product;
 import com.github.dingdaoyi.entity.ProductType;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import net.dreamlu.mica.core.utils.$;
 
 /**
  * @author dingyunwei
@@ -17,7 +17,7 @@ public class ProductVo extends Product {
     private ProductType productType;
 
     public ProductVo(Product product) {
-        $.copy(product, this);
+        BeanUtil.copyProperties(product, this);
     }
 
 }

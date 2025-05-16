@@ -7,7 +7,8 @@ import com.github.dingdaoyi.iot.IotCommandProcessor;
 import com.github.dingdaoyi.iot.model.CommandRequest;
 import com.github.dingdaoyi.iot.model.CommandResponse;
 import com.github.dingdaoyi.iot.proto.ProtocolFactory;
-import com.github.dingdaoyi.model.enu.SysCodeEnum;
+import com.github.dingdaoyi.model.enu.SystemCode;
+import com.github.dingdaoyi.model.exception.ServiceException;
 import com.github.dingdaoyi.proto.inter.ProtocolDecoder;
 import com.github.dingdaoyi.proto.model.*;
 import com.github.dingdaoyi.proto.model.tsl.TslModel;
@@ -15,7 +16,6 @@ import com.github.dingdaoyi.service.DeviceService;
 import com.github.dingdaoyi.service.TslModelService;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
-import net.dreamlu.mica.core.exception.ServiceException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -91,7 +91,7 @@ public class IoTDataProcessorImpl implements IoTDataProcessor, IotCommandProcess
         CompletableFuture<CommandResponse> future = new CompletableFuture<>();
         Optional<ProtocolDecoder> decoderOptional = ProtocolFactory.getDecoder(request.getProtoKey());
         if (decoderOptional.isEmpty()) {
-            future.completeExceptionally(new ServiceException(SysCodeEnum.PROTO_NOT_EXIST));
+            future.completeExceptionally(new ServiceException(SystemCode.PROTO_NOT_EXIST));
             return future;
         }
         ProtocolDecoder protocolDecoder = decoderOptional.get();
@@ -99,7 +99,7 @@ public class IoTDataProcessorImpl implements IoTDataProcessor, IotCommandProcess
             EncoderMessage encoderMessage = request.toMessage();
             EncoderResult result = protocolDecoder.encode(encoderMessage,tslModel);
             if (result == null) {
-                throw new ServiceException(SysCodeEnum.BAD_REQUEST,"此设备不支持调用此服务，有疑问请联系管理员！");
+                throw new ServiceException(SystemCode.BAD_REQUEST,"此设备不支持调用此服务，有疑问请联系管理员！");
             }
             //异步事件不需要响应时
             if (result.isNeedReply()) {

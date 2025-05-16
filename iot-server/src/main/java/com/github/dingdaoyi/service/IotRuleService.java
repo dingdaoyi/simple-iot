@@ -8,7 +8,6 @@ import com.github.dingdaoyi.model.query.RulePageQuery;
 import com.github.dingdaoyi.model.query.RuleUpdateQuery;
 import com.github.dingdaoyi.model.vo.RuleDetailVo;
 import com.github.dingdaoyi.model.vo.RulePageVo;
-import net.dreamlu.mica.core.result.R;
 
 import java.util.List;
 

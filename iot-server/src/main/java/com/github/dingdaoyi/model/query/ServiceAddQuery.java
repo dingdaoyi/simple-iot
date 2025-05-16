@@ -1,5 +1,6 @@
 package com.github.dingdaoyi.model.query;
 
+import cn.hutool.core.collection.CollectionUtil;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.github.dingdaoyi.entity.ModelService;
 import com.github.dingdaoyi.entity.ServiceProperty;
@@ -10,7 +11,6 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
-import net.dreamlu.mica.core.utils.$;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -117,12 +117,12 @@ public class ServiceAddQuery implements ToEntity<ModelService> {
 
     public List<ServiceProperty> getServiceProperties(Integer serviceId) {
         List<ServiceProperty> serviceProperties = new ArrayList<>();
-        if ($.isNotEmpty(outputParamIds)) {
+        if (CollectionUtil.isNotEmpty(outputParamIds)) {
             for (Integer propertyId : outputParamIds) {
                 serviceProperties.add(new ServiceProperty(serviceId, propertyId, ServiceProperty.OUTPUT_TYPE));
             }
         }
-        if ($.isNotEmpty(inputParamIds)) {
+        if (CollectionUtil.isNotEmpty(inputParamIds)) {
             for (Integer propertyId : inputParamIds) {
                 serviceProperties.add(new ServiceProperty(serviceId, propertyId, ServiceProperty.INPUT_TYPE));
             }

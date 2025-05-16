@@ -1,12 +1,12 @@
 package com.github.dingdaoyi.controller.iot;
 
 import com.github.dingdaoyi.entity.Protocol;
+import com.github.dingdaoyi.model.base.R;
 import com.github.dingdaoyi.service.ProductService;
 import com.github.dingdaoyi.service.ProtocolService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AllArgsConstructor;
-import net.dreamlu.mica.core.result.R;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;

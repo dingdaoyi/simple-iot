@@ -3,11 +3,11 @@ package com.github.dingdaoyi.iot.model;
 import java.io.Serializable;
 import java.util.Map;
 
+import cn.hutool.core.bean.BeanUtil;
 import com.github.dingdaoyi.entity.DeviceCommand;
 import com.github.dingdaoyi.proto.model.EncoderMessage;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import net.dreamlu.mica.core.utils.$;
 
 /**
  * 设备指令下发实体
@@ -18,7 +18,7 @@ import net.dreamlu.mica.core.utils.$;
 public class CommandRequest extends DeviceCommand {
 
     public CommandRequest(DeviceCommand command) {
-        $.copy(command, this);
+        BeanUtil.copyProperties(command, this);
     }
 
     public EncoderMessage toMessage() {

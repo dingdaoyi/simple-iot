@@ -1,6 +1,7 @@
 package com.github.dingdaoyi.controller.iot;
 
 
+import com.github.dingdaoyi.model.base.R;
 import com.github.dingdaoyi.model.query.DeviceDataQuery;
 import com.github.dingdaoyi.model.query.DeviceEventDataVo;
 import com.github.dingdaoyi.proto.model.KeyValue;
@@ -9,7 +10,6 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.annotation.Resource;
 import lombok.AllArgsConstructor;
-import net.dreamlu.mica.core.result.R;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;

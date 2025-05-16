@@ -4,22 +4,17 @@ import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.github.dingdaoyi.entity.ProductType;
 import com.github.dingdaoyi.model.PageResult;
-import com.github.dingdaoyi.model.enu.SysCodeEnum;
 import com.github.dingdaoyi.model.query.ProductPageQuery;
 import com.github.dingdaoyi.model.vo.ProductPageVo;
 import com.github.dingdaoyi.model.vo.ProductVo;
-import com.github.dingdaoyi.service.ModelPropertyService;
-import com.github.dingdaoyi.service.ModelServiceService;
 import com.github.dingdaoyi.service.ProductTypeService;
 import com.github.dingdaoyi.utils.PageHelper;
 import jakarta.annotation.Resource;
-import net.dreamlu.mica.core.exception.ServiceException;
-import net.dreamlu.mica.core.utils.$;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
 import java.io.Serializable;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -40,7 +35,7 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper, Product> impl
         return list(Wrappers
                 .<Product>lambdaQuery()
                 .eq(Product::getProductTypeId, productTypeId)
-                .like($.isNotBlank(manufacturer), Product::getManufacturer, manufacturer));
+                .like(StringUtils.isNotBlank(manufacturer), Product::getManufacturer, manufacturer));
     }
 
     @Override

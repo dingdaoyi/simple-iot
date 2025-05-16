@@ -1,9 +1,9 @@
 package com.github.dingdaoyi.model.vo;
 
+import cn.hutool.core.bean.BeanUtil;
 import com.github.dingdaoyi.entity.IotRule;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import net.dreamlu.mica.core.utils.$;
 
 /**
  * @author dingyunwei
@@ -43,6 +43,6 @@ public class RuleDetailVo extends IotRule {
     private String sourceName;
 
     public RuleDetailVo(IotRule iotRule) {
-        $.copy(iotRule, this);
+        BeanUtil.copyProperties(iotRule, this);
     }
 }

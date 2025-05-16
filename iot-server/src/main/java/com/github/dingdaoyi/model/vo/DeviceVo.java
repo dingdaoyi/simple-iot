@@ -1,5 +1,6 @@
 package com.github.dingdaoyi.model.vo;
 
+import cn.hutool.core.bean.BeanUtil;
 import com.github.dingdaoyi.entity.Device;
 import com.github.dingdaoyi.entity.Product;
 import com.github.dingdaoyi.entity.ProductType;
@@ -7,7 +8,6 @@ import com.github.dingdaoyi.proto.model.tsl.TslModel;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import net.dreamlu.mica.core.utils.$;
 
 @EqualsAndHashCode(callSuper = true)
 @Data
@@ -29,7 +29,7 @@ public class DeviceVo extends Device {
     }
     public static DeviceVo build(Device device) {
         DeviceVo deviceVo = new DeviceVo();
-        $.copy(device, deviceVo);
+        BeanUtil.copyProperties(device, deviceVo);
         return deviceVo;
     }
 }

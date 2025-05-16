@@ -1,9 +1,13 @@
 package com.github.dingdaoyi.iot.influx;
 
+import cn.hutool.core.collection.CollectionUtil;
+import cn.hutool.core.date.DateUtil;
+import cn.hutool.json.JSONUtil;
 import com.github.dingdaoyi.config.base.IotConfigProperties;
 import com.github.dingdaoyi.iot.DataProcessor;
 import com.github.dingdaoyi.model.DTO.DeviceDTO;
-import com.github.dingdaoyi.model.enu.SysCodeEnum;
+import com.github.dingdaoyi.model.enu.SystemCode;
+import com.github.dingdaoyi.model.exception.ServiceException;
 import com.github.dingdaoyi.model.query.DeviceDataQuery;
 import com.github.dingdaoyi.model.query.DeviceEventDataVo;
 import com.github.dingdaoyi.proto.model.DecodeResult;
@@ -22,10 +26,6 @@ import com.influxdb.v3.client.query.QueryOptions;
 import com.influxdb.v3.client.query.QueryType;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
-import net.dreamlu.mica.core.exception.ServiceException;
-import net.dreamlu.mica.core.utils.$;
-import net.dreamlu.mica.core.utils.DateUtil;
-import net.dreamlu.mica.core.utils.JsonUtil;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
@@ -62,7 +62,7 @@ public class InfluxDataProcessor implements DataProcessor, DeviceDataService {
 
     @Override
     public void process(DecodeResult message, String deviceKey, TslModel tslModel) {
-        if ($.isNotEmpty(message.getDataList())) {
+        if (CollectionUtil.isNotEmpty(message.getDataList())) {
             this.saveProperties(message.getDataList(), deviceKey);
         }
         if (message.getEventData() != null) {
@@ -75,10 +75,10 @@ public class InfluxDataProcessor implements DataProcessor, DeviceDataService {
                 .setTag("deviceKey", deviceKey)
                 .setTag("identifier", eventData.getIdentifier())
                 .setTag("eventType", eventData.getEventType().getValue() + "")
-                .setField("value", JsonUtil.toJson(eventData.getParams()))
+                .setField("value", JSONUtil.toJsonStr(eventData.getParams()))
                 .setField("rowData", rowData)
                 .setTimestamp(Instant.now());
-        log.info("保存事件信息;{}|{}", deviceKey, JsonUtil.toJson(point));
+        log.info("保存事件信息;{}|{}", deviceKey, JSONUtil.toJsonStr(eventData));
         influxDBClient.writePoint(point);
     }
 
@@ -105,7 +105,7 @@ public class InfluxDataProcessor implements DataProcessor, DeviceDataService {
             }
             points.add(point);
         }
-        log.info("保存属性信息;{}|{}", deviceKey, JsonUtil.toJson(dataList));
+        log.info("保存属性信息;{}|{}", deviceKey, JSONUtil.toJsonStr(dataList));
         influxDBClient.writePoints(points);
     }
 
@@ -151,7 +151,7 @@ public class InfluxDataProcessor implements DataProcessor, DeviceDataService {
         String sqlParams = "select value,time from " + properties.getPropDatabase() + "_" + query.getIdentifier() + " where \"deviceKey\"=$deviceKey" +
                            " and time> $beginTime and time<= $endTime order by time asc";
         try (Stream<PointValues> stream = influxDBClient.queryPoints(sqlParams, Map.of("deviceKey", query.getDeviceKey(),
-                "beginTime", DateUtil.formatDateTime(query.getBeginTime()), "endTime",  DateUtil.formatDateTime(query.getEndTime())), queryOptions)) {
+                "beginTime", DateUtil.formatLocalDateTime(query.getBeginTime()), "endTime",  DateUtil.formatLocalDateTime(query.getEndTime())), queryOptions)) {
 
             stream.forEach(row -> dataList.add(new KeyValue<>(TimeUtils.toDateTimeStr(row.getTimestamp()), row.getField("value"))));
         } catch (Exception e) {
@@ -167,11 +167,11 @@ public class InfluxDataProcessor implements DataProcessor, DeviceDataService {
         String sqlParams = "select * from " + properties.getEventDatabase() + " where \"deviceKey\"=$deviceKey" +
                            " and time> $beginTime and time<= $endTime order by time desc limit 100";
         try (Stream<PointValues> stream = influxDBClient.queryPoints(sqlParams, Map.of("deviceKey", query.getDeviceKey(),
-                "beginTime", DateUtil.formatDateTime(query.getBeginTime()), "endTime",  DateUtil.formatDateTime(query.getEndTime())), queryOptions)) {
+                "beginTime", DateUtil.formatLocalDateTime(query.getBeginTime()), "endTime",  DateUtil.formatLocalDateTime(query.getEndTime())), queryOptions)) {
            return stream.map(DeviceEventDataVo::fromPointValues).toList();
         } catch (Exception e) {
             log.error("查询出错:{}", e.getMessage());
-            throw new ServiceException(SysCodeEnum.BAD_REQUEST,"请求参数错误!");
+            throw new ServiceException(SystemCode.BAD_REQUEST,"请求参数错误!");
         }
     }
 }
