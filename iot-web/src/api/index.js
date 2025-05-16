@@ -470,6 +470,18 @@ export function deviceDataMetric(data) {
 }
 
 /**
+ * 设备事件列表
+ * @param data 参数上
+ */
+export function deviceEventLogsApi(data) {
+  return request({
+    url: `/device/data/event/logs`,
+    method: 'post',
+    data,
+  })
+}
+
+/**
  * 设备指标
  * @param data 参数上
  */
@@ -503,7 +515,6 @@ export function ruleEditApi(data) {
     data,
   })
 }
-
 
 /**
  * 规则详情

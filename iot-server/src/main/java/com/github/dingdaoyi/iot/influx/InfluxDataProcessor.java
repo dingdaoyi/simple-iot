@@ -26,15 +26,13 @@ import com.influxdb.v3.client.query.QueryOptions;
 import com.influxdb.v3.client.query.QueryType;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Stream;
 
 /**
@@ -92,16 +90,16 @@ public class InfluxDataProcessor implements DataProcessor, DeviceDataService {
     private void saveProperties(List<DeviceData> dataList, String deviceKey) {
         List<Point> points = new ArrayList<>();
         for (DeviceData deviceData : dataList) {
-            Point point = Point.measurement(properties.getPropDatabase() + "_" + deviceData.identifier())
+            Point point = Point.measurement(properties.getPropDatabase() + "_" + deviceData.getIdentifier())
                     .setTag("deviceKey", deviceKey)
-                    .setTag("dataType", deviceData.dataType().name())
+                    .setTag("dataType", deviceData.getDataType().name())
                     .setTimestamp(Instant.now());
-            switch (deviceData.dataType()) {
-                case DATE, STRUCT, ENUM, TEXT -> point.setField("value", deviceData.value().toString());
-                case INT -> point.setField("value", (int) deviceData.value());
-                case FLOAT -> point.setField("value", (float) deviceData.value());
-                case DOUBLE -> point.setField("value", (double) deviceData.value());
-                case BOOL -> point.setField("value", (boolean) deviceData.value());
+            switch (deviceData.getDataType()) {
+                case DATE, STRUCT, ENUM, TEXT -> point.setField("value", deviceData.getValue().toString());
+                case INT -> point.setField("value", (int) deviceData.getValue());
+                case FLOAT -> point.setField("value", (float) deviceData.getValue());
+                case DOUBLE -> point.setField("value", (double) deviceData.getValue());
+                case BOOL -> point.setField("value", (boolean) deviceData.getValue());
             }
             points.add(point);
         }
@@ -151,7 +149,7 @@ public class InfluxDataProcessor implements DataProcessor, DeviceDataService {
         String sqlParams = "select value,time from " + properties.getPropDatabase() + "_" + query.getIdentifier() + " where \"deviceKey\"=$deviceKey" +
                            " and time> $beginTime and time<= $endTime order by time asc";
         try (Stream<PointValues> stream = influxDBClient.queryPoints(sqlParams, Map.of("deviceKey", query.getDeviceKey(),
-                "beginTime", DateUtil.formatLocalDateTime(query.getBeginTime()), "endTime",  DateUtil.formatLocalDateTime(query.getEndTime())), queryOptions)) {
+                "beginTime", DateUtil.formatLocalDateTime(query.getBeginTime()), "endTime", DateUtil.formatLocalDateTime(query.getEndTime())), queryOptions)) {
 
             stream.forEach(row -> dataList.add(new KeyValue<>(TimeUtils.toDateTimeStr(row.getTimestamp()), row.getField("value"))));
         } catch (Exception e) {
@@ -165,13 +163,20 @@ public class InfluxDataProcessor implements DataProcessor, DeviceDataService {
         QueryOptions queryOptions = new QueryOptions(properties.getDatabase(), QueryType.SQL);
         //TODO 需要解决分页等问题
         String sqlParams = "select * from " + properties.getEventDatabase() + " where \"deviceKey\"=$deviceKey" +
+                           (StringUtils.isNotBlank(query.getIdentifier()) ? " and \"identifier\"=$identifier" : "") +
                            " and time> $beginTime and time<= $endTime order by time desc limit 100";
-        try (Stream<PointValues> stream = influxDBClient.queryPoints(sqlParams, Map.of("deviceKey", query.getDeviceKey(),
-                "beginTime", DateUtil.formatLocalDateTime(query.getBeginTime()), "endTime",  DateUtil.formatLocalDateTime(query.getEndTime())), queryOptions)) {
-           return stream.map(DeviceEventDataVo::fromPointValues).toList();
+        Map<String, Object> params = new HashMap<>();
+        params.put("deviceKey", query.getDeviceKey());
+        params.put("beginTime", DateUtil.formatLocalDateTime(query.getBeginTime()));
+        params.put("endTime", DateUtil.formatLocalDateTime(query.getEndTime()));
+        if (StringUtils.isNotBlank(query.getIdentifier())) {
+            params.put("identifier", query.getIdentifier());
+        }
+        try (Stream<PointValues> stream = influxDBClient.queryPoints(sqlParams, params, queryOptions)) {
+            return stream.map(DeviceEventDataVo::fromPointValues).toList();
         } catch (Exception e) {
             log.error("查询出错:{}", e.getMessage());
-            throw new ServiceException(SystemCode.BAD_REQUEST,"请求参数错误!");
+            throw new ServiceException(SystemCode.BAD_REQUEST, "请求参数错误!");
         }
     }
 }

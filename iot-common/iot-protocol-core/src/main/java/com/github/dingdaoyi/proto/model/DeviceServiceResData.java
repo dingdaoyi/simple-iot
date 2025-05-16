@@ -29,6 +29,6 @@ public class DeviceServiceResData {
 
     public Map<String, Object> toMap() {
         return resultData.stream()
-                .collect(Collectors.toMap(DeviceData::identifier, DeviceData::value));
+                .collect(Collectors.toMap(DeviceData::getIdentifier, DeviceData::getValue));
     }
 }

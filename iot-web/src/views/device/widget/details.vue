@@ -2,13 +2,14 @@
 import { deviceDataLast, deviceDetailApi } from '@/api/index.js'
 import Breadcrumb from '@/components/Breadcrumb.vue'
 import { onlineOpts } from '@/utils/base.jsx'
+import DeviceEvent from '@/views/device/widget/deviceEvent.vue'
 import LabelItem from '@/views/device/widget/LabelItem.vue'
 import PropChart from '@/views/device/widget/propChart.vue'
 import PropMetric from '@/views/device/widget/PropMetric.vue'
 import { ref } from 'vue'
 import { useRoute } from 'vue-router'
 
-const activeName = ref('基础信息')
+const activeName = ref('设备事件')
 const route = useRoute()
 const id = route.query.id
 const deviceDetail = ref({})
@@ -74,10 +75,13 @@ loadData()
       <el-tabs
         v-model="activeName"
       >
-        <el-tab-pane label="基础信息" name="base">
-          <div>你好</div>
+        <el-tab-pane label="设备事件" name="设备事件">
+          <DeviceEvent
+            v-if="deviceDetail.deviceKey"
+            :device-detail="deviceDetail"
+          />
         </el-tab-pane>
-        <el-tab-pane label="服务定义" name="event">
+        <el-tab-pane label="服务定义" name="服务定义">
           <div>你好</div>
         </el-tab-pane>
       </el-tabs>

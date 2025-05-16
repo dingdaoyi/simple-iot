@@ -70,7 +70,7 @@ public class ModelServiceController {
     }
 
     @DeleteMapping("{id}")
-    @Operation(summary = "根据产品id获取物模型数据")
+    @Operation(summary = "根据产品id删除物模型数据")
     public R<Boolean> delete(@PathVariable  Integer id) {
         return R.success(modelServiceService.removeById(id));
     }

@@ -2,13 +2,8 @@
 import { protocolDeleteApi, protocolListApi } from '@/api/index.js'
 import EditDia from '@/views/protocol/widget/editDia.vue'
 import { dwHooks } from 'dwyl-ui'
-import { nextTick, ref } from 'vue'
-import { useRouter } from 'vue-router'
 
 const { useDwTable } = dwHooks
-
-const router = useRouter()
-const parentId = ref(-1)
 
 const protocolTypeOpt = [
   {
@@ -76,16 +71,6 @@ const {
 
 function closeEdite() {
   updatePage()
-}
-
-function onAddChild(row) {
-  parentId.value = row.id
-  nextTick(() => {
-    dialogVisible.value = true
-  })
-}
-function tslConfig(row) {
-  router.push(`/tslModel?typeId=${row.id}`)
 }
 </script>
 

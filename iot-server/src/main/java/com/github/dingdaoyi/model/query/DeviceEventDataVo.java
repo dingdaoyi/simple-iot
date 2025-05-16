@@ -7,6 +7,7 @@ import com.github.dingdaoyi.proto.model.DeviceEventData;
 import com.github.dingdaoyi.proto.model.tsl.EventTypeEnum;
 import com.influxdb.v3.client.PointValues;
 import lombok.*;
+import org.tio.utils.json.JsonUtil;
 
 import java.time.LocalDateTime;
 import java.util.List;

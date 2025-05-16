@@ -60,14 +60,14 @@ public class RuleDataProcessor implements DataProcessor {
            return;
        }
         List<DeviceData> dataList = message.getDataList();
-        Map<String, DeviceData> deviceDataMap = dataList.stream().collect(Collectors.toMap(DeviceData::identifier, item -> item));
+        Map<String, DeviceData> deviceDataMap = dataList.stream().collect(Collectors.toMap(DeviceData::getIdentifier, item -> item));
         for (IotRule rule : rules) {
            switch (rule.getInputType()) {
                case PROP_DATA -> {
                    if (deviceDataMap.containsKey(rule.getIdentifier())) {
                        // 存在属性
                        DeviceData deviceData = deviceDataMap.get(rule.getIdentifier());
-                       Object resultValue = rule.parse(deviceData.value());
+                       Object resultValue = rule.parse(deviceData.getValue());
                        switch (rule.getRuleType()) {
                            case FILTER -> {
                                if ((Boolean) resultValue) {
@@ -107,7 +107,7 @@ public class RuleDataProcessor implements DataProcessor {
                     params.put("eventTime", DateUtil.format(LocalDateTime.now(), DatePattern.NORM_DATETIME_PATTERN));
                     params.put("eventTypeName", rule.getName());
                     HashMap<String, String> eventContent = new HashMap<>();
-                    eventContent.put(tslProperty.getName(), deviceData.value() + tslProperty.getUnit());
+                    eventContent.put(tslProperty.getName(), deviceData.getValue() + tslProperty.getUnit());
                     eventContent.put("规则描述",rule.getRemark());
                     params.put("eventContent",eventContent);
                     notificationServiceMap.get(notifyType)

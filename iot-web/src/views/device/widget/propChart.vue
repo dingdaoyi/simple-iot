@@ -83,7 +83,6 @@ function loadChartDate() {
     .then(({ data }) => {
       options.value.xAxis[0].data = data.map(item => item.key)
       options.value.series[0].data = data.map(item => item.value || 0)
-      console.log(options.value, 'freferfre')
     })
 }
 const renderChart = ref(false)
