@@ -90,7 +90,6 @@ public class R<T> implements Serializable {
         return error(systemCode);
     }
 
-    @JsonIgnore // 避免 jackson 序列化
     public boolean isSuccess() {
         return isSuccess(code);
     }

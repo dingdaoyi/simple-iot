@@ -10,7 +10,7 @@ import lombok.Getter;
 @Getter
 public enum SystemCode {
 
-    SUCCESS(0, "成功"),
+    SUCCESS(1, "成功"),
 
     // ========== 客户端错误段 ==========
 

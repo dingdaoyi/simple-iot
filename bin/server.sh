@@ -24,7 +24,7 @@ start() {
             fi
 
     LOG_FILE="$LOG_DIR/app_$(date +'%Y-%m-%d').log"
-    nohup java -jar "$APP_PATH/$APP_NAME" >> "$LOG_FILE" 2>&1 &
+    nohup java --add-opens=java.base/java.nio=org.apache.arrow.memory.core,ALL-UNNAMED -jar "$APP_PATH/$APP_NAME" >> "$LOG_FILE" 2>&1 &
                                                          echo $! > "$PID_FILE"
     echo "$APP_NAME started with PID $(cat $PID_FILE). Logs: $LOG_FILE"
 }
