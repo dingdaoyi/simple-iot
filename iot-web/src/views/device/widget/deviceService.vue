@@ -3,7 +3,12 @@ import { callDeviceServiceApi } from '@/api/index.js'
 import { ElMessage } from 'element-plus'
 import { computed, ref } from 'vue'
 
-const props = defineProps(['deviceDetail'])
+const props = defineProps({
+  deviceDetail: {
+    type: Object,
+    required: true,
+  },
+})
 
 // 获取设备的服务列表
 const serviceList = computed(() => {

@@ -2,15 +2,19 @@
 import { deviceEventLogsApi } from '@/api/index.js'
 import { DateUtils } from '@/utils/date_utils.js'
 import { dwHooks } from 'dwyl-ui'
-import { ref } from 'vue'
+import { computed } from 'vue'
 
-const props = defineProps(['deviceDetail'])
+const props = defineProps({
+  deviceDetail: {
+    type: Object,
+    required: true,
+  },
+})
+
 const { useDwTable } = dwHooks
-const tlsEventOpt = ref([])
-function tlsEventName() {
-  tlsEventOpt.value = props.deviceDetail.tslModel?.events
-}
-tlsEventName()
+
+const tlsEventOpt = computed(() => props.deviceDetail.tslModel?.events || [])
+
 const column = [
   {
     prop: 'eventType',
@@ -22,7 +26,7 @@ const column = [
     formatter(row) {
       return tlsEventOpt.value
         .find(item => item.identifier === row.identifier)
-        ?.name
+        ?.name || row.identifier
     },
   },
   {
@@ -42,11 +46,11 @@ const column = [
     },
   },
 ]
+
 const {
   params,
   onSearch,
   dwTable,
-  onDelete,
 } = useDwTable({
   defParams: {
     deviceKey: props.deviceDetail.deviceKey,
@@ -57,48 +61,52 @@ const {
 </script>
 
 <template>
-  <div class="flex flex-col flex-1">
-    <div class="flex flex-row mb-12px">
-      <dw-select
-        v-model="params.identifier"
-        placeholder="请选择事件类型"
-        class="w-200px mr-12px"
-        filterable
-        clearable
-      >
-        <dw-option
-          v-for="item in tlsEventOpt"
-          :key="item.identifier"
-          :label="item.name"
-          :value="item.identifier"
-        />
-      </dw-select>
+  <div class="flex flex-col h-full p-4">
+    <!-- 搜索区域 -->
+    <div class="flex items-center gap-4 mb-6 p-4 bg-gray-50 rounded-lg">
+      <div class="flex items-center gap-2 w-300px">
+        <span class="text-sm font-medium text-gray-700 w-100px">事件类型:</span>
+        <dw-select
+          v-model="params.identifier"
+          placeholder="请选择事件类型"
+          class="w-48"
+          filterable
+          clearable
+        >
+          <dw-option
+            v-for="item in tlsEventOpt"
+            :key="item.identifier"
+            :label="item.name"
+            :value="item.identifier"
+          />
+        </dw-select>
+      </div>
 
-      <div class="w-350px mr-12px">
+      <div class="flex items-center gap-2">
+        <span class="text-sm font-medium text-gray-700">时间范围:</span>
         <DwPicker
           v-model:start="params.beginTime"
           v-model:end="params.endTime"
-          placeholder="请输厂家名称"
-          class="mr-12px picker"
+          placeholder="请选择时间范围"
+          class="w-80"
         />
-        <!--        <el-input v-model="params.manufacturer" clearable placeholder="请输厂家名称" /> -->
       </div>
+
       <el-button type="primary" @click="onSearch">
-        搜索
+        <i class="i-ep-search mr-1" />搜索
       </el-button>
     </div>
-    <DwTable
-      ref="dwTable"
-      row-key="id"
-      :column="column"
-      :is-page="false"
-      :params="params"
-      :api="deviceEventLogsApi"
-    >
-    </DwTable>
+
+    <!-- 表格区域 -->
+    <div class="flex-1 bg-white rounded-lg border border-gray-200">
+      <DwTable
+        ref="dwTable"
+        row-key="id"
+        :column="column"
+        :is-page="false"
+        :params="params"
+        :api="deviceEventLogsApi"
+      />
+    </div>
   </div>
 </template>
-
-<style scoped lang="scss">
-
-</style>

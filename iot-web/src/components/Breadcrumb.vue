@@ -1,8 +1,7 @@
-<script lang="jsx" setup>
+<script setup>
 import { ArrowRight } from '@element-plus/icons-vue'
 import { useRouter } from 'vue-router'
 
-// 接收组件的 props
 defineProps({
   breadcrumbs: {
     type: Array,
@@ -11,45 +10,37 @@ defineProps({
   },
   backIcon: {
     type: String,
-    default: '/src/assets/backico.svg', // 默认返回图标路径
+    default: '/src/assets/backico.svg',
   },
 })
 
-// 路由和返回功能
 const router = useRouter()
+const separatorIcon = ArrowRight
+
 function handleBack() {
   router.back()
 }
-
-// 图标
-const separatorIcon = ArrowRight
 </script>
 
 <template>
   <div class="flex items-center justify-between">
-    <!-- 动态生成面包屑 -->
-    <div>
-      <el-breadcrumb :separator-icon="separatorIcon">
-        <el-breadcrumb-item
-          v-for="(item, index) in breadcrumbs"
-          :key="index"
-          :to="item.path ? { path: item.path } : undefined"
-        >
-          {{ item.label }}
-        </el-breadcrumb-item>
-      </el-breadcrumb>
-    </div>
+    <!-- 面包屑导航 -->
+    <el-breadcrumb :separator-icon="separatorIcon" class="text-sm">
+      <el-breadcrumb-item
+        v-for="(item, index) in breadcrumbs"
+        :key="index"
+        :to="item.path ? { path: item.path } : undefined"
+        class="font-medium"
+      >
+        {{ item.label }}
+      </el-breadcrumb-item>
+    </el-breadcrumb>
 
     <!-- 返回按钮 -->
-    <div>
-      <el-button type="primary" plain @click="handleBack">
-        <img :src="backIcon" alt="返回" class="w-4 h-4 mr-2">
-        返回
-      </el-button>
-    </div>
+    <el-button type="primary" plain size="small" @click="handleBack">
+      <i class="i-ep-back mr-1" />返回
+    </el-button>
   </div>
 </template>
 
-<style scoped>
 
-</style>

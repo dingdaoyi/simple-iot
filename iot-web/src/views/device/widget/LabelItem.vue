@@ -1,18 +1,19 @@
 <script setup>
-defineProps(['label', 'value'])
+defineProps({
+  label: {
+    type: String,
+    default: '',
+  },
+  value: {
+    type: [String, Number],
+    default: '',
+  },
+})
 </script>
 
 <template>
-  <div class="flex gap-20px">
-    <div class="text-gray">
-      {{ label || '' }}
-    </div>
-    <div class="w-300px">
-      {{ value || '' }}
-    </div>
+  <div class="flex flex-col gap-1">
+    <span class="text-sm font-medium text-gray-600">{{ label }}</span>
+    <span class="text-base text-gray-900 truncate">{{ value || '-' }}</span>
   </div>
 </template>
-
-<style scoped lang="scss">
-
-</style>
