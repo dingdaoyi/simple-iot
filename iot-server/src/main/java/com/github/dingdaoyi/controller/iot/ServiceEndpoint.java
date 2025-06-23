@@ -38,7 +38,7 @@ public class ServiceEndpoint {
             log.info("INSTRUCTION_SENT_SUCCESSFULLY|指令下发成功|{}|{}|{}", deviceKey, identifier, message);
         } catch (BusinessException e) {
             log.info("INSTRUCTION_SENT_FAILURE|指令下发失败|{}|{}|{}", deviceKey, identifier,e.getMessage());
-            throw e;
+            return BaseResult.fail(e.getMessage());
         }
         return BaseResult.success(message);
     }

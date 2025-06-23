@@ -136,9 +136,6 @@ async function callDeviceService() {
       ElMessage.error(result.msg || '服务调用失败')
     }
   }
-  catch (error) {
-    ElMessage.error(`服务调用失败: ${error.message}`)
-  }
   finally {
     loading.value = false
   }
@@ -161,15 +158,6 @@ function renderFormItem(param) {
       return 'input'
   }
 }
-
-// 获取服务类型标签
-function getServiceTypeTag(serviceType) {
-  return serviceType === 1 ? 'primary' : 'success'
-}
-
-function getServiceTypeName(serviceType) {
-  return serviceType === 1 ? '服务' : '事件'
-}
 </script>
 
 <template>
@@ -179,89 +167,125 @@ function getServiceTypeName(serviceType) {
       <el-empty description="暂无可用服务" />
     </div>
 
-    <div v-else class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
-      <el-card
+    <div v-else class="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
+      <div
         v-for="service in serviceList"
         :key="service.identifier"
-        shadow="hover"
+        class="bg-white rounded-xl border border-gray-200 hover:border-blue-300 hover:shadow-xl transition-all duration-300 overflow-hidden group"
       >
-        <template #header>
-          <div class="flex justify-between items-center">
-            <span class="font-bold text-base">{{ service.name }}</span>
-            <el-tag
-              :type="getServiceTypeTag(service.serviceType)"
-              size="small"
-            >
-              {{ getServiceTypeName(service.serviceType) }}
+        <!-- 服务头部 -->
+        <div class="bg-gradient-to-r from-blue-50 to-indigo-50 px-6 py-4 border-b border-gray-100">
+          <div class="flex items-start justify-between mb-2">
+            <h3 class="font-semibold text-lg text-gray-800 group-hover:text-blue-600 transition-colors">
+              {{ service.name }}
+            </h3>
+            <div class="flex items-center gap-2">
+              <el-tag type="primary" size="small" class="font-medium">
+                服务
+              </el-tag>
+            </div>
+          </div>
+
+          <div class="flex items-center gap-2 mb-3">
+            <code class="bg-gray-100 text-gray-700 px-2 py-1 rounded text-xs font-mono">
+              {{ service.identifier }}
+            </code>
+            <el-tag v-if="service.async" type="warning" size="small">
+              异步
+            </el-tag>
+            <el-tag v-if="service.required" type="danger" size="small">
+              必选
             </el-tag>
           </div>
-        </template>
 
-        <div class="flex flex-col h-full">
-          <div class="mb-4">
-            <p class="text-gray-600 text-sm mb-1">
-              标识符: {{ service.identifier }}
-            </p>
-            <p v-if="service.description" class="text-gray-500 text-xs">
-              {{ service.description }}
+          <!-- 服务描述 -->
+          <div v-if="service.remark" class="bg-blue-100 border-l-4 border-blue-400 p-3 rounded-r">
+            <p class="text-sm text-blue-800 leading-relaxed m-0">
+              {{ service.remark }}
             </p>
           </div>
+        </div>
 
-          <div class="mb-4 flex-1 flex flex-col">
-            <div class="flex-1 h-full">
-              <div class="mb-3">
-                <p class="font-bold text-sm mb-2 text-gray-800">
-                  输入参数:
-                </p>
-                <div v-if="service.inputParams && service.inputParams.length > 0" class="flex flex-wrap gap-1">
-                  <el-tag
-                    v-for="param in service.inputParams"
-                    :key="param.identifier"
-                    size="small"
-                    class="m-0.5"
-                  >
-                    {{ param.name }}({{ param.dataType }})
-                  </el-tag>
+        <!-- 服务内容 -->
+        <div class="p-6">
+          <!-- 参数信息 -->
+          <div class="grid grid-cols-2 gap-4 mb-6">
+            <!-- 输入参数 -->
+            <div class="bg-green-50 rounded-lg p-4 border border-green-200">
+              <div class="flex items-center justify-between mb-3">
+                <div class="flex items-center gap-2">
+                  <div class="w-2 h-2 bg-green-500 rounded-full" />
+                  <span class="text-sm font-medium text-green-700">输入</span>
                 </div>
-                <div v-else class="flex flex-wrap gap-1">
+                <span class="bg-green-200 text-green-700 text-xs px-2 py-1 rounded-full font-medium">
+                  {{ service.inputParams?.length || 0 }}
+                </span>
+              </div>
+              <div class="space-y-1 min-h-12">
+                <div v-if="service.inputParams && service.inputParams.length > 0">
+                  <div
+                    v-for="param in service.inputParams.slice(0, 2)"
+                    :key="param.identifier"
+                    class="text-xs bg-white text-green-700 px-2 py-1 rounded border border-green-300 truncate"
+                    :title="param.name"
+                  >
+                    {{ param.name }}
+                  </div>
+                  <div v-if="service.inputParams.length > 2" class="text-xs text-green-600 font-medium">
+                    +{{ service.inputParams.length - 2 }} 更多
+                  </div>
+                </div>
+                <div v-else class="text-xs text-green-600 italic">
                   无输入参数
                 </div>
               </div>
             </div>
-            <div class="flex-1 h-full">
-              <div>
-                <p class="font-bold text-sm mb-2 text-gray-800">
-                  输出参数:
-                </p>
-                <div v-if="service.outputParams && service.outputParams.length > 0" class="flex flex-wrap gap-1">
-                  <el-tag
-                    v-for="param in service.outputParams"
-                    :key="param.identifier"
-                    size="small"
-                    type="info"
-                    class="m-0.5"
-                  >
-                    {{ param.name }}({{ param.dataType }})
-                  </el-tag>
+
+            <!-- 输出参数 -->
+            <div class="bg-blue-50 rounded-lg p-4 border border-blue-200">
+              <div class="flex items-center justify-between mb-3">
+                <div class="flex items-center gap-2">
+                  <div class="w-2 h-2 bg-blue-500 rounded-full" />
+                  <span class="text-sm font-medium text-blue-700">输出</span>
                 </div>
-                <div v-else class="flex flex-wrap gap-1">
+                <span class="bg-blue-200 text-blue-700 text-xs px-2 py-1 rounded-full font-medium">
+                  {{ service.outputParams?.length || 0 }}
+                </span>
+              </div>
+              <div class="space-y-1 min-h-12">
+                <div v-if="service.outputParams && service.outputParams.length > 0">
+                  <div
+                    v-for="param in service.outputParams.slice(0, 2)"
+                    :key="param.identifier"
+                    class="text-xs bg-white text-blue-700 px-2 py-1 rounded border border-blue-300 truncate"
+                    :title="param.name"
+                  >
+                    {{ param.name }}
+                  </div>
+                  <div v-if="service.outputParams.length > 2" class="text-xs text-blue-600 font-medium">
+                    +{{ service.outputParams.length - 2 }} 更多
+                  </div>
+                </div>
+                <div v-else class="text-xs text-blue-600 italic">
                   无输出参数
                 </div>
               </div>
             </div>
           </div>
 
-          <div class="flex justify-end">
+          <!-- 操作按钮 -->
+          <div class="flex justify-end pt-4 border-t border-gray-100">
             <el-button
               type="primary"
-              size="small"
+              size="default"
+              class="px-6 font-medium"
               @click="showServiceDialog(service)"
             >
               调用服务
             </el-button>
           </div>
         </div>
-      </el-card>
+      </div>
     </div>
 
     <!-- 服务调用对话框 -->
@@ -273,11 +297,18 @@ function getServiceTypeName(serviceType) {
     >
       <div v-if="activeService">
         <div class="bg-gray-50 p-4 rounded mb-5">
-          <p class="mb-1">
-            <strong>服务标识:</strong> {{ activeService.identifier }}
-          </p>
-          <p v-if="activeService.description" class="mb-0">
-            <strong>服务描述:</strong> {{ activeService.description }}
+          <div class="flex items-center gap-2 mb-2">
+            <strong>服务标识:</strong>
+            <code class="bg-gray-200 px-2 py-1 rounded text-sm">{{ activeService.identifier }}</code>
+            <el-tag v-if="activeService.async" type="warning" size="small">
+              异步
+            </el-tag>
+            <el-tag v-if="activeService.required" type="danger" size="small">
+              必选
+            </el-tag>
+          </div>
+          <p v-if="activeService.remark" class="mb-0 text-gray-700">
+            <strong>服务描述:</strong> {{ activeService.remark }}
           </p>
         </div>
 
