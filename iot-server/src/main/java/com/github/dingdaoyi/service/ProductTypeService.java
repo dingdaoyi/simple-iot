@@ -3,7 +3,7 @@ package com.github.dingdaoyi.service;
 import com.github.dingdaoyi.entity.ProductType;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.github.dingdaoyi.model.PageQuery;
-import com.github.dingdaoyi.model.PageResult;
+import com.github.dingdaoyi.core.base.PageResult;
 import com.github.dingdaoyi.model.vo.ProductTypeVo;
 
 import java.util.List;

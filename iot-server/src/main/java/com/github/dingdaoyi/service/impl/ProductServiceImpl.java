@@ -3,7 +3,7 @@ package com.github.dingdaoyi.service.impl;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.github.dingdaoyi.entity.ProductType;
-import com.github.dingdaoyi.model.PageResult;
+import com.github.dingdaoyi.core.base.PageResult;
 import com.github.dingdaoyi.model.query.ProductPageQuery;
 import com.github.dingdaoyi.model.vo.ProductPageVo;
 import com.github.dingdaoyi.model.vo.ProductVo;

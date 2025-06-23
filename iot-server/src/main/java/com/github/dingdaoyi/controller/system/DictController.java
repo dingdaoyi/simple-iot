@@ -1,7 +1,7 @@
 package com.github.dingdaoyi.controller.system;
 
 import com.github.dingdaoyi.entity.Dict;
-import com.github.dingdaoyi.model.base.R;
+import com.github.dingdaoyi.core.base.BaseResult;
 import com.github.dingdaoyi.service.DictService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -24,14 +24,14 @@ public class DictController{
 
     @GetMapping("groups")
     @Operation(summary  = "查询所有类型的字典")
-    public R<List<Dict>> groupList() {
+    public BaseResult<List<Dict>> groupList() {
         List<Dict> list = dictService.groupList();
-        return R.success(list);
+        return BaseResult.success(list);
     }
 
     @GetMapping("list")
     @Operation(summary  = "查询所有类型的字典")
-    public R<List<Dict>> getList(@RequestParam String group) {
-        return R.success(dictService.listByCode(group));
+    public BaseResult<List<Dict>> getList(@RequestParam String group) {
+        return BaseResult.success(dictService.listByCode(group));
     }
 }

@@ -3,8 +3,8 @@ package com.github.dingdaoyi.iot.impl;
 
 import com.baomidou.mybatisplus.core.toolkit.StringPool;
 import com.github.dingdaoyi.iot.model.CommandResponse;
-import com.github.dingdaoyi.model.enu.SystemCode;
-import com.github.dingdaoyi.model.exception.ServiceException;
+import com.github.dingdaoyi.core.enums.ResultCode;
+import com.github.dingdaoyi.core.exception.BusinessException;
 import com.github.dingdaoyi.proto.model.DecodeResult;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -40,7 +40,7 @@ public class ResponseRegister {
                 // 如果还没有完成,踢掉
                 if (completableFuture != null &&(future==completableFuture)&& (!completableFuture.isDone())) {
                     log.error("调用超时|{}|{}...",messageId,deviceKey);
-                    completableFuture.completeExceptionally(new ServiceException(SystemCode.BAD_REQUEST,"设备未回复,调用超时"));
+                    completableFuture.completeExceptionally(new BusinessException(ResultCode.BAD_REQUEST,"设备未回复,调用超时"));
                     localRequestMap.remove(redisKey);
                 }
             });

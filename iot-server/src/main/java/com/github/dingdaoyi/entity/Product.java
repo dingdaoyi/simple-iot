@@ -4,47 +4,35 @@ import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
+import com.github.dingdaoyi.core.base.BaseEntity;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 /**
  * @author dingyunwei
  */
 @Schema
 @Data
+@EqualsAndHashCode(callSuper = true)
 @TableName(value = "tb_product")
-public class Product {
-    /**
-     * 产品id
-     */
+public class Product extends BaseEntity {
     @TableId(value = "id", type = IdType.AUTO)
     @Schema(description = "产品id")
     private Integer id;
 
-    /**
-     * 产品型号
-     */
     @TableField(value = "model")
     @Schema(description = "产品型号")
     private String model;
 
-    /**
-     * 厂家
-     */
     @TableField(value = "manufacturer")
     @Schema(description = "厂家")
     private String manufacturer;
 
-    /**
-     * 描述
-     */
     @TableField(value = "remark")
     @Schema(description = "描述")
     private String remark;
 
-    /**
-     * 协议id
-     */
     @TableField(value = "protocol_id")
     @Schema(description = "协议id")
     private Integer protocolId;

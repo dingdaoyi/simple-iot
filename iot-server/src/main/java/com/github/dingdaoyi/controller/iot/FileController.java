@@ -1,7 +1,7 @@
 package com.github.dingdaoyi.controller.iot;
 
 
-import com.github.dingdaoyi.model.base.R;
+import com.github.dingdaoyi.core.base.BaseResult;
 import com.github.dingdaoyi.service.StorageService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -41,12 +41,12 @@ public class FileController {
     @Operation(summary ="文件上传")
     @PostMapping("/file/upload")
     @SneakyThrows(Exception.class)
-    public R<List<String>> uploadFile(@RequestParam("files") MultipartFile file) {
+    public BaseResult<List<String>> uploadFile(@RequestParam("files") MultipartFile file) {
         if (file == null) {
-            R.fail("文件不能为空");
+            BaseResult.fail("文件不能为空");
         }
         String path = storageService.uploadFile(file);
-        return R.success(List.of(String.format("%s/file/%s", contextPath, path)));
+        return BaseResult.success(List.of(String.format("%s/file/%s", contextPath, path)));
     }
 
     @Operation(summary ="文件代理下载")

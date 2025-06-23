@@ -1,7 +1,7 @@
 package com.github.dingdaoyi.controller.iot;
 
-import com.github.dingdaoyi.model.PageResult;
-import com.github.dingdaoyi.model.base.R;
+import com.github.dingdaoyi.core.base.PageResult;
+import com.github.dingdaoyi.core.base.BaseResult;
 import com.github.dingdaoyi.model.query.*;
 import com.github.dingdaoyi.model.vo.RuleDetailVo;
 import com.github.dingdaoyi.model.vo.RulePageVo;
@@ -29,26 +29,26 @@ public class RuleController {
 
     @GetMapping("/{id}")
     @Operation(summary = "分页查询")
-    public R<RuleDetailVo> details(@PathVariable Integer id) {
-        return R.success(ruleService.details(id));
+    public BaseResult<RuleDetailVo> details(@PathVariable Integer id) {
+        return BaseResult.success(ruleService.details(id));
     }
 
 
     @PostMapping
     @Operation(summary = "添加")
-    public R<Boolean> save(@RequestBody RuleAddQuery addQuery) {
-        return R.success(ruleService.save(addQuery));
+    public BaseResult<Boolean> save(@RequestBody RuleAddQuery addQuery) {
+        return BaseResult.success(ruleService.save(addQuery));
     }
 
     @PutMapping
     @Operation(summary = "修改")
-    public R<Boolean> update(@RequestBody RuleUpdateQuery updateQuery) {
-        return R.success(ruleService.update(updateQuery));
+    public BaseResult<Boolean> update(@RequestBody RuleUpdateQuery updateQuery) {
+        return BaseResult.success(ruleService.update(updateQuery));
     }
 
     @DeleteMapping("/{id}")
     @Operation(summary = "删除")
-    public R<Boolean> delete(@PathVariable Integer id) {
-        return R.success(ruleService.removeById(id));
+    public BaseResult<Boolean> delete(@PathVariable Integer id) {
+        return BaseResult.success(ruleService.removeById(id));
     }
 }

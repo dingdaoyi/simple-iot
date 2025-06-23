@@ -55,7 +55,7 @@ public class ProductAddQuery implements ToEntity<Product> {
         product.setProtocolId(protocolId);
         product.setProductTypeId(productTypeId);
         //自定义串
-        product.setProductKey(RandomStringUtils.randomAlphanumeric(20));
+        product.setProductKey(RandomStringUtils.secure().nextAlphabetic(20));
         return product;
     }
 }

@@ -1,14 +1,14 @@
-package com.github.dingdaoyi.model.enu;
-
+package com.github.dingdaoyi.core.enums;
 
 import lombok.Getter;
 
 /**
+ * 响应状态码枚举
  *
  * @author dingyunwei
  */
 @Getter
-public enum SystemCode {
+public enum ResultCode {
 
     SUCCESS(1, "成功"),
 
@@ -38,12 +38,12 @@ public enum SystemCode {
     UNKNOWN(999, "未知错误"),
     ;
 
+    private final Integer code;
+    private final String message;
 
-    private final int code;
-    private final String msg;
-
-    SystemCode(int code, String msg) {
+    ResultCode(Integer code, String message) {
         this.code = code;
-        this.msg = msg;
+        this.message = message;
     }
+
 }

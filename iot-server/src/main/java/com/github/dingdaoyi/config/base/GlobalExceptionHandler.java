@@ -1,9 +1,9 @@
 package com.github.dingdaoyi.config.base;
 
 import com.baomidou.mybatisplus.core.toolkit.StringPool;
-import com.github.dingdaoyi.model.base.R;
-import com.github.dingdaoyi.model.enu.SystemCode;
-import com.github.dingdaoyi.model.exception.ServiceException;
+import com.github.dingdaoyi.core.base.BaseResult;
+import com.github.dingdaoyi.core.enums.ResultCode;
+import com.github.dingdaoyi.core.exception.BusinessException;
 import jakarta.validation.ConstraintViolationException;
 import lombok.extern.slf4j.Slf4j;
 
@@ -42,30 +42,24 @@ public class GlobalExceptionHandler {
 
     @ResponseBody
     @ExceptionHandler(value = MethodArgumentTypeMismatchException.class)
-    public R<Object> methodArgumentTypeMismatchException(MethodArgumentTypeMismatchException e) {
+    public BaseResult<Object> methodArgumentTypeMismatchException(MethodArgumentTypeMismatchException e) {
         final MethodParameter parameter = e.getParameter();
-        return R.fail(SystemCode.BAD_REQUEST, "参数不存在:" + parameter.getParameterName());
+        return BaseResult.fail(ResultCode.BAD_REQUEST.getCode(), "参数不存在:" + parameter.getParameterName());
     }
 
     @ResponseBody
     @ExceptionHandler(value = HttpMessageNotReadableException.class)
-    public R<Object> monitorExceptionHandler(HttpMessageNotReadableException e) {
+    public BaseResult<Object> monitorExceptionHandler(HttpMessageNotReadableException e) {
         log.error("请求参数不规范:{}",e.getMessage());
-        return R.fail(e.getMostSpecificCause().getMessage());
+        return BaseResult.fail(e.getMostSpecificCause().getMessage());
     }
 
 
 
-    /**
-     * 异常捕捉
-     *
-     * @param e
-     * @return
-     */
     @ResponseBody
-    @ExceptionHandler(value = ServiceException.class)
-    public R<Object> serviceException(ServiceException e) {
-        return e.getResult();
+    @ExceptionHandler(value = BusinessException.class)
+    public BaseResult<Object> businessException(BusinessException e) {
+        return BaseResult.fail(e.getCode(), e.getMessage());
     }
 
     /**
@@ -76,8 +70,8 @@ public class GlobalExceptionHandler {
      */
     @ResponseBody
     @ExceptionHandler(value = FileSizeLimitExceededException.class)
-    public R<Object> fileSizeLimitExceededException(FileSizeLimitExceededException e) {
-        return R.fail("文件超过大小限制");
+    public BaseResult<Object> fileSizeLimitExceededException(FileSizeLimitExceededException e) {
+        return BaseResult.fail("文件超过大小限制");
     }
 
     /**
@@ -88,11 +82,11 @@ public class GlobalExceptionHandler {
      */
     @ResponseBody
     @ExceptionHandler(value = {ConstraintViolationException.class, TransactionSystemException.class})
-    public R<Object> constraintViolationException(ConstraintViolationException e) {
+    public BaseResult<Object> constraintViolationException(ConstraintViolationException e) {
         final String message = e.getConstraintViolations()
                 .stream().map(constraintViolation -> constraintViolation.getPropertyPath() + StringPool.COLON + constraintViolation.getMessage()).collect(Collectors.joining());
         log.error("参数校验异常:{}", message);
-        return R.fail(SystemCode.PARAM_VALID_ERROR, message);
+        return BaseResult.fail(ResultCode.PARAM_VALID_ERROR.getCode(), message);
     }
 
     /**
@@ -104,8 +98,8 @@ public class GlobalExceptionHandler {
     @ResponseBody
     @ExceptionHandler(value = {HttpRequestMethodNotSupportedException.class})
     @ResponseStatus(HttpStatus.METHOD_NOT_ALLOWED)
-    public R<Object> httpRequestMethodNotSupportedException(HttpRequestMethodNotSupportedException e) {
-        return R.fail(SystemCode.METHOD_NOT_ALLOWED);
+    public BaseResult<Object> httpRequestMethodNotSupportedException(HttpRequestMethodNotSupportedException e) {
+        return BaseResult.fail(ResultCode.METHOD_NOT_ALLOWED.getCode(), ResultCode.METHOD_NOT_ALLOWED.getMessage());
     }
 
     /**
@@ -116,45 +110,45 @@ public class GlobalExceptionHandler {
      */
     @ResponseBody
     @ExceptionHandler(value = BindException.class)
-    public R<Object> bindException(BindException exception) {
+    public BaseResult<Object> bindException(BindException exception) {
         final String message = exception.getAllErrors()
                 .stream().map(DefaultMessageSourceResolvable::getDefaultMessage)
                 .collect(Collectors.joining(","));
         log.error("参数校验异常:{}", message);
-        return R.fail(SystemCode.PARAM_VALID_ERROR, message);
+        return BaseResult.fail(ResultCode.PARAM_VALID_ERROR.getCode(), message);
     }
 
 
     @ResponseBody
     @ExceptionHandler(value = NullPointerException.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    public R<Object> exceptionHandler(NullPointerException e) {
+    public BaseResult<Object> exceptionHandler(NullPointerException e) {
         log.error("sytem_error", e);
-        return R.fail(SystemCode.NPE_ERROR,e.getMessage());
+        return BaseResult.fail(ResultCode.INTERNAL_SERVER_ERROR.getCode(), e.getMessage());
     }
 
     @ResponseBody
     @ExceptionHandler(value = PSQLException.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    public R<Object> exceptionHandler(PSQLException e) {
+    public BaseResult<Object> exceptionHandler(PSQLException e) {
         log.error("sytem_error", e);
-        return R.fail(SystemCode.INTERNAL_SERVER_ERROR,"服务器异常,请联系管理员");
+        return BaseResult.fail(ResultCode.INTERNAL_SERVER_ERROR.getCode(), "服务器异常,请联系管理员");
     }
 
     @ResponseBody
     @ExceptionHandler(value = DataAccessException.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    public R<Object> exceptionHandler(DataAccessException e) {
+    public BaseResult<Object> exceptionHandler(DataAccessException e) {
         log.error("sytem_error", e);
-        return R.fail(SystemCode.INTERNAL_SERVER_ERROR,"数据异常");
+        return BaseResult.fail(ResultCode.INTERNAL_SERVER_ERROR.getCode(), "数据异常");
     }
 
     @ResponseBody
     @ExceptionHandler(value = IllegalArgumentException.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    public R<Object> exceptionHandler(IllegalArgumentException e) {
+    public BaseResult<Object> exceptionHandler(IllegalArgumentException e) {
         log.error("sytem_error", e);
-        return R.fail(SystemCode.BAD_REQUEST,e.getMessage());
+        return BaseResult.fail(ResultCode.BAD_REQUEST.getCode(), e.getMessage());
     }
     /**
      * 异常捕捉
@@ -165,9 +159,9 @@ public class GlobalExceptionHandler {
     @ResponseBody
     @ExceptionHandler(value = Exception.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    public R<Object> exceptionHandler(Exception e) {
+    public BaseResult<Object> exceptionHandler(Exception e) {
         log.error("sytem_error", e);
-        return R.fail(SystemCode.INTERNAL_SERVER_ERROR);
+        return BaseResult.fail(ResultCode.INTERNAL_SERVER_ERROR.getCode(), ResultCode.INTERNAL_SERVER_ERROR.getMessage());
     }
 
     /**
@@ -177,9 +171,9 @@ public class GlobalExceptionHandler {
      */
     @ResponseBody
     @ExceptionHandler(value = NoResourceFoundException.class)
-    public R<Object> noResourceFoundException(NoResourceFoundException exception) {
+    public BaseResult<Object> noResourceFoundException(NoResourceFoundException exception) {
         log.error("路径异常:{}", exception.getMessage());
-        return R.fail(SystemCode.NOT_FOUND, SystemCode.NOT_FOUND.getMsg());
+        return BaseResult.fail(ResultCode.NOT_FOUND.getCode(), ResultCode.NOT_FOUND.getMessage());
     }
 
     /**
@@ -189,11 +183,11 @@ public class GlobalExceptionHandler {
      */
     @ResponseBody
     @ExceptionHandler(value = HandlerMethodValidationException.class)
-    public R<Object> monitorExceptionHandler(HandlerMethodValidationException e) {
+    public BaseResult<Object> handlerMethodValidationException(HandlerMethodValidationException e) {
         List<String> collect = e.getValueResults().stream().map(result -> {
             List<String> list = result.getResolvableErrors().stream().map(MessageSourceResolvable::getDefaultMessage).toList();
             return list.getFirst();
         }).toList();
-        return R.fail(SystemCode.PARAM_VALID_ERROR, String.join(",",collect));
+        return BaseResult.fail(ResultCode.PARAM_VALID_ERROR.getCode(), String.join(",",collect));
     }
 }

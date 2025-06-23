@@ -1,7 +1,7 @@
 package com.github.dingdaoyi.service.impl;
 
-import com.github.dingdaoyi.model.enu.SystemCode;
-import com.github.dingdaoyi.model.exception.ServiceException;
+import com.github.dingdaoyi.core.enums.ResultCode;
+import com.github.dingdaoyi.core.exception.BusinessException;
 import com.github.dingdaoyi.service.StorageService;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.core.io.Resource;
@@ -33,12 +33,12 @@ public class LocalStorageService implements StorageService {
 
     @Override
     public String uploadFile(MultipartFile file) {
-        String fileName = RandomStringUtils.randomAlphabetic(10) + "_" + file.getOriginalFilename();
+        String fileName = RandomStringUtils.secure().nextNumeric(10) + "_" + file.getOriginalFilename();
         Path path = Paths.get(localDir, fileName);
         try {
             Files.copy(file.getInputStream(), path);
         } catch (IOException e) {
-            throw new ServiceException(SystemCode.BAD_REQUEST.getCode(),"文件上传失败");
+            throw new BusinessException(ResultCode.BAD_REQUEST.getCode(),"文件上传失败");
         }
         return fileName;
     }
@@ -55,7 +55,7 @@ public class LocalStorageService implements StorageService {
         try {
             Files.deleteIfExists(paths);
         } catch (IOException e) {
-            throw new ServiceException(SystemCode.BAD_REQUEST.getCode(),"删除文件失败");
+            throw new BusinessException(ResultCode.BAD_REQUEST.getCode(),"删除文件失败");
         }
     }
 }

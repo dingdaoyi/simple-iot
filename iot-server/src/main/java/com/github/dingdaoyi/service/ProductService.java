@@ -1,8 +1,8 @@
 package com.github.dingdaoyi.service;
 
+import com.github.dingdaoyi.core.base.PageResult;
 import com.github.dingdaoyi.entity.Product;
 import com.baomidou.mybatisplus.extension.service.IService;
-import com.github.dingdaoyi.model.PageResult;
 import com.github.dingdaoyi.model.query.ProductPageQuery;
 import com.github.dingdaoyi.model.vo.ProductPageVo;
 import com.github.dingdaoyi.model.vo.ProductVo;

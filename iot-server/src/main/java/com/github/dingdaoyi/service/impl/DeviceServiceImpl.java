@@ -4,7 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.github.dingdaoyi.model.DTO.DeviceDTO;
-import com.github.dingdaoyi.model.PageResult;
+import com.github.dingdaoyi.core.base.PageResult;
 import com.github.dingdaoyi.model.query.DevicePageQuery;
 import com.github.dingdaoyi.model.vo.DevicePageVo;
 import com.github.dingdaoyi.model.vo.DeviceVo;
@@ -63,7 +63,8 @@ public class DeviceServiceImpl extends ServiceImpl<DeviceMapper, Device> impleme
     @Override
     public PageResult<DevicePageVo> pageByQuery(DevicePageQuery query) {
         Page<DevicePageVo> page = PageHelper.page(query);
-        return PageHelper.result(baseMapper.pageByQuery(page,query));
+        Page<DevicePageVo> result = baseMapper.pageByQuery(page,query);
+        return PageResult.of(result.getRecords(), result.getTotal(), result.getCurrent(), result.getSize());
     }
 
     @Override

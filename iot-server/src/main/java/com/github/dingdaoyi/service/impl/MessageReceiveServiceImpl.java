@@ -2,7 +2,7 @@ package com.github.dingdaoyi.service.impl;
 
 import com.baomidou.mybatisplus.core.toolkit.ObjectUtils;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
-import com.github.dingdaoyi.model.PageResult;
+import com.github.dingdaoyi.core.base.PageResult;
 import com.github.dingdaoyi.model.query.MessageRecivePageQuery;
 import com.github.dingdaoyi.utils.PageHelper;
 import org.apache.commons.lang3.StringUtils;

@@ -5,8 +5,8 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.ObjectUtils;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.github.dingdaoyi.entity.Product;
-import com.github.dingdaoyi.model.enu.SystemCode;
-import com.github.dingdaoyi.model.exception.ServiceException;
+import com.github.dingdaoyi.core.enums.ResultCode;
+import com.github.dingdaoyi.core.exception.BusinessException;
 import com.github.dingdaoyi.proto.model.DataTypeEnum;
 import com.github.dingdaoyi.model.ToEntity;
 import com.github.dingdaoyi.model.query.ModelPropertyUpdateQuery;
@@ -106,7 +106,7 @@ public class ModelPropertyServiceImpl extends ServiceImpl<ModelPropertyMapper, M
                     .toList();
             int result = baseMapper.insertList(propertyList);
             if (result != propertyList.size()) {
-                throw new ServiceException(SystemCode.BAD_REQUEST, "子属性添加失败");
+                throw new BusinessException(ResultCode.BAD_REQUEST, "子属性添加失败");
             }
         }
     }
@@ -136,7 +136,7 @@ public class ModelPropertyServiceImpl extends ServiceImpl<ModelPropertyMapper, M
     public Boolean saveProductProperty(ProductPropertyAddQuery property) {
         Product product = productService.getById(property.getProductId());
         if (product == null) {
-            throw new ServiceException(SystemCode.PARAM_VALID_ERROR, "请选择正确的产品");
+            throw new BusinessException(ResultCode.PARAM_VALID_ERROR, "请选择正确的产品");
         }
         ModelProperty entity = property.toEntity();
         boolean result = baseMapper.insert(entity) > 0;
@@ -151,7 +151,7 @@ public class ModelPropertyServiceImpl extends ServiceImpl<ModelPropertyMapper, M
     public Boolean update(ModelPropertyUpdateQuery property) {
         ModelProperty modelProperty = getById(property.getId());
         if (modelProperty == null) {
-            throw new ServiceException(SystemCode.BAD_REQUEST,"属性不存在,无法修改!");
+            throw new BusinessException(ResultCode.BAD_REQUEST,"属性不存在,无法修改!");
         }
         boolean result = baseMapper.updateById(property.toEntity()) > 0;
         if (result) {

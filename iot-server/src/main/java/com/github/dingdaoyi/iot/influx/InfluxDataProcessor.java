@@ -6,8 +6,8 @@ import cn.hutool.json.JSONUtil;
 import com.github.dingdaoyi.config.base.IotConfigProperties;
 import com.github.dingdaoyi.iot.DataProcessor;
 import com.github.dingdaoyi.model.DTO.DeviceDTO;
-import com.github.dingdaoyi.model.enu.SystemCode;
-import com.github.dingdaoyi.model.exception.ServiceException;
+import com.github.dingdaoyi.core.enums.ResultCode;
+import com.github.dingdaoyi.core.exception.BusinessException;
 import com.github.dingdaoyi.model.query.DeviceDataQuery;
 import com.github.dingdaoyi.model.query.DeviceEventDataVo;
 import com.github.dingdaoyi.proto.model.DecodeResult;
@@ -176,7 +176,7 @@ public class InfluxDataProcessor implements DataProcessor, DeviceDataService {
             return stream.map(DeviceEventDataVo::fromPointValues).toList();
         } catch (Exception e) {
             log.error("查询出错:{}", e.getMessage());
-            throw new ServiceException(SystemCode.BAD_REQUEST, "请求参数错误!");
+            throw new BusinessException(ResultCode.BAD_REQUEST, "请求参数错误!");
         }
     }
 }

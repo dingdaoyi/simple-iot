@@ -5,8 +5,8 @@ import cn.dev33.satoken.secure.BCrypt;
 import cn.dev33.satoken.stp.SaTokenInfo;
 import cn.dev33.satoken.stp.StpUtil;
 import com.github.dingdaoyi.entity.User;
-import com.github.dingdaoyi.model.base.R;
-import com.github.dingdaoyi.model.enu.SystemCode;
+import com.github.dingdaoyi.core.base.BaseResult;
+import com.github.dingdaoyi.core.enums.ResultCode;
 import com.github.dingdaoyi.model.query.LoginQuery;
 import com.github.dingdaoyi.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -29,21 +29,20 @@ public class UserController {
 
     @PostMapping("login")
     @Operation(summary  = "登录")
-    public R<SaTokenInfo> doLogin(@RequestBody @Valid LoginQuery loginQuery) {
-
+    public BaseResult<SaTokenInfo> doLogin(@RequestBody @Valid LoginQuery loginQuery) {
         Optional<User> optional = userService.getByUsername(loginQuery.getUsername());
         if (optional.isPresent()) {
             User user = optional.get();
             if (user.isLocked()) {
-                return R.fail(SystemCode.BAD_REQUEST, "账号已被锁定");
+                return BaseResult.fail(ResultCode.BAD_REQUEST.getCode(), "账号已被锁定");
             }
             if (BCrypt.checkpw(loginQuery.getPassword(), user.getPassword())) {
                 StpUtil.login(user.getId());
-                return R.success(StpUtil.getTokenInfo());
+                return BaseResult.success(StpUtil.getTokenInfo());
             }
-            return R.fail(SystemCode.BAD_REQUEST, "登录密码错误");
+            return BaseResult.fail(ResultCode.BAD_REQUEST.getCode(), "登录密码错误");
         }
-        return R.fail(SystemCode.BAD_REQUEST, "账号不存在");
+        return BaseResult.fail(ResultCode.BAD_REQUEST.getCode(), "账号不存在");
     }
 
 }

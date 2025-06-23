@@ -1,7 +1,7 @@
 package com.github.dingdaoyi.controller.iot;
 
 import com.github.dingdaoyi.entity.Protocol;
-import com.github.dingdaoyi.model.base.R;
+import com.github.dingdaoyi.core.base.BaseResult;
 import com.github.dingdaoyi.service.ProductService;
 import com.github.dingdaoyi.service.ProtocolService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -24,28 +24,28 @@ public class ProtocolController {
 
     @GetMapping
     @Operation(summary = "协议列表")
-    public R<List<Protocol>> list() {
-        return R.success(protocolService.list());
+    public BaseResult<List<Protocol>> list() {
+        return BaseResult.success(protocolService.list());
     }
 
     @PostMapping
     @Operation(summary = "协议添加")
-    public R<Boolean> save(@RequestBody Protocol protocol) {
-        return R.success(protocolService.save(protocol));
+    public BaseResult<Boolean> save(@RequestBody Protocol protocol) {
+        return BaseResult.success(protocolService.save(protocol));
     }
 
     @PutMapping
     @Operation(summary = "协议修改")
-    public R<Boolean> update(@RequestBody Protocol protocol) {
-        return R.success(protocolService.updateById(protocol));
+    public BaseResult<Boolean> update(@RequestBody Protocol protocol) {
+        return BaseResult.success(protocolService.updateById(protocol));
     }
 
     @DeleteMapping("/{id}")
     @Operation(summary = "协议修改")
-    public R<Boolean> delete(@PathVariable Integer id) {
+    public BaseResult<Boolean> delete(@PathVariable Integer id) {
         if (productService.existsByProtocol(id)) {
-            return R.fail("协议已被引用,无法删除");
+            return BaseResult.fail("协议已被引用,无法删除");
         }
-        return R.success(protocolService.removeById(id));
+        return BaseResult.success(protocolService.removeById(id));
     }
 }

@@ -1,6 +1,6 @@
 package com.github.dingdaoyi.controller.system;
 
-import com.github.dingdaoyi.model.base.R;
+import com.github.dingdaoyi.core.base.BaseResult;
 import com.github.dingdaoyi.service.impl.EmailNotificationService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -23,7 +23,7 @@ public class NotificationController {
 
     @Operation(summary = "发送消息")
     @GetMapping
-    public R<Boolean> sendTest() {
+    public BaseResult<Boolean> sendTest() {
         notificationService.sendMessage("1493001032@qq.com", "event_notification",
                 Map.of("deviceName", "烟雾报警器",
                         "eventTime", "2024-12-24",
@@ -31,6 +31,6 @@ public class NotificationController {
                         "eventTypeName", "告警",
                         "eventContent", Map.of("液位", 100,
                                 "类型", "火警")));
-        return R.success(true);
+        return BaseResult.success(true);
     }
 }

@@ -42,7 +42,7 @@ public class DeviceAddQuery implements ToEntity<Device> {
         device.setDeviceName(deviceName);
         device.setDeviceKey(deviceKey);
         //自定义串
-        device.setDeviceSecret(RandomStringUtils.randomAlphanumeric(20));
+        device.setDeviceSecret(RandomStringUtils.secure().nextAlphabetic(20));
         return device;
     }
 }

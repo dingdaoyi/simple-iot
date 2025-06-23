@@ -4,7 +4,7 @@ import cn.hutool.core.util.BooleanUtil;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.github.dingdaoyi.model.PageQuery;
-import com.github.dingdaoyi.model.PageResult;
+import com.github.dingdaoyi.core.base.PageResult;
 import com.github.dingdaoyi.model.vo.ProductTypeVo;
 import com.github.dingdaoyi.utils.PageHelper;
 import org.apache.commons.lang3.StringUtils;

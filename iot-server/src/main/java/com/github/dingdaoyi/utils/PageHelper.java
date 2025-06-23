@@ -4,7 +4,7 @@ import cn.hutool.core.collection.CollectionUtil;
 import com.baomidou.mybatisplus.core.metadata.OrderItem;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.github.dingdaoyi.model.PageQuery;
-import com.github.dingdaoyi.model.PageResult;
+import com.github.dingdaoyi.core.base.PageResult;
 
 import java.util.stream.Collectors;
 
@@ -21,7 +21,7 @@ public class PageHelper {
      * @return
      */
     public static <E> PageResult<E> result(Page<E> data) {
-        return PageResult.fromList(data.getRecords(), data.getCurrent(), data.getSize(), data.getTotal());
+        return PageResult.of(data.getRecords(), data.getTotal(), data.getCurrent(), data.getSize());
     }
 
     public static <E> Page<E> page(PageQuery pageQuery) {

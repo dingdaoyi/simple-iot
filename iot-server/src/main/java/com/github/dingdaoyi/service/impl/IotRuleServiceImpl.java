@@ -6,7 +6,7 @@ import com.github.dingdaoyi.entity.Device;
 import com.github.dingdaoyi.entity.Product;
 import com.github.dingdaoyi.entity.enu.RuleSourceType;
 import com.github.dingdaoyi.model.DTO.DeviceDTO;
-import com.github.dingdaoyi.model.PageResult;
+import com.github.dingdaoyi.core.base.PageResult;
 import com.github.dingdaoyi.model.query.RuleAddQuery;
 import com.github.dingdaoyi.model.query.RulePageQuery;
 import com.github.dingdaoyi.model.query.RuleUpdateQuery;

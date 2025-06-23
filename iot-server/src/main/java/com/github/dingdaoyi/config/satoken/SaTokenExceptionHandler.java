@@ -5,8 +5,8 @@ import cn.dev33.satoken.exception.NotPermissionException;
 import cn.dev33.satoken.exception.NotRoleException;
 import cn.dev33.satoken.exception.SaTokenException;
 
-import com.github.dingdaoyi.model.base.R;
-import com.github.dingdaoyi.model.enu.SystemCode;
+import com.github.dingdaoyi.core.base.BaseResult;
+import com.github.dingdaoyi.core.enums.ResultCode;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpStatus;
@@ -33,8 +33,8 @@ public class SaTokenExceptionHandler {
     @ResponseBody
     @ExceptionHandler(value = NotLoginException.class)
     @ResponseStatus(HttpStatus.UNAUTHORIZED)
-    public R<Object> notLoginException(NotLoginException e) {
-        return R.error(SystemCode.UNAUTHORIZED);
+    public BaseResult<Object> notLoginException(NotLoginException e) {
+        return BaseResult.fail(ResultCode.UNAUTHORIZED.getCode(), ResultCode.UNAUTHORIZED.getMessage());
     }
 
     /**
@@ -45,8 +45,8 @@ public class SaTokenExceptionHandler {
     @ResponseBody
     @ExceptionHandler(value = MissingServletRequestParameterException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public R<Object> missingServletRequestParameterException(MissingServletRequestParameterException e) {
-        return R.error(SystemCode.BAD_REQUEST, e.getParameterName() + "不能为空");
+    public BaseResult<Object> missingServletRequestParameterException(MissingServletRequestParameterException e) {
+        return BaseResult.fail(ResultCode.BAD_REQUEST.getCode(), e.getParameterName() + "不能为空");
     }
 
     /**
@@ -57,8 +57,8 @@ public class SaTokenExceptionHandler {
     @ResponseBody
     @ExceptionHandler(value = NotPermissionException.class)
     @ResponseStatus(HttpStatus.FORBIDDEN)
-    public R<Object> noPermissionException(NotPermissionException e) {
-        return R.error(SystemCode.FORBIDDEN, "用户无操作权限:" + e.getPermission());
+    public BaseResult<Object> noPermissionException(NotPermissionException e) {
+        return BaseResult.fail(ResultCode.FORBIDDEN.getCode(), "用户无操作权限:" + e.getPermission());
     }
 
     /**
@@ -69,8 +69,8 @@ public class SaTokenExceptionHandler {
     @ResponseBody
     @ExceptionHandler(value = NotRoleException.class)
     @ResponseStatus(HttpStatus.FORBIDDEN)
-    public R<Object> notRoleException(NotRoleException e) {
-        return R.error(SystemCode.FORBIDDEN, "用户无" + e.getRole() + "角色！");
+    public BaseResult<Object> notRoleException(NotRoleException e) {
+        return BaseResult.fail(ResultCode.FORBIDDEN.getCode(), "用户无" + e.getRole() + "角色！");
     }
 
     /**
@@ -81,7 +81,7 @@ public class SaTokenExceptionHandler {
     @ResponseBody
     @ExceptionHandler(value = SaTokenException.class)
     @ResponseStatus(HttpStatus.UNAUTHORIZED)
-    public R<Object> saTokenException(SaTokenException e) {
-        return R.error(SystemCode.UNAUTHORIZED,"登陆失效,请重新登陆");
+    public BaseResult<Object> saTokenException(SaTokenException e) {
+        return BaseResult.fail(ResultCode.UNAUTHORIZED.getCode(), "登陆失效,请重新登陆");
     }
 }

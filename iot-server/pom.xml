@@ -19,13 +19,10 @@
         <dependency>
             <groupId>cn.dev33</groupId>
             <artifactId>sa-token-spring-boot3-starter</artifactId>
-            <version>${sa-token.version}</version>
         </dependency>
-        <!-- https://mvnrepository.com/artifact/cn.hutool/hutool-all -->
         <dependency>
             <groupId>cn.hutool</groupId>
             <artifactId>hutool-all</artifactId>
-            <version>5.8.38</version>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -39,14 +36,10 @@
             <groupId>com.baomidou</groupId>
             <artifactId>mybatis-plus-spring-boot3-starter</artifactId>
         </dependency>
-        <!-- https://mvnrepository.com/artifact/com.baomidou/mybatis-plus-jsqlparser -->
         <dependency>
             <groupId>com.baomidou</groupId>
             <artifactId>mybatis-plus-jsqlparser</artifactId>
-            <version>${mybatis-plus.version}</version>
         </dependency>
-
-        <!-- PostgreSql -->
         <dependency>
             <groupId>org.postgresql</groupId>
             <artifactId>postgresql</artifactId>
@@ -69,7 +62,6 @@
         <dependency>
             <groupId>org.dromara.mica-mqtt</groupId>
             <artifactId>mica-mqtt-server-spring-boot-starter</artifactId>
-            <version>${mica-mqtt.version}</version>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -79,9 +71,13 @@
         <dependency>
             <groupId>com.influxdb</groupId>
             <artifactId>influxdb3-java</artifactId>
-            <version>1.0.0</version>
         </dependency>
 
+        <dependency>
+            <groupId>com.github.dingdaoyi</groupId>
+            <artifactId>iot-core</artifactId>
+            <version>${project.version}</version>
+        </dependency>
         <dependency>
             <groupId>com.github.dingdaoyi</groupId>
             <artifactId>iot-protocol-core</artifactId>
@@ -90,7 +86,6 @@
         <dependency>
             <groupId>io.github.cdimascio</groupId>
             <artifactId>dotenv-java</artifactId>
-            <version>3.1.0</version>
         </dependency>
         <dependency>
             <groupId>org.freemarker</groupId>

@@ -7,8 +7,8 @@ import com.github.dingdaoyi.iot.IotCommandProcessor;
 import com.github.dingdaoyi.iot.model.CommandRequest;
 import com.github.dingdaoyi.iot.model.CommandResponse;
 import com.github.dingdaoyi.model.DTO.DeviceDTO;
-import com.github.dingdaoyi.model.enu.SystemCode;
-import com.github.dingdaoyi.model.exception.ServiceException;
+import com.github.dingdaoyi.core.enums.ResultCode;
+import com.github.dingdaoyi.core.exception.BusinessException;
 import com.github.dingdaoyi.proto.model.ProtocolException;
 import com.github.dingdaoyi.proto.model.tsl.TslModel;
 import com.github.dingdaoyi.proto.model.tsl.TslProperty;
@@ -33,24 +33,24 @@ public class ServiceHandler {
     private final DeviceCommandService commandService;
     private final IotCommandProcessor commandProcessor;
     public Map<String, Object> sendMessage(String deviceKey, String identifier, Map<String, Object> paramMap)
-            throws ServiceException {
+            throws BusinessException {
         if (CollectionUtil.isEmpty(paramMap)) {
             paramMap = new HashMap<>();
         }
         final Optional<DeviceDTO> optional = deviceService.getByDeviceKey(deviceKey);
         if (optional.isEmpty()) {
-            throw new ServiceException(SystemCode.BAD_REQUEST, "device not found: " + deviceKey);
+            throw new BusinessException(ResultCode.BAD_REQUEST, "device not found: " + deviceKey);
         }
         DeviceDTO device = optional.get();
         //TODO 判断通道是否激活
         Optional<TslModel> tslModelOptional = tslModelService.findByProductKey(device.getProductKey());
         if (tslModelOptional.isEmpty()) {
-            throw new ServiceException(SystemCode.BAD_REQUEST, "tsl model not found: " + deviceKey);
+            throw new BusinessException(ResultCode.BAD_REQUEST, "tsl model not found: " + deviceKey);
         }
         TslModel tslModel = tslModelOptional.get();
         Optional<TslService> tslService = tslModel.serviceByIdentifier(identifier);
         if (tslService.isEmpty()) {
-            throw new ServiceException(SystemCode.BAD_REQUEST, "服务未定义在物模型中,无法下发指令:" + identifier);
+            throw new BusinessException(ResultCode.BAD_REQUEST, "服务未定义在物模型中,无法下发指令:" + identifier);
         }
         TslService service = tslService.get();
         validParam(paramMap, service);
@@ -80,15 +80,15 @@ public class ServiceHandler {
             }
             return new HashMap<>(resultData);
         } catch (InterruptedException e) {
-            throw new ServiceException(SystemCode.BAD_REQUEST, e.getMessage());
+            throw new BusinessException(ResultCode.BAD_REQUEST, e.getMessage());
         } catch (ExecutionException e) {
-            if (e.getCause() instanceof ServiceException se) {
+            if (e.getCause() instanceof BusinessException se) {
                 throw se;
             }
             if (e.getCause() instanceof ProtocolException se) {
-                throw new ServiceException(SystemCode.BAD_REQUEST, se.getMessage());
+                throw new BusinessException(ResultCode.BAD_REQUEST, se.getMessage());
             }
-            throw new ServiceException(SystemCode.BAD_REQUEST, e.getMessage());
+            throw new BusinessException(ResultCode.BAD_REQUEST, e.getMessage());
         }
     }
 
@@ -100,7 +100,7 @@ public class ServiceHandler {
                 if (paramMap.containsKey(identifier)) {
                     Object param = paramMap.get(identifier);
                     if (!tslProperty.validType(param)) {
-                        throw new ServiceException(SystemCode.BAD_REQUEST, "参数数据类型错误:" + identifier);
+                        throw new BusinessException(ResultCode.BAD_REQUEST, "参数数据类型错误:" + identifier);
                     }
                 }
             }

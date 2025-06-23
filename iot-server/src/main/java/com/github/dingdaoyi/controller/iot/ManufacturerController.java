@@ -3,7 +3,7 @@ package com.github.dingdaoyi.controller.iot;
 
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.github.dingdaoyi.entity.Product;
-import com.github.dingdaoyi.model.base.R;
+import com.github.dingdaoyi.core.base.BaseResult;
 import com.github.dingdaoyi.service.ProductService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -28,12 +28,12 @@ public class ManufacturerController {
 
     @GetMapping
     @Operation(summary = "查找厂家列表")
-    public R<List<String>> list(@RequestParam Integer productTypeId) {
+    public BaseResult<List<String>> list(@RequestParam Integer productTypeId) {
         List<String> dictList = productService.listObjs(Wrappers
                 .lambdaQuery(Product.class)
                 .eq(Product::getProductTypeId, productTypeId)
                 .select(Product::getManufacturer));
-        return R.success(dictList);
+        return BaseResult.success(dictList);
     }
 
 }

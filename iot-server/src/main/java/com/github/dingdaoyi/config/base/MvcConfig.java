@@ -82,7 +82,7 @@ public class MvcConfig implements WebMvcConfigurer, WebMvcRegistrations {
             @Override
             public String deserialize(JsonParser jsonParser, DeserializationContext ctx)
                     throws IOException {
-                return StringUtils.trimWhitespace(jsonParser.getValueAsString());
+                return StringUtils.trimAllWhitespace(jsonParser.getValueAsString());
             }
         };
     }
