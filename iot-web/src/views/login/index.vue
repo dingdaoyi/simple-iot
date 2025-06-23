@@ -44,23 +44,29 @@ function onSubmit() {
       // const { code, data, msg } = await Index(form.value)
       Index(form.value).then((rs) => {
         const { code, data } = rs
-        if (code === 1) {
+        if (code === 200) {
           ctx.$message.success({
             message: '登录成功',
             duration: 1000,
           })
 
-          const targetPath = decodeURIComponent(route.query.redirect)
-          if (targetPath.startsWith('http')) {
-            // 如果是一个url地址
-            window.location.href = targetPath
-          }
-          else if (targetPath.startsWith('/')) {
-            // 如果是内部路由地址
-            router.push(targetPath)
+          const redirectPath = route.query.redirect
+          if (redirectPath && redirectPath !== 'undefined') {
+            const targetPath = decodeURIComponent(redirectPath)
+            if (targetPath.startsWith('http')) {
+              // 如果是一个url地址
+              window.location.href = targetPath
+            }
+            else if (targetPath.startsWith('/')) {
+              // 如果是内部路由地址
+              router.push(targetPath)
+            }
+            else {
+              router.push('/home')
+            }
           }
           else {
-            router.push('/')
+            router.push('/home')
           }
 
           store.setToken(data)

@@ -10,7 +10,7 @@ import lombok.Getter;
 @Getter
 public enum ResultCode {
 
-    SUCCESS(1, "成功"),
+    SUCCESS(200, "成功"),
 
     // ========== 客户端错误段 ==========
 

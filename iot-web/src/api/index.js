@@ -595,3 +595,17 @@ export function messageReceiveListApi(params) {
     params,
   })
 }
+
+/**
+ * 调用设备服务
+ * @param deviceKey 设备编号
+ * @param identifier 服务标识符
+ * @param params 服务参数
+ */
+export function callDeviceServiceApi(deviceKey, identifier, params) {
+  return request({
+    url: `/service/${deviceKey}/${identifier}`,
+    method: 'POST',
+    data: params,
+  })
+}

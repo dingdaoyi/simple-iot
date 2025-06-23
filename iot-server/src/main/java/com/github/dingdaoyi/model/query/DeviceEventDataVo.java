@@ -12,6 +12,9 @@ import org.tio.utils.json.JsonUtil;
 import java.time.LocalDateTime;
 import java.util.List;
 
+/**
+ * @author dingyunwei
+ */
 @Getter
 @Setter
 public class DeviceEventDataVo extends DeviceEventData {

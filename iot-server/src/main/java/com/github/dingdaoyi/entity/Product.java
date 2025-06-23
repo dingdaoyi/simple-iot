@@ -14,9 +14,8 @@ import lombok.EqualsAndHashCode;
  */
 @Schema
 @Data
-@EqualsAndHashCode(callSuper = true)
 @TableName(value = "tb_product")
-public class Product extends BaseEntity {
+public class Product  {
     @TableId(value = "id", type = IdType.AUTO)
     @Schema(description = "产品id")
     private Integer id;

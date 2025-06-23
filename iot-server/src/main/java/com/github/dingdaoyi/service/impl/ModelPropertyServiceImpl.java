@@ -4,6 +4,7 @@ import cn.hutool.core.collection.CollectionUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.ObjectUtils;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
+import com.github.dingdaoyi.entity.Icon;
 import com.github.dingdaoyi.entity.Product;
 import com.github.dingdaoyi.core.enums.ResultCode;
 import com.github.dingdaoyi.core.exception.BusinessException;
@@ -14,6 +15,7 @@ import com.github.dingdaoyi.model.query.ProductPropertyAddQuery;
 import com.github.dingdaoyi.model.query.StandardPropertyAddQuery;
 import com.github.dingdaoyi.service.CacheService;
 import com.github.dingdaoyi.service.ProductService;
+import com.github.dingdaoyi.service.ResourceUseService;
 import jakarta.annotation.Resource;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
@@ -33,7 +35,7 @@ import static com.github.dingdaoyi.service.CacheService.TSL_MODEL_CACHE;
  * @author dingyunwei
  */
 @Service
-public class ModelPropertyServiceImpl extends ServiceImpl<ModelPropertyMapper, ModelProperty> implements ModelPropertyService {
+public class ModelPropertyServiceImpl extends ServiceImpl<ModelPropertyMapper, ModelProperty> implements ModelPropertyService , ResourceUseService<Icon> {
 
     @Resource
     private CacheService cacheService;
@@ -189,4 +191,17 @@ public class ModelPropertyServiceImpl extends ServiceImpl<ModelPropertyMapper, M
                 .eq(ModelProperty::getDataType, DataTypeEnum.STRUCT));
         return super.removeById(id);
     }
+
+    @Override
+    public boolean isUsed(Icon data) {
+        return exists(Wrappers
+                .<ModelProperty>lambdaQuery()
+                .eq(ModelProperty::getIconId, data.getId()));
+    }
+
+    @Override
+    public String userTarget() {
+        return "物模型属性";
+    }
+
 }

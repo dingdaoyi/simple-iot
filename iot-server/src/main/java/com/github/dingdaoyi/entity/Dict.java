@@ -5,20 +5,23 @@ import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.github.dingdaoyi.core.base.BaseEntity;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 import java.time.LocalDateTime;
 
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 /**
  * 用字典表
  * @author dingyunwei
  */
+@EqualsAndHashCode(callSuper = true)
 @Schema(description="用字典表")
 @Data
 @TableName(value = "tb_dict")
-public class Dict {
+public class Dict  extends BaseEntity {
     /**
      * 主键
      */
@@ -60,18 +63,4 @@ public class Dict {
     @TableField(value = "sort")
     @Schema(description="排序字段")
     private Integer sort;
-
-    /**
-     * 创建时间
-     */
-    @TableField(value = "create_time")
-    @Schema(description="创建时间")
-    private LocalDateTime createTime;
-
-    /**
-     * 创建时间
-     */
-    @TableField(value = "update_time")
-    @Schema(description="创建时间")
-    private LocalDateTime updateTime;
 }

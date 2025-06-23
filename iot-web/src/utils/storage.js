@@ -17,6 +17,5 @@ export function setItem(name, value) {
 }
 
 export function removeItem(name) {
-  console.log('删除token')
   window.localStorage.removeItem(name)
 }

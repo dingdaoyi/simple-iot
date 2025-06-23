@@ -19,50 +19,42 @@ public class BaseResult<T> {
     private Integer code;
 
     @Schema(description = "响应消息")
-    private String message;
+    private String msg;
 
     @Schema(description = "响应数据")
     private T data;
 
-    @Schema(description = "时间戳")
-    private Long timestamp;
+    @Schema(description = "是否成功")
+    private boolean success;
 
-    public BaseResult() {
-        this.timestamp = System.currentTimeMillis();
-    }
-
-    public BaseResult(Integer code, String message) {
-        this();
+    private BaseResult(Integer code, String msg, T data, boolean success) {
         this.code = code;
-        this.message = message;
-    }
-
-    public BaseResult(Integer code, String message, T data) {
-        this(code, message);
+        this.msg = msg;
         this.data = data;
+        this.success = success;
     }
 
     public static <T> BaseResult<T> success() {
-        return new BaseResult<>(200, "操作成功");
+        return new BaseResult<>(ResultCode.SUCCESS.getCode(), "操作成功", null, true);
     }
 
     public static <T> BaseResult<T> success(T data) {
-        return new BaseResult<>(200, "操作成功", data);
+        return new BaseResult<>(ResultCode.SUCCESS.getCode(), "操作成功", data, true);
     }
 
-    public static <T> BaseResult<T> success(String message, T data) {
-        return new BaseResult<>(200, message, data);
+    public static <T> BaseResult<T> success(String msg, T data) {
+        return new BaseResult<>(ResultCode.SUCCESS.getCode(), msg, data, true);
     }
 
-    public static <T> BaseResult<T> fail(String message) {
-        return new BaseResult<>(500, message);
+    public static <T> BaseResult<T> fail(String msg) {
+        return new BaseResult<>(ResultCode.INTERNAL_SERVER_ERROR.getCode(), msg, null, false);
     }
 
-    public static <T> BaseResult<T> fail(ResultCode code, String message) {
-        return fail(code.getCode(), message);
+    public static <T> BaseResult<T> fail(ResultCode code, String msg) {
+        return new BaseResult<>(code.getCode(), msg, null, false);
     }
 
-    public static <T> BaseResult<T> fail(Integer code, String message) {
-        return new BaseResult<>(code, message);
+    public static <T> BaseResult<T> fail(Integer code, String msg) {
+        return new BaseResult<>(code, msg, null, false);
     }
 }

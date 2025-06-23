@@ -1,5 +1,6 @@
 package com.github.dingdaoyi.core.base;
 
+import com.github.dingdaoyi.core.enums.ResultCode;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
@@ -15,8 +16,14 @@ import java.util.List;
 @Schema(description = "分页结果")
 public class PageResult<T> implements Iterable<T>{
 
+    @Schema(description = "响应码")
+    private Integer code;
+
+    @Schema(description = "响应消息")
+    private String msg;
+
     @Schema(description = "数据列表")
-    private List<T> records;
+    private List<T> data;
 
     @Schema(description = "总记录数")
     private Long total;
@@ -30,11 +37,12 @@ public class PageResult<T> implements Iterable<T>{
     public PageResult() {
     }
 
-    public PageResult(List<T> records, Long total, Long current, Long size) {
-        this.records = records;
+    public PageResult(List<T> data, Long total, Long current, Long size) {
+        this.data = data;
         this.total = total;
         this.current = current;
         this.size = size;
+        this.code = ResultCode.SUCCESS.getCode();
     }
 
     public static <T> PageResult<T> of(List<T> records, Long total, Long current, Long size) {
@@ -43,6 +51,6 @@ public class PageResult<T> implements Iterable<T>{
 
     @Override
     public Iterator<T> iterator() {
-        return records.iterator();
+        return data.iterator();
     }
 }

@@ -54,8 +54,9 @@ service.interceptors.response.use(
     const { data, status } = error.response
     if (status === 401) {
       user.clearToken()
-      // router.replace('/login')
-      window.location.href = '#/login'
+      // 使用路由跳转，保持当前页面作为重定向参数
+      const currentPath = window.location.hash.replace('#', '')
+      window.location.href = `#/login?redirect=${encodeURIComponent(currentPath)}`
       return
     }
     ElMessage.error(data?.msg || error?.message || '请求出错')

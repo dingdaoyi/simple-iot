@@ -2,6 +2,7 @@ package com.github.dingdaoyi.entity;
 
 import com.baomidou.mybatisplus.annotation.*;
 import com.baomidou.mybatisplus.extension.handlers.JacksonTypeHandler;
+import com.github.dingdaoyi.core.base.BaseEntity;
 import com.github.dingdaoyi.entity.enu.CommandStatus;
 import io.swagger.v3.oas.annotations.media.Schema;
 
@@ -11,34 +12,22 @@ import java.util.HashMap;
 import java.util.Map;
 
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 /**
  * @author dingyunwei
  */
+@EqualsAndHashCode(callSuper = true)
 @Schema
 @Data
 @TableName(value = "tb_device_command", autoResultMap = true)
-public class DeviceCommand {
+public class DeviceCommand extends BaseEntity {
     /**
      * id
      */
     @TableId(value = "id", type = IdType.AUTO)
     @Schema(description = "id")
     private Long id;
-
-    /**
-     * 创建时间
-     */
-    @TableField(value = "create_time", fill = FieldFill.INSERT)
-    @Schema(description = "创建时间")
-    private LocalDateTime createTime;
-
-    /**
-     * 更新时间
-     */
-    @TableField(value = "update_time", fill = FieldFill.INSERT_UPDATE)
-    @Schema(description = "更新时间")
-    private LocalDateTime updateTime;
 
     /**
      * 标识符

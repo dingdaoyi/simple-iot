@@ -20,7 +20,13 @@ public enum DataTypeEnum {
     INT(1, "整型", Integer.class) {
         @Override
         public boolean validType(Object value) {
-            return value instanceof Integer;
+            if (value instanceof Integer) return true;
+            try {
+                Integer.parseInt(value.toString());
+                return true;
+            } catch (NumberFormatException e) {
+                return false;
+            }
         }
 
         @Override
@@ -31,7 +37,13 @@ public enum DataTypeEnum {
     FLOAT(2, "float浮点型", Float.class) {
         @Override
         public boolean validType(Object value) {
-            return value instanceof Float;
+            if (value instanceof Float) return true;
+            try {
+                Float.parseFloat(value.toString());
+                return true;
+            } catch (NumberFormatException e) {
+                return false;
+            }
         }
 
         @Override
@@ -42,7 +54,13 @@ public enum DataTypeEnum {
     DOUBLE(3, "double浮点型", Double.class) {
         @Override
         public boolean validType(Object value) {
-            return value instanceof Double;
+            if (value instanceof Double) return true;
+            try {
+                Double.parseDouble(value.toString());
+                return true;
+            } catch (NumberFormatException e) {
+                return false;
+            }
         }
 
         @Override
@@ -53,7 +71,13 @@ public enum DataTypeEnum {
     ENUM(4, "枚举型", String.class) {
         @Override
         public boolean validType(Object value) {
-            return value instanceof Integer;
+            if (value instanceof Integer) return true;
+            try {
+                Integer.parseInt(value.toString());
+                return true;
+            } catch (NumberFormatException e) {
+                return false;
+            }
         }
 
         @Override
@@ -82,7 +106,9 @@ public enum DataTypeEnum {
     BOOL(6, "布尔", Boolean.class) {
         @Override
         public boolean validType(Object value) {
-            return value instanceof Boolean;
+            if (value instanceof Boolean) return true;
+            String str = value.toString().toLowerCase();
+            return "true".equals(str) || "false".equals(str);
         }
 
         @Override
@@ -93,7 +119,14 @@ public enum DataTypeEnum {
     DATE(7, "日期", LocalDateTime.class) {
         @Override
         public boolean validType(Object value) {
-            return value instanceof LocalDateTime;
+            if (value instanceof LocalDateTime) return true;
+            try {
+                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'");
+                LocalDateTime.parse(value.toString(), formatter);
+                return true;
+            } catch (Exception e) {
+                return false;
+            }
         }
 
         @Override

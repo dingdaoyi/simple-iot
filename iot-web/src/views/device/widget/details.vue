@@ -3,6 +3,7 @@ import { deviceDataLast, deviceDetailApi } from '@/api/index.js'
 import Breadcrumb from '@/components/Breadcrumb.vue'
 import { onlineOpts } from '@/utils/base.jsx'
 import DeviceEvent from '@/views/device/widget/deviceEvent.vue'
+import DeviceService from '@/views/device/widget/deviceService.vue'
 import LabelItem from '@/views/device/widget/LabelItem.vue'
 import PropChart from '@/views/device/widget/propChart.vue'
 import PropMetric from '@/views/device/widget/PropMetric.vue'
@@ -82,7 +83,10 @@ loadData()
           />
         </el-tab-pane>
         <el-tab-pane label="服务定义" name="服务定义">
-          <div>你好</div>
+          <DeviceService
+            v-if="deviceDetail.deviceKey"
+            :device-detail="deviceDetail"
+          />
         </el-tab-pane>
       </el-tabs>
     </div>
