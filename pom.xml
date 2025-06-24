@@ -9,7 +9,7 @@
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <groupId>com.github.dingdaoyi</groupId>
-    <artifactId>sample-iot</artifactId>
+    <artifactId>simple-iot</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <packaging>pom</packaging>
     <name>sample-iot</name>
