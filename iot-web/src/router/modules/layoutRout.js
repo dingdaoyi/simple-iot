@@ -8,6 +8,7 @@ import protocol from '@/views/protocol'
 import rule from '@/views/rule'
 import icon from '@/views/system/icon'
 import messageReceive from '@/views/system/messageReceive'
+import sms from '@/views/system/sms'
 import tslModel from '@/views/tslModel'
 
 export default [
@@ -106,6 +107,14 @@ export default [
             component: icon,
             meta: {
               title: '图标管理',
+            },
+          },
+          {
+            path: '/sms',
+            name: '短信配置',
+            component: sms,
+            meta: {
+              title: '短信配置',
             },
           },
           {

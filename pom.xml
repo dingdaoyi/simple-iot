@@ -49,6 +49,7 @@
         <dotenv.version>3.1.0</dotenv.version>
         <swagger.version>2.2.21</swagger.version>
         <postgresql.version>42.7.4</postgresql.version>
+        <sms4j.version>3.3.4</sms4j.version>
     </properties>
     <dependencyManagement>
         <dependencies>
@@ -117,6 +118,11 @@
                 <groupId>com.influxdb</groupId>
                 <artifactId>influxdb3-java</artifactId>
                 <version>${influxdb.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.dromara.sms4j</groupId>
+                <artifactId>sms4j-spring-boot-starter</artifactId>
+                <version>${sms4j.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>

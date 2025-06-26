@@ -63,6 +63,7 @@ sa-token:
   sso:
     skip-url:
       - /user/login
+      - /sms/**
 
 mybatis-plus:
   configuration:
@@ -97,6 +98,9 @@ mqtt:
       truststore-path:          # 可选参数：ssl 双向认证 truststore 目录，支持 classpath:/ 路径。
       truststore-pass:          # 可选参数：ssl 双向认证 truststore 密码
       client-auth: none         # 是否需要客户端认证（双向认证），默认：NONE（不需要）
+sms:
+  config-type: interface
+
 logging:
   level:
     root: info
