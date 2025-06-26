@@ -192,6 +192,14 @@ export default [
             },
           },
           {
+            path: '/sms',
+            name: '短信配置',
+            component: sms,
+            meta: {
+              title: '短信配置',
+            },
+          },
+          {
             path: '/message',
             name: 'message',
             component: messageReceive,

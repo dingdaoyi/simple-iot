@@ -1,8 +1,6 @@
 package com.github.dingdaoyi.service.impl;
 
 import com.github.dingdaoyi.model.enu.NotifyType;
-import com.github.dingdaoyi.model.enu.SmsTemplateType;
-import com.github.dingdaoyi.model.query.SmsSendWithTemplateQuery;
 import com.github.dingdaoyi.service.NotificationService;
 import com.github.dingdaoyi.service.SmsConfigService;
 import lombok.extern.slf4j.Slf4j;
@@ -29,11 +27,11 @@ public class SmsNotificationService implements NotificationService {
     
     @Override
     public void sendMessage(String receiver, String templateId, Map<String, Object> model) {
-        SmsSendWithTemplateQuery query = new SmsSendWithTemplateQuery();
-        query.setPhone(receiver);
-        query.setTemplateType(SmsTemplateType.fromCode(templateId));
-        query.setTemplateParams(model);
-        smsConfigService.sendSmsWithTemplate(query);
+        String message = buildMessage(templateId, model);
+        Boolean result = smsConfigService.sendSms(receiver, message);
+        if (!result) {
+            log.error("短信发送失败: receiver={}, message={}", receiver, message);
+        }
     }
     
     private String buildMessage(String templateId, Map<String, Object> model) {

@@ -1,10 +1,8 @@
 package com.github.dingdaoyi.model.query;
 
 import com.github.dingdaoyi.entity.SmsConfig;
-import com.github.dingdaoyi.model.enu.SmsSupplier;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
 import java.util.Map;
@@ -21,9 +19,9 @@ public class SmsConfigAddQuery {
     @Schema(description = "配置名称")
     private String name;
     
-    @NotNull(message = "短信供应商不能为空")
+    @NotBlank(message = "短信供应商不能为空")
     @Schema(description = "短信供应商")
-    private SmsSupplier supplier;
+    private String supplier;
     
     @NotBlank(message = "访问密钥不能为空")
     @Schema(description = "访问密钥")
