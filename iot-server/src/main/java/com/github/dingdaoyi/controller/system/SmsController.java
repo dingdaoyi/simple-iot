@@ -3,10 +3,12 @@ package com.github.dingdaoyi.controller.system;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.github.dingdaoyi.core.base.BaseResult;
 import com.github.dingdaoyi.entity.SmsConfig;
-import com.github.dingdaoyi.model.query.SmsConfigAddQuery;
-import com.github.dingdaoyi.model.query.SmsConfigUpdateQuery;
-import com.github.dingdaoyi.model.query.SmsSendQuery;
+import com.github.dingdaoyi.entity.SmsTemplate;
+import com.github.dingdaoyi.model.enu.SmsSupplier;
+import com.github.dingdaoyi.model.enu.SmsTemplateType;
+import com.github.dingdaoyi.model.query.*;
 import com.github.dingdaoyi.service.SmsConfigService;
+import com.github.dingdaoyi.service.SmsTemplateService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -27,6 +29,7 @@ import java.util.List;
 public class SmsController {
     
     private final SmsConfigService smsConfigService;
+    private final SmsTemplateService smsTemplateService;
     
     @GetMapping("/config")
     @Operation(summary = "获取短信配置列表")
@@ -86,4 +89,36 @@ public class SmsController {
         result = smsConfigService.sendSms(query.getPhone(), query.getMessage());
         return BaseResult.success(result);
     }
+    
+    @PostMapping("/send/template")
+    @Operation(summary = "使用模板发送短信")
+    public BaseResult<Boolean> sendSmsWithTemplate(@RequestBody @Valid SmsSendWithTemplateQuery query) {
+        return BaseResult.success(smsConfigService.sendSmsWithTemplate(query));
+    }
+    
+    @GetMapping("/template")
+    @Operation(summary = "获取短信模板列表")
+    public BaseResult<List<SmsTemplate>> listTemplate(@RequestParam Integer configId) {
+        return BaseResult.success(smsTemplateService.listByConfigId(configId));
+    }
+    
+    @PostMapping("/template")
+    @Operation(summary = "添加短信模板")
+    public BaseResult<Boolean> addTemplate(@RequestBody @Valid SmsTemplateAddQuery query) {
+        return BaseResult.success(smsTemplateService.save(query.toEntity()));
+    }
+    
+    @PutMapping("/template")
+    @Operation(summary = "更新短信模板")
+    public BaseResult<Boolean> updateTemplate(@RequestBody @Valid SmsTemplate template) {
+        return BaseResult.success(smsTemplateService.updateById(template));
+    }
+    
+    @DeleteMapping("/template/{id}")
+    @Operation(summary = "删除短信模板")
+    public BaseResult<Boolean> deleteTemplate(@PathVariable Integer id) {
+        return BaseResult.success(smsTemplateService.removeById(id));
+    }
+    
+
 }

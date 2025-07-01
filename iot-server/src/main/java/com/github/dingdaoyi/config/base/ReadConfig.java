@@ -1,17 +1,12 @@
 package com.github.dingdaoyi.config.base;
 
-import cn.hutool.json.JSONObject;
-import cn.hutool.json.JSONUtil;
 import com.github.dingdaoyi.entity.SmsConfig;
+import com.github.dingdaoyi.model.enu.SmsSupplier;
 import com.github.dingdaoyi.service.SmsConfigService;
 import jakarta.annotation.Resource;
-import org.dromara.sms4j.comm.constant.SupplierConstant;
 import org.dromara.sms4j.core.datainterface.SmsReadConfig;
-import org.dromara.sms4j.core.factory.SmsFactory;
 import org.dromara.sms4j.provider.config.BaseConfig;
 import org.dromara.sms4j.tencent.config.TencentConfig;
-import org.springframework.context.event.ContextRefreshedEvent;
-import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -33,7 +28,7 @@ public class ReadConfig implements SmsReadConfig {
         }
         SmsConfig smsConfig = defaultConfig.get();
         return switch (smsConfig.getSupplier()) {
-            case SupplierConstant.TENCENT -> parseTencentConfig(smsConfig);
+            case SmsSupplier.TENCENT -> parseTencentConfig(smsConfig);
             default -> null;
         };
 

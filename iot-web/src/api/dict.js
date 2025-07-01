@@ -56,17 +56,3 @@ export function getEventType() {
     method: 'get',
   })
 }
-
-export function getDriverTypeEnum() {
-  return request({
-    url: '/dict/driver-type',
-    method: 'get',
-  })
-}
-
-export function getConnectionTypeEnum() {
-  return request({
-    url: '/dict/connection-type',
-    method: 'get',
-  })
-}
