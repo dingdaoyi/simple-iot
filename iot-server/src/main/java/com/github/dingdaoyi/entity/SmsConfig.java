@@ -7,6 +7,7 @@ import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.extension.handlers.JacksonTypeHandler;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.github.dingdaoyi.core.base.BaseEntity;
+import com.github.dingdaoyi.model.enu.SmsSupplier;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -32,7 +33,7 @@ public class SmsConfig extends BaseEntity {
     private String name;
     
     @Schema(description = "短信供应商")
-    private String supplier;
+    private SmsSupplier supplier;
     
     @Schema(description = "访问密钥")
     private String accessKey;

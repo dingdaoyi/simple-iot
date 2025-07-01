@@ -4,7 +4,6 @@ import com.github.dingdaoyi.entity.MessageReceive;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.github.dingdaoyi.core.base.PageResult;
 import com.github.dingdaoyi.model.query.MessageRecivePageQuery;
-import com.github.dingdaoyi.model.query.ProductPageQuery;
 
 /**
  * @author dingyunwei

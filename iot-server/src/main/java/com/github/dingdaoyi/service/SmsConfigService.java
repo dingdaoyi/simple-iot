@@ -2,6 +2,7 @@ package com.github.dingdaoyi.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.github.dingdaoyi.entity.SmsConfig;
+import com.github.dingdaoyi.model.query.SmsSendWithTemplateQuery;
 
 import java.util.Optional;
 
@@ -25,5 +26,10 @@ public interface SmsConfigService extends IService<SmsConfig> {
      * 发送短信
      */
     Boolean sendSms(String phone, String message);
+
+    /**
+     * 使用模板发送短信
+     */
+    Boolean sendSmsWithTemplate(SmsSendWithTemplateQuery query);
 
 }

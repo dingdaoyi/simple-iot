@@ -63,7 +63,7 @@ sa-token:
   sso:
     skip-url:
       - /user/login
-      - /sms/**
+      - /dict/**
 
 mybatis-plus:
   configuration:
