@@ -83,15 +83,6 @@ const dataForm = ref()
 const sendForm = ref()
 const templateForm = ref()
 
-// 模板内容映射
-const templateContentMap = {
-  verify_code: '您的验证码是${code}，5分钟内有效',
-  login_notify: '您的账号于${time}在${location}登录',
-  alarm_notify: '设备${deviceName}发生${alarmType}告警',
-  device_offline: '设备${deviceName}已离线，请及时处理',
-  system_notify: '系统通知：${message}',
-}
-
 async function getList() {
   listLoading.value = true
   try {
@@ -239,9 +230,22 @@ function handleEditTemplate(row) {
 }
 
 // 模板类型变化时自动填充内容
-function handleTemplateTypeChange() {
-  if (templateTemp.templateType && templateContentMap[templateTemp.templateType]) {
-    templateTemp.templateContent = templateContentMap[templateTemp.templateType]
+async function handleTemplateTypeChange() {
+  if (templateTemp.templateType && templateTemp.configId) {
+    // 1. 先查数据库模板
+    const response = await getSmsTemplateList(templateTemp.configId)
+    const found = response.data.find(t => t.templateType === templateTemp.templateType)
+    if (found) {
+      templateTemp.templateContent = found.templateContent
+    }
+    else {
+      // 2. 数据库没有，再查枚举接口，取默认模板内容
+      const type = templateTypes.value.find(t => t.code === templateTemp.templateType)
+      templateTemp.templateContent = type ? type.template : ''
+    }
+  }
+  else {
+    templateTemp.templateContent = ''
   }
 }
 

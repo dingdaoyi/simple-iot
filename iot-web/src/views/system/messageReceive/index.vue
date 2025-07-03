@@ -13,10 +13,6 @@ const notifyTypeOpt = [
     label: '短信',
     value: 2,
   },
-  {
-    label: '电话',
-    value: 3,
-  },
 ]
 const column = [
   {

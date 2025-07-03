@@ -11,7 +11,7 @@ import lombok.Getter;
  */
 @Getter
 public enum NotifyType {
-    EMAIL(1),SMS(2),VMS(3),;
+    EMAIL(1),SMS(2),;
     @EnumValue
     @JsonValue
     private final int value;

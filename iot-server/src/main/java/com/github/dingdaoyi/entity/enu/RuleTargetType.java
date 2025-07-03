@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonValue;
 
 /**
  * 1,产品;2,设备分组,3, 特定设备
+ * @author dingyunwei
  */
 public enum RuleTargetType {
     HTTP(1),

@@ -7,9 +7,9 @@ import cn.hutool.json.JSONUtil;
 import com.github.dingdaoyi.entity.Device;
 import com.github.dingdaoyi.entity.IotRule;
 import com.github.dingdaoyi.entity.MessageReceive;
-import com.github.dingdaoyi.entity.enu.RuleType;
 import com.github.dingdaoyi.iot.DataProcessor;
 import com.github.dingdaoyi.model.enu.NotifyType;
+import com.github.dingdaoyi.model.enu.SmsTemplateType;
 import com.github.dingdaoyi.proto.model.DecodeResult;
 import com.github.dingdaoyi.proto.model.DeviceData;
 import com.github.dingdaoyi.proto.model.tsl.TslModel;
@@ -20,12 +20,10 @@ import lombok.extern.slf4j.Slf4j;
 
 import org.springframework.stereotype.Service;
 
-import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -109,7 +107,14 @@ public class RuleDataProcessor implements DataProcessor {
                     HashMap<String, String> eventContent = new HashMap<>();
                     eventContent.put(tslProperty.getName(), deviceData.getValue() + tslProperty.getUnit());
                     eventContent.put("规则描述",rule.getRemark());
-                    params.put("eventContent",eventContent);
+                    if (notifyType == NotifyType.SMS) {
+                        // 短信模板参数，eventContent转为字符串
+                        StringBuilder contentBuilder = new StringBuilder();
+                        eventContent.forEach((k, v) -> contentBuilder.append(k).append(":").append(v).append("; "));
+                        params.put("eventContent", contentBuilder.toString());
+                    } else {
+                        params.put("eventContent",eventContent);
+                    }
                     notificationServiceMap.get(notifyType)
                             .sendMessage(messageReceive.getReceiver(),
                                     templateId,params);
@@ -122,6 +127,7 @@ public class RuleDataProcessor implements DataProcessor {
     private String getMessageTemplateId(NotifyType notifyType) {
         return switch (notifyType) {
             case EMAIL -> "event_notification.ftl";
+            case SMS -> SmsTemplateType.VERIFY_CODE.getCode();
             default -> "";
         };
     }
