@@ -19,5 +19,4 @@ public class FileServiceConfig {
         IotConfigProperties.LocalStorage localstorage = iotConfigProperties.getLocalstorage();
         return new LocalStorageService(localstorage.getLocalDir());
     }
-
 }
