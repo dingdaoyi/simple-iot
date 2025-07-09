@@ -6,6 +6,7 @@ import com.github.dingdaoyi.iot.DeviceChannelManager;
 import com.github.dingdaoyi.iot.IoTDataProcessor;
 import com.github.dingdaoyi.model.DTO.DeviceDTO;
 import com.github.dingdaoyi.proto.model.DeviceRequest;
+import com.github.dingdaoyi.core.driver.DeviceTransport;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.dromara.mica.mqtt.codec.MqttPublishMessage;
@@ -23,13 +24,42 @@ import java.util.Optional;
  */
 @Component
 @Slf4j
-public class MqttDriver implements IMqttMessageListener {
+public class MqttDriver implements IMqttMessageListener, DeviceTransport {
 
     @Resource
     private IoTDataProcessor dataProcessor;
 
     @Resource
     private DeviceChannelManager deviceChannelManager;
+
+    private volatile boolean running = false;
+
+    @Override
+    public void start() {
+        running = true;
+        // 启动MQTT服务端/客户端，订阅主题等
+    }
+
+    @Override
+    public void stop() {
+        running = false;
+        // 断开MQTT连接等
+    }
+
+    @Override
+    public boolean isRunning() {
+        return running;
+    }
+
+    @Override
+    public String getType() {
+        return "MQTT";
+    }
+
+    @Override
+    public String getName() {
+        return "MQTT标准驱动";
+    }
 
     @Override
     public void onMessage(ChannelContext context, String clientId, String topic, MqttQoS qoS, MqttPublishMessage message) {

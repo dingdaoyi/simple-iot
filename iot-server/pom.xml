@@ -84,6 +84,11 @@
             <version>${project.version}</version>
         </dependency>
         <dependency>
+            <groupId>com.github.dingdaoyi</groupId>
+            <artifactId>gb-driver</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
             <groupId>io.github.cdimascio</groupId>
             <artifactId>dotenv-java</artifactId>
         </dependency>

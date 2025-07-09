@@ -43,6 +43,14 @@ export default [
             },
           },
           {
+            path: '/driver',
+            name: '驱动管理',
+            component: () => import('@/views/driver/index.vue'),
+            meta: {
+              title: '驱动管理',
+            },
+          },
+          {
             path: '/protocol',
             name: '协议管理',
             component: protocol,
