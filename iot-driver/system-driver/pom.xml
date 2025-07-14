@@ -5,21 +5,27 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>com.github.dingdaoyi</groupId>
-        <artifactId>simple-iot</artifactId>
+        <artifactId>iot-driver</artifactId>
         <version>0.0.1-SNAPSHOT</version>
     </parent>
 
-    <artifactId>iot-driver</artifactId>
-    <packaging>pom</packaging>
-    <modules>
-        <module>gb-driver</module>
-        <module>system-driver</module>
-    </modules>
+    <artifactId>system-driver</artifactId>
 
     <properties>
         <maven.compiler.source>21</maven.compiler.source>
         <maven.compiler.target>21</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
-
+    <dependencies>
+        <dependency>
+            <groupId>com.github.dingdaoyi</groupId>
+            <artifactId>iot-core</artifactId>
+            <version>${project.version}</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>cn.hutool</groupId>
+            <artifactId>hutool-all</artifactId>
+        </dependency>
+    </dependencies>
 </project>

@@ -27,4 +27,6 @@ public interface DeviceMapper extends BaseMapper<Device> {
     List<Device> listByProductAndDeviceKey(@Param("productTypeId") Integer productTypeId,
                                            @Param("productId") Integer productId,
                                            @Param("deviceKey") String deviceKey);
+
+    Optional<DeviceDTO> selectByThirdDeviceId(@Param("thirdDeviceId") String thirdDeviceId);
 }

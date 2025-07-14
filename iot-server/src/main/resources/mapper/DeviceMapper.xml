@@ -106,4 +106,15 @@
             </if>
         </where>
     </select>
+
+    <select id="selectByThirdDeviceId" resultMap="DTOResultMap">
+        select
+        <include refid="dvs_column_list"/>,
+                                              proto.proto_key,
+                                              prod.product_key as product_key
+    from tb_device dvs
+             left join tb_product prod on prod.id = dvs.product_id
+             left join tb_protocol proto on proto.id = prod.protocol_id
+    where dvs.third_device_id = #{thirdDeviceId}
+    </select>
 </mapper>

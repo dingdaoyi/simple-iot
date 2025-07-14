@@ -2,8 +2,10 @@ package com.github.dingdaoyi.gb.driver;
 
 import com.github.dingdaoyi.core.driver.DeviceKeyParser;
 import com.github.dingdaoyi.core.driver.DriverTypeEnum;
+import com.github.dingdaoyi.core.service.DeviceProvider;
 
 import java.util.List;
+import java.util.Optional;
 
 /**
  * 国标 GB/T 28181 驱动实现
@@ -11,6 +13,11 @@ import java.util.List;
  * @author dingyunwei
  */
 public class GbDeviceKeyParser implements DeviceKeyParser {
+
+    @Override
+    public void setDeviceProvider(DeviceProvider deviceProvider) {
+
+    }
 
     @Override
     public List<DriverTypeEnum> driverTypes() {
@@ -28,7 +35,7 @@ public class GbDeviceKeyParser implements DeviceKeyParser {
     }
 
     @Override
-    public String deviceKey(byte[] data) {
+    public Optional<String> deviceKey(byte[] data) {
         // 特殊处理：如协议头为4040EE1F000006FF00882323，截取指定位置6字节
         int index = 12;
         if (data.length == 12) {
@@ -41,6 +48,6 @@ public class GbDeviceKeyParser implements DeviceKeyParser {
         for (int i = 0; i < 6; i++) {
             value |= ((long) (data[index + i] & 0xFF)) << (8 * i);
         }
-        return Long.toHexString(value).toUpperCase();
+        return Optional.of(Long.toHexString(value).toUpperCase());
     }
 }

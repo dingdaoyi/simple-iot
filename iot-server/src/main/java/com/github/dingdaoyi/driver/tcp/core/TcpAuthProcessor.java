@@ -1,5 +1,6 @@
 package com.github.dingdaoyi.driver.tcp.core;
 
+import cn.hutool.core.lang.Opt;
 import com.github.dingdaoyi.core.driver.DeviceKeyParser;
 import com.github.dingdaoyi.model.DTO.DeviceDTO;
 import com.github.dingdaoyi.proto.model.DeviceRequest;
@@ -24,7 +25,11 @@ public class TcpAuthProcessor {
     public void process(Channel channel, byte[] data, TcpChannelManager.ChannelContext context, DeviceKeyParser parser) {
         if (!context.isAuthenticated()) {
             if (parser.hasDeviceKey(data)) {
-                String deviceKey = parser.deviceKey(data);
+                Optional<String>  deviceKeyOpt = parser.deviceKey(data);
+                if (deviceKeyOpt.isEmpty()) {
+                    return;
+                }
+                String deviceKey = deviceKeyOpt.get();
                 Optional<DeviceDTO> deviceOpt = deviceService.getByDeviceKey(deviceKey);
                 if (deviceOpt.isPresent()) {
                     context.setAuthenticated(true);

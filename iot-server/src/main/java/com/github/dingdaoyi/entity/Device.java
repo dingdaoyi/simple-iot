@@ -44,4 +44,8 @@ public class Device extends BaseEntity {
     @TableField(value = "active_status")
     @Schema(description = "激活状态")
     private Boolean activeStatus;
+
+    @TableField(value = "third_device_id")
+    @Schema(description = "第三方设备id")
+    private String thirdDeviceId;
 }
