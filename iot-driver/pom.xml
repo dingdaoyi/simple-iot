@@ -12,7 +12,6 @@
     <artifactId>iot-driver</artifactId>
     <packaging>pom</packaging>
     <modules>
-        <module>gb-driver</module>
         <module>system-driver</module>
     </modules>
 

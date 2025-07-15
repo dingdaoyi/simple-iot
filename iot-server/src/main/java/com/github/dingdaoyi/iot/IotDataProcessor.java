@@ -6,7 +6,7 @@ import com.github.dingdaoyi.proto.model.DeviceRequest;
 /**
  * @author dingyunwei
  */
-public interface IoTDataProcessor {
+public interface IotDataProcessor {
 
     /**
      * 数据接收

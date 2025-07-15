@@ -2,7 +2,7 @@ package com.github.dingdaoyi.iot.impl;
 
 import com.github.dingdaoyi.iot.DataProcessor;
 import com.github.dingdaoyi.iot.DeviceChannelManager;
-import com.github.dingdaoyi.iot.IoTDataProcessor;
+import com.github.dingdaoyi.iot.IotDataProcessor;
 import com.github.dingdaoyi.iot.IotCommandProcessor;
 import com.github.dingdaoyi.iot.model.CommandRequest;
 import com.github.dingdaoyi.iot.model.CommandResponse;
@@ -29,7 +29,7 @@ import java.util.concurrent.ExecutorService;
  */
 @Service
 @Slf4j
-public class IoTDataProcessorImpl implements IoTDataProcessor, IotCommandProcessor {
+public class IotDataProcessorImpl implements IotDataProcessor, IotCommandProcessor {
     @Resource
     private ExecutorService executorService;
     @Resource

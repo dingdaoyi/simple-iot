@@ -5,6 +5,9 @@ import com.github.dingdaoyi.core.service.DeviceProvider;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * @author dingyunwei
+ */
 public interface DeviceKeyParser {
 
     void setDeviceProvider(DeviceProvider deviceProvider);

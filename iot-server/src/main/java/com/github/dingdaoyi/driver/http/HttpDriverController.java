@@ -1,13 +1,14 @@
 package com.github.dingdaoyi.driver.http;
 
+import com.github.dingdaoyi.core.base.BaseResult;
 import com.github.dingdaoyi.core.driver.DeviceKeyParser;
+import com.github.dingdaoyi.core.enums.ResultCode;
 import com.github.dingdaoyi.driver.tcp.core.DeviceKeyParserLoader;
-import com.github.dingdaoyi.iot.IoTDataProcessor;
+import com.github.dingdaoyi.iot.IotDataProcessor;
 import com.github.dingdaoyi.model.DTO.DeviceDTO;
 import com.github.dingdaoyi.proto.model.DeviceRequest;
 import com.github.dingdaoyi.service.DeviceService;
 import jakarta.annotation.Resource;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Optional;
@@ -16,40 +17,35 @@ import java.util.Optional;
  * @author dingyunwei
  */
 @RestController
-@RequestMapping("/api/driver/http")
+@RequestMapping("/driver/http")
 public class HttpDriverController {
     @Resource
-    private IoTDataProcessor ioTDataProcessor;
+    private IotDataProcessor ioTDataProcessor;
 
     @Resource
     private DeviceService deviceService;
 
     @PostMapping("/{driverName}")
-    public ResponseEntity<?> receiveData(
+    public BaseResult<String> receiveData(
             @PathVariable String driverName,
             @RequestBody byte[] body) {
         DeviceKeyParser parser = DeviceKeyParserLoader.getParser(driverName);
         if (parser == null) {
-            return ResponseEntity.badRequest().body("不支持的驱动: " + driverName);
+            return BaseResult.fail(ResultCode.PARAM_VALID_ERROR, "未找到对应驱动解析器");
         }
         if (!parser.hasDeviceKey(body)) {
-            return ResponseEntity.badRequest().body("无法解析设备号");
+            return BaseResult.fail(ResultCode.PARAM_VALID_ERROR, "无法解析设备编号");
         }
-       Optional<String>  deviceKeyOpt = parser.deviceKey(body);
-        if (deviceKeyOpt.isEmpty()) {
-            return ResponseEntity.badRequest().body("设备未注册到平台");
-        }
-        Optional<DeviceDTO> deviceOpt = deviceService.getByDeviceKey(deviceKeyOpt.get());
-        if (deviceOpt.isPresent()) {
-            DeviceDTO device = deviceOpt.get();
+        parser.deviceKey(body).flatMap(deviceKey ->
+                deviceService.getByDeviceKey(deviceKey)
+        ).ifPresent(device -> {
             DeviceRequest deviceRequest = new DeviceRequest();
             deviceRequest.setDeviceKey(device.getDeviceKey());
             deviceRequest.setProtoKey(device.getProtoKey());
             deviceRequest.setProductKey(device.getProductKey());
             deviceRequest.setData(body);
             ioTDataProcessor.messageUp(deviceRequest);
-        }
-
-        return ResponseEntity.ok("接收成功");
+        });
+        return BaseResult.success("数据接收成功");
     }
 } 

@@ -12,6 +12,8 @@ import java.util.Optional;
 
 /**
  * 电信aep接入
+ * <p>
+ * <a href="https://www.ctwing.cn/dyts/105#see">参考文档</a>
  *
  * @author dingyunwei
  */
@@ -31,7 +33,7 @@ public class AepDeviceKeyParser implements DeviceKeyParser {
 
     @Override
     public String driverName() {
-        return "电信AEP";
+        return "AEP";
     }
 
     @Override
@@ -44,7 +46,9 @@ public class AepDeviceKeyParser implements DeviceKeyParser {
         JSONObject jsonObject = JSONUtil.parseObj(new String(data));
         if (jsonObject.containsKey("imei")) {
             return Optional.of(jsonObject.getStr("imei"));
-        } else if (jsonObject.containsKey("deviceId")) {
+        }else if (jsonObject.containsKey("IMEI")) {
+            return Optional.of(jsonObject.getStr("IMEI"));
+        }else if (jsonObject.containsKey("deviceId")) {
             Optional<DeviceBase> optional = deviceProvider.getByThreadDeviceId(jsonObject.getStr("deviceId"));
             return optional.map(DeviceBase::getDeviceKey);
         }

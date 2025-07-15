@@ -1,7 +1,7 @@
 package com.github.dingdaoyi.driver.mqtt;
 
 import com.github.dingdaoyi.iot.DeviceChannelManager;
-import com.github.dingdaoyi.iot.IoTDataProcessor;
+import com.github.dingdaoyi.iot.IotDataProcessor;
 import com.github.dingdaoyi.model.DTO.DeviceDTO;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
@@ -23,7 +23,7 @@ public class MqttConnectStatusListener implements IMqttConnectStatusListener {
     @Lazy
     private MqttServerTemplate mqttServerTemplate;
     @Resource
-    private IoTDataProcessor dataProcessor;
+    private IotDataProcessor dataProcessor;
 
     @Override
     public void online(ChannelContext context, String clientId, String username) {

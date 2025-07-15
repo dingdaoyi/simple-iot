@@ -1,4 +1,4 @@
-package com.github.dingdaoyi.gb.driver;
+package com.github.dingdaoyi.drivers;
 
 import com.github.dingdaoyi.core.driver.DeviceKeyParser;
 import com.github.dingdaoyi.core.driver.DriverTypeEnum;

@@ -85,7 +85,7 @@
         </dependency>
         <dependency>
             <groupId>com.github.dingdaoyi</groupId>
-            <artifactId>gb-driver</artifactId>
+            <artifactId>system-driver</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>

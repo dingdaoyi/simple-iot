@@ -9,7 +9,7 @@ import com.github.dingdaoyi.core.driver.DeviceTransport;
 import com.github.dingdaoyi.entity.Driver;
 import com.github.dingdaoyi.service.DriverService;
 import com.github.dingdaoyi.service.DeviceService;
-import com.github.dingdaoyi.iot.IoTDataProcessor;
+import com.github.dingdaoyi.iot.IotDataProcessor;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.*;
 import jakarta.annotation.Resource;
@@ -28,7 +28,7 @@ public class TcpDeviceTransport implements DeviceTransport {
     @Resource
     private DeviceService deviceService;
     @Resource
-    private IoTDataProcessor dataProcessor;
+    private IotDataProcessor dataProcessor;
 
     private final TcpServerManager serverManager = new TcpServerManager();
     private final TcpChannelManager channelManager = new TcpChannelManager();

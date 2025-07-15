@@ -1,12 +1,9 @@
 package com.github.dingdaoyi.driver.tcp.core;
 
-import cn.hutool.core.lang.Opt;
 import com.github.dingdaoyi.core.driver.DeviceKeyParser;
 import com.github.dingdaoyi.model.DTO.DeviceDTO;
 import com.github.dingdaoyi.proto.model.DeviceRequest;
-import com.github.dingdaoyi.iot.IoTDataProcessor;
-import com.github.dingdaoyi.proto.inter.ProtocolDecoder;
-import com.github.dingdaoyi.iot.proto.ProtocolFactory;
+import com.github.dingdaoyi.iot.IotDataProcessor;
 import com.github.dingdaoyi.service.DeviceService;
 import io.netty.channel.Channel;
 import lombok.extern.slf4j.Slf4j;
@@ -15,9 +12,9 @@ import java.util.Optional;
 @Slf4j
 public class TcpAuthProcessor {
     private final DeviceService deviceService;
-    private final IoTDataProcessor dataProcessor;
+    private final IotDataProcessor dataProcessor;
 
-    public TcpAuthProcessor(DeviceService deviceService, IoTDataProcessor dataProcessor) {
+    public TcpAuthProcessor(DeviceService deviceService, IotDataProcessor dataProcessor) {
         this.deviceService = deviceService;
         this.dataProcessor = dataProcessor;
     }

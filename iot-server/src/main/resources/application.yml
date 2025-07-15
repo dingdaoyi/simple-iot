@@ -64,6 +64,7 @@ sa-token:
     skip-url:
       - /user/login
       - /dict/**
+      - /driver/http/**
 
 mybatis-plus:
   configuration:

@@ -3,7 +3,7 @@ package com.github.dingdaoyi.driver.mqtt;
 
 import com.github.dingdaoyi.driver.mqtt.model.MqttTopic;
 import com.github.dingdaoyi.iot.DeviceChannelManager;
-import com.github.dingdaoyi.iot.IoTDataProcessor;
+import com.github.dingdaoyi.iot.IotDataProcessor;
 import com.github.dingdaoyi.model.DTO.DeviceDTO;
 import com.github.dingdaoyi.proto.model.DeviceRequest;
 import com.github.dingdaoyi.core.driver.DeviceTransport;
@@ -27,7 +27,7 @@ import java.util.Optional;
 public class MqttDriver implements IMqttMessageListener, DeviceTransport {
 
     @Resource
-    private IoTDataProcessor dataProcessor;
+    private IotDataProcessor dataProcessor;
 
     @Resource
     private DeviceChannelManager deviceChannelManager;
