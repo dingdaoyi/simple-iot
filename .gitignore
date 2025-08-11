@@ -63,3 +63,5 @@ package-lock.json
 yarn.lock
 /file/upload/
 /.env
+/iot-web/src/.env
+/iot-web/.env.development
