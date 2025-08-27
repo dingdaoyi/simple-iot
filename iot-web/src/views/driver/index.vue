@@ -10,14 +10,14 @@ const dialogTitle = ref('')
 const form = ref({})
 const formRules = ref({
   name: [
-    { required: true, message: '请输入驱动名称', trigger: 'blur' }
+    { required: true, message: '请输入驱动名称', trigger: 'blur' },
   ],
   type: [
-    { required: true, message: '请选择驱动类型', trigger: 'change' }
+    { required: true, message: '请选择驱动类型', trigger: 'change' },
   ],
   connectionType: [
-    { required: true, message: '请选择连接类型', trigger: 'change' }
-  ]
+    { required: true, message: '请选择连接类型', trigger: 'change' },
+  ],
 })
 const driverTypeOptions = ref([])
 const connectionTypeOptions = ref([])
@@ -48,19 +48,19 @@ function handleSave() {
     if (!valid) {
       return
     }
-    
+
     // 验证端口号
     if (form.value.port && (form.value.port < 1 || form.value.port > 65535)) {
       ElMessage.error('端口号必须在1-65535之间')
       return
     }
-    
+
     // 验证TCP/UDP驱动必须配置端口
     if ((form.value.type === 'TCP' || form.value.type === 'UDP') && !form.value.port) {
       ElMessage.error('TCP/UDP驱动必须配置端口')
       return
     }
-    
+
     if (form.value.driverId) {
       updateDriver(form.value).then(() => {
         ElMessage.success('修改成功')
@@ -159,7 +159,7 @@ fetchList()
       </el-table-column>
     </el-table>
     <el-dialog v-model="dialogVisible" :title="dialogTitle">
-      <el-form :model="form" :rules="formRules" ref="formRef" label-width="100px">
+      <el-form ref="formRef" :model="form" :rules="formRules" label-width="100px">
         <el-form-item label="驱动名称" prop="name">
           <el-input v-model="form.name" />
         </el-form-item>
@@ -173,9 +173,11 @@ fetchList()
             <el-option v-for="item in connectionTypeOptions" :key="item.code" :label="item.desc" :value="item.code" />
           </el-select>
         </el-form-item>
-        <el-form-item label="端口" v-if="form.type === 'TCP' || form.type === 'UDP'">
+        <el-form-item v-if="form.type === 'TCP' || form.type === 'UDP'" label="端口">
           <el-input-number v-model="form.port" :min="1" :max="65535" placeholder="请输入端口号" />
-          <div class="el-form-item__tip">TCP/UDP驱动需要配置监听端口</div>
+          <div class="el-form-item__tip">
+            TCP/UDP驱动需要配置监听端口
+          </div>
         </el-form-item>
         <el-form-item label="描述">
           <el-input v-model="form.description" />

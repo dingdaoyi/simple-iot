@@ -52,7 +52,9 @@ loadData()
 
     <!-- 设备基本信息 -->
     <div class="bg-white rounded-lg p-6 shadow-sm">
-      <h2 class="text-lg font-semibold text-gray-800 mb-4">设备信息</h2>
+      <h2 class="text-lg font-semibold text-gray-800 mb-4">
+        设备信息
+      </h2>
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         <LabelItem label="产品类型" :value="deviceDetail?.productType?.name" />
         <LabelItem label="产品厂家" :value="deviceDetail?.product?.manufacturer" />
@@ -68,7 +70,9 @@ loadData()
 
     <!-- 设备属性指标 -->
     <div v-if="devicePropData" class="bg-white rounded-lg p-6 shadow-sm">
-      <h2 class="text-lg font-semibold text-gray-800 mb-4">实时数据</h2>
+      <h2 class="text-lg font-semibold text-gray-800 mb-4">
+        实时数据
+      </h2>
       <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-4">
         <div v-for="item in devicePropData" :key="item.key" class="cursor-pointer hover:bg-gray-50 p-3 rounded-lg transition-colors" @click="showPro(item.key)">
           <PropMetric :value="item.value" :tsl-prop="dictTsl(item.key)" />
@@ -89,13 +93,11 @@ loadData()
     </div>
 
     <!-- 属性图表对话框 -->
-    <PropChart 
-      v-if="propDialogShow" 
-      v-model="propDialogShow" 
-      :device-key="deviceDetail.deviceKey" 
-      :tsl-prop-opt="tslPropOpt" 
+    <PropChart
+      v-if="propDialogShow"
+      v-model="propDialogShow"
+      :device-key="deviceDetail.deviceKey"
+      :tsl-prop-opt="tslPropOpt"
     />
   </div>
 </template>
-
-

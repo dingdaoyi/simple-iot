@@ -243,10 +243,10 @@ function changeUnit(value) {
         />
       </el-form-item>
       <el-form-item
+        v-if="currentType === 'number'"
         label="单位"
         prop="unit"
         class="is-required"
-        v-if="currentType === 'number'"
       >
         <dw-select
           v-model="form.unit"

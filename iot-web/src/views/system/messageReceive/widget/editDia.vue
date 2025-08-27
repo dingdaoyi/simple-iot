@@ -1,5 +1,5 @@
 <script lang="jsx" setup>
-import {iconAddApi, iconEditeApi, messageReceiveAddApi, messageReceiveEditApi} from '@/api'
+import { messageReceiveAddApi, messageReceiveEditApi } from '@/api'
 import { dwHooks } from 'dwyl-ui'
 import { ref } from 'vue'
 
