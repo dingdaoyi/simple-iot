@@ -17,7 +17,7 @@ spring:
       enabled: true
   datasource:
     driver-class-name: org.postgresql.Driver
-    url: jdbc:postgresql://${POSTGRES_HOST:127.0.0.1}:${POSTGRES_PORT:5432}/${DATABASE:sample}?stringtype=unspecified
+    url: jdbc:postgresql://${POSTGRES_HOST:127.0.0.1}:${POSTGRES_PORT:5432}/${DATABASE:simple}?stringtype=unspecified
     username: ${POSTGRES_USERNAME:postgres}
     password: ${POSTGRES_PASSWORD:postgres}
   mail:
@@ -109,17 +109,26 @@ sample:
   iot:
     # 开启设备密钥认证
     enable-device-secret: true
-    localstorage:
-      local-dir: ./file/upload
-    storage-type: file
+    # 存储类型: file(本地存储) 或 s3(S3存储)
+    storage-type: s3
+    # 本地存储配置 (当 storage-type=file 时生效)
+#    localstorage:
+#      local-dir: ./file/upload
+    # S3 存储配置 (当 storage-type=s3 时生效)
+    s3storage:
+      accessKeyId: ${S3_ACCESS_KEY_ID:your-access-key-id}
+      secretAccessKey: ${S3_SECRET_ACCESS_KEY:your-secret-access-key}
+      bucketName: ${S3_BUCKET_NAME:iot-bucket}
+      region: ${S3_REGION:us-east-1}
+      endpointUrl: ${S3_ENDPOINT:http://localhost:9000}  # 可选，用于 MinIO 或自建 S3
     driver:
       mqtt:
         mqtt-client-id-prefix: sample_
-        topic-prefix: sampleiot
+        topic-prefix: simpleiot
     device-channel-type: single
     influxdb:
       url: ${INFLUXDB_URL:http://127.0.0.1:8086}
       token: ${INFLUXDB_TOKEN:Evc2GMqMqWS}
       prop-database: prop_data
       event-database: even_data
-      database: sample
+      database: simple

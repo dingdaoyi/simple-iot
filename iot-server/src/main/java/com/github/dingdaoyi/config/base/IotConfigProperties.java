@@ -66,12 +66,13 @@ public class IotConfigProperties {
          */
         private String eventDatabase;
     }
+
     public enum DeviceChannelType {
-        PARTITION,SINGLE
+        PARTITION, SINGLE
     }
 
-    public enum StorageType{
-        FILE,
+    public enum StorageType {
+        FILE, S3
     }
 
     @Data
@@ -80,5 +81,38 @@ public class IotConfigProperties {
          * 本地存储目录
          */
         private String localDir;
+    }
+
+    /**
+     * S3 存储配置
+     */
+    private S3Storage s3storage;
+
+    @Data
+    public static class S3Storage {
+        /**
+         * S3 访问密钥 ID
+         */
+        private String accessKeyId;
+
+        /**
+         * S3 秘密访问密钥
+         */
+        private String secretAccessKey;
+
+        /**
+         * S3 桶名称
+         */
+        private String bucketName;
+
+        /**
+         * S3 区域
+         */
+        private String region;
+
+        /**
+         * S3 端点 URL (可选，用于 MinIO 或自建 S3)
+         */
+        private String endpointUrl;
     }
 }

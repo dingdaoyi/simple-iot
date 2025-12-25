@@ -34,7 +34,7 @@
         </dependency>
         <dependency>
             <groupId>com.baomidou</groupId>
-            <artifactId>mybatis-plus-spring-boot3-starter</artifactId>
+            <artifactId>mybatis-plus-spring-boot4-starter</artifactId>
         </dependency>
         <dependency>
             <groupId>com.baomidou</groupId>
@@ -57,7 +57,7 @@
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
-            <scope>provided</scope>
+            <scope>annotationProcessor</scope>
         </dependency>
         <dependency>
             <groupId>org.dromara.mica-mqtt</groupId>
@@ -73,6 +73,10 @@
             <artifactId>influxdb3-java</artifactId>
         </dependency>
 
+        <dependency>
+            <groupId>io.netty</groupId>
+            <artifactId>netty-codec</artifactId>
+        </dependency>
         <dependency>
             <groupId>com.github.dingdaoyi</groupId>
             <artifactId>iot-core</artifactId>
@@ -118,6 +122,10 @@
                 </exclusion>
             </exclusions>
         </dependency>
+        <dependency>
+            <groupId>software.amazon.awssdk</groupId>
+            <artifactId>s3</artifactId>
+        </dependency>
     </dependencies>
     <build>
         <plugins>
@@ -125,6 +133,13 @@
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
+                <configuration>
+                    <!-- 添加 JVM 参数解决 Arrow 与 Netty 4.2.7 兼容性问题 -->
+                    <jvmArguments>
+                        -Dio.netty.tryReflectionSetAccessible=true
+                        --add-opens=java.base/java.nio=ALL-UNNAMED
+                    </jvmArguments>
+                </configuration>
             </plugin>
         </plugins>
     </build>

@@ -5,15 +5,15 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>3.5.3</version>
+        <version>4.0.1</version>
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <groupId>com.github.dingdaoyi</groupId>
     <artifactId>simple-iot</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <packaging>pom</packaging>
-    <name>sample-iot</name>
-    <description>sample-iot</description>
+    <name>simple-iot</name>
+    <description>simple-iot</description>
     <url/>
     <licenses>
         <license/>
@@ -24,7 +24,6 @@
     <modules>
         <module>iot-server</module>
         <module>iot-common</module>
-        <module>iot-common/iot-protocol-core</module>
         <module>iot-driver</module>
     </modules>
     <scm>
@@ -34,30 +33,32 @@
         <url/>
     </scm>
     <properties>
-        <java.version>21</java.version>
-        <maven.compiler.source>21</maven.compiler.source>
-        <maven.compiler.target>21</maven.compiler.target>
+        <java.version>25</java.version>
+        <maven.compiler.source>25</maven.compiler.source>
+        <maven.compiler.target>25</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        
+
         <!-- 依赖版本统一管理 -->
-        <spring-boot.version>3.4.1</spring-boot.version>
-        <mybatis-plus.version>3.5.12</mybatis-plus.version>
-        <sa-token.version>1.42.0</sa-token.version>
+        <spring-boot.version>4.0.1</spring-boot.version>
+        <mybatis-plus.version>3.5.15</mybatis-plus.version>
+        <sa-token.version>1.44.0</sa-token.version>
         <knife4j.version>4.5.0</knife4j.version>
-        <mica-mqtt.version>2.4.5</mica-mqtt.version>
-        <hutool.version>5.8.38</hutool.version>
-        <influxdb.version>1.0.0</influxdb.version>
+        <mica-mqtt.version>2.5.9</mica-mqtt.version>
+        <hutool.version>5.8.42</hutool.version>
+        <influxdb.version>1.7.0</influxdb.version>
         <dotenv.version>3.1.0</dotenv.version>
         <swagger.version>2.2.21</swagger.version>
         <postgresql.version>42.7.4</postgresql.version>
         <sms4j.version>3.3.4</sms4j.version>
+        <aws-java-sdk.version>2.40.15</aws-java-sdk.version>
+        <lombok.version>1.18.42</lombok.version>
     </properties>
     <dependencyManagement>
         <dependencies>
             <!-- MyBatis Plus -->
             <dependency>
                 <groupId>com.baomidou</groupId>
-                <artifactId>mybatis-plus-spring-boot3-starter</artifactId>
+                <artifactId>mybatis-plus-spring-boot4-starter</artifactId>
                 <version>${mybatis-plus.version}</version>
             </dependency>
             <dependency>
@@ -70,7 +71,7 @@
                 <artifactId>mybatis-plus-annotation</artifactId>
                 <version>${mybatis-plus.version}</version>
             </dependency>
-            
+
             <!-- API文档 -->
             <dependency>
                 <groupId>com.github.xiaoymin</groupId>
@@ -82,14 +83,14 @@
                 <artifactId>swagger-annotations-jakarta</artifactId>
                 <version>${swagger.version}</version>
             </dependency>
-            
+
             <!-- 认证授权 -->
             <dependency>
                 <groupId>cn.dev33</groupId>
                 <artifactId>sa-token-spring-boot3-starter</artifactId>
                 <version>${sa-token.version}</version>
             </dependency>
-            
+
             <!-- 工具类 -->
             <dependency>
                 <groupId>cn.hutool</groupId>
@@ -101,14 +102,14 @@
                 <artifactId>dotenv-java</artifactId>
                 <version>${dotenv.version}</version>
             </dependency>
-            
+
             <!-- MQTT -->
             <dependency>
                 <groupId>org.dromara.mica-mqtt</groupId>
                 <artifactId>mica-mqtt-server-spring-boot-starter</artifactId>
                 <version>${mica-mqtt.version}</version>
             </dependency>
-            
+
             <!-- 数据库 -->
             <dependency>
                 <groupId>org.postgresql</groupId>
@@ -119,11 +120,31 @@
                 <groupId>com.influxdb</groupId>
                 <artifactId>influxdb3-java</artifactId>
                 <version>${influxdb.version}</version>
+                <exclusions>
+                    <!-- 排除 Arrow 自带的 Netty 依赖，使用兼容版本 -->
+                    <exclusion>
+                        <groupId>io.netty</groupId>
+                        <artifactId>*</artifactId>
+                    </exclusion>
+                </exclusions>
             </dependency>
             <dependency>
                 <groupId>org.dromara.sms4j</groupId>
                 <artifactId>sms4j-spring-boot-starter</artifactId>
                 <version>${sms4j.version}</version>
+            </dependency>
+            <!-- AWS S3 SDK -->
+            <dependency>
+                <groupId>software.amazon.awssdk</groupId>
+                <artifactId>s3</artifactId>
+                <version>${aws-java-sdk.version}</version>
+            </dependency>
+            <!-- Lombok 显式指定版本以支持 JDK 25 -->
+            <dependency>
+                <groupId>org.projectlombok</groupId>
+                <artifactId>lombok</artifactId>
+                <version>${lombok.version}</version>
+                <scope>annotationProcessor</scope>
             </dependency>
         </dependencies>
     </dependencyManagement>

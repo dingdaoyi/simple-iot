@@ -3,7 +3,7 @@
 -- Sequence structure for icon_id_seq
 -- ----------------------------
 DROP SEQUENCE IF EXISTS "public"."icon_id_seq";
-CREATE SEQUENCE "public"."icon_id_seq" 
+CREATE SEQUENCE "public"."icon_id_seq"
 INCREMENT 1
 MINVALUE  1
 MAXVALUE 2147483647
@@ -14,7 +14,7 @@ CACHE 1;
 -- Sequence structure for iot_driver_driver_id_seq
 -- ----------------------------
 DROP SEQUENCE IF EXISTS "public"."iot_driver_driver_id_seq";
-CREATE SEQUENCE "public"."iot_driver_driver_id_seq" 
+CREATE SEQUENCE "public"."iot_driver_driver_id_seq"
 INCREMENT 1
 MINVALUE  1
 MAXVALUE 2147483647
@@ -25,7 +25,7 @@ CACHE 1;
 -- Sequence structure for message_receive_id_seq
 -- ----------------------------
 DROP SEQUENCE IF EXISTS "public"."message_receive_id_seq";
-CREATE SEQUENCE "public"."message_receive_id_seq" 
+CREATE SEQUENCE "public"."message_receive_id_seq"
 INCREMENT 1
 MINVALUE  1
 MAXVALUE 2147483647
@@ -36,7 +36,7 @@ CACHE 1;
 -- Sequence structure for product_id_seq
 -- ----------------------------
 DROP SEQUENCE IF EXISTS "public"."product_id_seq";
-CREATE SEQUENCE "public"."product_id_seq" 
+CREATE SEQUENCE "public"."product_id_seq"
 INCREMENT 1
 MINVALUE  1
 MAXVALUE 2147483647
@@ -47,7 +47,7 @@ CACHE 1;
 -- Sequence structure for product_tyoe_id_seq
 -- ----------------------------
 DROP SEQUENCE IF EXISTS "public"."product_tyoe_id_seq";
-CREATE SEQUENCE "public"."product_tyoe_id_seq" 
+CREATE SEQUENCE "public"."product_tyoe_id_seq"
 INCREMENT 1
 MINVALUE  1
 MAXVALUE 9223372036854775807
@@ -58,7 +58,7 @@ CACHE 1;
 -- Sequence structure for protocol_id_seq
 -- ----------------------------
 DROP SEQUENCE IF EXISTS "public"."protocol_id_seq";
-CREATE SEQUENCE "public"."protocol_id_seq" 
+CREATE SEQUENCE "public"."protocol_id_seq"
 INCREMENT 1
 MINVALUE  1
 MAXVALUE 2147483647
@@ -69,7 +69,7 @@ CACHE 1;
 -- Sequence structure for sms_config_id_seq
 -- ----------------------------
 DROP SEQUENCE IF EXISTS "public"."sms_config_id_seq";
-CREATE SEQUENCE "public"."sms_config_id_seq" 
+CREATE SEQUENCE "public"."sms_config_id_seq"
 INCREMENT 1
 MINVALUE  1
 MAXVALUE 2147483647
@@ -80,7 +80,7 @@ CACHE 1;
 -- Sequence structure for sms_template_id_seq
 -- ----------------------------
 DROP SEQUENCE IF EXISTS "public"."sms_template_id_seq";
-CREATE SEQUENCE "public"."sms_template_id_seq" 
+CREATE SEQUENCE "public"."sms_template_id_seq"
 INCREMENT 1
 MINVALUE  1
 MAXVALUE 2147483647
@@ -91,7 +91,7 @@ CACHE 1;
 -- Sequence structure for tb_device_command_id_seq
 -- ----------------------------
 DROP SEQUENCE IF EXISTS "public"."tb_device_command_id_seq";
-CREATE SEQUENCE "public"."tb_device_command_id_seq" 
+CREATE SEQUENCE "public"."tb_device_command_id_seq"
 INCREMENT 1
 MINVALUE  1
 MAXVALUE 9223372036854775807
@@ -102,7 +102,7 @@ CACHE 1;
 -- Sequence structure for tb_device_id_seq
 -- ----------------------------
 DROP SEQUENCE IF EXISTS "public"."tb_device_id_seq";
-CREATE SEQUENCE "public"."tb_device_id_seq" 
+CREATE SEQUENCE "public"."tb_device_id_seq"
 INCREMENT 1
 MINVALUE  1
 MAXVALUE 2147483647
@@ -113,7 +113,7 @@ CACHE 1;
 -- Sequence structure for tb_dict_id_seq
 -- ----------------------------
 DROP SEQUENCE IF EXISTS "public"."tb_dict_id_seq";
-CREATE SEQUENCE "public"."tb_dict_id_seq" 
+CREATE SEQUENCE "public"."tb_dict_id_seq"
 INCREMENT 1
 MINVALUE  1
 MAXVALUE 9223372036854775807
@@ -124,7 +124,7 @@ CACHE 1;
 -- Sequence structure for tb_iot_rule_id_seq
 -- ----------------------------
 DROP SEQUENCE IF EXISTS "public"."tb_iot_rule_id_seq";
-CREATE SEQUENCE "public"."tb_iot_rule_id_seq" 
+CREATE SEQUENCE "public"."tb_iot_rule_id_seq"
 INCREMENT 1
 MINVALUE  1
 MAXVALUE 2147483647
@@ -135,7 +135,7 @@ CACHE 1;
 -- Sequence structure for tb_model_property_id_seq
 -- ----------------------------
 DROP SEQUENCE IF EXISTS "public"."tb_model_property_id_seq";
-CREATE SEQUENCE "public"."tb_model_property_id_seq" 
+CREATE SEQUENCE "public"."tb_model_property_id_seq"
 INCREMENT 1
 MINVALUE  1
 MAXVALUE 2147483647
@@ -146,7 +146,7 @@ CACHE 1;
 -- Sequence structure for tb_model_service_id_seq
 -- ----------------------------
 DROP SEQUENCE IF EXISTS "public"."tb_model_service_id_seq";
-CREATE SEQUENCE "public"."tb_model_service_id_seq" 
+CREATE SEQUENCE "public"."tb_model_service_id_seq"
 INCREMENT 1
 MINVALUE  1
 MAXVALUE 2147483647
@@ -157,7 +157,7 @@ CACHE 1;
 -- Sequence structure for tb_user_id_seq
 -- ----------------------------
 DROP SEQUENCE IF EXISTS "public"."tb_user_id_seq";
-CREATE SEQUENCE "public"."tb_user_id_seq" 
+CREATE SEQUENCE "public"."tb_user_id_seq"
 INCREMENT 1
 MINVALUE  1
 MAXVALUE 2147483647
@@ -185,7 +185,6 @@ CREATE TABLE "public"."sms_config" (
   "update_time" timestamp(6) DEFAULT CURRENT_TIMESTAMP
 )
 ;
-ALTER TABLE "public"."sms_config" OWNER TO "sample";
 
 -- ----------------------------
 -- Records of sms_config
@@ -206,7 +205,6 @@ CREATE TABLE "public"."sms_template" (
   "update_time" timestamp(6) DEFAULT CURRENT_TIMESTAMP
 )
 ;
-ALTER TABLE "public"."sms_template" OWNER TO "sample";
 
 -- ----------------------------
 -- Records of sms_template
@@ -230,7 +228,6 @@ CREATE TABLE "public"."tb_device" (
   "third_device_id" varchar(64) COLLATE "pg_catalog"."default"
 )
 ;
-ALTER TABLE "public"."tb_device" OWNER TO "sample";
 COMMENT ON COLUMN "public"."tb_device"."id" IS '设备编号';
 COMMENT ON COLUMN "public"."tb_device"."product_id" IS '产品id';
 COMMENT ON COLUMN "public"."tb_device"."device_name" IS '设备名称';
@@ -267,7 +264,6 @@ CREATE TABLE "public"."tb_device_command" (
   "product_key" varchar(50) COLLATE "pg_catalog"."default" NOT NULL DEFAULT ''::character varying
 )
 ;
-ALTER TABLE "public"."tb_device_command" OWNER TO "sample";
 COMMENT ON COLUMN "public"."tb_device_command"."id" IS 'id';
 COMMENT ON COLUMN "public"."tb_device_command"."create_time" IS '创建时间';
 COMMENT ON COLUMN "public"."tb_device_command"."update_time" IS '更新时间';
@@ -312,7 +308,6 @@ CREATE TABLE "public"."tb_dict" (
   "update_time" timestamp(6) DEFAULT CURRENT_TIMESTAMP
 )
 ;
-ALTER TABLE "public"."tb_dict" OWNER TO "sample";
 COMMENT ON COLUMN "public"."tb_dict"."id" IS '主键';
 COMMENT ON COLUMN "public"."tb_dict"."dict_group" IS '字典编码';
 COMMENT ON COLUMN "public"."tb_dict"."dict_label" IS '字典键';
@@ -357,7 +352,6 @@ CREATE TABLE "public"."tb_icon" (
   "path" varchar(128) COLLATE "pg_catalog"."default" NOT NULL DEFAULT ''::character varying
 )
 ;
-ALTER TABLE "public"."tb_icon" OWNER TO "sample";
 COMMENT ON COLUMN "public"."tb_icon"."id" IS 'id';
 COMMENT ON COLUMN "public"."tb_icon"."name" IS '名称备注';
 COMMENT ON COLUMN "public"."tb_icon"."path" IS '地址';
@@ -386,7 +380,6 @@ CREATE TABLE "public"."tb_iot_driver" (
   "port" int4
 )
 ;
-ALTER TABLE "public"."tb_iot_driver" OWNER TO "sample";
 COMMENT ON COLUMN "public"."tb_iot_driver"."port" IS '端口';
 
 -- ----------------------------
@@ -415,7 +408,6 @@ CREATE TABLE "public"."tb_iot_rule" (
   "identifier" varchar(50) COLLATE "pg_catalog"."default" DEFAULT ''::character varying
 )
 ;
-ALTER TABLE "public"."tb_iot_rule" OWNER TO "sample";
 COMMENT ON COLUMN "public"."tb_iot_rule"."id" IS '规则id';
 COMMENT ON COLUMN "public"."tb_iot_rule"."name" IS '规则名称';
 COMMENT ON COLUMN "public"."tb_iot_rule"."rule_type" IS '处理类型';
@@ -447,7 +439,6 @@ CREATE TABLE "public"."tb_message_receive" (
   "remark" varchar(50) COLLATE "pg_catalog"."default" NOT NULL DEFAULT ''::character varying
 )
 ;
-ALTER TABLE "public"."tb_message_receive" OWNER TO "sample";
 COMMENT ON COLUMN "public"."tb_message_receive"."id" IS 'id';
 COMMENT ON COLUMN "public"."tb_message_receive"."name" IS '接收者名称';
 COMMENT ON COLUMN "public"."tb_message_receive"."receiver" IS '接收对象';
@@ -543,7 +534,6 @@ CREATE TABLE "public"."tb_model_service" (
   "product_id" int4
 )
 ;
-ALTER TABLE "public"."tb_model_service" OWNER TO "sample";
 COMMENT ON COLUMN "public"."tb_model_service"."id" IS 'id';
 COMMENT ON COLUMN "public"."tb_model_service"."async" IS '服务是否为异步';
 COMMENT ON COLUMN "public"."tb_model_service"."event_type" IS '事件类型,INFO,WARN,FAULT';
@@ -583,7 +573,6 @@ CREATE TABLE "public"."tb_product" (
   "product_key" char(20) COLLATE "pg_catalog"."default" DEFAULT ''::bpchar
 )
 ;
-ALTER TABLE "public"."tb_product" OWNER TO "sample";
 COMMENT ON COLUMN "public"."tb_product"."id" IS '产品id';
 COMMENT ON COLUMN "public"."tb_product"."model" IS '产品型号';
 COMMENT ON COLUMN "public"."tb_product"."manufacturer" IS '厂家';
@@ -644,7 +633,6 @@ CREATE TABLE "public"."tb_protocol" (
   "handler_class" varchar(255) COLLATE "pg_catalog"."default" NOT NULL DEFAULT ''::character varying
 )
 ;
-ALTER TABLE "public"."tb_protocol" OWNER TO "sample";
 COMMENT ON COLUMN "public"."tb_protocol"."id" IS 'id';
 COMMENT ON COLUMN "public"."tb_protocol"."name" IS '协议名称';
 COMMENT ON COLUMN "public"."tb_protocol"."proto_type" IS '协议类型';
@@ -664,12 +652,11 @@ COMMIT;
 -- ----------------------------
 DROP TABLE IF EXISTS "public"."tb_service_property";
 CREATE TABLE "public"."tb_service_property" (
-  "service_id" int4,
-  "property_id" int4,
-  "param_type" int4
-)
+  "service_id" int4 NOT NULL,
+  "property_id" int4 NOT NULL,
+  "param_type" int4 NOT NULL
+);
 ;
-ALTER TABLE "public"."tb_service_property" OWNER TO "sample";
 COMMENT ON COLUMN "public"."tb_service_property"."service_id" IS '服务id';
 COMMENT ON COLUMN "public"."tb_service_property"."property_id" IS '属性id';
 COMMENT ON COLUMN "public"."tb_service_property"."param_type" IS '1:出参数,2:入参';
@@ -952,13 +939,9 @@ CREATE UNIQUE INDEX "ux_protocol_proto_key" ON "public"."tb_protocol" USING btre
 ALTER TABLE "public"."tb_protocol" ADD CONSTRAINT "protocol_pkey" PRIMARY KEY ("id");
 
 -- ----------------------------
--- Indexes structure for table tb_service_property
+-- Primary Key structure for table tb_service_property
 -- ----------------------------
-CREATE UNIQUE INDEX "tb_service_property_property_id_service_id_uindex" ON "public"."tb_service_property" USING btree (
-  "property_id" "pg_catalog"."int4_ops" ASC NULLS LAST,
-  "service_id" "pg_catalog"."int4_ops" ASC NULLS LAST,
-  "param_type" "pg_catalog"."int4_ops" ASC NULLS LAST
-);
+ALTER TABLE "public"."tb_service_property" ADD CONSTRAINT "tb_service_property_pkey" PRIMARY KEY ("service_id", "property_id", "param_type");
 
 -- ----------------------------
 -- Uniques structure for table tb_user

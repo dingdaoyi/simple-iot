@@ -2,13 +2,13 @@ package com.github.dingdaoyi.service.impl;
 
 import com.github.dingdaoyi.core.enums.ResultCode;
 import com.github.dingdaoyi.core.exception.BusinessException;
+import com.github.dingdaoyi.model.vo.FileMetadata;
 import com.github.dingdaoyi.service.StorageService;
 import org.apache.commons.lang3.RandomStringUtils;
-import org.springframework.core.io.Resource;
-import org.springframework.core.io.UrlResource;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -44,9 +44,28 @@ public class LocalStorageService implements StorageService {
     }
 
     @Override
-    public Resource downloadFile(String path) throws IOException {
-        Path paths = Paths.get(localDir, path);
-        return new UrlResource(paths.toUri());
+    public FileMetadata getFileMetadata(String path) throws IOException {
+        Path filePath = Paths.get(localDir, path);
+        
+        if (!Files.exists(filePath)) {
+            FileMetadata metadata = new FileMetadata();
+            metadata.setExists(false);
+            return metadata;
+        }
+        
+        String contentType = Files.probeContentType(filePath);
+        long contentLength = Files.size(filePath);
+        InputStream inputStream = Files.newInputStream(filePath);
+        String filename = filePath.getFileName().toString();
+        
+        FileMetadata metadata = new FileMetadata();
+        metadata.setFilename(filename);
+        metadata.setContentType(contentType);
+        metadata.setContentLength(contentLength);
+        metadata.setInputStream(inputStream);
+        metadata.setExists(true);
+        
+        return metadata;
     }
 
     @Override

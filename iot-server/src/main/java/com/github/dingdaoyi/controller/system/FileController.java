@@ -1,7 +1,8 @@
-package com.github.dingdaoyi.controller.iot;
+package com.github.dingdaoyi.controller.system;
 
 
 import com.github.dingdaoyi.core.base.BaseResult;
+import com.github.dingdaoyi.model.vo.FileMetadata;
 import com.github.dingdaoyi.service.StorageService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -21,7 +22,6 @@ import java.io.OutputStream;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
 import java.util.List;
 
 /**
@@ -55,20 +55,26 @@ public class FileController {
         String path = request.getRequestURI();
         String filePath = StringUtils.substringAfter(path, "file");
         filePath = URLDecoder.decode(filePath, StandardCharsets.UTF_8);
-        org.springframework.core.io.Resource resource = storageService.downloadFile(filePath);
-        if (resource.exists() && resource.isReadable()) {
-            // 设置响应头
-            response.setContentType(Files.probeContentType(resource.getFile().toPath()));
-            response.setContentLengthLong(resource.contentLength());
-            response.setHeader("Content-Disposition", "attachment; filename=\""
-                                                      + URLEncoder.encode(resource.getFilename(), StandardCharsets.UTF_8) + "\"");
-            try (InputStream inputStream = resource.getInputStream();
-                 OutputStream outputStream = response.getOutputStream()) {
-                FileCopyUtils.copy(inputStream, outputStream);
-            }
-        } else {
+        
+        FileMetadata metadata = storageService.getFileMetadata(filePath);
+        
+        if (!metadata.isExists()) {
             response.setStatus(HttpServletResponse.SC_NOT_FOUND);
             response.getWriter().write("File not found: " + filePath);
+            return;
+        }
+        
+        // 设置响应头
+        if (metadata.getContentType() != null) {
+            response.setContentType(metadata.getContentType());
+        }
+        response.setContentLengthLong(metadata.getContentLength());
+        response.setHeader("Content-Disposition", "attachment; filename=\"" 
+                                                  + URLEncoder.encode(metadata.getFilename(), StandardCharsets.UTF_8) + "\"");
+        
+        try (InputStream inputStream = metadata.getInputStream();
+             OutputStream outputStream = response.getOutputStream()) {
+            FileCopyUtils.copy(inputStream, outputStream);
         }
     }
 }

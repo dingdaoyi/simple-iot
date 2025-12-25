@@ -12,8 +12,7 @@ import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalTimeSerializer;
 import org.springframework.beans.propertyeditors.StringTrimmerEditor;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
-import org.springframework.boot.autoconfigure.jackson.Jackson2ObjectMapperBuilderCustomizer;
-import org.springframework.boot.autoconfigure.web.servlet.WebMvcRegistrations;
+import org.springframework.boot.webmvc.autoconfigure.WebMvcRegistrations;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
@@ -36,7 +35,7 @@ import java.time.format.DateTimeFormatter;
  */
 @Configuration
 @Order(Ordered.HIGHEST_PRECEDENCE)
-@ConditionalOnClass({WebMvcConfigurer.class,WebMvcRegistrations.class})
+@ConditionalOnClass({WebMvcConfigurer.class, WebMvcRegistrations.class})
 public class MvcConfig implements WebMvcConfigurer, WebMvcRegistrations {
 
     /**
@@ -51,27 +50,6 @@ public class MvcConfig implements WebMvcConfigurer, WebMvcRegistrations {
      * 默认时间格式
      */
     public static final String DEFAULT_TIME_FORMAT = "HH:mm:ss";
-
-    /**
-     * Jackson全局转化long类型为String，解决jackson序列化时long类型缺失精度问题
-     *
-     * @return Jackson2ObjectMapperBuilderCustomizer 注入的对象
-     */
-    @Bean
-    public Jackson2ObjectMapperBuilderCustomizer jackson2ObjectMapperBuilderCustomizer() {
-        return jacksonObjectMapperBuilder -> {
-            jacksonObjectMapperBuilder.serializerByType(Long.TYPE, ToStringSerializer.instance)
-                    .serializerByType(Long.class, ToStringSerializer.instance)
-                    .serializerByType(long.class, ToStringSerializer.instance)
-                    .serializerByType(LocalDateTime.class, localDateTimeSerializer())
-                    .deserializerByType(LocalDateTime.class, localDateTimeDeserializer())
-                    .serializerByType(LocalDate.class, localDateSerializer())
-                    .deserializerByType(LocalDate.class, localDateDeserializer())
-                    .serializerByType(LocalTime.class, localTimeSerializer())
-                    .deserializerByType(LocalTime.class, localTimeDeserializer())
-                    .deserializerByType(String.class,stringStdScalarDeserializer());
-        };
-    }
 
     @Bean
     public StdScalarDeserializer<String> stringStdScalarDeserializer() {

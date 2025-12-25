@@ -1,6 +1,6 @@
 package com.github.dingdaoyi.service;
 
-import org.springframework.core.io.Resource;
+import com.github.dingdaoyi.model.vo.FileMetadata;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -12,19 +12,20 @@ public interface StorageService {
     /**
      * 文件上传
      * @param file
-     * @return
+     * @return 文件路径
      */
     String uploadFile(MultipartFile file);
 
     /**
-     * 文件下载
-     * @param path
+     * 获取文件元数据和内容
+     * @param path 文件路径
+     * @return 文件元数据，如果文件不存在则 exists 为 false
      */
-    Resource downloadFile(String path) throws IOException;
+    FileMetadata getFileMetadata(String path) throws IOException;
 
     /**
      * 删除文件
-     * @param path
+     * @param path 文件路径
      */
     void deleteFile(String path);
 }

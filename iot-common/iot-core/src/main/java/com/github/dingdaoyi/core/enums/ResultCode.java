@@ -1,13 +1,11 @@
 package com.github.dingdaoyi.core.enums;
 
-import lombok.Getter;
 
 /**
  * 响应状态码枚举
  *
  * @author dingyunwei
  */
-@Getter
 public enum ResultCode {
 
     SUCCESS(200, "成功"),
@@ -39,6 +37,15 @@ public enum ResultCode {
     ;
 
     private final Integer code;
+
+    public String getMessage() {
+        return message;
+    }
+
+    public Integer getCode() {
+        return code;
+    }
+
     private final String message;
 
     ResultCode(Integer code, String message) {
