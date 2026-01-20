@@ -14,7 +14,7 @@ outPutParam.value = props.datas?.outputParamIds?.map(id => findItem(id)) || []
 </script>
 
 <template>
-  <dw-dialog
+  <el-dialog
     title="参数列表"
     width="620px"
   >
@@ -44,7 +44,7 @@ outPutParam.value = props.datas?.outputParamIds?.map(id => findItem(id)) || []
         </div>
       </div>
     </div>
-  </dw-dialog>
+  </el-dialog>
 </template>
 
 <style lang="scss" scoped>

@@ -132,7 +132,7 @@ function changeUnit(value) {
 </script>
 
 <template>
-  <dw-dialog
+  <el-dialog
     ref="dwDialogRef"
     :title="datas?.id ? '编辑' : '新增'"
     width="1042px"
@@ -176,18 +176,18 @@ function changeUnit(value) {
         prop="dataType"
         class="is-required"
       >
-        <dw-select
+        <el-select
           v-model="form.dataType"
           placeholder="请选择"
           class="w-full"
           @change="changeDataType"
         >
-          <dw-option
+          <el-option
             v-for="item in dataTypeOpt" :key="item.value"
             :label="item.label"
             :value="item.value"
           />
-        </dw-select>
+        </el-select>
       </el-form-item>
       <el-form-item
         label="访问权限"
@@ -248,18 +248,18 @@ function changeUnit(value) {
         prop="unit"
         class="is-required"
       >
-        <dw-select
+        <el-select
           v-model="form.unit"
           placeholder="请选择"
           class="w-full"
           @change="changeUnit"
         >
-          <dw-option
+          <el-option
             v-for="item in unitListOpt" :key="item.value"
             :label="`${item.label}:${item.value}`"
             :value="item.value"
           />
-        </dw-select>
+        </el-select>
       </el-form-item>
       <el-form-item v-if="currentType === 'enum'" label="枚举值" prop="enums">
         <div class="flex flex-col">
@@ -279,9 +279,9 @@ function changeUnit(value) {
             </el-button>
           </div>
           <div class="pt-10px self-center">
-            <dw-button type="primary" plain @click="addEnumValue">
+            <el-button type="primary" plain @click="addEnumValue">
               添加枚举值
-            </dw-button>
+            </el-button>
           </div>
         </div>
       </el-form-item>
@@ -331,7 +331,7 @@ function changeUnit(value) {
       </el-form-item>
       <IconInput v-model:value="form.iconId" />
     </el-form>
-  </dw-dialog>
+  </el-dialog>
 </template>
 
 <style lang="scss" scoped>

@@ -26,7 +26,7 @@ if (props?.datas) {
 </script>
 
 <template>
-  <dw-dialog
+  <el-dialog
     ref="dwDialogRef"
     :title="datas?.id ? '编辑' : '新增'"
     width="440px"
@@ -60,7 +60,7 @@ if (props?.datas) {
         <DwUpload v-model="form.path" :limit="1" />
       </el-form-item>
     </el-form>
-  </dw-dialog>
+  </el-dialog>
 </template>
 
 <style lang="scss" scoped>

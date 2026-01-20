@@ -77,7 +77,7 @@ const {
         添加
       </el-button>
     </div>
-    <DwTable
+    <IotTable
       ref="dwTable"
       row-key="id"
       :column="column"
@@ -86,14 +86,14 @@ const {
       :api="propertyListApi"
     >
       <template #cz="{ row }">
-        <dw-button v-if="showEdite" type="danger" link @click="onDelete(row)">
+        <el-button v-if="showEdite" type="danger" link @click="onDelete(row)">
           删除
-        </dw-button>
-        <dw-button v-if="showEdite" type="primary" link @click="onEdit(row)">
+        </el-button>
+        <el-button v-if="showEdite" type="primary" link @click="onEdit(row)">
           编辑定义
-        </dw-button>
+        </el-button>
       </template>
-    </DwTable>
+    </IotTable>
     <PropertyEdite
       v-if="dialogVisible"
       v-model="dialogVisible"

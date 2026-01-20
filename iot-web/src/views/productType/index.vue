@@ -1,11 +1,10 @@
 <script setup>
 import { productTypeDelApi, productTypeListApi } from '@/api/index.js'
 import EditDia from '@/views/productType/widget/editDia.vue'
-import { dwHooks } from 'dwyl-ui'
+import { useTable } from '@/composables/useTable.js'
 import { nextTick, ref } from 'vue'
 import { useRouter } from 'vue-router'
 
-const { useDwTable } = dwHooks
 
 const router = useRouter()
 const parentId = ref(-1)
@@ -42,12 +41,11 @@ const {
   dialogVisible,
   updatePage,
   onSearch,
-  dwTable,
   onDelete,
   onAdd,
   diaTitle,
   currentItem,
-} = useDwTable({
+} = useTable({
   deleteApi: productTypeDelApi,
   diaName: '用户',
   defParams: {
@@ -83,7 +81,7 @@ function tslConfig(row) {
         添加
       </el-button>
     </div>
-    <DwTable
+    <IotTable
       ref="dwTable"
       row-key="id"
       :column="column"
@@ -92,18 +90,18 @@ function tslConfig(row) {
       :api="productTypeListApi"
     >
       <template #cz="{ row }">
-        <!--        <dw-button type="primary" link @click="onEdit(row)">编辑</dw-button> -->
-        <dw-button type="danger" link @click="onDelete(row)">
+        <!--        <el-button type="primary" link @click="onEdit(row)">编辑</el-button> -->
+        <el-button type="danger" link @click="onDelete(row)">
           删除
-        </dw-button>
-        <dw-button type="primary" link @click="tslConfig(row)">
+        </el-button>
+        <el-button type="primary" link @click="tslConfig(row)">
           功能配置
-        </dw-button>
-        <dw-button v-if="row.parentId === -1" type="primary" link @click="onAddChild(row)">
+        </el-button>
+        <el-button v-if="row.parentId === -1" type="primary" link @click="onAddChild(row)">
           添加子级
-        </dw-button>
+        </el-button>
       </template>
-    </DwTable>
+    </IotTable>
     <EditDia
       v-if="dialogVisible"
       v-model="dialogVisible"

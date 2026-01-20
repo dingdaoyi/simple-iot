@@ -68,20 +68,20 @@ function closeEdite() {
 <template>
   <div class="flex flex-col flex-1">
     <div class="flex flex-row mb-12px">
-      <dw-select
+      <el-select
         v-model="params.notifyType"
         placeholder="请选择通知类型"
         class="w-200px mr-12px"
         filterable
         clearable
       >
-        <dw-option
+        <el-option
           v-for="item in notifyTypeOpt"
           :key="item.value"
           :label="item.label"
           :value="item.value"
         />
-      </dw-select>
+      </el-select>
       <div class="w-200px mr-12px">
         <el-input v-model="params.name" clearable placeholder="请输入通知名称" />
       </div>
@@ -95,7 +95,7 @@ function closeEdite() {
         添加
       </el-button>
     </div>
-    <DwTable
+    <IotTable
       ref="dwTable"
       row-key="id"
       :column="column"
@@ -103,14 +103,14 @@ function closeEdite() {
       :api="messageReceivePageApi"
     >
       <template #cz="{ row }">
-        <dw-button type="danger" link @click="onDelete(row)">
+        <el-button type="danger" link @click="onDelete(row)">
           删除
-        </dw-button>
-        <dw-button type="primary" link @click="onEdit(row)">
+        </el-button>
+        <el-button type="primary" link @click="onEdit(row)">
           编辑
-        </dw-button>
+        </el-button>
       </template>
-    </DwTable>
+    </IotTable>
     <EditDia
       v-if="dialogVisible"
       v-model="dialogVisible"

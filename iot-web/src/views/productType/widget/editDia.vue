@@ -29,7 +29,7 @@ if (props?.datas) {
 </script>
 
 <template>
-  <dw-dialog
+  <el-dialog
     ref="dwDialogRef"
     :title="datas?.id ? '编辑' : '新增'"
     width="1042px"
@@ -68,7 +68,7 @@ if (props?.datas) {
         />
       </el-form-item>
     </el-form>
-  </dw-dialog>
+  </el-dialog>
 </template>
 
 <style lang="scss" scoped>

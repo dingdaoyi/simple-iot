@@ -94,7 +94,7 @@ loadChartDate()
 </script>
 
 <template>
-  <dw-dialog
+  <el-dialog
     title="参数列表"
     width="1200px"
   >
@@ -118,7 +118,7 @@ loadChartDate()
         <VCharts v-if="renderChart" :option="options" />
       </div>
     </div>
-  </dw-dialog>
+  </el-dialog>
 </template>
 
 <style lang="scss" scoped>

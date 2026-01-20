@@ -1,9 +1,9 @@
 <script setup>
 import { ruleDeleteApi, rulePageApi } from '@/api/index.js'
 import EditDia from '@/views/rule/widget/editDia.vue'
-import { dwHooks } from 'dwyl-ui'
+import { useTable } from '@/composables/useTable.js'
+import { onMounted } from 'vue'
 
-const { useDwTable } = dwHooks
 
 const ruleTypeOpt = [
   {
@@ -122,67 +122,85 @@ const {
   dialogVisible,
   updatePage,
   onSearch,
-  dwTable,
+  tableData,
+  total,
+  loading,
   onDelete,
   onEdit,
   onAdd,
   diaTitle,
   currentItem,
-} = useDwTable({
+  onPageChange,
+  onSizeChange,
+} = useTable({
   deleteApi: ruleDeleteApi,
+  fetchApi: rulePageApi,
   diaName: '规则',
-  defParams: {
-  },
+  defParams: {},
 })
 
 function closeEdite() {
   updatePage()
 }
+
+onMounted(() => {
+  updatePage()
+})
 </script>
 
 <template>
-  <div class="flex flex-col flex-1">
-    <div class="flex flex-row mb-12px">
-      <dw-select
-        v-model="params.productTypeId"
-        placeholder="请选择处理类型"
-        class="w-200px mr-12px"
-        filterable
-        clearable
-      >
-        <dw-option
-          v-for="item in ruleTypeOpt"
-          :key="item.value"
-          :label="item.label"
-          :value="item.value"
-        />
-      </dw-select>
-      <div class="w-200px mr-12px">
-        <el-input v-model="params.name" clearable placeholder="请输入规则名称" />
-      </div>
-      <el-button type="primary" @click="onSearch">
-        搜索
-      </el-button>
-      <el-button type="success" @click="onAdd">
-        添加
-      </el-button>
+  <div class="rule-page">
+    <div class="iot-card search-bar">
+      <el-form :inline="true" class="search-form">
+        <el-form-item label="处理类型">
+          <el-select
+            v-model="params.productTypeId"
+            placeholder="请选择处理类型"
+            filterable
+            clearable
+          >
+            <el-option
+              v-for="item in ruleTypeOpt"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value"
+            />
+          </el-select>
+        </el-form-item>
+
+        <el-form-item label="规则名称">
+          <el-input v-model="params.name" clearable placeholder="请输入规则名称" />
+        </el-form-item>
+
+        <el-form-item>
+          <el-button type="primary" @click="onSearch">
+            搜索
+          </el-button>
+          <el-button type="success" @click="onAdd">
+            添加
+          </el-button>
+        </el-form-item>
+      </el-form>
     </div>
-    <DwTable
-      ref="dwTable"
-      row-key="id"
-      :column="column"
-      :params="params"
-      :api="rulePageApi"
+    <IotTable
+      :columns="column"
+      :data="tableData"
+      :total="total"
+      :current-page="params.page"
+      :page-size="params.size"
+      :loading="loading"
+      @page-change="onPageChange"
+      @size-change="onSizeChange"
     >
       <template #cz="{ row }">
-        <dw-button type="danger" link @click="onDelete(row)">
+        <el-button type="danger" link @click="onDelete(row)">
           删除
-        </dw-button>
-        <dw-button type="primary" link @click="onEdit(row)">
+        </el-button>
+        <el-button type="primary" link @click="onEdit(row)">
           编辑
-        </dw-button>
+        </el-button>
       </template>
-    </DwTable>
+    </IotTable>
     <EditDia
       v-if="dialogVisible"
       v-model="dialogVisible"
@@ -192,3 +210,22 @@ function closeEdite() {
     />
   </div>
 </template>
+
+<style scoped lang="scss">
+.rule-page {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-lg);
+  height: 100%;
+}
+
+.search-bar {
+  padding: var(--space-md);
+}
+
+.search-form {
+  :deep(.el-form-item) {
+    margin-bottom: 0;
+  }
+}
+</style>

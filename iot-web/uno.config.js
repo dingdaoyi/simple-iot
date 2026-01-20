@@ -21,8 +21,6 @@ export default defineConfig({
     colors: {
       primary: 'var(--el-color-primary)',
       danger: 'var(--el-color-danger)',
-      dwbg: 'var(--dw-bg)',
-      dwboxbg: 'var(--dw-box-bg)',
     },
   },
 })

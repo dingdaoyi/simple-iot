@@ -117,7 +117,7 @@ loadPropertiesDict()
         添加
       </ElButton>
     </div>
-    <DwTable
+    <IotTable
       ref="dwTable"
       row-key="id"
       :column="column"
@@ -126,14 +126,14 @@ loadPropertiesDict()
       :api="productId ? customServiceListApi : standardServiceListApi"
     >
       <template #cz="{ row }">
-        <dw-button v-if="showEdite" type="danger" link @click="onDelete(row)">
+        <el-button v-if="showEdite" type="danger" link @click="onDelete(row)">
           删除
-        </dw-button>
-        <dw-button v-if="showEdite" type="primary" link @click="onEdit(row)">
+        </el-button>
+        <el-button v-if="showEdite" type="primary" link @click="onEdit(row)">
           编辑定义
-        </dw-button>
+        </el-button>
       </template>
-    </DwTable>
+    </IotTable>
     <ServiceEdite
       v-if="dialogVisible"
       v-model="dialogVisible"

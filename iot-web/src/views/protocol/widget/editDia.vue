@@ -41,7 +41,7 @@ if (props?.datas) {
 </script>
 
 <template>
-  <dw-dialog
+  <el-dialog
     ref="dwDialogRef"
     :title="datas?.id ? '编辑' : '新增'"
     width="1042px"
@@ -73,20 +73,20 @@ if (props?.datas) {
         prop="protoType"
         class="is-required"
       >
-        <dw-select
+        <el-select
           v-model="form.protoType"
           placeholder="请选择协议类型"
           class="w-full"
           filterable
           clearable
         >
-          <dw-option
+          <el-option
             v-for="item in protocolTypeOpt"
             :key="item.value"
             :label="item.label"
             :value="item.value"
           />
-        </dw-select>
+        </el-select>
       </el-form-item>
 
       <el-form-item
@@ -122,7 +122,7 @@ if (props?.datas) {
         />
       </el-form-item>
     </el-form>
-  </dw-dialog>
+  </el-dialog>
 </template>
 
 <style lang="scss" scoped>

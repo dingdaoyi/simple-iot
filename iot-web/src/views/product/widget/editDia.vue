@@ -27,7 +27,7 @@ if (props?.datas) {
 </script>
 
 <template>
-  <dw-dialog
+  <el-dialog
     ref="dwDialogRef"
     :title="datas?.id ? '编辑' : '新增'"
     width="1042px"
@@ -49,20 +49,20 @@ if (props?.datas) {
         prop="productTypeId"
         class="is-required"
       >
-        <dw-select
+        <el-select
           v-model="form.productTypeId"
           placeholder="请选择产品类型"
           class="w-full"
           filterable
           clearable
         >
-          <dw-option
+          <el-option
             v-for="item in productTypeList"
             :key="item.id"
             :label="item.name"
             :value="item.id"
           />
-        </dw-select>
+        </el-select>
       </el-form-item>
       <el-form-item
         label="型号"
@@ -95,7 +95,7 @@ if (props?.datas) {
         />
       </el-form-item>
     </el-form>
-  </dw-dialog>
+  </el-dialog>
 </template>
 
 <style lang="scss" scoped>

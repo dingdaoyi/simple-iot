@@ -157,7 +157,7 @@ loadData()
 </script>
 
 <template>
-  <dw-dialog
+  <el-dialog
     ref="dwDialogRef"
     :title="datas?.id ? '编辑' : '新增'"
     width="1042px"
@@ -189,20 +189,20 @@ loadData()
         prop="inputType"
         class="is-required"
       >
-        <dw-select
+        <el-select
           v-model="form.inputType"
           placeholder="请选择输入类型"
           class="w-full"
           filterable
           clearable
         >
-          <dw-option
+          <el-option
             v-for="item in inputTypeOpt"
             :key="item.value"
             :label="item.label"
             :value="item.value"
           />
-        </dw-select>
+        </el-select>
       </el-form-item>
       <el-form-item
         v-if="form.inputType === 1"
@@ -210,47 +210,47 @@ loadData()
         prop="ruleType"
         class="is-required"
       >
-        <dw-select
+        <el-select
           v-model="form.ruleType"
           placeholder="处理类型"
           class="w-full"
           filterable
           clearable
         >
-          <dw-option
+          <el-option
             v-for="item in ruleTypeOpt"
             :key="item.value"
             :label="item.label"
             :value="item.value"
           />
-        </dw-select>
+        </el-select>
       </el-form-item>
       <el-form-item
         label="数据源类型"
         prop="sourceType"
         class="is-required"
       >
-        <dw-select
+        <el-select
           v-model="form.sourceType"
           placeholder="请选择数据源类型"
           class="w-full"
           filterable
           clearable
         >
-          <dw-option
+          <el-option
             v-for="item in sourceTypeOpt"
             :key="item.value"
             :label="item.label"
             :value="item.value"
           />
-        </dw-select>
+        </el-select>
       </el-form-item>
       <el-form-item
         label="产品类型"
         prop="productTypeId"
         class="is-required"
       >
-        <dw-select
+        <el-select
           v-model="form.productTypeId"
           placeholder="请选择产品类型"
           class="w-full"
@@ -258,20 +258,20 @@ loadData()
           clearable
           @change="changeProductType"
         >
-          <dw-option
+          <el-option
             v-for="item in productTypeListOpt"
             :key="item.id"
             :label="item.name"
             :value="item.id"
           />
-        </dw-select>
+        </el-select>
       </el-form-item>
       <el-form-item
         label="产品"
         prop="productId"
         class="is-required"
       >
-        <dw-select
+        <el-select
           v-model="form.productId"
           placeholder="请选择产品"
           class="w-full"
@@ -279,13 +279,13 @@ loadData()
           clearable
           @change="changeProduct"
         >
-          <dw-option
+          <el-option
             v-for="item in productListOpt"
             :key="item.id"
             :label="`${item.model}(${item.manufacturer})`"
             :value="item.id"
           />
-        </dw-select>
+        </el-select>
       </el-form-item>
       <el-form-item
         v-if="form.sourceType === 3"
@@ -316,7 +316,7 @@ loadData()
         prop="targetType"
         class="is-required"
       >
-        <dw-select
+        <el-select
           v-model="form.targetType"
           placeholder="请选择输出类型"
           class="w-full"
@@ -324,33 +324,33 @@ loadData()
           clearable
           @change="changeTargetType"
         >
-          <dw-option
+          <el-option
             v-for="item in targetTypeOpt"
             :key="item.value"
             :label="item.label"
             :value="item.value"
           />
-        </dw-select>
+        </el-select>
       </el-form-item>
       <el-form-item
         label="接收者"
         prop="targetId"
         class="is-required"
       >
-        <dw-select
+        <el-select
           v-model="form.targetId"
           placeholder="请选择接收者"
           class="w-full"
           filterable
           clearable
         >
-          <dw-option
+          <el-option
             v-for="item in targetListOpt"
             :key="item.value"
             :label="item.label"
             :value="item.value"
           />
-        </dw-select>
+        </el-select>
       </el-form-item>
       <el-form-item
         label="处理脚本"
@@ -373,7 +373,7 @@ loadData()
         />
       </el-form-item>
     </el-form>
-  </dw-dialog>
+  </el-dialog>
 </template>
 
 <style lang="scss" scoped>

@@ -81,9 +81,9 @@ function closeEdite() {
           </div>
           <template #footer>
             <div class="flex justify-end">
-              <dw-button type="danger" link @click="onDelete(row)">
+              <el-button type="danger" link @click="onDelete(row)">
                 删除
-              </dw-button>
+              </el-button>
             </div>
           </template>
         </el-card>

@@ -66,20 +66,20 @@ const {
     <div class="flex items-center gap-4 mb-6 p-4 bg-gray-50 rounded-lg">
       <div class="flex items-center gap-2 w-300px">
         <span class="text-sm font-medium text-gray-700 w-100px">事件类型:</span>
-        <dw-select
+        <el-select
           v-model="params.identifier"
           placeholder="请选择事件类型"
           class="w-48"
           filterable
           clearable
         >
-          <dw-option
+          <el-option
             v-for="item in tlsEventOpt"
             :key="item.identifier"
             :label="item.name"
             :value="item.identifier"
           />
-        </dw-select>
+        </el-select>
       </div>
 
       <div class="flex items-center gap-2">
@@ -99,7 +99,7 @@ const {
 
     <!-- 表格区域 -->
     <div class="flex-1 bg-white rounded-lg border border-gray-200">
-      <DwTable
+      <IotTable
         ref="dwTable"
         row-key="id"
         :column="column"

@@ -66,7 +66,7 @@ if (props.datas) {
 </script>
 
 <template>
-  <dw-dialog
+  <el-dialog
     ref="dwDialogRef"
     :title="datas?.id ? '编辑' : '新增'"
     width="1042px"
@@ -110,18 +110,18 @@ if (props.datas) {
         prop="serviceType"
         class="is-required"
       >
-        <dw-select
+        <el-select
           v-model="form.serviceType"
           placeholder="请选择"
           class="w-full"
           @change="changeServiceType"
         >
-          <dw-option
+          <el-option
             v-for="item in serviceTypeOpt" :key="item.value"
             :label="item.label"
             :value="item.value"
           />
-        </dw-select>
+        </el-select>
       </el-form-item>
       <el-form-item
         label="是否必选"
@@ -167,61 +167,61 @@ if (props.datas) {
         label="输入参数"
         prop="inputParamIds"
       >
-        <dw-select
+        <el-select
           v-model="form.inputParamIds"
           placeholder="属性选择"
           class="w-full"
           clearable
           multiple
         >
-          <dw-option
+          <el-option
             v-for="item in properties"
             :key="item.id"
             :label="`${item.name}:${item.identifier}`"
             :value="item.id"
           />
-        </dw-select>
+        </el-select>
       </el-form-item>
       <el-form-item
         label="输出参数"
         prop="outputParamIds"
       >
-        <dw-select
+        <el-select
           v-model="form.outputParamIds"
           placeholder="参数选择"
           class="w-full"
           clearable
           multiple
         >
-          <dw-option
+          <el-option
             v-for="item in properties"
             :key="item.id"
             :label="`${item.name}:${item.identifier}`"
             :value="item.id"
           />
-        </dw-select>
+        </el-select>
       </el-form-item>
       <el-form-item
         v-if="currentType === 2"
         label="事件类型"
         prop="eventType"
       >
-        <dw-select
+        <el-select
           v-model="form.eventType"
           placeholder="事件类型选择"
           class="w-full"
           clearable
         >
-          <dw-option
+          <el-option
             v-for="item in eventTypeOpt"
             :key="item.value"
             :label="item.label"
             :value="item.value"
           />
-        </dw-select>
+        </el-select>
       </el-form-item>
     </el-form>
-  </dw-dialog>
+  </el-dialog>
 </template>
 
 <style lang="scss" scoped>
