@@ -1,18 +1,17 @@
-<script  setup>
+<script setup>
 import { deviceDeleteApi, devicePageApi, manufacturerListApi, productListApi, productTypeListApi } from '@/api/index.js'
 import { activateOpts, onlineOpts } from '@/utils/base.jsx'
 import EditDia from '@/views/device/widget/editDia.vue'
-import { dwHooks } from 'dwyl-ui'
-import { ref } from 'vue'
+import { useTable } from '@/composables/useTable.js'
+import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
-
-const { useDwTable } = dwHooks
 
 const router = useRouter()
 const parentId = ref(-1)
 const productTypeList = ref([])
 const manufacturerListOpt = ref([])
 const productListOpt = ref([])
+
 const column = [
   {
     prop: 'productTypeName',
@@ -57,19 +56,25 @@ const column = [
     label: '操作',
   },
 ]
+
 const {
   params,
   dialogVisible,
   updatePage,
   onSearch,
-  dwTable,
+  tableData,
+  total,
+  loading,
   onDelete,
   onAdd,
   diaTitle,
   currentItem,
   onEdit,
-} = useDwTable({
+  onPageChange,
+  onSizeChange,
+} = useTable({
   deleteApi: deviceDeleteApi,
+  fetchApi: devicePageApi,
   diaName: '设备',
   defParams: {
     parentId: parentId.value,
@@ -83,6 +88,7 @@ function closeEdite() {
 function showDetails(row) {
   router.push(`/deviceDetails?id=${row.id}`)
 }
+
 function changeProductType() {
   if (params.productTypeId) {
     manufacturerListApi({
@@ -96,6 +102,7 @@ function changeProductType() {
     manufacturerListOpt.value = []
   }
 }
+
 function changeManufacturer() {
   if (!params.manufacturer) {
     productListOpt.value = []
@@ -109,88 +116,111 @@ function changeManufacturer() {
       productListOpt.value = data
     })
 }
-productTypeListApi()
-  .then(({ data }) => {
-    productTypeList.value = data
-  })
+
+onMounted(() => {
+  updatePage()
+  productTypeListApi()
+    .then(({ data }) => {
+      productTypeList.value = data
+    })
+})
 </script>
 
 <template>
-  <div class="flex flex-col flex-1">
-    <div class="flex flex-row mb-12px">
-      <dw-select
-        v-model="params.productTypeId"
-        placeholder="请选择产品类型"
-        class="w-200px mr-12px"
-        filterable
-        clearable
-        @change="changeProductType"
-      >
-        <dw-option
-          v-for="item in productTypeList"
-          :key="item.id"
-          :label="item.name"
-          :value="item.id"
-        />
-      </dw-select>
-      <dw-select
-        v-model="params.manufacturer"
-        placeholder="请选择厂家"
-        class="w-200px mr-12px"
-        filterable
-        clearable
-        @change="changeManufacturer"
-      >
-        <dw-option
-          v-for="item in manufacturerListOpt"
-          :key="item"
-          :label="item"
-          :value="item"
-        />
-      </dw-select>
-      <dw-select
-        v-model="params.productId"
-        placeholder="请选择型号"
-        class="w-200px mr-12px"
-        filterable
-        clearable
-      >
-        <dw-option
-          v-for="item in productListOpt"
-          :key="item.id"
-          :label="item.model"
-          :value="item.id"
-        />
-      </dw-select>
-      <div class="w-200px mr-12px">
-        <el-input v-model="params.deviceKey" clearable placeholder="设备编号模糊搜索" />
-      </div>
-      <el-button type="primary" @click="onSearch">
-        搜索
-      </el-button>
-      <el-button type="success" @click="onAdd">
-        添加
-      </el-button>
+  <div class="device-page">
+    <!-- 搜索栏 -->
+    <div class="iot-card search-bar">
+      <el-form :inline="true" class="search-form">
+        <el-form-item label="产品类型">
+          <el-select
+            v-model="params.productTypeId"
+            placeholder="请选择产品类型"
+            filterable
+            clearable
+            @change="changeProductType"
+          >
+            <el-option
+              v-for="item in productTypeList"
+              :key="item.id"
+              :label="item.name"
+              :value="item.id"
+            />
+          </el-select>
+        </el-form-item>
+
+        <el-form-item label="厂家">
+          <el-select
+            v-model="params.manufacturer"
+            placeholder="请选择厂家"
+            filterable
+            clearable
+            @change="changeManufacturer"
+          >
+            <el-option
+              v-for="item in manufacturerListOpt"
+              :key="item"
+              :label="item"
+              :value="item"
+            />
+          </el-select>
+        </el-form-item>
+
+        <el-form-item label="型号">
+          <el-select
+            v-model="params.productId"
+            placeholder="请选择型号"
+            filterable
+            clearable
+          >
+            <el-option
+              v-for="item in productListOpt"
+              :key="item.id"
+              :label="item.model"
+              :value="item.id"
+            />
+          </el-select>
+        </el-form-item>
+
+        <el-form-item label="设备编号">
+          <el-input v-model="params.deviceKey" clearable placeholder="设备编号模糊搜索" />
+        </el-form-item>
+
+        <el-form-item>
+          <el-button type="primary" @click="onSearch">
+            搜索
+          </el-button>
+          <el-button type="success" @click="onAdd">
+            添加
+          </el-button>
+        </el-form-item>
+      </el-form>
     </div>
-    <DwTable
-      ref="dwTable"
-      row-key="id"
-      :column="column"
-      :params="params"
-      :api="devicePageApi"
+
+    <!-- 表格 -->
+    <IotTable
+      :columns="column"
+      :data="tableData"
+      :total="total"
+      :current-page="params.page"
+      :page-size="params.size"
+      :loading="loading"
+      @page-change="onPageChange"
+      @size-change="onSizeChange"
     >
       <template #cz="{ row }">
-        <dw-button type="danger" link @click="onDelete(row)">
+        <el-button type="danger" link @click="onDelete(row)">
           删除
-        </dw-button>
-        <dw-button type="primary" link @click="onEdit(row)">
+        </el-button>
+        <el-button type="primary" link @click="onEdit(row)">
           编辑
-        </dw-button>
-        <dw-button type="primary" link @click="showDetails(row)">
+        </el-button>
+        <el-button type="primary" link @click="showDetails(row)">
           设备详情
-        </dw-button>
+        </el-button>
       </template>
-    </DwTable>
+    </IotTable>
+
+    <!-- 编辑对话框 -->
     <EditDia
       v-if="dialogVisible"
       v-model="dialogVisible"
@@ -201,3 +231,22 @@ productTypeListApi()
     />
   </div>
 </template>
+
+<style scoped lang="scss">
+.device-page {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-lg);
+  height: 100%;
+}
+
+.search-bar {
+  padding: var(--space-md);
+}
+
+.search-form {
+  :deep(.el-form-item) {
+    margin-bottom: 0;
+  }
+}
+</style>

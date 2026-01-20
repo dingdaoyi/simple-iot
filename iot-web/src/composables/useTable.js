@@ -4,11 +4,13 @@ import { ElMessage, ElMessageBox } from 'element-plus'
 export function useTable(options = {}) {
   const {
     deleteApi = null,
+    fetchApi = null,
     defParams = {},
     pageSize = 20,
+    diaName = '项',
   } = options
 
-  // 查询参数
+  // 查询参数 - 完全兼容原 useDwTable 的参数名
   const params = reactive({
     ...defParams,
     page: 1,
@@ -27,15 +29,17 @@ export function useTable(options = {}) {
 
   // 更新页面数据
   const updatePage = async () => {
+    if (!fetchApi) {
+      console.warn('useTable: 请传入 fetchApi 函数')
+      return
+    }
+
     loading.value = true
     try {
-      // 这里需要传入获取数据的API函数
-      if (options.fetchApi) {
-        const res = await options.fetchApi(params)
-        if (res && res.data) {
-          tableData.value = res.data.records || res.data.data || res.data
-          total.value = res.data.total || 0
-        }
+      const res = await fetchApi(params)
+      if (res && res.data) {
+        tableData.value = res.data.records || res.data.data || res.data
+        total.value = res.data.total || 0
       }
     }
     catch (error) {
@@ -64,24 +68,29 @@ export function useTable(options = {}) {
   }
 
   // 新增
-  const onAdd = (title = '新增') => {
-    diaTitle.value = title
+  const onAdd = (title) => {
+    diaTitle.value = title || `新增${diaName}`
     currentItem.value = null
     dialogVisible.value = true
   }
 
   // 编辑
-  const onEdit = (row, title = '编辑') => {
-    diaTitle.value = title
+  const onEdit = (row, title) => {
+    diaTitle.value = title || `编辑${diaName}`
     currentItem.value = { ...row }
     dialogVisible.value = true
   }
 
   // 删除
-  const onDelete = async (row, title = '该项') => {
+  const onDelete = async (row) => {
+    if (!deleteApi) {
+      console.warn('useTable: 请传入 deleteApi 函数')
+      return
+    }
+
     try {
       await ElMessageBox.confirm(
-        `确定要删除${title}吗?`,
+        `确定要删除${diaName}吗?`,
         '提示',
         {
           confirmButtonText: '确定',
@@ -90,11 +99,9 @@ export function useTable(options = {}) {
         },
       )
 
-      if (deleteApi) {
-        await deleteApi(row.id || row)
-        ElMessage.success('删除成功')
-        updatePage()
-      }
+      await deleteApi(row.id || row)
+      ElMessage.success('删除成功')
+      updatePage()
     }
     catch (error) {
       if (error !== 'cancel') {
@@ -123,15 +130,25 @@ export function useTable(options = {}) {
     currentItem.value = null
   }
 
+  // dwTable - 返回表格配置对象(兼容原 useDwTable)
+  const dwTable = ref({
+    data: tableData,
+    total,
+    loading,
+    currentPage: params.page,
+    pageSize: params.size,
+  })
+
   return {
     // 数据
     params,
-    tableData,
-    total,
-    loading,
     dialogVisible,
     currentItem,
     diaTitle,
+    tableData,
+    total,
+    loading,
+    dwTable,
 
     // 方法
     updatePage,
