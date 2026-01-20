@@ -3,11 +3,53 @@
 @use './reset.scss';
 @use './var.scss';
 
+@import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600;700&family=Fira+Sans:wght@300;400;500;600;700&display=swap');
+
+/* IoT Design System - Color Palette */
+:root {
+  --iot-color-primary: #3B82F6;
+  --iot-color-secondary: #60A5FA;
+  --iot-color-cta: #F97316;
+  --iot-color-background: #F8FAFC;
+  --iot-color-text: #1E293B;
+  --iot-color-success: #10B981;
+  --iot-color-warning: #F59E0B;
+  --iot-color-danger: #EF4444;
+  --iot-color-info: #3B82F6;
+
+  /* Spacing */
+  --space-xs: 4px;
+  --space-sm: 8px;
+  --space-md: 16px;
+  --space-lg: 24px;
+  --space-xl: 32px;
+  --space-2xl: 48px;
+  --space-3xl: 64px;
+
+  /* Shadows */
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1);
+  --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.1);
+  --shadow-xl: 0 20px 25px rgba(0, 0, 0, 0.15);
+}
+
 $primary: var(--el-color-primary);
 
+/* Typography */
+body {
+  font-family: 'Fira Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  color: var(--iot-color-text);
+  background-color: var(--iot-color-background);
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Fira Code', monospace;
+  font-weight: 600;
+}
+
+/* Form Layouts */
 .form-two-column {
   display: flex;
-  // grid-template-columns: 1fr 1fr;
   flex-wrap: wrap;
 
   .el-form-item__content {
@@ -26,7 +68,6 @@ $primary: var(--el-color-primary);
 
 .form-three-column {
   display: flex;
-  // grid-template-columns: 1fr 1fr;
   flex-wrap: wrap;
 
   .el-form-item__content {
@@ -43,18 +84,18 @@ $primary: var(--el-color-primary);
   }
 }
 
+/* Animations */
 .dw_animate {
-  transition: all 0.3s;
+  transition: all 0.2s ease;
 }
 
 .hover-shadow {
-  // transition: all 0.3s;
-  // .dw_animate
   @extend .dw_animate;
+  cursor: pointer;
 
   &:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 4px 10px #ddd;
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-lg);
   }
 }
 
@@ -74,4 +115,147 @@ $primary: var(--el-color-primary);
 
 .customMsgCls {
   z-index: 4000 !important;
+}
+
+/* IoT Card Styles */
+.iot-card {
+  background: white;
+  border-radius: 12px;
+  padding: var(--space-lg);
+  box-shadow: var(--shadow-md);
+  transition: all 0.2s ease;
+  cursor: pointer;
+
+  &:hover {
+    box-shadow: var(--shadow-lg);
+    transform: translateY(-2px);
+  }
+}
+
+/* IoT Status Indicators */
+.iot-status {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-sm);
+  padding: var(--space-xs) var(--space-md);
+  border-radius: 16px;
+  font-size: 12px;
+  font-weight: 500;
+
+  &.online {
+    background: #D1FAE5;
+    color: #065F46;
+
+    &::before {
+      content: '';
+      width: 8px;
+      height: 8px;
+      background: #10B981;
+      border-radius: 50%;
+      animation: pulse 2s infinite;
+    }
+  }
+
+  &.offline {
+    background: #FEE2E2;
+    color: #991B1B;
+
+    &::before {
+      content: '';
+      width: 8px;
+      height: 8px;
+      background: #EF4444;
+      border-radius: 50%;
+    }
+  }
+
+  &.warning {
+    background: #FEF3C7;
+    color: #92400E;
+
+    &::before {
+      content: '';
+      width: 8px;
+      height: 8px;
+      background: #F59E0B;
+      border-radius: 50%;
+    }
+  }
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+/* IoT Metric Card */
+.iot-metric-card {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  padding: var(--space-lg);
+  border-radius: 12px;
+  box-shadow: var(--shadow-md);
+
+  .metric-value {
+    font-size: 32px;
+    font-weight: 700;
+    font-family: 'Fira Code', monospace;
+  }
+
+  .metric-label {
+    font-size: 14px;
+    opacity: 0.9;
+    margin-top: var(--space-sm);
+  }
+
+  .metric-trend {
+    font-size: 12px;
+    margin-top: var(--space-sm);
+    display: flex;
+    align-items: center;
+    gap: var(--space-xs);
+
+    &.up {
+      color: #10B981;
+    }
+
+    &.down {
+      color: #EF4444;
+    }
+  }
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .form-two-column .el-form-item,
+  .form-three-column .el-form-item {
+    width: 100%;
+  }
+}
+
+/* Accessibility */
+*:focus-visible {
+  outline: 2px solid var(--iot-color-primary);
+  outline-offset: 2px;
+}
+
+button,
+a,
+[role="button"] {
+  cursor: pointer;
+}
+
+/* Reduced Motion */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
 }

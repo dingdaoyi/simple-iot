@@ -13,15 +13,15 @@ function outLogin() {
 </script>
 
 <template>
-  <div class="header-box flex flex-row items-center bg-dwboxbg">
+  <div class="header-box flex items-center">
     <div class="flex items-center flex-1">
-      <div class="pl-20px text-22px title color-primary">
+      <div class="title">
         物联网管理平台
       </div>
     </div>
-    <div class="flex-center h-full">
+    <div class="flex items-center h-full gap-4">
       <el-dropdown>
-        <span class="el-dropdown-link cursor-pointer">
+        <span class="el-dropdown-link">
           {{ userName }}
           <el-icon class="el-icon--right">
             <arrow-down />
@@ -41,22 +41,33 @@ function outLogin() {
 
 <style lang="scss" scoped>
 .header-box {
-  height: 60px;
-  padding: 0 20px;
+  height: 64px;
+  padding: 0 var(--space-xl);
+  background: white;
+  box-shadow: var(--shadow-md);
   position: relative;
   z-index: 9;
-  box-shadow:
-    0px 4px 10px 0px rgba(78, 89, 105, 0.15),
-    0px 1px 0px 0px var(--dw-border-color);
 }
+
 .title {
-  font-family: PangMenZhengDao, serif;
+  font-size: 24px;
+  font-weight: 700;
+  font-family: 'Fira Code', monospace;
+  color: var(--iot-color-primary);
   letter-spacing: 2px;
 }
-.lightDark {
-  // color: var;
+
+.el-dropdown-link {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+  padding: var(--space-sm) var(--space-md);
+  border-radius: 8px;
+  transition: all 0.2s ease;
+  cursor: pointer;
+
   &:hover {
-    background-color: var(--dw-hover-color);
+    background-color: var(--iot-color-background);
   }
 }
 </style>

@@ -4,16 +4,15 @@ import slider from './widget/slider'
 </script>
 
 <template>
-  <div class="flex flex-col wh-full">
+  <div class="layout-container">
     <headers />
-    <div class="flex-1 flex overflow-hidden">
+    <div class="layout-content">
       <slider />
-      <div class="flex-1 m-20px  overflow-hidden">
+      <div class="layout-main">
         <router-view v-slot="{ Component, route }">
-          <div class="flex flex-col h-full">
+          <div class="view-container">
             <component :is="Component" :key="route.path" />
           </div>
-          <!--          <component :is="Component" :key="route.path" classz="flex flex-col h-full"/> -->
         </router-view>
       </div>
     </div>
@@ -21,40 +20,31 @@ import slider from './widget/slider'
 </template>
 
 <style lang="scss" scoped>
-.wrapper {
+.layout-container {
   display: flex;
-  margin: 0 auto;
-  width: 1440px;
+  flex-direction: column;
+  width: 100%;
   height: 100%;
+  background: var(--iot-color-background);
+}
 
-  &.fluid {
-    width: 100%;
-  }
+.layout-content {
+  flex: 1;
+  display: flex;
+  overflow: hidden;
+}
 
-  .right {
-    flex: 1;
-    overflow: auto;
+.layout-main {
+  flex: 1;
+  padding: var(--space-lg);
+  overflow: hidden;
+  background: var(--iot-color-background);
+}
 
-    &.flex {
-      overflow: hidden;
-      display: flex;
-      flex-direction: column;
-    }
-
-    .top {
-      background: #fff;
-    }
-
-    .main {
-      flex: 1;
-      background: #f5f5f5;
-      padding: 16px;
-      overflow: auto;
-
-      &.pt0 {
-        padding-top: 0;
-      }
-    }
-  }
+.view-container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow: auto;
 }
 </style>

@@ -30,14 +30,15 @@ function renderMenu(item, index) {
       {
         title: () =>
           h('div', {
-            class: 'flex-y-center gap-1',
+            class: 'menu-item-title',
           }, [
-            h(
-              <el-icon size="20">
-                <Location />
-              </el-icon>,
-              // <SvgIcon icon={item.icon} size="6" color={setStore.themeColor} />,
-            ),
+            h('div', { class: 'menu-icon' }, [
+              h(
+                <el-icon size="20">
+                  <Location />
+                </el-icon>,
+              ),
+            ]),
             h('span', null, item.meta.title),
           ]),
         default: () => {
@@ -65,10 +66,11 @@ function renderMenu(item, index) {
 </script>
 
 <template>
-  <div>
-    <el-scrollbar class="sidebar-container ">
+  <div class="sidebar-container">
+    <el-scrollbar>
       <el-menu
         :default-active="currRoute"
+        class="sidebar-menu"
       >
         <template v-for="item in menuTree" :key="item.path">
           <component :is="renderMenu(item, String(item.path))" />
@@ -80,27 +82,25 @@ function renderMenu(item, index) {
 
 <style lang="scss" scoped>
 .sidebar-container {
-  width: 200px;
-  background-color: var(--el-bg-color);
-  padding: 30px 10px;
-  margin: 0 0;
-  overflow: auto;
+  width: 240px;
+  height: 100%;
+  background: white;
+  border-right: 1px solid #E2E8F0;
 }
 
-.el-menu-class:not(.el-menu--collapse) {
-  width: 100%;
-  min-height: 400px;
-}
-// 设置选中项的背景色
-.el-menu-class .el-menu-item.is-active {
-  background-color: var(--el-color-primary) !important; // 使用主题色变量
-  color: #fff !important; // 设置文字颜色
-  border-radius: 4px; // 圆角效果（可选）
+.sidebar-menu {
+  border-right: none;
 }
 
-.el-menu-class .el-sub-menu.is-active > .el-menu__title {
-  background-color: var(--el-color-primary) !important;
-  color: #fff !important;
-  border-radius: 4px; // 圆角效果（可选）
+.menu-item-title {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+}
+
+.menu-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 </style>

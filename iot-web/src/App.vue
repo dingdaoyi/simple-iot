@@ -1,30 +1,8 @@
 <script setup>
-import { uploadMoreApi } from '@/api/index.js'
-import { useRoute, useRouter } from 'vue-router'
-/* dwyl-ui默认传递参数配置 */
-const projectConfig = {
-  table: {
-    pageField: 'page',
-    limitField: 'size',
-    totalField: 'total',
-    dataField: 'data',
-    defaultLimit: 20, // 默认展示多少条
-  },
-  vueRouter: {
-    useRouter,
-    useRoute,
-  },
-  upload: {
-    uploadMoreApi,
-  },
-}
-/* dwyl-ui默认传递参数配置 */
 </script>
 
 <template>
-  <DwProjectConfig :config="projectConfig">
-    <router-view />
-  </DwProjectConfig>
+  <router-view />
 </template>
 
 <style lang="scss">
@@ -38,13 +16,5 @@ body,
 }
 #app {
   position: relative;
-}
-.dwmain-fixed {
-  position: fixed;
-  background-color: var(--el-color-primary);
-  z-index: 10;
-  top: 360px;
-  right: 14px;
-  cursor: pointer;
 }
 </style>

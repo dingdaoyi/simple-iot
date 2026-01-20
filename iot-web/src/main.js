@@ -1,10 +1,9 @@
 import * as ElementPlusIconsVue from '@element-plus/icons-vue'
-import DwUi from 'dwyl-ui'
 
 import * as echarts from 'echarts'
 // 引入element-plus
 import ElementPlus from 'element-plus'
-import zhCn from 'element-plus/es/locale/lang/zh-cn'
+import zhCn from 'element-plus/dist/locale/zh-cn.mjs'
 import { createApp } from 'vue'
 import Echarts from 'vue-echarts'
 import App from './App.vue'
@@ -22,7 +21,6 @@ import '@/styles/global.scss'
 
 // 权限控制
 import './permission'
-import 'dwyl-ui/dist/style.css'
 
 async function setupApp() {
   const app = createApp(App)
@@ -34,7 +32,6 @@ async function setupApp() {
   app.use(ElementPlus, { locale: zhCn })
   setupStore(app)
   app.use(router)
-  app.use(DwUi)
   app.component('e-charts', Echarts)
   app.config.globalProperties.$echarts = echarts
   app.mount('#app')
