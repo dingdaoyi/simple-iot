@@ -3,6 +3,7 @@ import { onMounted } from 'vue'
 import { propertyDeleteApi, propertyListApi } from '@/api/index.js'
 import PropertyEdite from '@/views/tslModel/widget/propertyEdite.vue'
 import { useTable } from '@/composables/useTable.js'
+import IotTable from '@/components/IotTable.vue'
 
 const props = defineProps(['typeId', 'productId', 'showEdite'])
 

@@ -3,6 +3,7 @@ import { deviceDeleteApi, devicePageApi, manufacturerListApi, productListApi, pr
 import { activateOpts, onlineOpts } from '@/utils/base.jsx'
 import EditDia from '@/views/device/widget/editDia.vue'
 import { useTable } from '@/composables/useTable.js'
+import IotTable from '@/components/IotTable.vue'
 import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 

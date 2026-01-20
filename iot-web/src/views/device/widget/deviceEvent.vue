@@ -2,6 +2,7 @@
 import { deviceEventLogsApi } from '@/api/index.js'
 import { DateUtils } from '@/utils/date_utils.js'
 import { useTable } from '@/composables/useTable.js'
+import IotTable from '@/components/IotTable.vue'
 import { computed } from 'vue'
 
 const props = defineProps({

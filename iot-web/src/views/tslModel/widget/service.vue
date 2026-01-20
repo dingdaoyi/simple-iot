@@ -8,6 +8,7 @@ import {
 import ParamShow from '@/views/tslModel/widget/paramShow.vue' // 引入图标
 import ServiceEdite from '@/views/tslModel/widget/serviceEdite.vue'
 import { useTable } from '@/composables/useTable.js'
+import IotTable from '@/components/IotTable.vue'
 import { ElButton } from 'element-plus'
 import { h, ref } from 'vue'
 

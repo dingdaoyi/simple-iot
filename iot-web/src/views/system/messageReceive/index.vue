@@ -2,6 +2,7 @@
 import { messageReceiveDeleteApi, messageReceivePageApi } from '@/api/index.js'
 import EditDia from '@/views/system/messageReceive/widget/editDia.vue'
 import { useTable } from '@/composables/useTable.js'
+import IotTable from '@/components/IotTable.vue'
 import { onMounted } from 'vue'
 
 const notifyTypeOpt = [
