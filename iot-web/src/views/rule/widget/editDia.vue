@@ -8,14 +8,12 @@ import {
   ruleDetailsApi,
   ruleEditApi,
 } from '@/api'
-import { dwHooks } from 'dwyl-ui'
 import { ref } from 'vue'
 
 const props = defineProps(['datas'])
 
 const emits = defineEmits(['update'])
 
-const { useForm } = dwHooks
 
 const ruleTypeOpt = [
   {

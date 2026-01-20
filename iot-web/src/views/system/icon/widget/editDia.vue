@@ -1,13 +1,11 @@
 <script lang="jsx" setup>
 import { iconAddApi, iconEditeApi } from '@/api'
-import { dwHooks } from 'dwyl-ui'
 import { ref } from 'vue'
 
 const props = defineProps(['datas'])
 
 const emits = defineEmits(['update'])
 
-const { useForm } = dwHooks
 
 const rules = ref({
   name: [{ required: true, message: '协议名称不能为空', trigger: 'blur' }],

@@ -7,13 +7,12 @@ import {
 } from '@/api/index.js'
 import ParamShow from '@/views/tslModel/widget/paramShow.vue' // 引入图标
 import ServiceEdite from '@/views/tslModel/widget/serviceEdite.vue'
-import { dwHooks } from 'dwyl-ui'
+import { useTable } from '@/composables/useTable.js'
 import { ElButton } from 'element-plus'
 import { h, ref } from 'vue'
 
 const props = defineProps(['typeId', 'productId', 'showEdite'])
 
-const { useDwTable } = dwHooks
 
 const propertiesDct = ref([])
 const dialogVisibleParams = ref(false)
@@ -82,7 +81,7 @@ const {
   onAdd,
   diaTitle,
   currentItem,
-} = useDwTable({
+} = useTable({
   deleteApi: serviceDeleteApi,
   diaName: '服务',
   defParams: {

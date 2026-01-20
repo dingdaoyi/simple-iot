@@ -1,7 +1,7 @@
 <script setup>
 import { deviceEventLogsApi } from '@/api/index.js'
 import { DateUtils } from '@/utils/date_utils.js'
-import { dwHooks } from 'dwyl-ui'
+import { useTable } from '@/composables/useTable.js'
 import { computed } from 'vue'
 
 const props = defineProps({
@@ -11,7 +11,6 @@ const props = defineProps({
   },
 })
 
-const { useDwTable } = dwHooks
 
 const tlsEventOpt = computed(() => props.deviceDetail.tslModel?.events || [])
 
@@ -51,7 +50,7 @@ const {
   params,
   onSearch,
   dwTable,
-} = useDwTable({
+} = useTable({
   defParams: {
     deviceKey: props.deviceDetail.deviceKey,
     beginTime: DateUtils.formatDate(DateUtils.getStartOfDay()),

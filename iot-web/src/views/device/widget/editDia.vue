@@ -1,13 +1,11 @@
 <script lang="jsx" setup>
 import { deviceAddApi, deviceEditeApi, manufacturerListApi, productListApi } from '@/api'
-import { dwHooks } from 'dwyl-ui'
 import { ref } from 'vue'
 
 const props = defineProps(['datas', 'productTypeList'])
 
 const emits = defineEmits(['update'])
 
-const { useForm } = dwHooks
 
 const manufacturerListOpt = ref([])
 const productListOpt = ref([])

@@ -1,7 +1,6 @@
 <script lang="jsx" setup>
 import { customPropertyAddApi, dictListApi, standardPropertyAddApi, standardPropertyEditApi } from '@/api'
 import IconInput from '@/components/IconInput.vue'
-import { dwHooks } from 'dwyl-ui'
 import { ElMessage } from 'element-plus'
 import { ref } from 'vue'
 
@@ -9,7 +8,6 @@ const props = defineProps(['datas', 'typeId', 'productId'])
 
 const emits = defineEmits(['update'])
 
-const { useForm } = dwHooks
 
 const rules = ref({
   name: [{ required: true, message: '属性名称不能为空', trigger: 'blur' }],

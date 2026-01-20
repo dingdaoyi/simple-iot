@@ -1,11 +1,11 @@
 <script setup>
+import { onMounted } from 'vue'
 import { propertyDeleteApi, propertyListApi } from '@/api/index.js'
 import PropertyEdite from '@/views/tslModel/widget/propertyEdite.vue'
-import { dwHooks } from 'dwyl-ui'
+import { useTable } from '@/composables/useTable.js'
 
 const props = defineProps(['typeId', 'productId', 'showEdite'])
 
-const { useDwTable } = dwHooks
 
 const column = [
 
@@ -54,7 +54,7 @@ const {
   onAdd,
   diaTitle,
   currentItem,
-} = useDwTable({
+} = useTable({
   deleteApi: propertyDeleteApi,
   diaName: '属性',
   defParams: {

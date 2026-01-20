@@ -1,6 +1,5 @@
 <script lang="jsx" setup>
 import { messageReceiveAddApi, messageReceiveEditApi } from '@/api'
-import { dwHooks } from 'dwyl-ui'
 import { ref } from 'vue'
 
 const props = defineProps(['datas'])
@@ -20,7 +19,6 @@ const notifyTypeOpt = [
     value: 3,
   },
 ]
-const { useForm } = dwHooks
 
 const rules = ref({
   name: [{ required: true, message: '名称不能为空', trigger: 'blur' }],

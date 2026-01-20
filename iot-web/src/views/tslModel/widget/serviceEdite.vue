@@ -1,13 +1,11 @@
 <script lang="jsx" setup>
 import { serviceAddApi, serviceEditeApi } from '@/api'
-import { dwHooks } from 'dwyl-ui'
 import { ref } from 'vue'
 
 const props = defineProps(['datas', 'typeId', 'properties', 'productId'])
 
 const emits = defineEmits(['update'])
 
-const { useForm } = dwHooks
 
 const serviceTypeOpt = [
   {

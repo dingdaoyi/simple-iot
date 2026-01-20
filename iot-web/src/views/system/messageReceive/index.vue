@@ -1,9 +1,9 @@
 <script setup>
 import { messageReceiveDeleteApi, messageReceivePageApi } from '@/api/index.js'
 import EditDia from '@/views/system/messageReceive/widget/editDia.vue'
-import { dwHooks } from 'dwyl-ui'
+import { useTable } from '@/composables/useTable.js'
+import { onMounted } from 'vue'
 
-const { useDwTable } = dwHooks
 const notifyTypeOpt = [
   {
     label: '邮件',
@@ -14,6 +14,7 @@ const notifyTypeOpt = [
     value: 2,
   },
 ]
+
 const column = [
   {
     prop: 'name',
@@ -22,10 +23,10 @@ const column = [
   {
     prop: 'notifyType',
     label: '通知类型',
-    formatter(row) {
+    render({ row }) {
       return notifyTypeOpt
         .find(item => item.value === row.notifyType)
-        ?.label
+        ?.label || '-'
     },
   },
   {
@@ -39,23 +40,29 @@ const column = [
   {
     prop: 'cz',
     slot: 'cz',
-    width: 220,
+    width: 150,
     label: '操作',
   },
 ]
+
 const {
   params,
   dialogVisible,
   updatePage,
   onSearch,
-  dwTable,
+  tableData,
+  total,
+  loading,
   onDelete,
   onAdd,
   onEdit,
   diaTitle,
   currentItem,
-} = useDwTable({
+  onPageChange,
+  onSizeChange,
+} = useTable({
   deleteApi: messageReceiveDeleteApi,
+  fetchApi: messageReceivePageApi,
   diaName: '消息通知',
   defParams: {},
 })
@@ -63,44 +70,54 @@ const {
 function closeEdite() {
   updatePage()
 }
+
+onMounted(() => {
+  updatePage()
+})
 </script>
 
 <template>
-  <div class="flex flex-col flex-1">
-    <div class="flex flex-row mb-12px">
-      <el-select
-        v-model="params.notifyType"
-        placeholder="请选择通知类型"
-        class="w-200px mr-12px"
-        filterable
-        clearable
-      >
-        <el-option
-          v-for="item in notifyTypeOpt"
-          :key="item.value"
-          :label="item.label"
-          :value="item.value"
-        />
-      </el-select>
-      <div class="w-200px mr-12px">
-        <el-input v-model="params.name" clearable placeholder="请输入通知名称" />
-      </div>
-      <div class="w-200px mr-12px">
-        <el-input v-model="params.receiver" clearable placeholder="电话/邮箱搜索" />
-      </div>
-      <el-button type="primary" @click="onSearch">
-        搜索
-      </el-button>
-      <el-button type="success" @click="onAdd">
-        添加
-      </el-button>
+  <div class="message-receive-page">
+    <!-- 搜索栏 -->
+    <div class="iot-card search-bar">
+      <el-form :inline="true" class="search-form">
+        <el-form-item label="通知类型">
+          <el-select
+            v-model="params.notifyType"
+            placeholder="请选择通知类型"
+            filterable
+            clearable
+          >
+            <el-option
+              v-for="item in notifyTypeOpt"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value"
+            />
+          </el-select>
+        </el-form-item>
+
+        <el-form-item>
+          <el-button type="primary" @click="onSearch">
+            搜索
+          </el-button>
+          <el-button type="success" @click="onAdd">
+            添加
+          </el-button>
+        </el-form-item>
+      </el-form>
     </div>
+
+    <!-- 表格 -->
     <IotTable
-      ref="dwTable"
-      row-key="id"
-      :column="column"
-      :params="params"
-      :api="messageReceivePageApi"
+      :columns="column"
+      :data="tableData"
+      :total="total"
+      :current-page="params.page"
+      :page-size="params.size"
+      :loading="loading"
+      @page-change="onPageChange"
+      @size-change="onSizeChange"
     >
       <template #cz="{ row }">
         <el-button type="danger" link @click="onDelete(row)">
@@ -111,6 +128,8 @@ function closeEdite() {
         </el-button>
       </template>
     </IotTable>
+
+    <!-- 编辑对话框 -->
     <EditDia
       v-if="dialogVisible"
       v-model="dialogVisible"
@@ -120,3 +139,22 @@ function closeEdite() {
     />
   </div>
 </template>
+
+<style scoped lang="scss">
+.message-receive-page {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-lg);
+  height: 100%;
+}
+
+.search-bar {
+  padding: var(--space-md);
+}
+
+.search-form {
+  :deep(.el-form-item) {
+    margin-bottom: 0;
+  }
+}
+</style>

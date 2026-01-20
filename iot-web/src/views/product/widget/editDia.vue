@@ -1,13 +1,11 @@
 <script lang="jsx" setup>
 import { productAddApi, productEditeApi } from '@/api'
-import { dwHooks } from 'dwyl-ui'
 import { ref } from 'vue'
 
 const props = defineProps(['datas', 'productTypeList'])
 
 const emits = defineEmits(['update'])
 
-const { useForm } = dwHooks
 
 const rules = ref({
   productTypeId: [{ required: true, message: '产品类型不能为空', trigger: 'change' }],

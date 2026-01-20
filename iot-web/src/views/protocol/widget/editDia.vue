@@ -1,13 +1,11 @@
 <script lang="jsx" setup>
 import { protocolAddApi, protocolEditApi } from '@/api'
-import { dwHooks } from 'dwyl-ui'
 import { ref } from 'vue'
 
 const props = defineProps(['datas'])
 
 const emits = defineEmits(['update'])
 
-const { useForm } = dwHooks
 
 const protocolTypeOpt = [
   {
