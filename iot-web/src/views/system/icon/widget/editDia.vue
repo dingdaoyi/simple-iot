@@ -1,45 +1,51 @@
 <script lang="jsx" setup>
+import { ref, watch } from 'vue'
 import { iconAddApi, iconEditeApi } from '@/api'
-import { ref } from 'vue'
+import { useForm } from '@/composables/useForm.js'
 
-const props = defineProps(['datas'])
+const props = defineProps(['datas', 'modelValue'])
 
-const emits = defineEmits(['update'])
-
+const emits = defineEmits(['update', 'update:modelValue'])
 
 const rules = ref({
-  name: [{ required: true, message: '协议名称不能为空', trigger: 'blur' }],
+  name: [{ required: true, message: '图标名称不能为空', trigger: 'blur' }],
 })
 
-const { form, onSubmit, editRef, loading, onClose, dwDialogRef, onReset } = useForm({
+const { form, onSubmit: handleSubmit, editRef, loading } = useForm({
   api: props.datas ? iconEditeApi : iconAddApi,
   callback: () => {
     emits('update')
+    emits('update:modelValue', false)
   },
 })
 
-if (props?.datas) {
-  form.value = props.datas
+function onSubmit() {
+  handleSubmit()
 }
+
+function onCancel() {
+  emits('update:modelValue', false)
+}
+
+watch(() => props.datas, (val) => {
+  if (val) {
+    form.value = { ...val }
+  }
+}, { immediate: true })
 </script>
 
 <template>
   <el-dialog
-    ref="dwDialogRef"
+    :model-value="modelValue"
     :title="datas?.id ? '编辑' : '新增'"
-    width="440px"
-    show-footer
-    :footer-type="datas?.id ? 'edit' : 'add'"
-    :left-loading="loading"
-    @left-btn="onSubmit"
-    @close="onClose"
-    @reset="onReset"
+    width="500px"
+    @update:model-value="$emit('update:modelValue', $event)"
   >
     <el-form
       ref="editRef"
       :rules="rules"
       :model="form"
-      :label-width="100"
+      label-width="100px"
     >
       <el-form-item
         label="图标名称"
@@ -58,6 +64,12 @@ if (props?.datas) {
         <DwUpload v-model="form.path" :limit="1" />
       </el-form-item>
     </el-form>
+    <template #footer>
+      <el-button @click="onCancel">取消</el-button>
+      <el-button type="primary" :loading="loading" @click="onSubmit">
+        确定
+      </el-button>
+    </template>
   </el-dialog>
 </template>
 

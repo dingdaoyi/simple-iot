@@ -1,3 +1,17 @@
+// Element Plus 图标
+import {
+  Bell,
+  Box,
+  ChatDotRound,
+  Connection,
+  Document,
+  House,
+  Operation,
+  Picture,
+  Setting,
+  Tools,
+  TrendCharts,
+} from '@element-plus/icons-vue'
 import layout from '@/layout'
 import device from '@/views/device'
 import deviceDetails from '@/views/device/widget/details.vue'
@@ -12,7 +26,6 @@ import sms from '@/views/system/sms'
 import tslModel from '@/views/tslModel'
 
 export default [
-
   {
     path: '/',
     name: 'layout',
@@ -24,80 +37,89 @@ export default [
         component: home,
         meta: {
           title: '首页',
+          icon: House,
         },
       },
       {
         path: '/productType',
         name: 'productType',
-        // component: productType,
         meta: {
           title: '产品管理',
+          icon: Box,
         },
         children: [
           {
             path: '/productType',
-            name: '产品类型',
+            name: 'productTypePage',
             component: productType,
             meta: {
-              title: '首页',
+              title: '产品类型',
+              icon: Box,
             },
           },
           {
             path: '/driver',
-            name: '驱动管理',
+            name: 'driver',
             component: () => import('@/views/driver/index.vue'),
             meta: {
               title: '驱动管理',
+              icon: Tools,
             },
           },
           {
             path: '/protocol',
-            name: '协议管理',
+            name: 'protocol',
             component: protocol,
             meta: {
               title: '协议管理',
+              icon: Connection,
             },
           },
           {
             path: '/product',
-            name: '产品管理',
+            name: 'product',
             component: product,
             meta: {
               title: '产品管理',
+              icon: TrendCharts,
             },
           },
           {
             path: '/rule',
-            name: '规则处理',
+            name: 'rule',
             component: rule,
             meta: {
               title: '规则处理',
+              icon: Operation,
             },
           },
           {
             path: '/device',
-            name: '设备管理',
+            name: 'device',
             component: device,
             meta: {
               title: '设备管理',
+              icon: Document,
             },
           },
           {
             path: '/tslModel',
-            name: '物模型配置',
+            name: 'tslModel',
             component: tslModel,
             meta: {
               hidden: true,
               title: '物模型配置',
+              icon: Setting,
             },
           },
           {
             path: '/deviceDetails',
-            name: '设备详情',
+            name: 'deviceDetails',
             component: deviceDetails,
             meta: {
               hidden: true,
               title: '设备详情',
+              icon: Document,
             },
           },
         ],
@@ -107,30 +129,34 @@ export default [
         name: 'system',
         meta: {
           title: '系统管理',
+          icon: Setting,
         },
         children: [
           {
             path: '/icon',
-            name: '图标管理',
+            name: 'iconManagement',
             component: icon,
             meta: {
               title: '图标管理',
+              icon: Picture,
             },
           },
           {
             path: '/sms',
-            name: '短信配置',
+            name: 'sms',
             component: sms,
             meta: {
               title: '短信配置',
+              icon: ChatDotRound,
             },
           },
           {
             path: '/message',
-            name: '消息通知',
+            name: 'message',
             component: messageReceive,
             meta: {
               title: '消息通知',
+              icon: Bell,
             },
           },
         ],

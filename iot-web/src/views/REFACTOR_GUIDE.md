@@ -3,17 +3,20 @@
 ## ✅ 已完成的核心工作
 
 ### 1. 依赖升级与清理
+
 - ✅ 移除 `dwyl-ui` 依赖
 - ✅ 升级所有核心依赖到最新稳定版本
 - ✅ 更新 `package.json` 和 `main.js`
 
 ### 2. IoT 设计系统应用
+
 - ✅ 基于 ui-ux-pro-max 生成的专业设计系统
 - ✅ 全局 CSS 变量 (颜色、间距、阴影)
 - ✅ Fira Code + Fira Sans 字体系统
 - ✅ 状态指示器、卡片样式、动画效果
 
 ### 3. 核心组件重构
+
 - ✅ **App.vue** - 移除 dwyl-ui 配置
 - ✅ **main.js** - 清理导入
 - ✅ **Layout** - 全新设计布局
@@ -22,10 +25,12 @@
 - ✅ **Dashboard** - 重新设计仪表盘
 
 ### 4. 可复用组件创建
+
 - ✅ **IotTable.vue** - Element Plus 表格封装
 - ✅ **useTable.js** - 替代 useDwTable 的组合式 API
 
 ### 5. 页面重构
+
 - ✅ **device/index.vue** - 设备管理页面
 - ✅ **protocol/index.vue** - 协议管理页面
 
@@ -36,16 +41,18 @@
 ### 迁移步骤
 
 1. **替换导入**
+
 ```javascript
 // 旧代码
 import { dwHooks } from 'dwyl-ui'
-const { useDwTable } = dwHooks
 
 // 新代码
 import { useTable } from '@/composables/useTable.js'
+const { useDwTable } = dwHooks
 ```
 
 2. **替换 useDwTable 调用**
+
 ```javascript
 // 旧代码
 const { params, dialogVisible, updatePage, onSearch, dwTable, onDelete, onAdd, diaTitle, currentItem } = useDwTable({
@@ -64,6 +71,7 @@ const { params, dialogVisible, updatePage, onSearch, tableData, total, loading, 
 ```
 
 3. **添加 onMounted**
+
 ```javascript
 // 在 script setup 末尾添加
 import { onMounted } from 'vue'
@@ -74,11 +82,13 @@ onMounted(() => {
 ```
 
 4. **替换模板组件**
+
 ```vue
 <!-- 旧代码 -->
 <dw-select v-model="params.xxx">
   <dw-option v-for="item in list" :key="item.id" :label="item.name" :value="item.id" />
 </dw-select>
+
 <DwTable ref="dwTable" :column="column" :params="params" :api="xxxListApi">
 
 <!-- 新代码 -->
@@ -89,6 +99,7 @@ onMounted(() => {
 ```
 
 5. **更新样式类**
+
 ```vue
 <!-- 旧代码 -->
 <div class="flex flex-col flex-1 mb-12px">
@@ -99,6 +110,7 @@ onMounted(() => {
 ```
 
 6. **添加 scoped 样式**
+
 ```scss
 <style scoped lang="scss">
 .xxx-page {
@@ -123,6 +135,7 @@ onMounted(() => {
 ## 📋 待迁移页面列表
 
 ### 高优先级 (使用 useDwTable)
+
 - [ ] `product/index.vue` - 产品管理
 - [ ] `productType/index.vue` - 产品类型
 - [ ] `rule/index.vue` - 规则引擎
@@ -132,6 +145,7 @@ onMounted(() => {
 - [ ] `tslModel/index.vue` - TSL 模型
 
 ### 次优先级 (仅使用 dwyl-ui 组件)
+
 - [ ] `driver/index.vue` - 驱动管理
 - [ ] `login/index.vue` - 登录页面
 
@@ -175,12 +189,14 @@ find src/views -name "*.vue" -type f -exec sed -i '' 's/<\/dw-button>/<\/el-butt
 ## 📝 示例对比
 
 ### device/index.vue (已完成)
+
 - ✅ 完整的 IoT 设计系统样式
 - ✅ 表单布局优化
 - ✅ IotTable 集成
 - ✅ 响应式设计
 
 ### protocol/index.vue (已完成)
+
 - ✅ 简洁的搜索栏
 - ✅ 条件渲染按钮
 - ✅ 统一的数据流

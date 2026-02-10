@@ -1,7 +1,8 @@
-import { getItem, setItem } from '@/utils/storage' // getItem和setItem是封装的操作localStorage的方法
+import { colord } from 'colord'
 import { kebabCase } from 'lodash'
 import { defineStore } from 'pinia'
 import { nextTick } from 'vue'
+import { getItem, setItem } from '@/utils/storage' // getItem和setItem是封装的操作localStorage的方法
 
 const themeKey = 'theme'
 const key = 'primary'
@@ -62,13 +63,13 @@ export const useThemeStore = defineStore({
       }
 
       for (let i = 1; i <= 9; i++) {
-        el.style.setProperty(`--el-color-${key}-light-${i}`, lighten(colorVal, i / 10))
-        el.style.setProperty(`--el-color-${key}-dark-${i}`, darken(colorVal, i / 10))
+        el.style.setProperty(`--el-color-${key}-light-${i}`, colord(colorVal).lighten(i / 10).toHex())
+        el.style.setProperty(`--el-color-${key}-dark-${i}`, colord(colorVal).darken(i / 10).toHex())
 
         const variable1 = `elColorPrimaryLight${i}`
         const variable2 = `elColorPrimaryDark${i}`
-        resData[variable1] = lighten(colorVal, i / 10)
-        resData[variable2] = darken(colorVal, i / 10)
+        resData[variable1] = colord(colorVal).lighten(i / 10).toHex()
+        resData[variable2] = colord(colorVal).darken(i / 10).toHex()
       }
       addThemeCssVarsToHtml(resData)
       this.themeJson.elColorPrimary = colorVal

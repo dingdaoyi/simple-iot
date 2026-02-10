@@ -1,19 +1,18 @@
 <script lang="jsx" setup>
+import { ElButton } from 'element-plus'
+import { h, ref } from 'vue'
 import {
   customServiceListApi,
   propertyListApi,
   serviceDeleteApi,
   standardServiceListApi,
 } from '@/api/index.js'
+import IotTable from '@/components/IotTable.vue'
+import { useTable } from '@/composables/useTable.js'
 import ParamShow from '@/views/tslModel/widget/paramShow.vue' // 引入图标
 import ServiceEdite from '@/views/tslModel/widget/serviceEdite.vue'
-import { useTable } from '@/composables/useTable.js'
-import IotTable from '@/components/IotTable.vue'
-import { ElButton } from 'element-plus'
-import { h, ref } from 'vue'
 
 const props = defineProps(['typeId', 'productId', 'showEdite'])
-
 
 const propertiesDct = ref([])
 const dialogVisibleParams = ref(false)
@@ -126,12 +125,12 @@ loadPropertiesDict()
       :api="productId ? customServiceListApi : standardServiceListApi"
     >
       <template #cz="{ row }">
-        <el-button v-if="showEdite" type="danger" link @click="onDelete(row)">
+        <ElButton v-if="showEdite" type="danger" link @click="onDelete(row)">
           删除
-        </el-button>
-        <el-button v-if="showEdite" type="primary" link @click="onEdit(row)">
+        </ElButton>
+        <ElButton v-if="showEdite" type="primary" link @click="onEdit(row)">
           编辑定义
-        </el-button>
+        </ElButton>
       </template>
     </IotTable>
     <ServiceEdite

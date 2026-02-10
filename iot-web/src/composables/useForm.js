@@ -1,26 +1,82 @@
-import { reactive, ref } from 'vue'
 import { ElMessage } from 'element-plus'
+import { ref } from 'vue'
 
+/**
+ * 表单处理 composable
+ * 用于编辑对话框的表单逻辑
+ * 确认和取消按钮已在对话框模板中定义
+ */
 export function useForm(options = {}) {
   const {
-    defaultData = {},
+    api,
+    successMsg = '操作成功',
+    errorMsg = '操作失败',
+    callback,
+    defForm = {},
   } = options
 
-  const formData = reactive({ ...defaultData })
+  // 表单数据
+  const form = ref({ ...defForm })
+
+  // 加载状态
   const loading = ref(false)
 
-  const reset = () => {
-    Object.assign(formData, defaultData)
+  // 表单引用
+  const editRef = ref(null)
+
+  // 提交表单
+  const onSubmit = async () => {
+    if (!editRef.value) {
+      return
+    }
+
+    // 验证表单
+    const valid = await editRef.value.validate().catch(() => false)
+    if (!valid) {
+      return
+    }
+
+    loading.value = true
+    try {
+      await api(form.value)
+      ElMessage.success(successMsg)
+      if (callback) {
+        callback()
+      }
+      return true
+    }
+    catch (err) {
+      ElMessage.error(err?.message || errorMsg)
+      return false
+    }
+    finally {
+      loading.value = false
+    }
   }
 
-  const setData = (data) => {
-    Object.assign(formData, data)
+  // 关闭前的处理（可选）
+  const beforeClose = () => {
+    // 可以在这里添加关闭前的逻辑，比如表单重置
+  }
+
+  // 设置表单数据
+  const setForm = (data) => {
+    form.value = { ...defForm, ...data }
+  }
+
+  // 重置表单
+  const resetForm = () => {
+    form.value = { ...defForm }
+    editRef.value?.clearValidate()
   }
 
   return {
-    formData,
+    form,
+    onSubmit,
+    editRef,
     loading,
-    reset,
-    setData,
+    beforeClose,
+    setForm,
+    resetForm,
   }
 }

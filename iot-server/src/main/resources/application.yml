@@ -123,8 +123,8 @@ sample:
       endpointUrl: ${S3_ENDPOINT:http://localhost:9000}  # 可选，用于 MinIO 或自建 S3
     driver:
       mqtt:
-        mqtt-client-id-prefix: sample_
-        topic-prefix: simpleiot
+        mqtt-client-id-prefix: simple_
+        topic-prefix: simple/iot
     device-channel-type: single
     influxdb:
       url: ${INFLUXDB_URL:http://127.0.0.1:8086}

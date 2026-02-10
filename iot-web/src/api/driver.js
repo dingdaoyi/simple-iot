@@ -28,4 +28,4 @@ export function deleteDriver(driverId) {
     url: `/driver/${driverId}`,
     method: 'delete',
   })
-} 
+}

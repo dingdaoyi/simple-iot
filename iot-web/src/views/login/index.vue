@@ -1,8 +1,8 @@
 <script setup>
-import { Index } from '@/api'
-import { useAccountStore, useThemeStore } from '@/store'
 import { getCurrentInstance, reactive, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
+import { Index } from '@/api'
+import { useAccountStore, useThemeStore } from '@/store'
 import LoginBg from './weight/LoginBg'
 
 const { proxy: ctx } = getCurrentInstance() // 可以把ctx当成vue2中的this

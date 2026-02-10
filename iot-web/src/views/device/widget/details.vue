@@ -1,4 +1,6 @@
 <script setup>
+import { ref } from 'vue'
+import { useRoute } from 'vue-router'
 import { deviceDataLast, deviceDetailApi } from '@/api/index.js'
 import Breadcrumb from '@/components/Breadcrumb.vue'
 import { onlineOpts } from '@/utils/base.jsx'
@@ -7,8 +9,6 @@ import DeviceService from '@/views/device/widget/deviceService.vue'
 import LabelItem from '@/views/device/widget/LabelItem.vue'
 import PropChart from '@/views/device/widget/propChart.vue'
 import PropMetric from '@/views/device/widget/PropMetric.vue'
-import { ref } from 'vue'
-import { useRoute } from 'vue-router'
 
 const activeName = ref('设备事件')
 const route = useRoute()

@@ -1,5 +1,5 @@
 <script lang="jsx" setup>
-const props = defineProps({
+defineProps({
   startColor: {
     type: String,
     default: '#28aff0',

@@ -771,7 +771,7 @@ SELECT setval('"public"."tb_device_id_seq"', 2, true);
 -- ----------------------------
 ALTER SEQUENCE "public"."tb_dict_id_seq"
 OWNED BY "public"."tb_dict"."id";
-SELECT setval('"public"."tb_dict_id_seq"', 19, true);
+SELECT setval('"public"."tb_dict_id_seq"', 166988013104439297, true);
 
 -- ----------------------------
 -- Alter sequences owned by

@@ -1,6 +1,6 @@
 <script lang="jsx" setup>
-import { productDetailApi, productTypeDetailApi } from '@/api/index.js'
 import { ref } from 'vue'
+import { productDetailApi, productTypeDetailApi } from '@/api/index.js'
 
 const props = defineProps(['typeId', 'productId'])
 const product = ref({})

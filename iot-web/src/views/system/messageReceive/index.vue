@@ -1,9 +1,9 @@
 <script setup>
-import { messageReceiveDeleteApi, messageReceivePageApi } from '@/api/index.js'
-import EditDia from '@/views/system/messageReceive/widget/editDia.vue'
-import { useTable } from '@/composables/useTable.js'
-import IotTable from '@/components/IotTable.vue'
 import { onMounted } from 'vue'
+import { messageReceiveDeleteApi, messageReceivePageApi } from '@/api/index.js'
+import IotTable from '@/components/IotTable.vue'
+import { useTable } from '@/composables/useTable.js'
+import EditDia from '@/views/system/messageReceive/widget/editDia.vue'
 
 const notifyTypeOpt = [
   {
@@ -79,56 +79,75 @@ onMounted(() => {
 
 <template>
   <div class="message-receive-page">
-    <!-- 搜索栏 -->
-    <div class="iot-card search-bar">
-      <el-form :inline="true" class="search-form">
-        <el-form-item label="通知类型">
-          <el-select
-            v-model="params.notifyType"
-            placeholder="请选择通知类型"
-            filterable
-            clearable
-          >
-            <el-option
-              v-for="item in notifyTypeOpt"
-              :key="item.value"
-              :label="item.label"
-              :value="item.value"
-            />
-          </el-select>
-        </el-form-item>
+    <!-- 页面标题 -->
+    <div class="page-header">
+      <div class="header-content">
+        <h1 class="page-title">
+          <span class="title-icon">✉</span>
+          消息通知
+        </h1>
+        <p class="page-subtitle">
+          配置邮件与短信通知接收方式
+        </p>
+      </div>
+    </div>
 
-        <el-form-item>
+    <!-- 搜索栏 -->
+    <div class="search-bar glass-card">
+      <el-form :inline="false" class="search-form">
+        <div class="form-row">
+          <el-form-item label="通知类型">
+            <el-select
+              v-model="params.notifyType"
+              placeholder="请选择通知类型"
+              filterable
+              clearable
+            >
+              <el-option
+                v-for="item in notifyTypeOpt"
+                :key="item.value"
+                :label="item.label"
+                :value="item.value"
+              />
+            </el-select>
+          </el-form-item>
+        </div>
+
+        <div class="form-actions">
           <el-button type="primary" @click="onSearch">
+            <span class="btn-icon">⌕</span>
             搜索
           </el-button>
           <el-button type="success" @click="onAdd">
-            添加
+            <span class="btn-icon">+</span>
+            添加通知
           </el-button>
-        </el-form-item>
+        </div>
       </el-form>
     </div>
 
-    <!-- 表格 -->
-    <IotTable
-      :columns="column"
-      :data="tableData"
-      :total="total"
-      :current-page="params.page"
-      :page-size="params.size"
-      :loading="loading"
-      @page-change="onPageChange"
-      @size-change="onSizeChange"
-    >
-      <template #cz="{ row }">
-        <el-button type="danger" link @click="onDelete(row)">
-          删除
-        </el-button>
-        <el-button type="primary" link @click="onEdit(row)">
-          编辑
-        </el-button>
-      </template>
-    </IotTable>
+    <!-- 数据表格 -->
+    <div class="table-wrapper">
+      <IotTable
+        :columns="column"
+        :data="tableData"
+        :total="total"
+        :current-page="params.page"
+        :page-size="params.size"
+        :loading="loading"
+        @page-change="onPageChange"
+        @size-change="onSizeChange"
+      >
+        <template #cz="{ row }">
+          <el-button type="danger" link @click="onDelete(row)">
+            删除
+          </el-button>
+          <el-button type="primary" link @click="onEdit(row)">
+            编辑
+          </el-button>
+        </template>
+      </IotTable>
+    </div>
 
     <!-- 编辑对话框 -->
     <EditDia
@@ -145,17 +164,121 @@ onMounted(() => {
 .message-receive-page {
   display: flex;
   flex-direction: column;
-  gap: var(--space-lg);
-  height: 100%;
+  gap: var(--space-xl);
+  padding: var(--space-xl);
+  min-height: 100vh;
 }
 
+/* 页面标题 */
+.page-header {
+  .header-content {
+    background: var(--iot-glass-bg-dark);
+    backdrop-filter: blur(20px);
+    border: 1px solid var(--iot-glass-border);
+    border-radius: var(--radius-lg);
+    padding: var(--space-xl) var(--space-2xl);
+    box-shadow: var(--shadow-md);
+    position: relative;
+    overflow: hidden;
+
+    &::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 4px;
+      background: linear-gradient(90deg, var(--iot-color-primary), var(--iot-color-accent));
+    }
+  }
+
+  .page-title {
+    font-size: 24px;
+    font-weight: 700;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+    color: var(--iot-color-text-primary);
+
+    .title-icon {
+      font-size: 28px;
+      background: linear-gradient(135deg, var(--iot-color-primary), var(--iot-color-accent));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+  }
+
+  .page-subtitle {
+    margin: var(--space-sm) 0 0 0;
+    font-size: 14px;
+    color: var(--iot-color-text-secondary);
+  }
+}
+
+/* 搜索栏 */
 .search-bar {
-  padding: var(--space-md);
+  .search-form {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-md);
+  }
+
+  .form-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-md);
+
+    .el-form-item {
+      flex: 1;
+      min-width: 200px;
+      margin-bottom: 0;
+    }
+  }
+
+  .form-actions {
+    display: flex;
+    gap: var(--space-sm);
+    justify-content: flex-end;
+  }
+
+  .btn-icon {
+    margin-right: var(--space-xs);
+    font-size: 16px;
+  }
 }
 
-.search-form {
-  :deep(.el-form-item) {
-    margin-bottom: 0;
+/* 表格容器 */
+.table-wrapper {
+  flex: 1;
+}
+
+/* 响应式 */
+@media (max-width: 768px) {
+  .message-receive-page {
+    padding: var(--space-md);
+  }
+
+  .form-row {
+    flex-direction: column;
+
+    .el-form-item {
+      width: 100%;
+    }
+  }
+
+  .form-actions {
+    width: 100%;
+    flex-direction: column;
+
+    .el-button {
+      width: 100%;
+    }
+  }
+
+  .page-title {
+    font-size: 20px !important;
   }
 }
 </style>

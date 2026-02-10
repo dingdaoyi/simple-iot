@@ -1,11 +1,11 @@
 <script lang="jsx" setup>
+import { ref, watch } from 'vue'
 import { protocolAddApi, protocolEditApi } from '@/api'
-import { ref } from 'vue'
+import { useForm } from '@/composables/useForm.js'
 
-const props = defineProps(['datas'])
+const props = defineProps(['datas', 'modelValue'])
 
-const emits = defineEmits(['update'])
-
+const emits = defineEmits(['update', 'update:modelValue'])
 
 const protocolTypeOpt = [
   {
@@ -26,35 +26,41 @@ const rules = ref({
   name: [{ required: true, message: '协议名称不能为空', trigger: 'blur' }],
 })
 
-const { form, onSubmit, editRef, loading, onClose, dwDialogRef, onReset } = useForm({
+const { form, onSubmit: handleSubmit, editRef, loading } = useForm({
   api: props.datas ? protocolEditApi : protocolAddApi,
   callback: () => {
     emits('update')
+    emits('update:modelValue', false)
   },
 })
 
-if (props?.datas) {
-  form.value = props.datas
+function onSubmit() {
+  handleSubmit()
 }
+
+function onCancel() {
+  emits('update:modelValue', false)
+}
+
+watch(() => props.datas, (val) => {
+  if (val) {
+    form.value = { ...val }
+  }
+}, { immediate: true })
 </script>
 
 <template>
   <el-dialog
-    ref="dwDialogRef"
+    :model-value="modelValue"
     :title="datas?.id ? '编辑' : '新增'"
-    width="1042px"
-    show-footer
-    :footer-type="datas?.id ? 'edit' : 'add'"
-    :left-loading="loading"
-    @left-btn="onSubmit"
-    @close="onClose"
-    @reset="onReset"
+    width="600px"
+    @update:model-value="$emit('update:modelValue', $event)"
   >
     <el-form
       ref="editRef"
       :rules="rules"
       :model="form"
-      :label-width="100"
+      label-width="100px"
     >
       <el-form-item
         label="协议名称"
@@ -69,12 +75,11 @@ if (props?.datas) {
       <el-form-item
         label="协议类型"
         prop="protoType"
-        class="is-required"
       >
         <el-select
           v-model="form.protoType"
           placeholder="请选择协议类型"
-          class="w-full"
+          style="width: 100%"
           filterable
           clearable
         >
@@ -120,6 +125,12 @@ if (props?.datas) {
         />
       </el-form-item>
     </el-form>
+    <template #footer>
+      <el-button @click="onCancel">取消</el-button>
+      <el-button type="primary" :loading="loading" @click="onSubmit">
+        确定
+      </el-button>
+    </template>
   </el-dialog>
 </template>
 

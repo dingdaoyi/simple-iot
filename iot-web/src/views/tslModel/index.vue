@@ -1,11 +1,11 @@
 <script setup>
+import { ref } from 'vue'
+import { useRoute } from 'vue-router'
 import { productDetailApi, productTypeDetailApi } from '@/api/index.js'
 import Breadcrumb from '@/components/Breadcrumb.vue'
 import ProductInfo from '@/views/tslModel/widget/productInfo.vue'
 import ServiceConfig from '@/views/tslModel/widget/serviceConfig.vue'
 import tslexpoert from '@/views/tslModel/widget/tslexpoert.vue'
-import { ref } from 'vue'
-import { useRoute } from 'vue-router'
 
 const activeName = ref('service')
 const route = useRoute()

@@ -90,8 +90,9 @@ public class InfluxDataProcessor implements DataProcessor, DeviceDataService {
     private void saveProperties(List<DeviceData> dataList, String deviceKey) {
         List<Point> points = new ArrayList<>();
         for (DeviceData deviceData : dataList) {
-            Point point = Point.measurement(properties.getPropDatabase() + "_" + deviceData.getIdentifier())
+            Point point = Point.measurement(properties.getPropDatabase())
                     .setTag("deviceKey", deviceKey)
+                    .setTag("identifier", deviceData.getIdentifier())
                     .setTag("dataType", deviceData.getDataType().name())
                     .setTimestamp(Instant.now());
             switch (deviceData.getDataType()) {
@@ -146,9 +147,10 @@ public class InfluxDataProcessor implements DataProcessor, DeviceDataService {
 
         List<KeyValue<String, Object>> dataList = new ArrayList<>();
         QueryOptions queryOptions = new QueryOptions(properties.getDatabase(), QueryType.SQL);
-        String sqlParams = "select value,time from " + properties.getPropDatabase() + "_" + query.getIdentifier() + " where \"deviceKey\"=$deviceKey" +
+        String sqlParams = "select value,time from " + properties.getPropDatabase()  + " where \"identifier\"=identifier and  \"deviceKey\"=$deviceKey" +
                            " and time> $beginTime and time<= $endTime order by time asc";
         try (Stream<PointValues> stream = influxDBClient.queryPoints(sqlParams, Map.of("deviceKey", query.getDeviceKey(),
+                "identifier",query.getIdentifier(),
                 "beginTime", DateUtil.formatLocalDateTime(query.getBeginTime()), "endTime", DateUtil.formatLocalDateTime(query.getEndTime())), queryOptions)) {
 
             stream.forEach(row -> dataList.add(new KeyValue<>(TimeUtils.toDateTimeStr(row.getTimestamp()), row.getField("value"))));

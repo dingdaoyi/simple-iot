@@ -19,7 +19,7 @@ public class DictServiceImpl extends ServiceImpl<DictMapper, Dict> implements Di
     public List<Dict> groupList() {
         return list(Wrappers
                 .<Dict>lambdaQuery()
-                .eq(Dict::getLabel, "-1")
+                .eq(Dict::getValue, "-1")
                 .orderByAsc(Dict::getSort));
     }
 
@@ -28,8 +28,8 @@ public class DictServiceImpl extends ServiceImpl<DictMapper, Dict> implements Di
         return list(Wrappers
                 .lambdaQuery(Dict.class)
                 .eq(Dict::getDictGroup, group)
-                .not(w -> w.eq(Dict::getLabel, "-1"))
+                .not(w -> w.eq(Dict::getValue, "-1"))
                 .orderByAsc(Dict::getSort)
-                .select(Dict::getLabel,Dict::getValue, Dict::getSort));
+                .select(Dict::getLabel, Dict::getValue, Dict::getSort));
     }
 }

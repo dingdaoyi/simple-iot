@@ -1,7 +1,7 @@
 <script lang="jsx" setup>
 import { useRouter } from 'vue-router'
 
-const props = defineProps(['data', 'actPath'])
+defineProps(['data', 'actPath'])
 
 const router = useRouter()
 

@@ -1,31 +1,9 @@
 <script setup>
-import { iconDeleteApi, iconListApi } from '@/api/index.js'
-import EditDia from '@/views/system/icon/widget/editDia.vue'
-import { useTable } from '@/composables/useTable.js'
-import { ref, onMounted } from 'vue'
-import { useRouter } from 'vue-router'
 import { ElImage } from 'element-plus'
-
-const router = useRouter()
-
-const column = [
-  {
-    prop: 'name',
-    label: '图标名称',
-  },
-  {
-    prop: 'path',
-    slot: 'icon',
-    width: 220,
-    label: '图标',
-  },
-  {
-    prop: 'cz',
-    slot: 'cz',
-    width: 100,
-    label: '操作',
-  },
-]
+import { onMounted } from 'vue'
+import { iconDeleteApi, iconListApi } from '@/api/index.js'
+import { useTable } from '@/composables/useTable.js'
+import EditDia from '@/views/system/icon/widget/editDia.vue'
 
 const {
   params,
@@ -33,14 +11,11 @@ const {
   updatePage,
   onSearch,
   tableData,
-  total,
   loading,
   onDelete,
   onAdd,
   diaTitle,
   currentItem,
-  onPageChange,
-  onSizeChange,
 } = useTable({
   deleteApi: iconDeleteApi,
   fetchApi: iconListApi,
@@ -159,7 +134,7 @@ onMounted(() => {
 
   :deep(.el-card__header) {
     padding: var(--space-sm);
-    background: #F8FAFC;
+    background: #f8fafc;
   }
 
   :deep(.el-card__body) {

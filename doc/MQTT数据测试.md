@@ -1,5 +1,5 @@
 ### mqtt 协议数据上报测试
-topic:sampleiot/pro/B29Gx0OpapnOtPrQXtb4
+topic:simple/iot/pro/B29Gx0OpapnOtPrQXtb4
 ```json
 {
     "header": {
@@ -26,7 +26,7 @@ http://127.0.0.1:5010/iot/service/12312321312/customservice
 }
 ```
 mqtt数据上报
-Topic: sampleiot/cam_res/B29Gx0OpapnOtPrQXtb4QoS: 1
+topic:simple/iot/cam_res/B29Gx0OpapnOtPrQXtb4QoS: 1
 ```json
 {
     "header": {
@@ -41,7 +41,7 @@ Topic: sampleiot/cam_res/B29Gx0OpapnOtPrQXtb4QoS: 1
 }
 ```
 事件上报
-topic sampleiot/ev/B29Gx0OpapnOtPrQXtb4
+topic:simple/iot/ev/B29Gx0OpapnOtPrQXtb4
 ```json
 {
   "header": {

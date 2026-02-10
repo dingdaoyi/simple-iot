@@ -14,6 +14,9 @@ yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
 
+# Claude Code memory files
+CLAUDE.md
+**/CLAUDE.md
 
 # Editor directories and files
 .idea

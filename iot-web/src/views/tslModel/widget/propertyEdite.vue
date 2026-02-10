@@ -1,13 +1,13 @@
 <script lang="jsx" setup>
-import { customPropertyAddApi, dictListApi, standardPropertyAddApi, standardPropertyEditApi } from '@/api'
-import IconInput from '@/components/IconInput.vue'
 import { ElMessage } from 'element-plus'
 import { ref } from 'vue'
+import { customPropertyAddApi, dictListApi, standardPropertyAddApi, standardPropertyEditApi } from '@/api'
+import IconInput from '@/components/IconInput.vue'
+import { useForm } from '@/composables/useForm.js'
 
-const props = defineProps(['datas', 'typeId', 'productId'])
+const props = defineProps(['datas', 'typeId', 'productId', 'modelValue', 'title'])
 
-const emits = defineEmits(['update'])
-
+const emits = defineEmits(['update', 'update:modelValue'])
 
 const rules = ref({
   name: [{ required: true, message: '属性名称不能为空', trigger: 'blur' }],
@@ -22,34 +22,49 @@ const form = ref({
     key: 1,
     value: '',
   }],
+  step: 1,
 })
 const unitListOpt = ref([])
-const { editRef, loading, onClose, dwDialogRef, onReset } = useForm({})
+const { editRef, loading, onClose } = useForm({
+  callback: () => {
+    emits('update')
+  },
+  closeCallback: () => {
+    emits('update:modelValue', false)
+  },
+})
+
 async function onSubmit() {
-  await editRef.value.validate((valid) => {
-    if (valid) {
-      if (loading.value) {
-        return
-      }
-      loading.value = true
-      const func = props.datas
-        ? standardPropertyEditApi
-        : props.productId
-          ? customPropertyAddApi
-          : standardPropertyAddApi
-      func(form.value).then(() => {
-        loading.value = false
-        ElMessage({
-          message: '操作成功',
-          type: 'success',
-        })
-        emits('update')
-      }).catch(() => {
-        loading.value = false
-      })
-    }
-  })
+  if (!editRef.value)
+    return
+
+  const valid = await editRef.value.validate().catch(() => false)
+  if (!valid)
+    return
+
+  if (loading.value)
+    return
+
+  loading.value = true
+  try {
+    const func = props.datas
+      ? standardPropertyEditApi
+      : props.productId
+        ? customPropertyAddApi
+        : standardPropertyAddApi
+    await func(form.value)
+    ElMessage.success('操作成功')
+    emits('update')
+    emits('update:modelValue', false)
+  }
+  catch {
+    ElMessage.error('操作失败')
+  }
+  finally {
+    loading.value = false
+  }
 }
+
 const dataTypeOpt = [
   {
     label: 'INT:整型',
@@ -81,17 +96,6 @@ const dataTypeOpt = [
     value: 6,
     type: 'bool',
   },
-  // TODO 暂时不做
-  // {
-  //   label: '日期',
-  //   value: 7,
-  //   type: 'date'
-  // },
-  // {
-  //   label: '结构体',
-  //   value: 8,
-  //   type: 'struct'
-  // }
 ]
 const currentType = ref(1)
 
@@ -117,13 +121,15 @@ function removeEnumValue(index) {
 }
 
 if (props?.datas) {
-  form.value = props.datas
-  currentType.value = dataTypeOpt.find(item => item.value === props.datas.dataType).type
+  form.value = { ...form.value, ...props.datas }
+  currentType.value = dataTypeOpt.find(item => item.value === props.datas.dataType)?.type || 1
 }
+
 dictListApi('analog_quantity')
   .then(({ data }) => {
     unitListOpt.value = data
   })
+
 function changeUnit(value) {
   form.value.unitName = unitListOpt.value.find(item => item.value === value)?.label || ''
 }
@@ -131,15 +137,11 @@ function changeUnit(value) {
 
 <template>
   <el-dialog
-    ref="dwDialogRef"
-    :title="datas?.id ? '编辑' : '新增'"
-    width="1042px"
-    show-footer
-    :footer-type="datas?.id ? 'edit' : 'add'"
-    :left-loading="loading"
-    @left-btn="onSubmit"
+    :model-value="modelValue"
+    :title="datas?.id ? '编辑属性' : '新增属性'"
+    width="600px"
+    @update:model-value="$emit('update:modelValue', $event)"
     @close="onClose"
-    @reset="onReset"
   >
     <el-form
       ref="editRef"
@@ -150,7 +152,6 @@ function changeUnit(value) {
       <el-form-item
         label="属性名称"
         prop="name"
-        class="is-required"
       >
         <el-input
           v-model="form.name"
@@ -161,7 +162,6 @@ function changeUnit(value) {
       <el-form-item
         label="标识符"
         prop="identifier"
-        class="is-required"
       >
         <el-input
           v-model="form.identifier"
@@ -172,16 +172,16 @@ function changeUnit(value) {
       <el-form-item
         label="数据类型"
         prop="dataType"
-        class="is-required"
       >
         <el-select
           v-model="form.dataType"
           placeholder="请选择"
-          class="w-full"
+          style="width: 100%"
           @change="changeDataType"
         >
           <el-option
-            v-for="item in dataTypeOpt" :key="item.value"
+            v-for="item in dataTypeOpt"
+            :key="item.value"
             :label="item.label"
             :value="item.value"
           />
@@ -189,7 +189,6 @@ function changeUnit(value) {
       </el-form-item>
       <el-form-item
         label="访问权限"
-        class="is-required"
         prop="accessMode"
       >
         <el-radio-group v-model="form.accessMode">
@@ -208,9 +207,8 @@ function changeUnit(value) {
       >
         <el-input-number
           v-model="form.step"
-          class="wh-full"
-          min="1"
-          clearable
+          :min="1"
+          style="width: 100%"
           placeholder="请输入步进参数"
         />
       </el-form-item>
@@ -221,9 +219,8 @@ function changeUnit(value) {
       >
         <el-input-number
           v-model="form.max"
-          class="w-full"
           :step="form.step"
-          clearable
+          style="width: 100%"
           placeholder="请输入最大值"
         />
       </el-form-item>
@@ -234,9 +231,8 @@ function changeUnit(value) {
       >
         <el-input-number
           v-model="form.min"
-          class="w-full"
           :step="form.step"
-          clearable
+          style="width: 100%"
           placeholder="请输入最小值"
         />
       </el-form-item>
@@ -244,43 +240,49 @@ function changeUnit(value) {
         v-if="currentType === 'number'"
         label="单位"
         prop="unit"
-        class="is-required"
       >
         <el-select
           v-model="form.unit"
           placeholder="请选择"
-          class="w-full"
+          style="width: 100%"
           @change="changeUnit"
         >
           <el-option
-            v-for="item in unitListOpt" :key="item.value"
+            v-for="item in unitListOpt"
+            :key="item.value"
             :label="`${item.label}:${item.value}`"
             :value="item.value"
           />
         </el-select>
       </el-form-item>
       <el-form-item v-if="currentType === 'enum'" label="枚举值" prop="enums">
-        <div class="flex flex-col">
-          <div v-for="(item, index) in form.enums" :key="index" class="flex gap-20px pt-10px">
+        <div class="enum-inputs">
+          <div
+            v-for="(item, index) in form.enums"
+            :key="index"
+            class="enum-row"
+          >
             <el-input-number
               v-model="item.key"
               placeholder="键名"
-              style="width: 40%; margin-right: 10px"
+              style="width: 40%"
             />
             <el-input
               v-model="item.value"
               placeholder="值"
-              style="width: 40%; margin-right: 10px"
+              style="width: 40%"
             />
-            <el-button :disabled="index === 0" type="danger" icon="el-icon-delete" @click="removeEnumValue(index)">
+            <el-button
+              :disabled="index === 0"
+              class="enum-delete-btn"
+              @click="removeEnumValue(index)"
+            >
               删除
             </el-button>
           </div>
-          <div class="pt-10px self-center">
-            <el-button type="primary" plain @click="addEnumValue">
-              添加枚举值
-            </el-button>
-          </div>
+          <el-button class="enum-add-btn" @click="addEnumValue">
+            + 添加枚举值
+          </el-button>
         </div>
       </el-form-item>
       <el-form-item
@@ -290,8 +292,8 @@ function changeUnit(value) {
       >
         <el-input-number
           v-model="form.length"
-          class="w-full"
-          clearable
+          :min="1"
+          style="width: 100%"
           placeholder="请输入字符串长度"
         />
       </el-form-item>
@@ -309,7 +311,7 @@ function changeUnit(value) {
       <el-form-item
         v-if="currentType === 'bool'"
         label="true值"
-        prop="bool0"
+        prop="bool1"
       >
         <el-input
           v-model="form.bool1"
@@ -327,21 +329,198 @@ function changeUnit(value) {
           placeholder="请输入备注信息"
         />
       </el-form-item>
-      <IconInput v-model:value="form.iconId" />
+      <el-form-item label="图标" prop="iconId">
+        <IconInput v-model:value="form.iconId" />
+      </el-form-item>
     </el-form>
+    <template #footer>
+      <el-button class="glass-btn glass-btn-secondary" @click="onClose">
+        取消
+      </el-button>
+      <el-button type="primary" :loading="loading" class="glass-btn glass-btn-primary" @click="onSubmit">
+        {{ datas?.id ? '保存' : '新增' }}
+      </el-button>
+    </template>
   </el-dialog>
 </template>
 
 <style lang="scss" scoped>
-.check-item {
-  ::v-deep(.el-form-item__content) {
-    width: 100%;
+// 枚举值输入区域样式
+.enum-inputs {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  gap: var(--space-sm);
+
+  .enum-row {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
   }
 }
 
-:deep(.jtlc) {
-  .el-form-item__content {
-    display: block;
+// 添加枚举值按钮 - 玻璃态主题
+.enum-add-btn {
+  width: 100%;
+  padding: var(--space-sm) var(--space-md);
+  border: 1px solid var(--iot-glass-border);
+  border-radius: var(--radius-md);
+  background: var(--iot-glass-bg);
+  color: var(--iot-color-primary);
+  font-size: 14px;
+  transition: all var(--transition-fast);
+
+  &:hover {
+    background: var(--iot-glass-bg-hover);
+    border-color: var(--iot-color-primary);
+    transform: translateY(-1px);
   }
+
+  &:active {
+    transform: translateY(0);
+  }
+}
+
+// 玻璃态按钮样式
+.glass-btn {
+  min-width: 80px;
+  padding: var(--space-sm) var(--space-lg);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--iot-glass-border);
+  transition: all var(--transition-fast);
+
+  &.glass-btn-secondary {
+    background: var(--iot-glass-bg);
+    color: var(--iot-color-text-secondary);
+
+    &:hover {
+      background: var(--iot-glass-bg-hover);
+      border-color: var(--iot-color-text-muted);
+    }
+  }
+
+  &.glass-btn-primary {
+    background: linear-gradient(135deg, var(--iot-color-primary), var(--iot-color-accent));
+    border-color: transparent;
+    color: white;
+
+    &:hover {
+      opacity: 0.9;
+      transform: translateY(-1px);
+      box-shadow: var(--shadow-md);
+    }
+  }
+}
+
+// 删除按钮样式
+.enum-delete-btn {
+  min-width: 60px;
+  padding: var(--space-xs) var(--space-sm);
+  border-radius: var(--radius-sm);
+  background: rgba(239, 68, 68, 0.1);
+  border: 1px solid rgba(239, 68, 68, 0.2);
+  color: #ef4444;
+  transition: all var(--transition-fast);
+
+  &:hover:not(:disabled) {
+    background: rgba(239, 68, 68, 0.2);
+    border-color: #ef4444;
+  }
+
+  &:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
+}
+
+// 对话框样式
+:deep(.el-dialog) {
+  background: var(--iot-glass-bg-dialog);
+  backdrop-filter: blur(20px);
+  border: 1px solid var(--iot-glass-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-xl);
+
+  .el-dialog__header {
+    border-bottom: 1px solid var(--iot-glass-border);
+    padding: var(--space-lg) var(--space-xl);
+  }
+
+  .el-dialog__title {
+    color: var(--iot-color-text-primary);
+    font-size: 18px;
+    font-weight: 600;
+  }
+
+  .el-dialog__body {
+    padding: var(--space-lg) var(--space-xl);
+    color: var(--iot-color-text-secondary);
+  }
+
+  .el-dialog__footer {
+    border-top: 1px solid var(--iot-glass-border);
+    padding: var(--space-md) var(--space-xl);
+  }
+}
+
+// 表单样式
+:deep(.el-form-item__label) {
+  color: var(--iot-color-text-secondary);
+  font-weight: 500;
+}
+
+:deep(.el-input__wrapper) {
+  background: var(--iot-glass-bg);
+  border-color: var(--iot-glass-border);
+  box-shadow: none;
+  transition: all var(--transition-fast);
+
+  &:hover {
+    border-color: var(--iot-color-primary);
+  }
+
+  &.is-focused {
+    border-color: var(--iot-color-primary);
+    box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.1);
+  }
+}
+
+:deep(.el-input__inner) {
+  color: var(--iot-color-text-primary);
+
+  &::placeholder {
+    color: var(--iot-color-text-muted);
+  }
+}
+
+:deep(.el-select .el-input__wrapper) {
+  background: var(--iot-glass-bg);
+  border-color: var(--iot-glass-border);
+
+  &:hover {
+    border-color: var(--iot-color-primary);
+  }
+}
+
+:deep(.el-radio-button__inner) {
+  background: var(--iot-glass-bg);
+  border-color: var(--iot-glass-border);
+  color: var(--iot-color-text-secondary);
+  transition: all var(--transition-fast);
+
+  &:hover {
+    color: var(--iot-color-primary);
+  }
+}
+
+:deep(.el-radio-button__original-radio:checked + .el-radio-button__inner) {
+  background: linear-gradient(135deg, var(--iot-color-primary), var(--iot-color-accent));
+  border-color: var(--iot-color-primary);
+  color: white;
+}
+
+:deep(.el-input-number .el-input__wrapper) {
+  background: var(--iot-glass-bg);
+  border-color: var(--iot-glass-border);
 }
 </style>

@@ -17,7 +17,6 @@ public class InfluxDbConfig {
     @Bean(destroyMethod = "close")
     public InfluxDBClient influxDbClient() {
         IotConfigProperties.InfluxDbProperties influxdb = iotConfigProperties.getInfluxdb();
-        InfluxDBClient influxDBClient = InfluxDBClient.getInstance(influxdb.getUrl(), influxdb.getToken().toCharArray(), influxdb.getDatabase());
-        return influxDBClient;
+        return InfluxDBClient.getInstance(influxdb.getUrl(), influxdb.getToken().toCharArray(), influxdb.getDatabase());
     }
 }

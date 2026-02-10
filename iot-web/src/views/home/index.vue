@@ -1,8 +1,8 @@
 <script setup>
-import { getDashboardStatistics } from '@/api/dashboard'
-import { useAmapConfig } from '@/config/amapConfig'
 import AMapLoader from '@amap/amap-jsapi-loader'
 import { onMounted, ref } from 'vue'
+import { getDashboardStatistics } from '@/api/dashboard'
+import { useAmapConfig } from '@/config/amapConfig'
 
 const { amapKey } = useAmapConfig()
 
@@ -29,7 +29,7 @@ onMounted(() => {
     version: '2.0',
     plugins: ['AMap.Marker'],
   }).then((AMap) => {
-    const map = new AMap.Map('amap-container', {
+    void new AMap.Map('amap-container', {
       zoom: 11,
       // center: [116.397428, 39.90923]
     })
@@ -48,42 +48,74 @@ onMounted(() => {
     <div class="dashboard-sidebar">
       <!-- 设备统计卡片 -->
       <div class="stat-section">
-        <h3 class="section-title">设备统计</h3>
+        <h3 class="section-title">
+          设备统计
+        </h3>
         <div class="stat-grid">
           <div class="iot-card stat-card">
-            <div class="stat-label">设备总数</div>
-            <div class="stat-value">{{ stats.total }}</div>
+            <div class="stat-label">
+              设备总数
+            </div>
+            <div class="stat-value">
+              {{ stats.total }}
+            </div>
           </div>
           <div class="iot-card stat-card stat-card-success">
-            <div class="stat-label">在线设备</div>
-            <div class="stat-value">{{ stats.online }}</div>
+            <div class="stat-label">
+              在线设备
+            </div>
+            <div class="stat-value">
+              {{ stats.online }}
+            </div>
           </div>
           <div class="iot-card stat-card stat-card-danger">
-            <div class="stat-label">离线设备</div>
-            <div class="stat-value">{{ stats.offline }}</div>
+            <div class="stat-label">
+              离线设备
+            </div>
+            <div class="stat-value">
+              {{ stats.offline }}
+            </div>
           </div>
           <div class="iot-card stat-card">
-            <div class="stat-label">今日新增</div>
-            <div class="stat-value">{{ stats.todayAdd }}</div>
+            <div class="stat-label">
+              今日新增
+            </div>
+            <div class="stat-value">
+              {{ stats.todayAdd }}
+            </div>
           </div>
         </div>
       </div>
 
       <!-- 系统资源统计卡片 -->
       <div class="stat-section">
-        <h3 class="section-title">系统资源</h3>
+        <h3 class="section-title">
+          系统资源
+        </h3>
         <div class="stat-grid">
           <div class="iot-card stat-card stat-card-info">
-            <div class="stat-label">CPU使用率</div>
-            <div class="stat-value">{{ stats.cpuUsage }}%</div>
+            <div class="stat-label">
+              CPU使用率
+            </div>
+            <div class="stat-value">
+              {{ stats.cpuUsage }}%
+            </div>
           </div>
           <div class="iot-card stat-card stat-card-purple">
-            <div class="stat-label">内存使用率</div>
-            <div class="stat-value">{{ stats.memoryUsage }}%</div>
+            <div class="stat-label">
+              内存使用率
+            </div>
+            <div class="stat-value">
+              {{ stats.memoryUsage }}%
+            </div>
           </div>
           <div class="iot-card stat-card stat-card-warning">
-            <div class="stat-label">磁盘使用率</div>
-            <div class="stat-value">{{ stats.diskUsage }}%</div>
+            <div class="stat-label">
+              磁盘使用率
+            </div>
+            <div class="stat-value">
+              {{ stats.diskUsage }}%
+            </div>
           </div>
         </div>
       </div>
@@ -103,11 +135,15 @@ onMounted(() => {
           <div class="alert-icon">
             <el-icon><Bell /></el-icon>
           </div>
-          <h3 class="alert-title">最新告警动态</h3>
+          <h3 class="alert-title">
+            最新告警动态
+          </h3>
         </div>
         <ul class="alert-list">
           <li v-for="(alert, index) in alerts" :key="index" class="alert-item" :class="`alert-item-${alert.level}`">
-            <div class="alert-time">{{ alert.time }}</div>
+            <div class="alert-time">
+              {{ alert.time }}
+            </div>
             <div class="alert-content">
               <span class="alert-device">{{ alert.device }}</span>
               <span class="alert-message">{{ alert.message }}</span>
@@ -165,7 +201,7 @@ onMounted(() => {
 
 .stat-label {
   font-size: 13px;
-  color: #64748B;
+  color: #64748b;
   margin-bottom: var(--space-sm);
 }
 
@@ -177,23 +213,23 @@ onMounted(() => {
 }
 
 .stat-card-success .stat-value {
-  color: #10B981;
+  color: #10b981;
 }
 
 .stat-card-danger .stat-value {
-  color: #EF4444;
+  color: #ef4444;
 }
 
 .stat-card-info .stat-value {
-  color: #3B82F6;
+  color: #3b82f6;
 }
 
 .stat-card-purple .stat-value {
-  color: #8B5CF6;
+  color: #8b5cf6;
 }
 
 .stat-card-warning .stat-value {
-  color: #F59E0B;
+  color: #f59e0b;
 }
 
 .dashboard-main {
@@ -217,7 +253,7 @@ onMounted(() => {
 .amap-wrapper {
   width: 100%;
   height: 100%;
-  background: #F1F5F9;
+  background: #f1f5f9;
   border-radius: 8px;
 }
 
@@ -245,8 +281,8 @@ onMounted(() => {
   justify-content: center;
   width: 32px;
   height: 32px;
-  background: #FEF3C7;
-  color: #D97706;
+  background: #fef3c7;
+  color: #d97706;
   border-radius: 8px;
   font-size: 18px;
 }
@@ -273,30 +309,30 @@ onMounted(() => {
 .alert-item {
   padding: var(--space-md);
   border-radius: 8px;
-  background: #F8FAFC;
-  border-left: 3px solid #CBD5E1;
+  background: #f8fafc;
+  border-left: 3px solid #cbd5e1;
   transition: all 0.2s ease;
   cursor: pointer;
 }
 
 .alert-item:hover {
-  background: #F1F5F9;
+  background: #f1f5f9;
   transform: translateX(2px);
 }
 
 .alert-item-danger {
-  border-left-color: #EF4444;
-  background: #FEF2F2;
+  border-left-color: #ef4444;
+  background: #fef2f2;
 }
 
 .alert-item-warning {
-  border-left-color: #F59E0B;
-  background: #FFFBEB;
+  border-left-color: #f59e0b;
+  background: #fffbeb;
 }
 
 .alert-time {
   font-size: 12px;
-  color: #64748B;
+  color: #64748b;
   margin-bottom: var(--space-xs);
   font-family: 'Fira Code', monospace;
 }
@@ -315,7 +351,7 @@ onMounted(() => {
 
 .alert-message {
   font-size: 13px;
-  color: #64748B;
+  color: #64748b;
 }
 
 @media (max-width: 1440px) {

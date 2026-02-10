@@ -1,7 +1,7 @@
 <script setup>
+import { ref } from 'vue'
 import Property from '@/views/tslModel/widget/property.vue'
 import Service from '@/views/tslModel/widget/service.vue'
-import { ref } from 'vue'
 
 defineProps(['typeId', 'productId'])
 const radioGroup = ref('property')

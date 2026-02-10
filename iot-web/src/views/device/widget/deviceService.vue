@@ -1,7 +1,7 @@
 <script setup>
-import { callDeviceServiceApi } from '@/api/index.js'
 import { ElMessage } from 'element-plus'
 import { computed, ref } from 'vue'
+import { callDeviceServiceApi } from '@/api/index.js'
 
 const props = defineProps({
   deviceDetail: {

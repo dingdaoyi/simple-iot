@@ -1,9 +1,9 @@
 <script setup>
-import { deviceEventLogsApi } from '@/api/index.js'
-import { DateUtils } from '@/utils/date_utils.js'
-import { useTable } from '@/composables/useTable.js'
-import IotTable from '@/components/IotTable.vue'
 import { computed } from 'vue'
+import { deviceEventLogsApi } from '@/api/index.js'
+import IotTable from '@/components/IotTable.vue'
+import { useTable } from '@/composables/useTable.js'
+import { DateUtils } from '@/utils/date_utils.js'
 
 const props = defineProps({
   deviceDetail: {
@@ -11,7 +11,6 @@ const props = defineProps({
     required: true,
   },
 })
-
 
 const tlsEventOpt = computed(() => props.deviceDetail.tslModel?.events || [])
 

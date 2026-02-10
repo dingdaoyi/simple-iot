@@ -1,5 +1,5 @@
 <script setup>
-import { ArrowRight } from '@element-plus/icons-vue'
+import { ArrowLeft, ArrowRight } from '@element-plus/icons-vue'
 import { useRouter } from 'vue-router'
 
 defineProps({
@@ -23,9 +23,9 @@ function handleBack() {
 </script>
 
 <template>
-  <div class="flex items-center justify-between">
+  <div class="breadcrumb-container">
     <!-- 面包屑导航 -->
-    <el-breadcrumb :separator-icon="separatorIcon" class="text-sm">
+    <el-breadcrumb :separator-icon="separatorIcon" class="text-sm breadcrumb">
       <el-breadcrumb-item
         v-for="(item, index) in breadcrumbs"
         :key="index"
@@ -37,10 +37,64 @@ function handleBack() {
     </el-breadcrumb>
 
     <!-- 返回按钮 -->
-    <el-button type="primary" plain size="small" @click="handleBack">
-      <i class="i-ep-back mr-1" />返回
+    <el-button class="glass-btn glass-btn-secondary" size="small" @click="handleBack">
+      <el-icon :size="14" class="mr-1">
+        <ArrowLeft />
+      </el-icon>
+      返回
     </el-button>
   </div>
 </template>
 
+<style lang="scss" scoped>
+.breadcrumb-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-md);
+}
 
+.breadcrumb {
+  :deep(.el-breadcrumb__item) {
+    .el-breadcrumb__inner {
+      color: var(--iot-color-text-secondary);
+      transition: color var(--transition-fast);
+
+      &:hover {
+        color: var(--iot-color-primary);
+      }
+    }
+
+    &:last-child .el-breadcrumb__inner {
+      color: var(--iot-color-text-primary);
+      font-weight: 500;
+    }
+  }
+
+  :deep(.el-breadcrumb__separator) {
+    color: var(--iot-color-text-muted);
+  }
+}
+
+.glass-btn {
+  min-width: 70px;
+  padding: var(--space-xs) var(--space-md);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--iot-glass-border);
+  transition: all var(--transition-fast);
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+
+  &.glass-btn-secondary {
+    background: var(--iot-glass-bg);
+    color: var(--iot-color-text-secondary);
+
+    &:hover {
+      background: var(--iot-glass-bg-hover);
+      border-color: var(--iot-color-primary);
+      color: var(--iot-color-primary);
+    }
+  }
+}
+</style>

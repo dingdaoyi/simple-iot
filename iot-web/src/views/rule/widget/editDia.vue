@@ -1,4 +1,5 @@
 <script lang="jsx" setup>
+import { ref, watch } from 'vue'
 import {
   deviceListApi,
   messageReceiveListApi,
@@ -8,12 +9,11 @@ import {
   ruleDetailsApi,
   ruleEditApi,
 } from '@/api'
-import { ref } from 'vue'
+import { useForm } from '@/composables/useForm.js'
 
-const props = defineProps(['datas'])
+const props = defineProps(['datas', 'modelValue'])
 
-const emits = defineEmits(['update'])
-
+const emits = defineEmits(['update', 'update:modelValue'])
 
 const ruleTypeOpt = [
   {
@@ -87,12 +87,14 @@ const sourceTypeOpt = [
   },
 ]
 
-const { form, onSubmit, editRef, loading, onClose, dwDialogRef, onReset } = useForm({
+const { form, onSubmit: handleSubmit, editRef, loading } = useForm({
   api: props.datas ? ruleEditApi : ruleAddApi,
   callback: () => {
     emits('update')
+    emits('update:modelValue', false)
   },
 })
+
 function changeProduct() {
   if (form.value.sourceType === 1) {
     form.value.sourceId = form.value.productId
@@ -102,15 +104,15 @@ function changeProduct() {
 async function changeTargetType(value) {
   if (value === 3) {
     const { data } = await messageReceiveListApi()
-    targetListOpt
-      .value = data.map((item) => {
-        return {
-          label: item.name,
-          value: item.id,
-        }
-      })
+    targetListOpt.value = data.map((item) => {
+      return {
+        label: item.name,
+        value: item.id,
+      }
+    })
   }
 }
+
 async function changeProductType() {
   const { data } = await productListApi({ productTypeId: form.value.productTypeId })
   productListOpt.value = data
@@ -132,45 +134,47 @@ async function searchDevice(query) {
     }
   }
 }
+
 async function loadData() {
-  loading.value = true
-  try {
-    const productTypeRes = await productTypeListApi()
-    productTypeListOpt.value = productTypeRes.data
-    if (!props?.datas) {
-      return
-    }
-    const { data } = await ruleDetailsApi(props?.datas.id)
+  const productTypeRes = await productTypeListApi()
+  productTypeListOpt.value = productTypeRes.data
+  if (props?.datas) {
+    const { data } = await ruleDetailsApi(props.datas.id)
     form.value = data
     await changeProductType()
     changeProduct()
     await changeTargetType(form.value.targetType)
     await searchDevice(form.value.sourceName)
   }
-  finally {
-    loading.value = false
-  }
 }
-loadData()
+
+function onSubmit() {
+  handleSubmit()
+}
+
+function onCancel() {
+  emits('update:modelValue', false)
+}
+
+watch(() => props.modelValue, (val) => {
+  if (val) {
+    loadData()
+  }
+}, { immediate: true })
 </script>
 
 <template>
   <el-dialog
-    ref="dwDialogRef"
+    :model-value="modelValue"
     :title="datas?.id ? '编辑' : '新增'"
-    width="1042px"
-    show-footer
-    :footer-type="datas?.id ? 'edit' : 'add'"
-    :left-loading="loading"
-    @left-btn="onSubmit"
-    @close="onClose"
-    @reset="onReset"
+    width="700px"
+    @update:model-value="$emit('update:modelValue', $event)"
   >
     <el-form
       ref="editRef"
       :rules="rules"
       :model="form"
-      :label-width="100"
+      label-width="100px"
     >
       <el-form-item
         label="规则名称"
@@ -185,12 +189,11 @@ loadData()
       <el-form-item
         label="输入类型"
         prop="inputType"
-        class="is-required"
       >
         <el-select
           v-model="form.inputType"
           placeholder="请选择输入类型"
-          class="w-full"
+          style="width: 100%"
           filterable
           clearable
         >
@@ -206,12 +209,11 @@ loadData()
         v-if="form.inputType === 1"
         label="处理类型"
         prop="ruleType"
-        class="is-required"
       >
         <el-select
           v-model="form.ruleType"
           placeholder="处理类型"
-          class="w-full"
+          style="width: 100%"
           filterable
           clearable
         >
@@ -226,12 +228,11 @@ loadData()
       <el-form-item
         label="数据源类型"
         prop="sourceType"
-        class="is-required"
       >
         <el-select
           v-model="form.sourceType"
           placeholder="请选择数据源类型"
-          class="w-full"
+          style="width: 100%"
           filterable
           clearable
         >
@@ -246,12 +247,11 @@ loadData()
       <el-form-item
         label="产品类型"
         prop="productTypeId"
-        class="is-required"
       >
         <el-select
           v-model="form.productTypeId"
           placeholder="请选择产品类型"
-          class="w-full"
+          style="width: 100%"
           filterable
           clearable
           @change="changeProductType"
@@ -267,12 +267,11 @@ loadData()
       <el-form-item
         label="产品"
         prop="productId"
-        class="is-required"
       >
         <el-select
           v-model="form.productId"
           placeholder="请选择产品"
-          class="w-full"
+          style="width: 100%"
           filterable
           clearable
           @change="changeProduct"
@@ -289,12 +288,11 @@ loadData()
         v-if="form.sourceType === 3"
         label="设备"
         prop="sourceId"
-        class="is-required"
       >
         <el-select
           v-model="form.sourceId"
           placeholder="请输入设备编号或名称"
-          class="w-full"
+          style="width: 100%"
           filterable
           remote
           :loading="searchDeviceLoading"
@@ -312,12 +310,11 @@ loadData()
       <el-form-item
         label="输出类型"
         prop="targetType"
-        class="is-required"
       >
         <el-select
           v-model="form.targetType"
           placeholder="请选择输出类型"
-          class="w-full"
+          style="width: 100%"
           filterable
           clearable
           @change="changeTargetType"
@@ -333,12 +330,11 @@ loadData()
       <el-form-item
         label="接收者"
         prop="targetId"
-        class="is-required"
       >
         <el-select
           v-model="form.targetId"
           placeholder="请选择接收者"
-          class="w-full"
+          style="width: 100%"
           filterable
           clearable
         >
@@ -371,6 +367,12 @@ loadData()
         />
       </el-form-item>
     </el-form>
+    <template #footer>
+      <el-button @click="onCancel">取消</el-button>
+      <el-button type="primary" :loading="loading" @click="onSubmit">
+        确定
+      </el-button>
+    </template>
   </el-dialog>
 </template>
 

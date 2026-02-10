@@ -34,7 +34,6 @@ export function productTypeEditeApi(data) {
 }
 
 export function productTypeAddApi(data) {
-  console.log('添加参数:', data)
   return request({
     url: '/product/type',
     method: 'post',

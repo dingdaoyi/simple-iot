@@ -1,56 +1,61 @@
 <script lang="jsx" setup>
+import { ref, watch } from 'vue'
 import { productAddApi, productEditeApi } from '@/api'
-import { ref } from 'vue'
+import { useForm } from '@/composables/useForm.js'
 
-const props = defineProps(['datas', 'productTypeList'])
+const props = defineProps(['datas', 'productTypeList', 'modelValue'])
 
-const emits = defineEmits(['update'])
-
+const emits = defineEmits(['update', 'update:modelValue'])
 
 const rules = ref({
   productTypeId: [{ required: true, message: '产品类型不能为空', trigger: 'change' }],
   model: [{ required: true, message: '产品型号不能为空', trigger: 'blur' }],
 })
 
-const { form, onSubmit, editRef, loading, onClose, dwDialogRef, onReset } = useForm({
+const { form, onSubmit: handleSubmit, editRef, loading } = useForm({
   api: props.datas ? productEditeApi : productAddApi,
   callback: () => {
     emits('update')
+    emits('update:modelValue', false)
   },
 })
 
-if (props?.datas) {
-  form.value = props.datas
+function onSubmit() {
+  handleSubmit()
 }
+
+function onCancel() {
+  emits('update:modelValue', false)
+}
+
+watch(() => props.datas, (val) => {
+  if (val) {
+    form.value = { ...val }
+  }
+}, { immediate: true })
 </script>
 
 <template>
   <el-dialog
-    ref="dwDialogRef"
+    :model-value="modelValue"
     :title="datas?.id ? '编辑' : '新增'"
-    width="1042px"
-    show-footer
-    :footer-type="datas?.id ? 'edit' : 'add'"
-    :left-loading="loading"
-    @left-btn="onSubmit"
-    @close="onClose"
-    @reset="onReset"
+    width="600px"
+    @update:model-value="$emit('update:modelValue', $event)"
   >
     <el-form
       ref="editRef"
       :rules="rules"
       :model="form"
-      :label-width="100"
+      label-width="100px"
     >
       <el-form-item
         label="产品类型"
         prop="productTypeId"
-        class="is-required"
       >
         <el-select
           v-model="form.productTypeId"
           placeholder="请选择产品类型"
-          class="w-full"
+          style="width: 100%"
           filterable
           clearable
         >
@@ -93,6 +98,12 @@ if (props?.datas) {
         />
       </el-form-item>
     </el-form>
+    <template #footer>
+      <el-button @click="onCancel">取消</el-button>
+      <el-button type="primary" :loading="loading" @click="onSubmit">
+        确定
+      </el-button>
+    </template>
   </el-dialog>
 </template>
 

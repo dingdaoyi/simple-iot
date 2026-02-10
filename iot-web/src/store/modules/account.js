@@ -1,5 +1,5 @@
-import { getItem, removeItem, setItem } from '@/utils/storage' // getItem和setItem是封装的操作localStorage的方法
 import { defineStore } from 'pinia'
+import { getItem, removeItem, setItem } from '@/utils/storage' // getItem和setItem是封装的操作localStorage的方法
 
 export const TOKEN = 'VEA-TOKEN'
 

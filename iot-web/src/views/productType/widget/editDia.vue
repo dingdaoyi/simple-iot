@@ -1,20 +1,23 @@
 <script lang="jsx" setup>
-import { productTypeAddApi, productTypeEditeApi } from '@/api'
 import { ref } from 'vue'
+import { productTypeAddApi, productTypeEditeApi } from '@/api'
+import { useForm } from '@/composables/useForm.js'
 
-const props = defineProps(['datas', 'parentId'])
+const props = defineProps(['datas', 'parentId', 'modelValue'])
 
-const emits = defineEmits(['update'])
-
+const emits = defineEmits(['update', 'update:modelValue'])
 
 const rules = ref({
   name: [{ required: true, message: '品名不能为空', trigger: 'blur' }],
 })
 
-const { form, onSubmit, editRef, loading, onClose, dwDialogRef, onReset } = useForm({
+const { form, onSubmit, editRef, loading, onClose, dwDialogRef } = useForm({
   api: props.datas ? productTypeEditeApi : productTypeAddApi,
   callback: () => {
     emits('update')
+  },
+  closeCallback: () => {
+    emits('update:modelValue', false)
   },
   defForm: {
     parentId: props.parentId,
@@ -29,14 +32,11 @@ if (props?.datas) {
 <template>
   <el-dialog
     ref="dwDialogRef"
+    :model-value="modelValue"
     :title="datas?.id ? '编辑' : '新增'"
-    width="1042px"
-    show-footer
-    :footer-type="datas?.id ? 'edit' : 'add'"
-    :left-loading="loading"
-    @left-btn="onSubmit"
+    width="500px"
+    @update:model-value="$emit('update:modelValue', $event)"
     @close="onClose"
-    @reset="onReset"
   >
     <el-form
       ref="editRef"
@@ -47,7 +47,6 @@ if (props?.datas) {
       <el-form-item
         label="品类名称"
         prop="name"
-        class="is-required"
       >
         <el-input
           v-model="form.name"
@@ -62,10 +61,22 @@ if (props?.datas) {
         <el-input
           v-model="form.mark"
           clearable
-          placeholder="请输入户主地址"
+          placeholder="请输入备注"
         />
       </el-form-item>
     </el-form>
+    <template #footer>
+      <el-button @click="onClose">
+        取消
+      </el-button>
+      <el-button
+        type="primary"
+        :loading="loading"
+        @click="onSubmit"
+      >
+        {{ datas?.id ? '保存' : '新增' }}
+      </el-button>
+    </template>
   </el-dialog>
 </template>
 

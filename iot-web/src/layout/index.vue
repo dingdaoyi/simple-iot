@@ -26,6 +26,7 @@ import slider from './widget/slider'
   width: 100%;
   height: 100%;
   background: var(--iot-color-background);
+  transition: background var(--transition-fast);
 }
 
 .layout-content {
@@ -36,9 +37,10 @@ import slider from './widget/slider'
 
 .layout-main {
   flex: 1;
-  padding: var(--space-lg);
+  padding: 0;
   overflow: hidden;
   background: var(--iot-color-background);
+  transition: background var(--transition-fast);
 }
 
 .view-container {

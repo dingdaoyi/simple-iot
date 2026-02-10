@@ -1,5 +1,5 @@
-import login from '@/views/login'
 import { createRouter, createWebHashHistory } from 'vue-router'
+import login from '@/views/login'
 import layoutRout from './modules/layoutRout'
 
 /* 菜单栏的路由 */

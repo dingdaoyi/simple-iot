@@ -1,8 +1,8 @@
 <script setup>
-import { getSmsSupplier, getSmsTemplateType } from '@/api/dict'
-import { addSmsConfig, addSmsTemplate, deleteSmsConfig, deleteSmsTemplate, getSmsConfigList, getSmsTemplateList, sendSms, sendSmsWithTemplate, setDefaultConfig, updateConfigStatus, updateSmsConfig, updateSmsTemplate } from '@/api/sms'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { nextTick, reactive, ref } from 'vue'
+import { getSmsSupplier, getSmsTemplateType } from '@/api/dict'
+import { addSmsConfig, addSmsTemplate, deleteSmsConfig, deleteSmsTemplate, getSmsConfigList, getSmsTemplateList, sendSms, sendSmsWithTemplate, setDefaultConfig, updateConfigStatus, updateSmsConfig, updateSmsTemplate } from '@/api/sms'
 
 const activeTab = ref('config')
 const listLoading = ref(true)
@@ -288,7 +288,7 @@ async function sendSmsMessage() {
         try {
           templateParams = JSON.parse(sendTemp.templateParamsStr)
         }
-        catch (e) {
+        catch {
           ElMessage.error('模板参数格式错误')
           return
         }
