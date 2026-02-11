@@ -35,7 +35,6 @@ build/
 
 .DS_Store
 node_modules
-.DS_Store
 dist
 dist-ssr
 
@@ -51,14 +50,14 @@ pnpm-debug.log*
 
 
 # Editor directories and files
-.idea
 .vscode
 *.suo
 *.ntvs*
 *.njsproj
 *.sln
 *.sw?
-
+.claude
+.run
 package-lock.json
 yarn.lock
 /file/upload/

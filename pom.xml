@@ -43,7 +43,7 @@
         <mybatis-plus.version>3.5.15</mybatis-plus.version>
         <sa-token.version>1.44.0</sa-token.version>
         <knife4j.version>4.5.0</knife4j.version>
-        <mica-mqtt.version>2.5.9</mica-mqtt.version>
+        <mica-mqtt.version>2.5.12</mica-mqtt.version>
         <hutool.version>5.8.42</hutool.version>
         <influxdb.version>1.7.0</influxdb.version>
         <dotenv.version>3.1.0</dotenv.version>
