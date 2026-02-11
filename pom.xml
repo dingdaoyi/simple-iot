@@ -5,7 +5,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>4.0.1</version>
+        <version>4.0.2</version>
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <groupId>com.github.dingdaoyi</groupId>
@@ -43,7 +43,7 @@
         <mybatis-plus.version>3.5.15</mybatis-plus.version>
         <sa-token.version>1.44.0</sa-token.version>
         <knife4j.version>4.5.0</knife4j.version>
-        <mica-mqtt.version>2.5.12</mica-mqtt.version>
+        <mica-mqtt.version>2.5.11</mica-mqtt.version>
         <hutool.version>5.8.42</hutool.version>
         <influxdb.version>1.7.0</influxdb.version>
         <dotenv.version>3.1.0</dotenv.version>
@@ -52,6 +52,10 @@
         <sms4j.version>3.3.4</sms4j.version>
         <aws-java-sdk.version>2.40.15</aws-java-sdk.version>
         <lombok.version>1.18.42</lombok.version>
+        <!-- 脚本引擎 -->
+        <graalvm-js.version>24.1.1</graalvm-js.version>
+        <groovy.version>4.0.24</groovy.version>
+        <jython.version>2.7.4</jython.version>
     </properties>
     <dependencyManagement>
         <dependencies>
@@ -145,6 +149,38 @@
                 <artifactId>lombok</artifactId>
                 <version>${lombok.version}</version>
                 <scope>provided</scope>
+            </dependency>
+
+            <!-- 脚本引擎 - GraalVM JavaScript (Java 21+) -->
+            <dependency>
+                <groupId>org.graalvm.polyglot</groupId>
+                <artifactId>polyglot</artifactId>
+                <version>${graalvm-js.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.graalvm.polyglot</groupId>
+                <artifactId>js</artifactId>
+                <version>${graalvm-js.version}</version>
+                <type>pom</type>
+            </dependency>
+
+            <!-- Groovy 脚本引擎 -->
+            <dependency>
+                <groupId>org.apache.groovy</groupId>
+                <artifactId>groovy</artifactId>
+                <version>${groovy.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.groovy</groupId>
+                <artifactId>groovy-jsr223</artifactId>
+                <version>${groovy.version}</version>
+            </dependency>
+
+            <!-- Jython (Python for JVM) -->
+            <dependency>
+                <groupId>org.python</groupId>
+                <artifactId>jython-standalone</artifactId>
+                <version>${jython.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>

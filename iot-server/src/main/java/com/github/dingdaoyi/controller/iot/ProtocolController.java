@@ -24,8 +24,11 @@ public class ProtocolController {
 
     @GetMapping
     @Operation(summary = "协议列表")
-    public BaseResult<List<Protocol>> list() {
-        return BaseResult.success(protocolService.list());
+    public BaseResult<List<Protocol>> list(
+            @RequestParam(required = false) String name,
+            @RequestParam(required = false) Integer protoType,
+            @RequestParam(required = false) Integer status) {
+        return BaseResult.success(protocolService.list(name, protoType, status));
     }
 
     @PostMapping
@@ -47,5 +50,11 @@ public class ProtocolController {
             return BaseResult.fail("协议已被引用,无法删除");
         }
         return BaseResult.success(protocolService.removeById(id));
+    }
+
+    @PutMapping("/{id}/status")
+    @Operation(summary = "设置协议状态")
+    public BaseResult<Boolean> setStatus(@PathVariable Integer id, @RequestParam Boolean enable) {
+        return BaseResult.success(protocolService.setProtocolStatus(id, enable));
     }
 }

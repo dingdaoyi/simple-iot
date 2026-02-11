@@ -2,8 +2,8 @@ package com.github.dingdaoyi.config.base;
 
 import io.github.cdimascio.dotenv.Dotenv;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.boot.EnvironmentPostProcessor;
 import org.springframework.boot.SpringApplication;
-import org.springframework.boot.env.EnvironmentPostProcessor;
 import org.springframework.core.env.ConfigurableEnvironment;
 
 /**

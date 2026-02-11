@@ -48,7 +48,7 @@ function getThemeIcon() {
         <el-icon :size="24" class="logo-icon">
           <Lightning />
         </el-icon>
-        <span class="logo-text">消智云 IoT</span>
+        <span class="logo-text">简单 IoT</span>
       </div>
     </div>
     <div class="header-right">

@@ -38,7 +38,7 @@ const column = [
   {
     prop: 'cz',
     slot: 'cz',
-    width: 240,
+    width: 280,
     label: '操作',
   },
 ]
@@ -53,6 +53,7 @@ const {
   loading,
   onDelete,
   onAdd,
+  onEdit,
   diaTitle,
   currentItem,
   onPageChange,
@@ -183,7 +184,10 @@ onMounted(() => {
           <el-button type="primary" link @click="tslConfig(row)">
             功能配置
           </el-button>
-          <el-button v-if="row.parentId === -1" type="primary" link @click="onAddChild(row)">
+          <el-button type="primary" link @click="onEdit(row)">
+            编辑
+          </el-button>
+          <el-button v-if="row.parentId === -1" type="success" link @click="onAddChild(row)">
             添加子级
           </el-button>
           <el-button type="danger" link @click="onDelete(row)">

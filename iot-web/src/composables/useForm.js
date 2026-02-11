@@ -12,6 +12,7 @@ export function useForm(options = {}) {
     successMsg = '操作成功',
     errorMsg = '操作失败',
     callback,
+    closeCallback,
     defForm = {},
   } = options
 
@@ -54,9 +55,11 @@ export function useForm(options = {}) {
     }
   }
 
-  // 关闭前的处理（可选）
-  const beforeClose = () => {
-    // 可以在这里添加关闭前的逻辑，比如表单重置
+  // 关闭对话框
+  const onClose = () => {
+    if (closeCallback) {
+      closeCallback()
+    }
   }
 
   // 设置表单数据
@@ -75,7 +78,7 @@ export function useForm(options = {}) {
     onSubmit,
     editRef,
     loading,
-    beforeClose,
+    onClose,
     setForm,
     resetForm,
   }

@@ -62,4 +62,13 @@ public class SmsConfig extends BaseEntity {
     
     @Schema(description = "状态 1启用 2禁用")
     private Integer status;
+
+    // ==================== 业务方法 ====================
+
+    /**
+     * 是否为启用状态
+     */
+    public boolean isEnabled() {
+        return status != null && status == 1;
+    }
 }

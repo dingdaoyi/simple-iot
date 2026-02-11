@@ -1,6 +1,8 @@
 <script setup>
+import { h } from 'vue'
+import { ElTag, ElMessage, ElMessageBox } from 'element-plus'
 import { onMounted } from 'vue'
-import { protocolDeleteApi, protocolListApi } from '@/api/index.js'
+import { protocolDeleteApi, protocolListApi, protocolSetStatusApi } from '@/api/index.js'
 import IotTable from '@/components/IotTable.vue'
 import { useTable } from '@/composables/useTable.js'
 import EditDia from '@/views/protocol/widget/editDia.vue'
@@ -9,31 +11,49 @@ const protocolTypeOpt = [
   {
     label: 'JAVA',
     value: 1,
+    color: 'warning',
   },
   {
     label: '系统默认',
     value: 2,
+    color: 'info',
   },
   {
     label: 'JAVASCRIPT',
     value: 3,
+    color: 'success',
   },
 ]
+
+const scriptLangOpt = {
+  javascript: { label: 'JavaScript', icon: '📜' },
+  python: { label: 'Python', icon: '🐍' },
+  groovy: { label: 'Groovy', icon: '☕' },
+  lua: { label: 'Lua', icon: '🌙' },
+}
 
 const column = [
   {
     prop: 'name',
     label: '协议名称',
     width: 180,
+    fixed: 'left',
+  },
+  {
+    prop: 'status',
+    label: '状态',
+    width: 100,
+    render({ row }) {
+      return h(ElTag, { type: row.status === 1 ? 'success' : 'info' }, () => row.status === 1 ? '已启用' : '已禁用')
+    },
   },
   {
     prop: 'protoType',
     label: '协议类型',
     width: 120,
     render({ row }) {
-      return protocolTypeOpt
-        .find(item => item.value === row.protoType)
-        ?.label || '-'
+      const opt = protocolTypeOpt.find(item => item.value === row.protoType)
+      return opt ? h(ElTag, { type: opt.color }, () => opt.label) : '-'
     },
   },
   {
@@ -42,17 +62,38 @@ const column = [
     width: 160,
   },
   {
+    prop: 'scriptLang',
+    label: '脚本语言',
+    width: 120,
+    render({ row }) {
+      if (row.protoType !== 3) return '-'
+      const lang = scriptLangOpt[row.scriptLang]
+      return lang ? `${lang.icon} ${lang.label}` : '-'
+    },
+  },
+  {
     prop: 'handlerClass',
     label: '处理入口',
+    minWidth: 200,
+    showOverflowTooltip: true,
+  },
+  {
+    prop: 'url',
+    label: '文件路径',
+    minWidth: 180,
+    showOverflowTooltip: true,
   },
   {
     prop: 'mark',
-    label: '备注',
+    label: '备注说明',
+    minWidth: 150,
+    showOverflowTooltip: true,
   },
   {
     prop: 'cz',
     slot: 'cz',
-    width: 120,
+    width: 200,
+    fixed: 'right',
     label: '操作',
   },
 ]
@@ -82,6 +123,36 @@ function closeEdite() {
   updatePage()
 }
 
+function onEdit(row) {
+  currentItem.value = row
+  dialogVisible.value = true
+}
+
+async function toggleStatus(row) {
+  const newStatus = row.status !== 1
+  const action = newStatus ? '启用' : '禁用'
+
+  try {
+    await ElMessageBox.confirm(
+      `确认要${action}协议 "${row.name}" 吗？${newStatus ? '启用后协议将被加载到内存中。' : '禁用后协议将从内存中卸载。'}`,
+      '操作确认',
+      {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning',
+      },
+    )
+    await protocolSetStatusApi(row.id, newStatus)
+    row.status = newStatus ? 1 : 2
+    ElMessage.success(`协议已${action}`)
+  }
+  catch (error) {
+    if (error !== 'cancel') {
+      ElMessage.error(`操作失败: ${error.message || '未知错误'}`)
+    }
+  }
+}
+
 onMounted(() => {
   updatePage()
 })
@@ -97,7 +168,7 @@ onMounted(() => {
           协议管理
         </h1>
         <p class="page-subtitle">
-          管理设备通信协议与解析规则
+          管理设备通信协议，支持 Java、JavaScript 等多种协议类型
         </p>
       </div>
     </div>
@@ -112,6 +183,7 @@ onMounted(() => {
               placeholder="选择协议类型"
               filterable
               clearable
+              style="width: 150px"
             >
               <el-option
                 v-for="item in protocolTypeOpt"
@@ -122,12 +194,39 @@ onMounted(() => {
             </el-select>
           </el-form-item>
 
+          <el-form-item label="脚本语言">
+            <el-select
+              v-model="params.scriptLang"
+              placeholder="选择脚本语言"
+              filterable
+              clearable
+              style="width: 150px"
+            >
+              <el-option
+                v-for="(lang, key) in scriptLangOpt"
+                :key="key"
+                :label="lang.label"
+                :value="key"
+              />
+            </el-select>
+          </el-form-item>
+
           <el-form-item label="协议名称">
-            <el-input v-model="params.name" clearable placeholder="输入协议名称" />
+            <el-input
+              v-model="params.name"
+              clearable
+              placeholder="输入协议名称"
+              style="width: 200px"
+            />
           </el-form-item>
 
           <el-form-item label="协议 Key">
-            <el-input v-model="params.protoKey" clearable placeholder="输入协议 Key" />
+            <el-input
+              v-model="params.protoKey"
+              clearable
+              placeholder="输入协议 Key"
+              style="width: 180px"
+            />
           </el-form-item>
         </div>
 
@@ -145,7 +244,7 @@ onMounted(() => {
     </div>
 
     <!-- 数据表格 -->
-    <div class="table-wrapper">
+    <div class="table-wrapper glass-card">
       <IotTable
         :columns="column"
         :data="tableData"
@@ -157,7 +256,22 @@ onMounted(() => {
         @size-change="onSizeChange"
       >
         <template #cz="{ row }">
-          <el-button v-if="row.protoType !== 2" type="danger" link @click="onDelete(row)">
+          <el-button
+            :type="row.status === 1 ? 'warning' : 'success'"
+            link
+            @click="toggleStatus(row)"
+          >
+            {{ row.status === 1 ? '禁用' : '启用' }}
+          </el-button>
+          <el-button type="primary" link @click="onEdit(row)">
+            编辑
+          </el-button>
+          <el-button
+            v-if="row.protoType !== 2"
+            type="danger"
+            link
+            @click="onDelete(row)"
+          >
             删除
           </el-button>
         </template>
@@ -246,8 +360,6 @@ onMounted(() => {
     gap: var(--space-md);
 
     .el-form-item {
-      flex: 1;
-      min-width: 200px;
       margin-bottom: 0;
     }
   }
@@ -280,6 +392,11 @@ onMounted(() => {
 
     .el-form-item {
       width: 100%;
+
+      :deep(.el-select),
+      :deep(.el-input) {
+        width: 100% !important;
+      }
     }
   }
 

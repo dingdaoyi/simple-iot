@@ -57,6 +57,11 @@ const props = defineProps({
     type: Boolean,
     default: false,
   },
+  // 是否自适应列宽（铺满表格）
+  autoFit: {
+    type: Boolean,
+    default: true,
+  },
 })
 
 const emit = defineEmits(['pageChange', 'sizeChange', 'selectionChange'])
@@ -123,12 +128,9 @@ function selectionChange(selection) {
   emit('selectionChange', selection)
 }
 
-// 渲染函数
-function renderCell(row, column, renderFn) {
-  if (typeof renderFn === 'function') {
-    return renderFn({ row, column })
-  }
-  return row[column.prop]
+// 判断是否为 VNode
+function isVNode(value) {
+  return value && typeof value === 'object' && ('__v_isVNode' in value || '$el' in value || 'type' in value)
 }
 
 // 旧风格：通过 API 获取数据
@@ -181,6 +183,7 @@ defineExpose({
       :data="tableData"
       :loading="tableLoading"
       :row-key="rowKey"
+      :table-layout="autoFit ? 'auto' : 'fixed'"
       stripe
       style="width: 100%"
       @selection-change="selectionChange"
@@ -213,9 +216,10 @@ defineExpose({
         :prop="col.prop"
         :label="col.label"
         :width="col.width"
-        :min-width="col.minWidth"
+        :min-width="col.minWidth || (autoFit && !col.width ? 120 : undefined)"
         :fixed="col.fixed"
-        :align="col.align || 'left'"
+        :align="col.align || 'center'"
+        header-align="center"
       >
         <template #default="{ row, $index }">
           <slot
@@ -225,11 +229,14 @@ defineExpose({
             :column="col"
             :index="$index"
           />
+          <!-- VNode 渲染 -->
           <component
-            :is="renderCell(row, col, col.render)"
-            v-else-if="col.render"
+            :is="col.render({ row, column: col })"
+            v-else-if="col.render && isVNode(col.render({ row, column: col }))"
           />
-          <span v-else>{{ row[col.prop] }}</span>
+          <!-- 字符串/普通值渲染 -->
+          <span v-else-if="col.render">{{ col.render({ row, column: col }) ?? row[col.prop] ?? '-' }}</span>
+          <span v-else>{{ row[col.prop] ?? '-' }}</span>
         </template>
       </el-table-column>
       <slot name="operations" />
@@ -247,6 +254,19 @@ defineExpose({
         @size-change="sizeChange"
       />
     </div>
+
+    <!-- 空状态提示 -->
+    <div
+      v-if="!tableLoading && tableData.length === 0"
+      class="iot-table-empty"
+    >
+      <div class="empty-icon">
+        📭
+      </div>
+      <div class="empty-text">
+        暂无数据
+      </div>
+    </div>
   </div>
 </template>
 
@@ -260,6 +280,7 @@ defineExpose({
   padding: var(--space-lg);
   box-shadow: var(--shadow-md);
   transition: all var(--transition-base);
+  position: relative;
 }
 
 :deep(.el-table) {
@@ -380,6 +401,27 @@ defineExpose({
         }
       }
     }
+  }
+}
+
+// 空状态
+.iot-table-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-2xl) var(--space-xl);
+  min-height: 200px;
+
+  .empty-icon {
+    font-size: 48px;
+    margin-bottom: var(--space-md);
+    opacity: 0.5;
+  }
+
+  .empty-text {
+    color: var(--iot-color-text-muted);
+    font-size: 14px;
   }
 }
 </style>

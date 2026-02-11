@@ -13,6 +13,7 @@ public enum ExceptionType {
     NULL_CONFIGURED_PARAMETER(2005,"参数未配置对应物模型"),
     DEVICE_NOT_CONNECTED(2006,"设备未连接或连接已关闭"),
     CLIENT_BROKEN(2007,"客户端断开"),
+    SYSTEM_ERROR(2008,"解析错误" ),
     ;
 
     public final int code;

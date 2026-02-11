@@ -25,6 +25,7 @@ import java.util.stream.Collectors;
  * @author dingyunwei
  */
 @Slf4j
+@Service
 public class DefaultProtocolDecoder implements ProtocolDecoder {
 
     @Override

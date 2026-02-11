@@ -17,6 +17,13 @@ public class ProtocolException extends Exception {
         this.type = type;
         this.messageId = messageId;
     }
+
+    public ProtocolException(String deviceKey, ExceptionType type, Integer messageId,String message) {
+        super(message);
+        this.deviceKey = deviceKey;
+        this.type = type;
+        this.messageId = messageId;
+    }
     public ProtocolException(String deviceKey, ExceptionType type) {
         this(deviceKey, type, null);
     }

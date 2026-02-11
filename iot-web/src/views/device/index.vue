@@ -17,22 +17,18 @@ const column = [
   {
     prop: 'productTypeName',
     label: '产品类型',
-    width: 140,
   },
   {
     prop: 'productModel',
     label: '型号',
-    width: 140,
   },
   {
     prop: 'manufacturer',
     label: '厂家',
-    width: 120,
   },
   {
     prop: 'deviceName',
     label: '设备名称',
-    width: 160,
   },
   {
     prop: 'deviceKey',
@@ -42,7 +38,7 @@ const column = [
   {
     prop: 'online',
     label: '在线状态',
-    width: 100,
+    width: 120,
     render({ row }) {
       const data = onlineOpts.find(o => o.value === row.online)
       return data?.render() || '-'
@@ -51,7 +47,7 @@ const column = [
   {
     prop: 'activeStatus',
     label: '激活状态',
-    width: 100,
+    width: 120,
     render({ row }) {
       const data = activateOpts.find(o => o.value === row.activeStatus)
       return data?.render() || '-'
@@ -60,7 +56,7 @@ const column = [
   {
     prop: 'cz',
     slot: 'cz',
-    width: 240,
+    width: 220,
     label: '操作',
   },
 ]

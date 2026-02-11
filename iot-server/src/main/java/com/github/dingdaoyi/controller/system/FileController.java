@@ -41,7 +41,7 @@ public class FileController {
     @Operation(summary ="文件上传")
     @PostMapping("/file/upload")
     @SneakyThrows(Exception.class)
-    public BaseResult<List<String>> uploadFile(@RequestParam("files") MultipartFile file) {
+    public BaseResult<List<String>> uploadFile(@RequestParam("file") MultipartFile file) {
         if (file == null) {
             BaseResult.fail("文件不能为空");
         }
@@ -55,23 +55,23 @@ public class FileController {
         String path = request.getRequestURI();
         String filePath = StringUtils.substringAfter(path, "file");
         filePath = URLDecoder.decode(filePath, StandardCharsets.UTF_8);
-        
+
         FileMetadata metadata = storageService.getFileMetadata(filePath);
-        
+
         if (!metadata.isExists()) {
             response.setStatus(HttpServletResponse.SC_NOT_FOUND);
             response.getWriter().write("File not found: " + filePath);
             return;
         }
-        
+
         // 设置响应头
         if (metadata.getContentType() != null) {
             response.setContentType(metadata.getContentType());
         }
         response.setContentLengthLong(metadata.getContentLength());
-        response.setHeader("Content-Disposition", "attachment; filename=\"" 
+        response.setHeader("Content-Disposition", "attachment; filename=\""
                                                   + URLEncoder.encode(metadata.getFilename(), StandardCharsets.UTF_8) + "\"");
-        
+
         try (InputStream inputStream = metadata.getInputStream();
              OutputStream outputStream = response.getOutputStream()) {
             FileCopyUtils.copy(inputStream, outputStream);

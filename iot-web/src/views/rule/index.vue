@@ -72,7 +72,7 @@ const column = [
     formatter(row) {
       return ruleTypeOpt
         .find(item => item.value === row.ruleType)
-        ?.label
+        ?.label ?? row.ruleType ?? '-'
     },
   },
   {
@@ -81,7 +81,7 @@ const column = [
     formatter(row) {
       return inputTypeOpt
         .find(item => item.value === row.inputType)
-        ?.label
+        ?.label ?? row.inputType ?? '-'
     },
   },
   {
@@ -90,7 +90,7 @@ const column = [
     formatter(row) {
       return sourceTypeOpt
         .find(item => item.value === row.sourceType)
-        ?.label
+        ?.label ?? row.sourceType ?? '-'
     },
   },
   {
@@ -104,7 +104,7 @@ const column = [
     formatter(row) {
       return targetTypeOpt
         .find(item => item.value === row.targetType)
-        ?.label
+        ?.label ?? row.targetType ?? '-'
     },
   },
   {

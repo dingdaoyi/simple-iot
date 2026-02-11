@@ -19,8 +19,8 @@ public class TcpServerManager {
 
     public void startServer(int port, ChannelInboundHandlerAdapter handler) {
         Thread.startVirtualThread(() -> {
-            EventLoopGroup bossGroup =  new MultiThreadIoEventLoopGroup(NioIoHandler.newFactory());
-            EventLoopGroup workerGroup =  new MultiThreadIoEventLoopGroup(NioIoHandler.newFactory());
+            EventLoopGroup bossGroup =  new NioEventLoopGroup(1);
+            EventLoopGroup workerGroup =  new NioEventLoopGroup();
             try {
                 ServerBootstrap b = new ServerBootstrap();
                 b.group(bossGroup, workerGroup)

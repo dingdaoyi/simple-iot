@@ -294,7 +294,7 @@ export function protocolEditApi(data) {
 }
 
 /**
- * 协议添加
+ * 协议删除
  * @param id
  * @returns {*}
  */
@@ -302,6 +302,20 @@ export function protocolDeleteApi(id) {
   return request({
     url: `/protocol/${id}`,
     method: 'delete',
+  })
+}
+
+/**
+ * 协议设置状态
+ * @param id 协议ID
+ * @param enable true=启用, false=禁用
+ * @returns {*}
+ */
+export function protocolSetStatusApi(id, enable) {
+  return request({
+    url: `/protocol/${id}/status`,
+    method: 'put',
+    params: { enable },
   })
 }
 

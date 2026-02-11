@@ -15,6 +15,8 @@ import io.netty.channel.*;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
+
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 /**
@@ -101,5 +103,18 @@ public class TcpDeviceTransport implements DeviceTransport {
             TcpChannelManager.ChannelContext context = channelManager.getContext(ctx.channel());
             authProcessor.process(ctx.channel(), data, context, parser);
         }
+
+        @Override
+        public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
+            if (cause instanceof IllegalArgumentException) {
+                log.error("连接无效,{}",cause.getMessage());
+                if (cause.getMessage() != null) {
+                    ctx.writeAndFlush(cause.getMessage().getBytes(StandardCharsets.UTF_8));
+                }
+                ctx.close();
+            } else {
+                super.exceptionCaught(ctx, cause);
+            }
+        }
     }
-} 
+}

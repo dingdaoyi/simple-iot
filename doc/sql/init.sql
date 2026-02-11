@@ -630,7 +630,10 @@ CREATE TABLE "public"."tb_protocol" (
   "url" varchar(50) COLLATE "pg_catalog"."default" NOT NULL DEFAULT ''::character varying,
   "mark" varchar(255) COLLATE "pg_catalog"."default" NOT NULL DEFAULT ''::character varying,
   "proto_key" varchar(50) COLLATE "pg_catalog"."default" NOT NULL DEFAULT ''::character varying,
-  "handler_class" varchar(255) COLLATE "pg_catalog"."default" NOT NULL DEFAULT ''::character varying
+  "handler_class" varchar(255) COLLATE "pg_catalog"."default" NOT NULL DEFAULT ''::character varying,
+  "script_content" TEXT,
+  "script_lang" VARCHAR(20),
+  "status" INTEGER DEFAULT 1
 )
 ;
 COMMENT ON COLUMN "public"."tb_protocol"."id" IS 'id';
@@ -639,6 +642,9 @@ COMMENT ON COLUMN "public"."tb_protocol"."proto_type" IS '协议类型';
 COMMENT ON COLUMN "public"."tb_protocol"."url" IS '协议包地址';
 COMMENT ON COLUMN "public"."tb_protocol"."mark" IS '协议描述';
 COMMENT ON COLUMN "public"."tb_protocol"."proto_key" IS '协议key';
+COMMENT ON COLUMN "public"."tb_protocol"."script_content" IS '脚本内容 (用于脚本类型协议)';
+COMMENT ON COLUMN "public"."tb_protocol"."script_lang" IS '脚本语言类型 (javascript, groovy, python, lua)';
+COMMENT ON COLUMN "public"."tb_protocol"."status" IS '状态 (1=启用, 2=禁用)';
 
 -- ----------------------------
 -- Records of tb_protocol

@@ -47,6 +47,12 @@ public class ProductTypeController {
         return BaseResult.success(productTypeService.add(query.toEntity()));
     }
 
+    @PutMapping
+    @Operation(summary = "修改产品类型")
+    public BaseResult<Boolean> update(@RequestBody @Valid ProductTypeAddQuery query) {
+        return BaseResult.success(productTypeService.updateById(query.toEntity()));
+    }
+
     @PutMapping("status/{id}")
     @Operation(summary = "修改产品类型状态")
     public BaseResult<Boolean> updateStatus(@RequestParam @Min(value = 1, message = "状态必须是1和2")

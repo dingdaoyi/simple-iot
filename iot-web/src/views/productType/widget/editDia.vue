@@ -1,5 +1,5 @@
 <script lang="jsx" setup>
-import { ref } from 'vue'
+import { ref, watch } from 'vue'
 import { productTypeAddApi, productTypeEditeApi } from '@/api'
 import { useForm } from '@/composables/useForm.js'
 
@@ -11,10 +11,11 @@ const rules = ref({
   name: [{ required: true, message: '品名不能为空', trigger: 'blur' }],
 })
 
-const { form, onSubmit, editRef, loading, onClose, dwDialogRef } = useForm({
+const { form, onSubmit: handleSubmit, editRef, loading, onClose } = useForm({
   api: props.datas ? productTypeEditeApi : productTypeAddApi,
   callback: () => {
     emits('update')
+    emits('update:modelValue', false)
   },
   closeCallback: () => {
     emits('update:modelValue', false)
@@ -25,13 +26,12 @@ const { form, onSubmit, editRef, loading, onClose, dwDialogRef } = useForm({
 })
 
 if (props?.datas) {
-  form.value = props.datas
+  form.value = { ...props.datas }
 }
 </script>
 
 <template>
   <el-dialog
-    ref="dwDialogRef"
     :model-value="modelValue"
     :title="datas?.id ? '编辑' : '新增'"
     width="500px"

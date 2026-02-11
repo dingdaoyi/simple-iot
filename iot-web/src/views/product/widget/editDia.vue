@@ -12,20 +12,19 @@ const rules = ref({
   model: [{ required: true, message: '产品型号不能为空', trigger: 'blur' }],
 })
 
-const { form, onSubmit: handleSubmit, editRef, loading } = useForm({
+const { form, onSubmit: handleSubmit, editRef, loading, onClose } = useForm({
   api: props.datas ? productEditeApi : productAddApi,
   callback: () => {
     emits('update')
+    emits('update:modelValue', false)
+  },
+  closeCallback: () => {
     emits('update:modelValue', false)
   },
 })
 
 function onSubmit() {
   handleSubmit()
-}
-
-function onCancel() {
-  emits('update:modelValue', false)
 }
 
 watch(() => props.datas, (val) => {
@@ -41,6 +40,7 @@ watch(() => props.datas, (val) => {
     :title="datas?.id ? '编辑' : '新增'"
     width="600px"
     @update:model-value="$emit('update:modelValue', $event)"
+    @close="onClose"
   >
     <el-form
       ref="editRef"
@@ -99,7 +99,7 @@ watch(() => props.datas, (val) => {
       </el-form-item>
     </el-form>
     <template #footer>
-      <el-button @click="onCancel">取消</el-button>
+      <el-button @click="onClose">取消</el-button>
       <el-button type="primary" :loading="loading" @click="onSubmit">
         确定
       </el-button>

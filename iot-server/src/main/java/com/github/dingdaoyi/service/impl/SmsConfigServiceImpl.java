@@ -70,7 +70,7 @@ public class SmsConfigServiceImpl extends ServiceImpl<SmsConfigMapper, SmsConfig
             SmsConfig config;
             if (query.getConfigId() != null) {
                 config = getById(query.getConfigId());
-                if (config == null || config.getStatus() != 1) {
+                if (config == null || !config.isEnabled()) {
                     log.error("短信配置不存在或已禁用: {}", query.getConfigId());
                     return false;
                 }
