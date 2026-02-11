@@ -28,9 +28,7 @@ public class DeviceKeyParserLoader implements ApplicationContextAware {
     public static Collection<DeviceKeyParser> allParsers() {
         return PARSER_MAP.values();
     }
-    public static Map<String, DeviceKeyParser> getParserMap() {
-        return PARSER_MAP;
-    }
+
 
     @Override
     public void setApplicationContext(ApplicationContext context) throws BeansException {

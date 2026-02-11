@@ -2,6 +2,7 @@ package com.github.dingdaoyi.core.base;
 
 import com.github.dingdaoyi.core.enums.ResultCode;
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
 import java.util.Iterator;
@@ -48,7 +49,6 @@ public class PageResult<T> implements Iterable<T>{
     public static <T> PageResult<T> of(List<T> records, Long total, Long current, Long size) {
         return new PageResult<>(records, total, current, size);
     }
-
     @Override
     public Iterator<T> iterator() {
         return data.iterator();

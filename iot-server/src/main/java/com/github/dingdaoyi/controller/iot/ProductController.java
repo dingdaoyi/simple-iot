@@ -69,10 +69,10 @@ public class ProductController {
     @DeleteMapping("{id}")
     @Operation(summary = "删除产品")
     public BaseResult<Boolean> delete(@PathVariable Integer id) {
-        if (modelServiceService.existsByProduct((Integer) id)) {
+        if (modelServiceService.existsByProduct(id)) {
             throw new BusinessException(ResultCode.BAD_REQUEST.getCode(), "产品下存在物模型信息, 无法删除");
         }
-        if (modelPropertyService.existsByProduct((Integer) id)) {
+        if (modelPropertyService.existsByProduct(id)) {
             throw new BusinessException(ResultCode.BAD_REQUEST.getCode(), "产品下存在物模型信息, 无法删除");
         }
         return BaseResult.success(productService.removeById(id));

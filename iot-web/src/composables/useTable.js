@@ -69,6 +69,10 @@ export function useTable(options = {}) {
 
   // 新增
   const onAdd = (title) => {
+    // 如果第一个参数是事件对象，忽略它
+    if (title && typeof title === 'object' && title.type) {
+      title = null
+    }
     diaTitle.value = title || `新增${diaName}`
     currentItem.value = null
     dialogVisible.value = true
@@ -76,6 +80,10 @@ export function useTable(options = {}) {
 
   // 编辑
   const onEdit = (row, title) => {
+    // 如果第二个参数是事件对象，忽略它
+    if (title && typeof title === 'object' && title.type) {
+      title = null
+    }
     diaTitle.value = title || `编辑${diaName}`
     currentItem.value = { ...row }
     dialogVisible.value = true

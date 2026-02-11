@@ -1,6 +1,7 @@
 package com.github.dingdaoyi.driver.tcp.core;
 
 import com.github.dingdaoyi.core.driver.DeviceKeyParser;
+import com.github.dingdaoyi.driver.tcp.TcpDeviceConnection;
 import com.github.dingdaoyi.model.DTO.DeviceDTO;
 import com.github.dingdaoyi.proto.model.DeviceRequest;
 import com.github.dingdaoyi.iot.IotDataProcessor;
@@ -32,9 +33,9 @@ public class TcpAuthProcessor {
                     context.setAuthenticated(true);
                     context.setDeviceKey(deviceKey);
                     // 认证通过后，处理当前数据和缓存数据
-                    handleDeviceData(deviceOpt.get(), data);
+                    handleDeviceData(deviceOpt.get(), data, channel);
                     for (byte[] cacheData : context.getCache()) {
-                        handleDeviceData(deviceOpt.get(), cacheData);
+                        handleDeviceData(deviceOpt.get(), cacheData, channel);
                     }
                     context.getCache().clear();
                 } else {
@@ -49,22 +50,22 @@ public class TcpAuthProcessor {
         } else {
             // 已认证，直接处理
             Optional<DeviceDTO> deviceOpt = deviceService.getByDeviceKey(context.getDeviceKey());
-            deviceOpt.ifPresent(device -> handleDeviceData(device, data));
+            deviceOpt.ifPresent(device -> handleDeviceData(device, data, channel));
         }
     }
 
-    private void handleDeviceData(DeviceDTO device, byte[] data) {
-        String protocolKey = device.getProtoKey();
-        String productKey = device.getProductKey();
+    private void handleDeviceData(DeviceDTO device, byte[] data, Channel channel) {
         DeviceRequest request = new DeviceRequest();
         request.setDeviceKey(device.getDeviceKey());
-        request.setProtoKey(protocolKey);
-        request.setProductKey(productKey);
+        request.setProtoKey(device.getProtoKey());
+        request.setProductKey(device.getProductKey());
         request.setData(data);
+        // 设置 TCP 连接对象，用于错误响应
+        request.setConnection(new TcpDeviceConnection(device.getDeviceKey(), device.getProductKey(), channel));
         try {
             dataProcessor.messageUp(request);
         } catch (Exception e) {
             log.error("协议解析失败", e);
         }
     }
-} 
+}

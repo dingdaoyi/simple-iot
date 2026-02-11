@@ -30,8 +30,8 @@ public interface ProtocolDecoder {
 
     /**
      * 回复错误信息
-     * @param connection
-     * @param e
+     * @param connection  设备连接
+     * @param e 错误异常
      */
     void responseError(DeviceConnection connection, ProtocolException e);
 }

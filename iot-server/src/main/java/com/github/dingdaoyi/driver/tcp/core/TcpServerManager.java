@@ -3,6 +3,7 @@ package com.github.dingdaoyi.driver.tcp.core;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
+import io.netty.channel.nio.NioIoHandler;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import lombok.extern.slf4j.Slf4j;
@@ -18,8 +19,8 @@ public class TcpServerManager {
 
     public void startServer(int port, ChannelInboundHandlerAdapter handler) {
         Thread.startVirtualThread(() -> {
-            EventLoopGroup bossGroup = new NioEventLoopGroup(1);
-            EventLoopGroup workerGroup = new NioEventLoopGroup();
+            EventLoopGroup bossGroup =  new MultiThreadIoEventLoopGroup(NioIoHandler.newFactory());
+            EventLoopGroup workerGroup =  new MultiThreadIoEventLoopGroup(NioIoHandler.newFactory());
             try {
                 ServerBootstrap b = new ServerBootstrap();
                 b.group(bossGroup, workerGroup)
@@ -47,4 +48,4 @@ public class TcpServerManager {
         portChannelMap.values().forEach(Channel::close);
         portChannelMap.clear();
     }
-} 
+}

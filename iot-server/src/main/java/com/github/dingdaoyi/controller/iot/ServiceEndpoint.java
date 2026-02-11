@@ -24,6 +24,7 @@ import java.util.Map;
 public class ServiceEndpoint {
     private ServiceHandler serviceHandler;
 
+    //TODO 指令下发记录日志如果错误需要知道原因
     @PostMapping("/{deviceKey}/{identifier}")
     @Operation(summary = "调用设备服务")
     public BaseResult<Map<String, Object>> sendMessage(
