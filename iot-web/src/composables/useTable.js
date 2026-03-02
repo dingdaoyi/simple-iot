@@ -114,7 +114,6 @@ export function useTable(options = {}) {
     catch (error) {
       if (error !== 'cancel') {
         console.error('删除失败:', error)
-        ElMessage.error('删除失败')
       }
     }
   }
