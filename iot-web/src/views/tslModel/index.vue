@@ -59,12 +59,12 @@ loadDetails()
 </script>
 
 <template>
-  <div class="wh-full flex flex-col">
+  <div class="tsl-page">
     <Breadcrumb :breadcrumbs="breadcrumbs" />
-    <div class="p-20px flex-1">
+    <div class="tsl-content">
       <el-tabs
         v-model="activeName"
-        class="demo-tabs"
+        class="tsl-tabs"
       >
         <el-tab-pane label="基础信息" name="first">
           <ProductInfo :type-id="productTypeId" :product-id="productId" />
@@ -81,5 +81,51 @@ loadDetails()
 </template>
 
 <style scoped lang="scss">
+.tsl-page {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  background: #1e1e1e; /* 编辑器深色背景 */
+}
 
+.tsl-content {
+  flex: 1;
+  padding: 16px 20px;
+  overflow: auto;
+}
+
+/* 编辑器风格的 Tabs */
+.tsl-tabs {
+  :deep(.el-tabs__header) {
+    margin-bottom: 16px;
+
+    .el-tabs__nav-wrap::after {
+      background-color: #333;
+    }
+
+    .el-tabs__item {
+      color: #858585;
+      font-size: 13px;
+      padding: 0 20px;
+      height: 36px;
+      line-height: 36px;
+
+      &:hover {
+        color: #c5c5c5;
+      }
+
+      &.is-active {
+        color: #fff;
+      }
+    }
+
+    .el-tabs__active-bar {
+      background-color: #007acc;
+    }
+  }
+
+  :deep(.el-tabs__content) {
+    color: #d4d4d4;
+  }
+}
 </style>

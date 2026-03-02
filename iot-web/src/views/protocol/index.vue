@@ -72,18 +72,6 @@ const column = [
     },
   },
   {
-    prop: 'handlerClass',
-    label: '处理入口',
-    minWidth: 200,
-    showOverflowTooltip: true,
-  },
-  {
-    prop: 'url',
-    label: '文件路径',
-    minWidth: 180,
-    showOverflowTooltip: true,
-  },
-  {
     prop: 'mark',
     label: '备注说明',
     minWidth: 150,

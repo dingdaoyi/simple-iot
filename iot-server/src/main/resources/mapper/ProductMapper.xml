@@ -10,6 +10,7 @@
         <result column="remark" property="remark"/>
         <result column="protocol_id" property="protocolId"/>
         <result column="product_type_id" property="productTypeId"/>
+        <result column="icon" property="icon"/>
     </resultMap>
     <resultMap id="PageVoResultMap" type="com.github.dingdaoyi.model.vo.ProductPageVo" extends="BaseResultMap">
         <result column="product_type_name" property="productTypeName"/>
@@ -22,7 +23,8 @@
         manufacturer,
         remark,
         protocol_id,
-        product_type_id
+        product_type_id,
+        icon
     </sql>
     <sql id="PageVo_Column_List">
         pro.id,
@@ -31,6 +33,7 @@
         pro.remark,
         pro.protocol_id,
         pro.product_type_id,
+        pro.icon,
         pt.name as productTypeName
     </sql>
 

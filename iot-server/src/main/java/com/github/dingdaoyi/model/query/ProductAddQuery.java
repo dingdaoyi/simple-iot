@@ -45,6 +45,12 @@ public class ProductAddQuery implements ToEntity<Product> {
     @NotNull(message = "请选择产品类型")
     private Integer productTypeId;
 
+    /**
+     * 产品图标
+     */
+    @Schema(description = "产品图标")
+    private String icon;
+
 
     @Override
     public Product toEntity() {
@@ -54,6 +60,7 @@ public class ProductAddQuery implements ToEntity<Product> {
         product.setRemark(remark);
         product.setProtocolId(protocolId);
         product.setProductTypeId(productTypeId);
+        product.setIcon(icon);
         //自定义串
         product.setProductKey(RandomStringUtils.secure().nextAlphabetic(20));
         return product;

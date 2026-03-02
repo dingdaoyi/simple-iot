@@ -1,10 +1,24 @@
 <script setup>
-import AMapLoader from '@amap/amap-jsapi-loader'
-import { onMounted, ref } from 'vue'
+import { onMounted, ref, computed } from 'vue'
+import { useRouter } from 'vue-router'
 import { getDashboardStatistics } from '@/api/dashboard'
-import { useAmapConfig } from '@/config/amapConfig'
+import { devicePageApi } from '@/api/index.js'
+import {
+  Monitor,
+  CircleCheck,
+  CircleClose,
+  Plus,
+  Cpu,
+  Bell,
+  Setting,
+  Lightning,
+  Box,
+  Grid,
+  TrendCharts,
+  Connection,
+} from '@element-plus/icons-vue'
 
-const { amapKey } = useAmapConfig()
+const router = useRouter()
 
 const stats = ref({
   total: 0,
@@ -16,363 +30,653 @@ const stats = ref({
   diskUsage: 0,
 })
 
-const alerts = ref([
-  { time: '08:01', device: '设备A', message: '温度超限告警', level: 'danger' },
-  { time: '08:05', device: '设备B', message: '离线', level: 'danger' },
-  { time: '08:10', device: '设备C', message: '电池低电量', level: 'warning' },
+// 最近设备
+const recentDevices = ref([])
+const devicesLoading = ref(false)
+
+// 计算在线率
+const onlineRate = computed(() => {
+  if (stats.value.total === 0) return 0
+  return ((stats.value.online / stats.value.total) * 100).toFixed(1)
+})
+
+// 概览卡片数据
+const overviewCards = computed(() => [
+  {
+    key: 'total',
+    label: '设备总数',
+    value: stats.value.total,
+    icon: Monitor,
+    color: 'primary',
+    trend: stats.value.todayAdd > 0 ? `+${stats.value.todayAdd} 今日` : null,
+  },
+  {
+    key: 'online',
+    label: '在线设备',
+    value: stats.value.online,
+    icon: CircleCheck,
+    color: 'success',
+    trend: `${onlineRate.value}%`,
+  },
+  {
+    key: 'offline',
+    label: '离线设备',
+    value: stats.value.offline,
+    icon: CircleClose,
+    color: 'danger',
+    trend: null,
+  },
+  {
+    key: 'todayAdd',
+    label: '今日新增',
+    value: stats.value.todayAdd,
+    icon: Plus,
+    color: 'accent',
+    trend: null,
+  },
 ])
 
+// 快捷入口
+const quickLinks = [
+  { name: '设备管理', icon: Monitor, path: '/device', color: '#6366f1' },
+  { name: '产品管理', icon: Box, path: '/product', color: '#8b5cf6' },
+  { name: '协议管理', icon: Connection, path: '/protocol', color: '#10b981' },
+  { name: '规则引擎', icon: Lightning, path: '/rule', color: '#f59e0b' },
+  { name: '数据统计', icon: TrendCharts, path: '/icon', color: '#ec4899' },
+  { name: '系统设置', icon: Setting, path: '/icon', color: '#06b6d4' },
+]
+
+// 告警数据（模拟）
+const alerts = ref([
+  { time: '10:23', device: '温湿度传感器-A01', message: '温度超限告警', level: 'danger' },
+  { time: '09:45', device: '智能电表-B12', message: '设备离线', level: 'danger' },
+  { time: '09:12', device: '网关设备-G03', message: '电池低电量', level: 'warning' },
+  { time: '08:30', device: '压力传感器-P08', message: '数据异常', level: 'warning' },
+])
+
+// 跳转页面
+function navigateTo(path) {
+  router.push(path)
+}
+
+// 加载最近设备
+async function loadRecentDevices() {
+  devicesLoading.value = true
+  try {
+    const res = await devicePageApi({ page: 1, size: 5 })
+    recentDevices.value = res.data?.records || res.data || []
+  }
+  catch (e) {
+    console.error('加载设备失败:', e)
+  }
+  finally {
+    devicesLoading.value = false
+  }
+}
+
+// 获取设备状态标签类型
+function getDeviceStatusType(online) {
+  return online ? 'success' : 'danger'
+}
+
+// 获取设备状态文字
+function getDeviceStatusText(online) {
+  return online ? '在线' : '离线'
+}
+
 onMounted(() => {
-  // 地图加载
-  AMapLoader.load({
-    key: amapKey,
-    version: '2.0',
-    plugins: ['AMap.Marker'],
-  }).then((AMap) => {
-    void new AMap.Map('amap-container', {
-      zoom: 11,
-      // center: [116.397428, 39.90923]
-    })
-  })
   // 统计数据加载
   getDashboardStatistics().then((res) => {
     if (res && res.data)
       Object.assign(stats.value, res.data)
   })
+
+  // 加载最近设备
+  loadRecentDevices()
 })
 </script>
 
 <template>
-  <div class="dashboard-container">
-    <!-- 左侧：统计卡片+系统资源 -->
-    <div class="dashboard-sidebar">
-      <!-- 设备统计卡片 -->
-      <div class="stat-section">
-        <h3 class="section-title">
-          设备统计
-        </h3>
-        <div class="stat-grid">
-          <div class="iot-card stat-card">
-            <div class="stat-label">
-              设备总数
-            </div>
-            <div class="stat-value">
-              {{ stats.total }}
-            </div>
-          </div>
-          <div class="iot-card stat-card stat-card-success">
-            <div class="stat-label">
-              在线设备
-            </div>
-            <div class="stat-value">
-              {{ stats.online }}
-            </div>
-          </div>
-          <div class="iot-card stat-card stat-card-danger">
-            <div class="stat-label">
-              离线设备
-            </div>
-            <div class="stat-value">
-              {{ stats.offline }}
-            </div>
-          </div>
-          <div class="iot-card stat-card">
-            <div class="stat-label">
-              今日新增
-            </div>
-            <div class="stat-value">
-              {{ stats.todayAdd }}
-            </div>
-          </div>
+  <div class="dashboard-page">
+    <!-- 顶部概览卡片 -->
+    <div class="overview-section">
+      <div
+        v-for="card in overviewCards"
+        :key="card.key"
+        class="overview-card"
+        :class="`overview-card--${card.color}`"
+      >
+        <div class="card-icon">
+          <el-icon :size="28">
+            <component :is="card.icon" />
+          </el-icon>
         </div>
-      </div>
-
-      <!-- 系统资源统计卡片 -->
-      <div class="stat-section">
-        <h3 class="section-title">
-          系统资源
-        </h3>
-        <div class="stat-grid">
-          <div class="iot-card stat-card stat-card-info">
-            <div class="stat-label">
-              CPU使用率
-            </div>
-            <div class="stat-value">
-              {{ stats.cpuUsage }}%
-            </div>
+        <div class="card-content">
+          <div class="card-value">
+            {{ card.value }}
           </div>
-          <div class="iot-card stat-card stat-card-purple">
-            <div class="stat-label">
-              内存使用率
-            </div>
-            <div class="stat-value">
-              {{ stats.memoryUsage }}%
-            </div>
+          <div class="card-label">
+            {{ card.label }}
           </div>
-          <div class="iot-card stat-card stat-card-warning">
-            <div class="stat-label">
-              磁盘使用率
-            </div>
-            <div class="stat-value">
-              {{ stats.diskUsage }}%
-            </div>
+          <div v-if="card.trend" class="card-trend">
+            {{ card.trend }}
           </div>
         </div>
       </div>
     </div>
 
-    <!-- 中间：地图最大化 -->
-    <div class="dashboard-main">
-      <div class="map-container">
-        <div id="amap-container" class="amap-wrapper" />
-      </div>
-    </div>
-
-    <!-- 右侧：告警动态 -->
-    <div class="dashboard-alerts">
-      <div class="iot-card alert-card">
-        <div class="alert-header">
-          <div class="alert-icon">
-            <el-icon><Bell /></el-icon>
+    <!-- 主内容区 -->
+    <div class="main-content">
+      <!-- 左侧 -->
+      <div class="left-column">
+        <!-- 系统资源监控 -->
+        <div class="resource-section glass-card">
+          <div class="section-header">
+            <el-icon :size="20">
+              <Cpu />
+            </el-icon>
+            <h3>系统资源</h3>
           </div>
-          <h3 class="alert-title">
-            最新告警动态
-          </h3>
+          <div class="resource-list">
+            <div class="resource-item">
+              <div class="resource-info">
+                <span class="resource-label">CPU</span>
+                <span class="resource-value">{{ stats.cpuUsage }}%</span>
+              </div>
+              <el-progress
+                :percentage="stats.cpuUsage"
+                :stroke-width="8"
+                :color="stats.cpuUsage > 80 ? '#ef4444' : '#6366f1'"
+                :show-text="false"
+              />
+            </div>
+            <div class="resource-item">
+              <div class="resource-info">
+                <span class="resource-label">内存</span>
+                <span class="resource-value">{{ stats.memoryUsage }}%</span>
+              </div>
+              <el-progress
+                :percentage="stats.memoryUsage"
+                :stroke-width="8"
+                :color="stats.memoryUsage > 80 ? '#ef4444' : '#8b5cf6'"
+                :show-text="false"
+              />
+            </div>
+            <div class="resource-item">
+              <div class="resource-info">
+                <span class="resource-label">磁盘</span>
+                <span class="resource-value">{{ stats.diskUsage }}%</span>
+              </div>
+              <el-progress
+                :percentage="stats.diskUsage"
+                :stroke-width="8"
+                :color="stats.diskUsage > 80 ? '#ef4444' : '#06b6d4'"
+                :show-text="false"
+              />
+            </div>
+          </div>
         </div>
-        <ul class="alert-list">
-          <li v-for="(alert, index) in alerts" :key="index" class="alert-item" :class="`alert-item-${alert.level}`">
-            <div class="alert-time">
-              {{ alert.time }}
+
+        <!-- 快捷入口 -->
+        <div class="quick-links glass-card">
+          <div class="section-header">
+            <el-icon :size="20">
+              <Grid />
+            </el-icon>
+            <h3>快捷入口</h3>
+          </div>
+          <div class="links-grid">
+            <div
+              v-for="link in quickLinks"
+              :key="link.path"
+              class="link-item"
+              :style="{ '--link-color': link.color }"
+              @click="navigateTo(link.path)"
+            >
+              <el-icon :size="22">
+                <component :is="link.icon" />
+              </el-icon>
+              <span>{{ link.name }}</span>
             </div>
-            <div class="alert-content">
-              <span class="alert-device">{{ alert.device }}</span>
-              <span class="alert-message">{{ alert.message }}</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- 右侧 -->
+      <div class="right-column">
+        <!-- 最近设备 -->
+        <div class="devices-section glass-card">
+          <div class="section-header">
+            <el-icon :size="20">
+              <Monitor />
+            </el-icon>
+            <h3>最近设备</h3>
+            <el-button type="primary" link size="small" class="view-all" @click="navigateTo('/device')">
+              查看全部
+            </el-button>
+          </div>
+          <div v-loading="devicesLoading" class="devices-list">
+            <div
+              v-for="device in recentDevices"
+              :key="device.id"
+              class="device-item"
+              @click="navigateTo('/device')"
+            >
+              <div class="device-info">
+                <span class="device-name">{{ device.deviceName || device.deviceKey }}</span>
+                <span class="device-key">{{ device.deviceKey }}</span>
+              </div>
+              <el-tag :type="getDeviceStatusType(device.online)" size="small">
+                {{ getDeviceStatusText(device.online) }}
+              </el-tag>
             </div>
-          </li>
-        </ul>
+            <div v-if="!devicesLoading && recentDevices.length === 0" class="empty-tip">
+              暂无设备数据
+            </div>
+          </div>
+        </div>
+
+        <!-- 告警动态 -->
+        <div class="alerts-section glass-card">
+          <div class="section-header">
+            <el-icon :size="20" class="alert-bell">
+              <Bell />
+            </el-icon>
+            <h3>告警动态</h3>
+            <el-badge :value="alerts.length" class="alert-badge" />
+          </div>
+          <div class="alerts-list">
+            <div
+              v-for="(alert, index) in alerts"
+              :key="index"
+              class="alert-item"
+              :class="`alert-item--${alert.level}`"
+            >
+              <div class="alert-indicator" />
+              <div class="alert-content">
+                <div class="alert-header">
+                  <span class="alert-device">{{ alert.device }}</span>
+                  <span class="alert-time">{{ alert.time }}</span>
+                </div>
+                <div class="alert-message">
+                  {{ alert.message }}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </div>
 </template>
 
-<style scoped>
-.dashboard-container {
+<style scoped lang="scss">
+.dashboard-page {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xl);
+  padding: var(--space-xl);
+  min-height: 100vh;
+}
+
+/* 概览卡片 */
+.overview-section {
   display: grid;
-  grid-template-columns: 280px 1fr 320px;
+  grid-template-columns: repeat(4, 1fr);
   gap: var(--space-lg);
-  height: 100%;
-  padding: 0;
 }
 
-.dashboard-sidebar {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-lg);
-  overflow-y: auto;
-}
-
-.stat-section {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-md);
-}
-
-.section-title {
-  font-size: 16px;
-  font-weight: 600;
-  font-family: 'Fira Code', monospace;
-  color: var(--iot-color-text);
-  margin: 0;
-}
-
-.stat-grid {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: var(--space-md);
-}
-
-.stat-card {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
+.overview-card {
+  background: var(--iot-color-bg-card);
+  backdrop-filter: blur(20px);
+  border: 1px solid var(--iot-glass-border);
+  border-radius: var(--radius-lg);
   padding: var(--space-lg);
-  min-height: 100px;
-}
-
-.stat-label {
-  font-size: 13px;
-  color: #64748b;
-  margin-bottom: var(--space-sm);
-}
-
-.stat-value {
-  font-size: 32px;
-  font-weight: 700;
-  font-family: 'Fira Code', monospace;
-  color: var(--iot-color-text);
-}
-
-.stat-card-success .stat-value {
-  color: #10b981;
-}
-
-.stat-card-danger .stat-value {
-  color: #ef4444;
-}
-
-.stat-card-info .stat-value {
-  color: #3b82f6;
-}
-
-.stat-card-purple .stat-value {
-  color: #8b5cf6;
-}
-
-.stat-card-warning .stat-value {
-  color: #f59e0b;
-}
-
-.dashboard-main {
   display: flex;
   align-items: center;
-  justify-content: center;
+  gap: var(--space-lg);
+  transition: all var(--transition-base);
+  cursor: pointer;
+
+  &:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-lg);
+  }
+
+  .card-icon {
+    width: 56px;
+    height: 56px;
+    border-radius: var(--radius-md);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+  }
+
+  .card-content {
+    flex: 1;
+  }
+
+  .card-value {
+    font-size: 32px;
+    font-weight: 700;
+    font-family: 'Fira Code', monospace;
+    color: var(--iot-color-text-primary);
+    line-height: 1.2;
+  }
+
+  .card-label {
+    font-size: 14px;
+    color: var(--iot-color-text-secondary);
+    margin-top: var(--space-xs);
+  }
+
+  .card-trend {
+    font-size: 12px;
+    color: var(--iot-color-success);
+    margin-top: var(--space-xs);
+    font-weight: 500;
+  }
+
+  &--primary .card-icon {
+    background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
+    box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+  }
+
+  &--success .card-icon {
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+  }
+
+  &--danger .card-icon {
+    background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+    box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+  }
+
+  &--accent .card-icon {
+    background: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%);
+    box-shadow: 0 4px 12px rgba(6, 182, 212, 0.3);
+  }
 }
 
-.map-container {
-  width: 100%;
-  height: 100%;
-  background: white;
-  border-radius: 12px;
-  box-shadow: var(--shadow-md);
-  padding: var(--space-md);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.amap-wrapper {
-  width: 100%;
-  height: 100%;
-  background: #f1f5f9;
-  border-radius: 8px;
-}
-
-.dashboard-alerts {
-  display: flex;
-  flex-direction: column;
-}
-
-.alert-card {
+/* 主内容区 - 两栏布局 */
+.main-content {
+  display: grid;
+  grid-template-columns: 320px 1fr;
+  gap: var(--space-lg);
   flex: 1;
-  display: flex;
-  flex-direction: column;
 }
 
-.alert-header {
+.left-column,
+.right-column {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-lg);
+}
+
+/* 通用区块样式 */
+.section-header {
   display: flex;
   align-items: center;
   gap: var(--space-sm);
-  margin-bottom: var(--space-lg);
+  margin-bottom: var(--space-md);
+
+  h3 {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--iot-color-text-primary);
+    margin: 0;
+  }
+
+  .view-all {
+    margin-left: auto;
+  }
+
+  .alert-bell {
+    color: var(--iot-color-warning);
+  }
 }
 
-.alert-icon {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 32px;
-  height: 32px;
-  background: #fef3c7;
-  color: #d97706;
-  border-radius: 8px;
-  font-size: 18px;
+/* 系统资源 */
+.resource-section {
+  flex-shrink: 0;
 }
 
-.alert-title {
-  font-size: 16px;
-  font-weight: 600;
-  font-family: 'Fira Code', monospace;
-  color: var(--iot-color-text);
-  margin: 0;
-}
-
-.alert-list {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-  flex: 1;
-  overflow-y: auto;
+.resource-list {
   display: flex;
   flex-direction: column;
   gap: var(--space-md);
 }
 
-.alert-item {
-  padding: var(--space-md);
-  border-radius: 8px;
-  background: #f8fafc;
-  border-left: 3px solid #cbd5e1;
-  transition: all 0.2s ease;
-  cursor: pointer;
+.resource-item {
+  .resource-info {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: var(--space-xs);
+  }
+
+  .resource-label {
+    font-size: 13px;
+    color: var(--iot-color-text-secondary);
+  }
+
+  .resource-value {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--iot-color-text-primary);
+    font-family: 'Fira Code', monospace;
+  }
 }
 
-.alert-item:hover {
-  background: #f1f5f9;
-  transform: translateX(2px);
+/* 快捷入口 */
+.quick-links {
+  flex: 1;
 }
 
-.alert-item-danger {
-  border-left-color: #ef4444;
-  background: #fef2f2;
+.links-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--space-sm);
 }
 
-.alert-item-warning {
-  border-left-color: #f59e0b;
-  background: #fffbeb;
-}
-
-.alert-time {
-  font-size: 12px;
-  color: #64748b;
-  margin-bottom: var(--space-xs);
-  font-family: 'Fira Code', monospace;
-}
-
-.alert-content {
+.link-item {
   display: flex;
   flex-direction: column;
-  gap: 2px;
-}
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-xs);
+  padding: var(--space-md);
+  border-radius: var(--radius-md);
+  background: var(--iot-glass-bg);
+  cursor: pointer;
+  transition: all var(--transition-base);
+  color: var(--iot-color-text-secondary);
 
-.alert-device {
-  font-size: 13px;
-  font-weight: 600;
-  color: var(--iot-color-text);
-}
+  &:hover {
+    background: var(--link-color);
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  }
 
-.alert-message {
-  font-size: 13px;
-  color: #64748b;
-}
-
-@media (max-width: 1440px) {
-  .dashboard-container {
-    grid-template-columns: 240px 1fr 280px;
+  span {
+    font-size: 12px;
+    font-weight: 500;
   }
 }
 
-@media (max-width: 1024px) {
-  .dashboard-container {
+/* 设备列表 */
+.devices-section {
+  flex-shrink: 0;
+}
+
+.devices-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+  min-height: 200px;
+}
+
+.device-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-sm) var(--space-md);
+  border-radius: var(--radius-md);
+  background: var(--iot-glass-bg);
+  cursor: pointer;
+  transition: all var(--transition-base);
+
+  &:hover {
+    background: var(--iot-glass-bg-hover);
+    transform: translateX(4px);
+  }
+
+  .device-info {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+  }
+
+  .device-name {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--iot-color-text-primary);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .device-key {
+    font-size: 11px;
+    color: var(--iot-color-text-muted);
+    font-family: 'Fira Code', monospace;
+  }
+}
+
+.empty-tip {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 150px;
+  color: var(--iot-color-text-muted);
+  font-size: 14px;
+}
+
+/* 告警动态 */
+.alerts-section {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.alert-badge {
+  margin-left: auto;
+}
+
+.alerts-list {
+  flex: 1;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+}
+
+.alert-item {
+  display: flex;
+  gap: var(--space-sm);
+  padding: var(--space-sm) var(--space-md);
+  border-radius: var(--radius-md);
+  background: var(--iot-glass-bg);
+  border-left: 3px solid var(--iot-color-border);
+  cursor: pointer;
+  transition: all var(--transition-base);
+
+  &:hover {
+    transform: translateX(4px);
+    box-shadow: var(--shadow-sm);
+  }
+
+  &--danger {
+    border-left-color: var(--iot-color-danger);
+    background: rgba(239, 68, 68, 0.08);
+  }
+
+  &--warning {
+    border-left-color: var(--iot-color-warning);
+    background: rgba(245, 158, 11, 0.08);
+  }
+
+  .alert-indicator {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--iot-color-danger);
+    margin-top: 6px;
+    flex-shrink: 0;
+  }
+
+  &--warning .alert-indicator {
+    background: var(--iot-color-warning);
+  }
+
+  .alert-content {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .alert-header {
+    display: flex;
+    justify-content: space-between;
+    gap: var(--space-sm);
+    margin-bottom: 2px;
+  }
+
+  .alert-device {
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--iot-color-text-primary);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .alert-time {
+    font-size: 11px;
+    color: var(--iot-color-text-muted);
+    font-family: 'Fira Code', monospace;
+    flex-shrink: 0;
+  }
+
+  .alert-message {
+    font-size: 12px;
+    color: var(--iot-color-text-secondary);
+  }
+}
+
+/* 响应式 */
+@media (max-width: 1200px) {
+  .overview-section {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .main-content {
     grid-template-columns: 1fr;
-    grid-template-rows: auto auto auto;
+  }
+}
+
+@media (max-width: 768px) {
+  .dashboard-page {
+    padding: var(--space-md);
   }
 
-  .dashboard-sidebar {
-    flex-direction: row;
-    overflow-x: auto;
+  .overview-section {
+    grid-template-columns: 1fr;
   }
 
-  .stat-grid {
-    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  .links-grid {
+    grid-template-columns: repeat(3, 1fr);
   }
 }
 </style>

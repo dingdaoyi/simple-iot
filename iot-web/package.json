@@ -20,10 +20,10 @@
     "echarts": "^5.6.0",
     "element-plus": "^2.11.3",
     "lodash": "4.17.23",
-    "monaco-editor": "0.52.0",
     "pinia": "^2.2.8",
     "vue": "^3.5.13",
     "vue-echarts": "^8.0.1",
+    "vue-json-viewer": "^3.0.4",
     "vue-router": "^4.5.0"
   },
   "devDependencies": {
@@ -37,7 +37,6 @@
     "unocss": "^66.6.0",
     "unplugin-vue-define-options": "^1.5.3",
     "vite": "^7.1.11",
-    "vite-plugin-monaco-editor": "1.1.0",
     "vite-plugin-svg-icons": "^2.0.1"
   }
 }

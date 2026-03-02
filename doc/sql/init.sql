@@ -570,7 +570,8 @@ CREATE TABLE "public"."tb_product" (
   "remark" varchar(255) COLLATE "pg_catalog"."default" NOT NULL DEFAULT ''::character varying,
   "protocol_id" int4,
   "product_type_id" int4,
-  "product_key" char(20) COLLATE "pg_catalog"."default" DEFAULT ''::bpchar
+  "product_key" char(20) COLLATE "pg_catalog"."default" DEFAULT ''::bpchar,
+  "icon" varchar(500) COLLATE "pg_catalog"."default"
 )
 ;
 COMMENT ON COLUMN "public"."tb_product"."id" IS '产品id';
@@ -579,6 +580,7 @@ COMMENT ON COLUMN "public"."tb_product"."manufacturer" IS '厂家';
 COMMENT ON COLUMN "public"."tb_product"."remark" IS '描述';
 COMMENT ON COLUMN "public"."tb_product"."protocol_id" IS '协议id';
 COMMENT ON COLUMN "public"."tb_product"."product_key" IS '产品key';
+COMMENT ON COLUMN "public"."tb_product"."icon" IS '产品图标';
 
 -- ----------------------------
 -- Records of tb_product

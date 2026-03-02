@@ -6,8 +6,6 @@ import Unocss from 'unocss/vite'
 import DefineOptions from 'unplugin-vue-define-options/vite'
 import { defineConfig } from 'vite'
 import { createSvgIconsPlugin } from 'vite-plugin-svg-icons'
-import monacoEditorPluginModule from 'vite-plugin-monaco-editor'
-const monacoEditorPlugin = monacoEditorPluginModule.default || monacoEditorPluginModule
 
 const configProxy = {
   local: {
@@ -38,9 +36,6 @@ export default defineConfig(({ command, mode }) => {
       DefineOptions(),
       vueJsx(),
       Unocss(),
-      monacoEditorPlugin({
-        languageWorkers: ['editorWorkerService', 'typescript', 'css', 'html', 'json'],
-      }),
       createSvgIconsPlugin({
         // 指定需要缓存的图标文件夹
         iconDirs: [path.resolve(process.cwd(), 'src/icons')],

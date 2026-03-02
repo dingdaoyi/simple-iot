@@ -41,4 +41,8 @@ public class Product  {
     @TableField(value = "product_key")
     @Schema(description = "产品接入key")
     private String productKey;
+
+    @TableField(value = "icon")
+    @Schema(description = "产品图标")
+    private String icon;
 }
