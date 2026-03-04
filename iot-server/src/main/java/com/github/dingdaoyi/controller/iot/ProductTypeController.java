@@ -30,8 +30,9 @@ public class ProductTypeController {
     @GetMapping
     @Operation(summary = "获取产品类型")
     public BaseResult<List<ProductTypeVo>> list(@RequestParam(defaultValue = "-1") Integer parentId,
-                                       @RequestParam(defaultValue = "false") Boolean withChild) {
-        return BaseResult.success(productTypeService.listByParentId(parentId, withChild));
+                                       @RequestParam(defaultValue = "false") Boolean withChild,
+                                       @RequestParam(required = false) String name) {
+        return BaseResult.success(productTypeService.listByParentId(parentId, withChild, name));
     }
 
     @PostMapping("page")

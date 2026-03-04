@@ -312,141 +312,157 @@ getTemplateTypes()
 </script>
 
 <template>
-  <div class="app-container">
-    <el-tabs v-model="activeTab" type="card">
-      <el-tab-pane label="短信配置" name="config">
-        <div class="filter-container">
-          <el-input
-            v-model="listQuery.name"
-            placeholder="配置名称"
-            style="width: 200px;"
-            class="filter-item"
-            @keyup.enter="handleFilter"
-          />
-          <el-button class="filter-item" type="primary" @click="handleFilter">
-            搜索
-          </el-button>
-          <el-button class="filter-item" style="margin-left: 10px;" type="primary" @click="handleCreate">
-            添加
-          </el-button>
-        </div>
+  <div class="sms-page">
+    <!-- 页面标题 -->
+    <div class="page-header">
+      <div class="header-content">
+        <h1 class="page-title">
+          <span class="title-icon">✉</span>
+          短信配置
+        </h1>
+        <p class="page-subtitle">
+          配置短信服务供应商与模板管理
+        </p>
+      </div>
+    </div>
 
-        <el-table
-          v-loading="listLoading"
-          :data="list"
-          element-loading-text="Loading"
-          border
-          fit
-          highlight-current-row
-        >
-          <el-table-column align="center" label="ID" width="95">
-            <template #default="scope">
-              {{ scope.row.id }}
-            </template>
-          </el-table-column>
-          <el-table-column label="配置名称">
-            <template #default="scope">
-              {{ scope.row.name }}
-              <el-tag v-if="scope.row.isDefault" type="success" size="small">
-                默认
-              </el-tag>
-            </template>
-          </el-table-column>
-          <el-table-column label="供应商" width="110" align="center">
-            <template #default="scope">
-              <span>{{ getSupplierName(scope.row.supplier) }}</span>
-            </template>
-          </el-table-column>
-          <el-table-column label="签名" width="110" align="center">
-            <template #default="scope">
-              {{ scope.row.signName }}
-            </template>
-          </el-table-column>
-          <el-table-column label="状态" width="110" align="center">
-            <template #default="scope">
-              <el-switch
-                v-model="scope.row.status"
-                :active-value="1"
-                :inactive-value="2"
-                @change="handleStatusChange(scope.row)"
-              />
-            </template>
-          </el-table-column>
-          <el-table-column label="操作" align="center" width="280" class-name="small-padding fixed-width">
-            <template #default="scope">
-              <el-button type="primary" size="small" @click="handleUpdate(scope.row)">
-                编辑
-              </el-button>
-              <el-button type="info" size="small" @click="handleTemplate(scope.row)">
-                模板
-              </el-button>
-              <el-button v-if="!scope.row.isDefault" type="success" size="small" @click="handleSetDefault(scope.row)">
-                设为默认
-              </el-button>
-              <el-button v-if="!scope.row.isDefault" size="small" type="danger" @click="handleDelete(scope.row)">
-                删除
-              </el-button>
-            </template>
-          </el-table-column>
-        </el-table>
-      </el-tab-pane>
-
-      <el-tab-pane label="发送短信" name="send">
-        <el-form
-          ref="sendForm"
-          :rules="sendRules"
-          :model="sendTemp"
-          label-position="left"
-          label-width="100px"
-          style="width: 500px;"
-        >
-          <el-form-item label="手机号" prop="phone">
-            <el-input v-model="sendTemp.phone" />
-          </el-form-item>
-          <el-form-item label="发送方式" prop="sendType">
-            <el-radio-group v-model="sendTemp.sendType">
-              <el-radio value="text">
-                文本消息
-              </el-radio>
-              <el-radio value="template">
-                模板消息
-              </el-radio>
-            </el-radio-group>
-          </el-form-item>
-          <el-form-item v-if="sendTemp.sendType === 'text'" label="短信内容" prop="message">
-            <el-input v-model="sendTemp.message" type="textarea" :rows="3" />
-          </el-form-item>
-          <el-form-item v-if="sendTemp.sendType === 'template'" label="模板类型" prop="templateType">
-            <el-select v-model="sendTemp.templateType" placeholder="请选择模板类型">
-              <el-option
-                v-for="item in templateTypes"
-                :key="item.code"
-                :label="item.desc"
-                :value="item.code"
-              />
-            </el-select>
-          </el-form-item>
-          <el-form-item v-if="sendTemp.sendType === 'template'" label="模板参数">
-            <el-input v-model="sendTemp.templateParamsStr" type="textarea" :rows="2" placeholder="{&quot;code&quot;:&quot;123456&quot;}" />
-          </el-form-item>
-          <el-form-item label="配置">
-            <el-select v-model="sendTemp.configId" placeholder="使用默认配置" clearable>
-              <el-option
-                v-for="item in list"
-                :key="item.id"
-                :label="item.name"
-                :value="item.id"
-              />
-            </el-select>
-          </el-form-item>
-          <el-form-item>
-            <el-button type="primary" @click="sendSmsMessage">
-              发送短信
+    <!-- 主内容 -->
+    <div class="main-content glass-card">
+      <el-tabs v-model="activeTab" class="sms-tabs">
+        <el-tab-pane label="短信配置" name="config">
+          <div class="filter-row">
+            <el-input
+              v-model="listQuery.name"
+              placeholder="配置名称"
+              style="width: 200px;"
+              clearable
+              @keyup.enter="handleFilter"
+            />
+            <el-button type="primary" @click="handleFilter">
+              搜索
             </el-button>
-          </el-form-item>
-        </el-form>
-      </el-tab-pane>
-    </el-tabs>
+            <el-button type="success" @click="handleCreate">
+              添加配置
+            </el-button>
+          </div>
+
+          <el-table
+            v-loading="listLoading"
+            :data="list"
+            element-loading-text="Loading"
+            border
+            fit
+            highlight-current-row
+          >
+            <el-table-column align="center" label="ID" width="80">
+              <template #default="scope">
+                {{ scope.row.id }}
+              </template>
+            </el-table-column>
+            <el-table-column label="配置名称">
+              <template #default="scope">
+                {{ scope.row.name }}
+                <el-tag v-if="scope.row.isDefault" type="success" size="small">
+                  默认
+                </el-tag>
+              </template>
+            </el-table-column>
+            <el-table-column label="供应商" width="110" align="center">
+              <template #default="scope">
+                <span>{{ getSupplierName(scope.row.supplier) }}</span>
+              </template>
+            </el-table-column>
+            <el-table-column label="签名" width="110" align="center">
+              <template #default="scope">
+                {{ scope.row.signName }}
+              </template>
+            </el-table-column>
+            <el-table-column label="状态" width="100" align="center">
+              <template #default="scope">
+                <el-switch
+                  v-model="scope.row.status"
+                  :active-value="1"
+                  :inactive-value="2"
+                  @change="handleStatusChange(scope.row)"
+                />
+              </template>
+            </el-table-column>
+            <el-table-column label="操作" align="center" width="280">
+              <template #default="scope">
+                <el-button type="primary" link size="small" @click="handleUpdate(scope.row)">
+                  编辑
+                </el-button>
+                <el-button type="info" link size="small" @click="handleTemplate(scope.row)">
+                  模板
+                </el-button>
+                <el-button v-if="!scope.row.isDefault" type="success" link size="small" @click="handleSetDefault(scope.row)">
+                  设为默认
+                </el-button>
+                <el-button v-if="!scope.row.isDefault" type="danger" link size="small" @click="handleDelete(scope.row)">
+                  删除
+                </el-button>
+              </template>
+            </el-table-column>
+          </el-table>
+        </el-tab-pane>
+
+        <el-tab-pane label="发送短信" name="send">
+          <el-form
+            ref="sendForm"
+            :rules="sendRules"
+            :model="sendTemp"
+            label-position="left"
+            label-width="100px"
+            class="send-form"
+          >
+            <el-form-item label="手机号" prop="phone">
+              <el-input v-model="sendTemp.phone" placeholder="请输入手机号" />
+            </el-form-item>
+            <el-form-item label="发送方式" prop="sendType">
+              <el-radio-group v-model="sendTemp.sendType">
+                <el-radio value="text">
+                  文本消息
+                </el-radio>
+                <el-radio value="template">
+                  模板消息
+                </el-radio>
+              </el-radio-group>
+            </el-form-item>
+            <el-form-item v-if="sendTemp.sendType === 'text'" label="短信内容" prop="message">
+              <el-input v-model="sendTemp.message" type="textarea" :rows="3" placeholder="请输入短信内容" />
+            </el-form-item>
+            <el-form-item v-if="sendTemp.sendType === 'template'" label="模板类型" prop="templateType">
+              <el-select v-model="sendTemp.templateType" placeholder="请选择模板类型">
+                <el-option
+                  v-for="item in templateTypes"
+                  :key="item.code"
+                  :label="item.desc"
+                  :value="item.code"
+                />
+              </el-select>
+            </el-form-item>
+            <el-form-item v-if="sendTemp.sendType === 'template'" label="模板参数">
+              <el-input v-model="sendTemp.templateParamsStr" type="textarea" :rows="2" placeholder='{"code":"123456"}' />
+            </el-form-item>
+            <el-form-item label="配置">
+              <el-select v-model="sendTemp.configId" placeholder="使用默认配置" clearable>
+                <el-option
+                  v-for="item in list"
+                  :key="item.id"
+                  :label="item.name"
+                  :value="item.id"
+                />
+              </el-select>
+            </el-form-item>
+            <el-form-item>
+              <el-button type="primary" @click="sendSmsMessage">
+                发送短信
+              </el-button>
+            </el-form-item>
+          </el-form>
+        </el-tab-pane>
+      </el-tabs>
+    </div>
 
     <!-- 配置对话框 -->
     <el-dialog v-model="dialogFormVisible" :title="textMap[dialogStatus]" width="600px">
@@ -579,3 +595,107 @@ getTemplateTypes()
     </el-dialog>
   </div>
 </template>
+
+<style scoped lang="scss">
+.sms-page {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xl);
+  padding: var(--space-xl);
+  min-height: 100vh;
+}
+
+/* 页面标题 */
+.page-header {
+  .header-content {
+    background: var(--iot-glass-bg-dark);
+    backdrop-filter: blur(20px);
+    border: 1px solid var(--iot-glass-border);
+    border-radius: var(--radius-lg);
+    padding: var(--space-xl) var(--space-2xl);
+    box-shadow: var(--shadow-md);
+    position: relative;
+    overflow: hidden;
+
+    &::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 4px;
+      background: linear-gradient(90deg, var(--iot-color-primary), var(--iot-color-accent));
+    }
+  }
+
+  .page-title {
+    font-size: 24px;
+    font-weight: 700;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+    color: var(--iot-color-text-primary);
+
+    .title-icon {
+      font-size: 28px;
+    }
+  }
+
+  .page-subtitle {
+    margin: var(--space-sm) 0 0 0;
+    font-size: 14px;
+    color: var(--iot-color-text-secondary);
+  }
+}
+
+/* 主内容 */
+.main-content {
+  flex: 1;
+  padding: var(--space-lg);
+}
+
+/* Tabs 样式 */
+.sms-tabs {
+  :deep(.el-tabs__header) {
+    margin-bottom: var(--space-lg);
+  }
+
+  :deep(.el-tabs__item) {
+    font-size: 14px;
+  }
+}
+
+/* 筛选行 */
+.filter-row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+  margin-bottom: var(--space-lg);
+}
+
+/* 发送表单 */
+.send-form {
+  max-width: 500px;
+}
+
+/* 响应式 */
+@media (max-width: 768px) {
+  .sms-page {
+    padding: var(--space-md);
+  }
+
+  .filter-row {
+    flex-direction: column;
+    align-items: stretch;
+
+    .el-input {
+      width: 100% !important;
+    }
+  }
+
+  .page-title {
+    font-size: 20px !important;
+  }
+}
+</style>

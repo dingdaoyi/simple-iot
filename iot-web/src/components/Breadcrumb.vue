@@ -77,24 +77,16 @@ function handleBack() {
 }
 
 .glass-btn {
-  min-width: 70px;
-  padding: var(--space-xs) var(--space-md);
-  border-radius: var(--radius-md);
-  border: 1px solid var(--iot-glass-border);
-  transition: all var(--transition-fast);
+  // 覆盖全局样式，添加 flex 布局
   display: flex;
   align-items: center;
   gap: var(--space-xs);
+  min-width: 70px;
+  padding: var(--space-xs) var(--space-md);
 
-  &.glass-btn-secondary {
-    background: var(--iot-glass-bg);
-    color: var(--iot-color-text-secondary);
-
-    &:hover {
-      background: var(--iot-glass-bg-hover);
-      border-color: var(--iot-color-primary);
-      color: var(--iot-color-primary);
-    }
+  &.glass-btn-secondary:hover {
+    border-color: var(--iot-color-primary);
+    color: var(--iot-color-primary);
   }
 }
 </style>

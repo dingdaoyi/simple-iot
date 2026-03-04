@@ -38,5 +38,8 @@
        select <include refid="Base_Column_List"/>
         from tb_product_type
         where parent_id = #{parentId}
+        <if test="name != null and name != ''">
+            AND "name" LIKE CONCAT('%', #{name}::text, '%')
+        </if>
     </select>
 </mapper>

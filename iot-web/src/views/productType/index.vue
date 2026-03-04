@@ -8,6 +8,7 @@ import EditDia from '@/views/productType/widget/editDia.vue'
 
 const router = useRouter()
 const parentId = ref(-1)
+const iotTableRef = ref()
 
 const column = [
   {
@@ -43,7 +44,6 @@ const {
   params,
   dialogVisible,
   updatePage,
-  onSearch,
   onDelete,
   onAdd,
   onEdit,
@@ -58,8 +58,14 @@ const {
   },
 })
 
+// 搜索时刷新 IotTable
+function onSearch() {
+  params.page = 1
+  iotTableRef.value?.refresh()
+}
+
 function closeEdite() {
-  updatePage()
+  iotTableRef.value?.refresh()
 }
 
 function onAddChild(row) {
@@ -117,6 +123,7 @@ function tslConfig(row) {
     <!-- 数据表格 -->
     <div class="table-wrapper">
       <IotTable
+        ref="iotTableRef"
         row-key="id"
         :column="column"
         :params="params"

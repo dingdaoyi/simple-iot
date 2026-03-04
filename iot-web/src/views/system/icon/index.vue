@@ -53,10 +53,11 @@ onMounted(() => {
         <div class="search-input">
           <label class="input-label">图标名称</label>
           <el-input
-            v-model="params.model"
+            v-model="params.name"
             clearable
             placeholder="输入图标名称搜索..."
             prefix-icon="Search"
+            @keyup.enter="onSearch"
           />
         </div>
         <div class="search-actions">

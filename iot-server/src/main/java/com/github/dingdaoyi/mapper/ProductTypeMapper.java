@@ -21,9 +21,10 @@ public interface ProductTypeMapper extends BaseMapper<ProductType> {
     /**
      * 查询产品类型
      * @param parentId 父类id
+     * @param name 名称（模糊查询）
      * @return
      */
-    List<ProductTypeVo> listByParentId(@Param("parentId")Integer parentId);
+    List<ProductTypeVo> listByParentId(@Param("parentId")Integer parentId, @Param("name")String name);
 
 
 }

@@ -24,9 +24,11 @@ public interface ProtocolService extends IService<Protocol>{
      * @param name 协议名称（模糊查询）
      * @param protoType 协议类型
      * @param status 状态
+     * @param protoKey 协议Key（模糊查询）
+     * @param scriptLang 脚本语言
      * @return 协议列表
      */
-    List<Protocol> list(String name, Integer protoType, Integer status);
+    List<Protocol> list(String name, Integer protoType, Integer status, String protoKey, String scriptLang);
 
     /**
      * 设置协议状态

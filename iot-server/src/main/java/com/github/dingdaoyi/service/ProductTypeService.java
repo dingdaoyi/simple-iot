@@ -14,9 +14,11 @@ public interface ProductTypeService extends IService<ProductType>{
     /**
      * 通过父级查询子级
      * @param parentId
+     * @param withChildren
+     * @param name 名称（模糊查询）
      * @return
      */
-    List<ProductTypeVo> listByParentId(Integer parentId,Boolean withChildren);
+    List<ProductTypeVo> listByParentId(Integer parentId, Boolean withChildren, String name);
 
     boolean add(ProductType entity);
 

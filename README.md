@@ -3,8 +3,8 @@
 <p align="center">
   <img src="https://img.shields.io/badge/Spring%20Boot-4.0.1-brightgreen" alt="Spring Boot">
   <img src="https://img.shields.io/badge/Vue-3.x-42b883" alt="Vue 3">
-  <img src="https://img.shields.io/badge/Java-21-orange" alt="Java 21">
-  <img src="https://img.shields.io/badge/License-MIT-blue" alt="License">
+  <img src="https://img.shields.io/badge/Java-25-orange" alt="Java 21">
+  <img src="https://img.shields.io/badge/License-Apache-blue" alt="License">
 </p>
 
 <p align="center">
@@ -104,8 +104,8 @@
 
 ```bash
 # 克隆项目
-git clone https://github.com/dingdaoyi/sample-iot.git
-cd sample-iot
+git clone https://github.com/dingdaoyi/simple-iot.git
+cd simple-iot
 
 # 配置数据库 (修改 application.yml)
 # 创建 PostgreSQL 数据库
@@ -194,18 +194,6 @@ sample-iot/
 
 ---
 
-## 开发规范
-
-项目包含完整的开发规范文档 `CLAUDE.md`，涵盖：
-
-- 前端组件开发规范
-- 后端分层架构规范
-- 数据库设计规范
-- API 接口规范
-- 命名约定
-
----
-
 ## 贡献指南
 
 1. Fork 本仓库
@@ -218,7 +206,7 @@ sample-iot/
 
 ## 开源协议
 
-本项目基于 [MIT](LICENSE) 协议开源。
+本项目基于 [Apache](LICENSE) 协议开源。
 
 ---
 

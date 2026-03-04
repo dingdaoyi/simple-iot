@@ -32,11 +32,13 @@ public class ProtocolServiceImpl extends ServiceImpl<ProtocolMapper, Protocol> i
     }
 
     @Override
-    public List<Protocol> list(String name, Integer protoType, Integer status) {
+    public List<Protocol> list(String name, Integer protoType, Integer status, String protoKey, String scriptLang) {
         return lambdaQuery()
                 .like(StringUtils.isNotBlank(name), Protocol::getName, name)
                 .eq(protoType != null, Protocol::getProtoType, protoType)
                 .eq(status != null, Protocol::getStatus, status)
+                .like(StringUtils.isNotBlank(protoKey), Protocol::getProtoKey, protoKey)
+                .eq(StringUtils.isNotBlank(scriptLang), Protocol::getScriptLang, scriptLang)
                 .orderByAsc(Protocol::getId)
                 .list();
     }

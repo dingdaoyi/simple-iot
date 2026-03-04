@@ -27,8 +27,10 @@ public class ProtocolController {
     public BaseResult<List<Protocol>> list(
             @RequestParam(required = false) String name,
             @RequestParam(required = false) Integer protoType,
-            @RequestParam(required = false) Integer status) {
-        return BaseResult.success(protocolService.list(name, protoType, status));
+            @RequestParam(required = false) Integer status,
+            @RequestParam(required = false) String protoKey,
+            @RequestParam(required = false) String scriptLang) {
+        return BaseResult.success(protocolService.list(name, protoType, status, protoKey, scriptLang));
     }
 
     @PostMapping

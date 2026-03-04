@@ -24,12 +24,12 @@ import com.github.dingdaoyi.service.ProductTypeService;
 public class ProductTypeServiceImpl extends ServiceImpl<ProductTypeMapper, ProductType> implements ProductTypeService {
 
     @Override
-    public List<ProductTypeVo> listByParentId(Integer parentId,Boolean withChildren) {
-        List<ProductTypeVo> productTypeVoList = baseMapper.listByParentId(parentId);
+    public List<ProductTypeVo> listByParentId(Integer parentId, Boolean withChildren, String name) {
+        List<ProductTypeVo> productTypeVoList = baseMapper.listByParentId(parentId, name);
         //TODO 换成内存方式
-        if (parentId==-1 && BooleanUtil.isTrue(withChildren)) {
+        if (parentId==-1 && BooleanUtil.isTrue(withChildren) && StringUtils.isBlank(name)) {
             for (ProductTypeVo productTypeVo : productTypeVoList) {
-                productTypeVo.setChildren(baseMapper.listByParentId(productTypeVo.getId()));
+                productTypeVo.setChildren(baseMapper.listByParentId(productTypeVo.getId(), null));
             }
         }
         return productTypeVoList;

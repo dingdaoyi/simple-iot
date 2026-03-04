@@ -85,47 +85,21 @@ loadDetails()
   display: flex;
   flex-direction: column;
   height: 100%;
-  background: #1e1e1e; /* 编辑器深色背景 */
 }
 
 .tsl-content {
   flex: 1;
   padding: 16px 20px;
   overflow: auto;
+  background: var(--iot-glass-bg);
+  border-radius: var(--radius-lg);
+  margin: 0 var(--space-md) var(--space-md);
 }
 
-/* 编辑器风格的 Tabs */
+/* Tabs 样式 */
 .tsl-tabs {
   :deep(.el-tabs__header) {
     margin-bottom: 16px;
-
-    .el-tabs__nav-wrap::after {
-      background-color: #333;
-    }
-
-    .el-tabs__item {
-      color: #858585;
-      font-size: 13px;
-      padding: 0 20px;
-      height: 36px;
-      line-height: 36px;
-
-      &:hover {
-        color: #c5c5c5;
-      }
-
-      &.is-active {
-        color: #fff;
-      }
-    }
-
-    .el-tabs__active-bar {
-      background-color: #007acc;
-    }
-  }
-
-  :deep(.el-tabs__content) {
-    color: #d4d4d4;
   }
 }
 </style>

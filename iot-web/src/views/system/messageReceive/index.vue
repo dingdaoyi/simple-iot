@@ -94,36 +94,33 @@ onMounted(() => {
 
     <!-- 搜索栏 -->
     <div class="search-bar glass-card">
-      <el-form :inline="false" class="search-form">
-        <div class="form-row">
-          <el-form-item label="通知类型">
-            <el-select
-              v-model="params.notifyType"
-              placeholder="请选择通知类型"
-              filterable
-              clearable
-            >
-              <el-option
-                v-for="item in notifyTypeOpt"
-                :key="item.value"
-                :label="item.label"
-                :value="item.value"
-              />
-            </el-select>
-          </el-form-item>
+      <div class="search-row">
+        <div class="search-field">
+          <label class="field-label">通知类型</label>
+          <el-select
+            v-model="params.notifyType"
+            placeholder="请选择通知类型"
+            filterable
+            clearable
+            style="width: 160px"
+          >
+            <el-option
+              v-for="item in notifyTypeOpt"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value"
+            />
+          </el-select>
         </div>
-
-        <div class="form-actions">
+        <div class="search-actions">
           <el-button type="primary" @click="onSearch">
-            <span class="btn-icon">⌕</span>
             搜索
           </el-button>
           <el-button type="success" @click="onAdd">
-            <span class="btn-icon">+</span>
             添加通知
           </el-button>
         </div>
-      </el-form>
+      </div>
     </div>
 
     <!-- 数据表格 -->
@@ -219,33 +216,27 @@ onMounted(() => {
 
 /* 搜索栏 */
 .search-bar {
-  .search-form {
+  .search-row {
     display: flex;
-    flex-direction: column;
+    align-items: flex-end;
     gap: var(--space-md);
+    flex-wrap: wrap;
   }
 
-  .form-row {
+  .search-field {
     display: flex;
-    flex-wrap: wrap;
-    gap: var(--space-md);
+    flex-direction: column;
+    gap: var(--space-xs);
 
-    .el-form-item {
-      flex: 1;
-      min-width: 200px;
-      margin-bottom: 0;
+    .field-label {
+      font-size: 13px;
+      color: var(--iot-color-text-secondary);
     }
   }
 
-  .form-actions {
+  .search-actions {
     display: flex;
     gap: var(--space-sm);
-    justify-content: flex-end;
-  }
-
-  .btn-icon {
-    margin-right: var(--space-xs);
-    font-size: 16px;
   }
 }
 
@@ -260,20 +251,22 @@ onMounted(() => {
     padding: var(--space-md);
   }
 
-  .form-row {
+  .search-row {
     flex-direction: column;
+    align-items: stretch;
 
-    .el-form-item {
-      width: 100%;
+    .search-field {
+      .el-select {
+        width: 100% !important;
+      }
     }
-  }
 
-  .form-actions {
-    width: 100%;
-    flex-direction: column;
-
-    .el-button {
+    .search-actions {
       width: 100%;
+
+      .el-button {
+        flex: 1;
+      }
     }
   }
 

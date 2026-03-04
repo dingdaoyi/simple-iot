@@ -173,6 +173,8 @@ onMounted(() => {
 // 暴露方法给外部
 defineExpose({
   dwTable,
+  fetchData,
+  refresh: fetchData,
 })
 </script>
 

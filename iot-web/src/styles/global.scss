@@ -380,6 +380,117 @@ h6 {
       box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.1);
     }
   }
+
+  .el-input-number__decrease,
+  .el-input-number__increase {
+    background: var(--iot-glass-bg);
+    border-color: var(--iot-color-border);
+    color: var(--iot-color-text-secondary);
+    transition: all var(--transition-fast);
+
+    &:hover {
+      color: var(--iot-color-primary);
+    }
+  }
+}
+
+/* ============================================
+   RADIO STYLES (Element Plus Override)
+   ============================================ */
+
+.el-radio-group {
+  .el-radio {
+    margin-right: var(--space-lg);
+
+    .el-radio__input {
+      .el-radio__inner {
+        border-color: var(--iot-color-border);
+        background: var(--iot-glass-bg);
+
+        &:hover {
+          border-color: var(--iot-color-primary);
+        }
+      }
+
+      &.is-checked .el-radio__inner {
+        border-color: var(--iot-color-primary);
+        background: var(--iot-color-primary);
+      }
+    }
+
+    .el-radio__label {
+      color: var(--iot-color-text-secondary);
+    }
+
+    &.is-checked .el-radio__label {
+      color: var(--iot-color-primary);
+    }
+  }
+}
+
+.el-radio-button {
+  .el-radio-button__inner {
+    background: var(--iot-glass-bg);
+    border: 1px solid var(--iot-color-border);
+    color: var(--iot-color-text-secondary);
+    transition: all var(--transition-fast);
+
+    &:hover {
+      color: var(--iot-color-primary);
+    }
+  }
+
+  &.is-active .el-radio-button__inner {
+    background: linear-gradient(135deg, var(--iot-color-primary), var(--iot-color-accent));
+    border-color: var(--iot-color-primary);
+    color: white;
+    box-shadow: none;
+  }
+}
+
+/* ============================================
+   FORM STYLES (Element Plus Override)
+   ============================================ */
+
+.el-form-item {
+  .el-form-item__label {
+    color: var(--iot-color-text-secondary);
+    font-weight: 500;
+  }
+}
+
+/* ============================================
+   GLASS BUTTON STYLES
+   ============================================ */
+
+.glass-btn {
+  min-width: 80px;
+  padding: var(--space-sm) var(--space-lg);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--iot-glass-border);
+  transition: all var(--transition-fast);
+
+  &.glass-btn-secondary {
+    background: var(--iot-glass-bg);
+    color: var(--iot-color-text-secondary);
+
+    &:hover {
+      background: var(--iot-glass-bg-hover);
+      border-color: var(--iot-color-text-muted);
+    }
+  }
+
+  &.glass-btn-primary {
+    background: linear-gradient(135deg, var(--iot-color-primary), var(--iot-color-accent));
+    border-color: transparent;
+    color: white;
+
+    &:hover {
+      opacity: 0.9;
+      transform: translateY(-1px);
+      box-shadow: var(--shadow-md);
+    }
+  }
 }
 
 /* ============================================
