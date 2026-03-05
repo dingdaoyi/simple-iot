@@ -60,8 +60,9 @@ public class InfluxDataProcessor implements DataProcessor, DeviceDataService {
 
     @Override
     public void process(DecodeResult message, String deviceKey, TslModel tslModel) {
+        String productKey = tslModel.getProductKey();
         if (CollectionUtil.isNotEmpty(message.getDataList())) {
-            this.saveProperties(message.getDataList(), deviceKey);
+            this.saveProperties(message.getDataList(), deviceKey, productKey);
         }
         if (message.getEventData() != null) {
             this.saveEvent(message.getEventData(), message.getRowData(), deviceKey);
@@ -82,30 +83,43 @@ public class InfluxDataProcessor implements DataProcessor, DeviceDataService {
 
     /**
      * 保存属性
+     * <p>
+     * 按产品区分存储，使用 identifier 作为字段名，避免 InfluxDB 同名字段类型不一致的问题
+     * measurement 命名: {propDatabase}_{productKey}
      *
-     * @param dataList  属性列表
-     * @param deviceKey 设备编号
+     * @param dataList   属性列表
+     * @param deviceKey  设备编号
+     * @param productKey 产品Key
      */
-    //TODO 当前未区分产品和产品类型,后面看怎么处理
-    private void saveProperties(List<DeviceData> dataList, String deviceKey) {
-        List<Point> points = new ArrayList<>();
-        for (DeviceData deviceData : dataList) {
-            Point point = Point.measurement(properties.getPropDatabase())
-                    .setTag("deviceKey", deviceKey)
-                    .setTag("identifier", deviceData.getIdentifier())
-                    .setTag("dataType", deviceData.getDataType().name())
-                    .setTimestamp(Instant.now());
-            switch (deviceData.getDataType()) {
-                case DATE, STRUCT, ENUM, TEXT -> point.setField("value", deviceData.getValue().toString());
-                case INT -> point.setField("value", (int) deviceData.getValue());
-                case FLOAT -> point.setField("value", (float) deviceData.getValue());
-                case DOUBLE -> point.setField("value", (double) deviceData.getValue());
-                case BOOL -> point.setField("value", (boolean) deviceData.getValue());
-            }
-            points.add(point);
+    private void saveProperties(List<DeviceData> dataList, String deviceKey, String productKey) {
+        if (CollectionUtil.isEmpty(dataList)) {
+            return;
         }
-        log.info("保存属性信息;{}|{}", deviceKey, JSONUtil.toJsonStr(dataList));
-        influxDBClient.writePoints(points);
+
+        // 构建按产品区分的 measurement
+        String measurement = properties.getPropDatabase() + "_" + productKey.toLowerCase(Locale.ROOT);
+
+        // 将一次上报的所有属性合并到一个 Point 中，使用 identifier 作为字段名
+        Point point = Point.measurement(measurement)
+                .setTag("deviceKey", deviceKey)
+                .setTimestamp(Instant.now());
+
+        for (DeviceData deviceData : dataList) {
+            String fieldName = deviceData.getIdentifier();
+            Object value = deviceData.getValue();
+            if (value == null) {
+                continue;
+            }
+            switch (deviceData.getDataType()) {
+                case DATE, STRUCT, ENUM, TEXT -> point.setField(fieldName, value.toString());
+                case INT -> point.setField(fieldName, Integer.parseInt(value.toString()));
+                case FLOAT -> point.setField(fieldName, Float.parseFloat(value.toString()));
+                case DOUBLE -> point.setField(fieldName, Double.parseDouble(value.toString()));
+                case BOOL -> point.setField(fieldName, Boolean.parseBoolean(value.toString()));
+            }
+        }
+        log.info("保存属性信息;deviceKey={}|productKey={}|data={}", deviceKey, productKey, JSONUtil.toJsonStr(dataList));
+        influxDBClient.writePoint(point);
     }
 
     @Override
@@ -115,45 +129,72 @@ public class InfluxDataProcessor implements DataProcessor, DeviceDataService {
             return new ArrayList<>();
         }
         DeviceDTO deviceDTO = dtoOptional.get();
+        String productKey = deviceDTO.getProductKey();
 
-        Optional<TslModel> optional = tslModelService.findByProductKey(deviceDTO.getProductKey());
+        Optional<TslModel> optional = tslModelService.findByProductKey(productKey);
         if (optional.isEmpty()) {
             return new ArrayList<>();
         }
         TslModel tslModel = optional.get();
         List<TslProperty> propertyList = tslModel.getProperties().stream()
                 .filter(TslProperty::isProperty).toList();
+
         List<KeyValue<String, Object>> dataList = new ArrayList<>();
         QueryOptions queryOptions = new QueryOptions(properties.getDatabase(), QueryType.SQL);
+
+        // 按产品区分的 measurement
+        String measurement = properties.getPropDatabase() + "_" + productKey.toLowerCase(Locale.ROOT);
+
+        // 为每个属性单独查询最新值
         for (TslProperty property : propertyList) {
-            String sqlParams = "select value from " + properties.getPropDatabase() + "_" + property.getIdentifier() + " where \"deviceKey\"=$deviceKey order by time desc limit 1";
-            try (Stream<PointValues> stream = influxDBClient.queryPoints(sqlParams, Map.of("deviceKey", deviceKey), queryOptions)) {
-                stream.forEach(row -> dataList.add(new KeyValue<>(property.getIdentifier(), row.getField("value"))));
+            String identifier = property.getIdentifier();
+            String sql = "select last_value(\"" + identifier + "\") as \"" + identifier + "\" from \"" + measurement + "\" where \"deviceKey\"=$deviceKey";
+            try (Stream<PointValues> stream = influxDBClient.queryPoints(sql, Map.of("deviceKey", deviceKey), queryOptions)) {
+                stream.findFirst().ifPresent(row -> {
+                    Object value = row.getField(identifier);
+                    if (value != null) {
+                        dataList.add(new KeyValue<>(identifier, value));
+                    }
+                });
             } catch (Exception e) {
-                log.debug("查询出错:{}", e.getMessage());
+                log.debug("查询属性 {} 出错:{}", identifier, e.getMessage());
             }
         }
         return dataList;
     }
 
     /**
-     * 查询条件可能有点问题
+     * 查询单个属性的历史数据
      *
-     * @param query
-     * @return
+     * @param query 查询条件
+     * @return 历史数据列表
      */
     @Override
     public List<KeyValue<String, Object>> metric(DeviceDataQuery query) {
+        // 获取设备信息以确定产品
+        Optional<DeviceDTO> deviceOptional = deviceService.getByDeviceKey(query.getDeviceKey());
+        if (deviceOptional.isEmpty()) {
+            return new ArrayList<>();
+        }
+        String productKey = deviceOptional.get().getProductKey();
 
         List<KeyValue<String, Object>> dataList = new ArrayList<>();
         QueryOptions queryOptions = new QueryOptions(properties.getDatabase(), QueryType.SQL);
-        String sqlParams = "select value,time from " + properties.getPropDatabase()  + " where \"identifier\"=identifier and  \"deviceKey\"=$deviceKey" +
-                           " and time> $beginTime and time<= $endTime order by time asc";
-        try (Stream<PointValues> stream = influxDBClient.queryPoints(sqlParams, Map.of("deviceKey", query.getDeviceKey(),
-                "identifier",query.getIdentifier(),
-                "beginTime", DateUtil.formatLocalDateTime(query.getBeginTime()), "endTime", DateUtil.formatLocalDateTime(query.getEndTime())), queryOptions)) {
 
-            stream.forEach(row -> dataList.add(new KeyValue<>(TimeUtils.toDateTimeStr(row.getTimestamp()), row.getField("value"))));
+        // 按产品区分的 measurement
+        String measurement = properties.getPropDatabase() + "_" + productKey.toLowerCase(Locale.ROOT);
+        String identifier = query.getIdentifier();
+
+        // 查询指定 identifier 字段的历史数据
+        String sqlParams = "select \"" + identifier + "\", time from \"" + measurement + "\" where \"deviceKey\"=$deviceKey" +
+                " and time >= $beginTime and time <= $endTime order by time asc";
+
+        try (Stream<PointValues> stream = influxDBClient.queryPoints(sqlParams, Map.of(
+                "deviceKey", query.getDeviceKey(),
+                "beginTime", DateUtil.formatLocalDateTime(query.getBeginTime()),
+                "endTime", DateUtil.formatLocalDateTime(query.getEndTime())), queryOptions)) {
+
+            stream.forEach(row -> dataList.add(new KeyValue<>(TimeUtils.toDateTimeStr(row.getTimestamp()), row.getField(identifier))));
         } catch (Exception e) {
             log.debug("查询出错:{}", e.getMessage());
         }

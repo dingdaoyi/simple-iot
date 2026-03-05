@@ -43,6 +43,7 @@ public class ModelServiceServiceImpl extends ServiceImpl<ModelServiceMapper, Mod
         List<ModelService> modelServices = baseMapper.selectList(
                 Wrappers.<ModelService>lambdaQuery()
                         .eq(ModelService::getProductTypeId, productTypeId)
+                        .eq(ModelService::getCustom, false)
                         .eq(ObjectUtils.isNotNull(serviceType), ModelService::getServiceType, serviceType)
                         .and(StringUtils.isNotBlank(search), w ->
                                 w.like(ModelService::getName, search)

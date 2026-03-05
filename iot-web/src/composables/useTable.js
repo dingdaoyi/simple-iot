@@ -53,8 +53,13 @@ export function useTable(options = {}) {
 
   // 搜索
   const onSearch = () => {
+    // 通过添加时间戳强制触发 params 变化，让外部组件（如 IotTable）能监听到
+    params._t = Date.now()
     params.page = 1
-    updatePage()
+    // 如果有 fetchApi 则调用
+    if (fetchApi) {
+      updatePage()
+    }
   }
 
   // 重置搜索

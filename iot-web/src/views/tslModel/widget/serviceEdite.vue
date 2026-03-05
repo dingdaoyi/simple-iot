@@ -41,13 +41,14 @@ const rules = ref({
   required: [{ required: true, message: '是否必选不能为空', trigger: 'change' }],
 })
 
-const { editRef, loading, onClose } = useForm({
+const { form, editRef, loading, onClose } = useForm({
   defForm: {
     productTypeId: props.typeId,
     productId: props.productId,
     custom: props.productId != null,
     outputParamIds: [],
     inputParamIds: [],
+    serviceType: 1,
   },
   api: props.datas ? serviceEditeApi : serviceAddApi,
   callback: () => {
@@ -72,7 +73,7 @@ async function onSubmit() {
   loading.value = true
   try {
     const func = props.datas ? serviceEditeApi : serviceAddApi
-    await func(editRef.value.model)
+    await func(form.value)
     ElMessage.success('操作成功')
     emits('update')
     emits('update:modelValue', false)
@@ -88,14 +89,6 @@ async function onSubmit() {
 function changeServiceType(value) {
   currentType.value = value
 }
-
-const form = ref({
-  productTypeId: props.typeId,
-  productId: props.productId,
-  custom: props.productId != null,
-  outputParamIds: [],
-  inputParamIds: [],
-})
 
 if (props.datas) {
   form.value = { ...form.value, ...props.datas }

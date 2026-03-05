@@ -51,6 +51,10 @@ function resetForm() {
 
 // 根据参数类型获取默认值
 function getDefaultValue(param) {
+  // 枚举类型默认取第一个值或空
+  if (param.enums && param.enums.length > 0) {
+    return param.enums[0]?.key ?? ''
+  }
   switch (param.dataType) {
     case 'int':
     case 'float':
@@ -148,6 +152,10 @@ async function callDeviceService() {
 
 // 渲染表单项
 function renderFormItem(param) {
+  // 如果有枚举值，使用下拉选择
+  if (param.enums && param.enums.length > 0) {
+    return 'enum'
+  }
   switch (param.dataType) {
     case 'bool':
       return 'switch'
@@ -166,112 +174,104 @@ function renderFormItem(param) {
 </script>
 
 <template>
-  <div class="p-5">
+  <div class="service-container">
     <!-- 服务列表 -->
-    <div v-if="serviceList.length === 0" class="text-center py-10">
+    <div v-if="serviceList.length === 0" class="empty-state glass-card">
       <el-empty description="暂无可用服务" />
     </div>
 
-    <div v-else class="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
+    <div v-else class="service-grid">
       <div
         v-for="service in serviceList"
         :key="service.identifier"
-        class="bg-white rounded-xl border border-gray-200 hover:border-blue-300 hover:shadow-xl transition-all duration-300 overflow-hidden group"
+        class="service-card glass-card"
       >
         <!-- 服务头部 -->
-        <div class="bg-gradient-to-r from-blue-50 to-indigo-50 px-6 py-4 border-b border-gray-100">
-          <div class="flex items-start justify-between mb-2">
-            <h3 class="font-semibold text-lg text-gray-800 group-hover:text-blue-600 transition-colors">
+        <div class="service-header">
+          <div class="service-title-row">
+            <h3 class="service-name">
               {{ service.name }}
             </h3>
-            <div class="flex items-center gap-2">
-              <el-tag type="primary" size="small" class="font-medium">
-                服务
-              </el-tag>
-            </div>
+            <el-tag type="primary" size="small" effect="dark" class="service-tag">
+              服务
+            </el-tag>
           </div>
 
-          <div class="flex items-center gap-2 mb-3">
-            <code class="bg-gray-100 text-gray-700 px-2 py-1 rounded text-xs font-mono">
+          <div class="service-meta">
+            <code class="service-identifier">
               {{ service.identifier }}
             </code>
-            <el-tag v-if="service.async" type="warning" size="small">
+            <el-tag v-if="service.async" type="warning" size="small" effect="light">
               异步
             </el-tag>
-            <el-tag v-if="service.required" type="danger" size="small">
+            <el-tag v-if="service.required" type="danger" size="small" effect="light">
               必选
             </el-tag>
           </div>
 
           <!-- 服务描述 -->
-          <div v-if="service.remark" class="bg-blue-100 border-l-4 border-blue-400 p-3 rounded-r">
-            <p class="text-sm text-blue-800 leading-relaxed m-0">
-              {{ service.remark }}
-            </p>
+          <div v-if="service.remark" class="service-desc">
+            <p>{{ service.remark }}</p>
           </div>
         </div>
 
         <!-- 服务内容 -->
-        <div class="p-6">
+        <div class="service-body">
           <!-- 参数信息 -->
-          <div class="grid grid-cols-2 gap-4 mb-6">
+          <div class="params-grid">
             <!-- 输入参数 -->
-            <div class="bg-green-50 rounded-lg p-4 border border-green-200">
-              <div class="flex items-center justify-between mb-3">
-                <div class="flex items-center gap-2">
-                  <div class="w-2 h-2 bg-green-500 rounded-full" />
-                  <span class="text-sm font-medium text-green-700">输入</span>
+            <div class="param-box param-input">
+              <div class="param-header">
+                <div class="param-header-left">
+                  <div class="param-dot" />
+                  <span class="param-label">输入</span>
                 </div>
-                <span class="bg-green-200 text-green-700 text-xs px-2 py-1 rounded-full font-medium">
-                  {{ service.inputParams?.length || 0 }}
-                </span>
+                <span class="param-count">{{ service.inputParams?.length || 0 }}</span>
               </div>
-              <div class="space-y-1 min-h-12">
+              <div class="param-list">
                 <div v-if="service.inputParams && service.inputParams.length > 0">
                   <div
                     v-for="param in service.inputParams.slice(0, 2)"
                     :key="param.identifier"
-                    class="text-xs bg-white text-green-700 px-2 py-1 rounded border border-green-300 truncate"
+                    class="param-item"
                     :title="param.name"
                   >
                     {{ param.name }}
                   </div>
-                  <div v-if="service.inputParams.length > 2" class="text-xs text-green-600 font-medium">
+                  <div v-if="service.inputParams.length > 2" class="param-more">
                     +{{ service.inputParams.length - 2 }} 更多
                   </div>
                 </div>
-                <div v-else class="text-xs text-green-600 italic">
+                <div v-else class="param-empty">
                   无输入参数
                 </div>
               </div>
             </div>
 
             <!-- 输出参数 -->
-            <div class="bg-blue-50 rounded-lg p-4 border border-blue-200">
-              <div class="flex items-center justify-between mb-3">
-                <div class="flex items-center gap-2">
-                  <div class="w-2 h-2 bg-blue-500 rounded-full" />
-                  <span class="text-sm font-medium text-blue-700">输出</span>
+            <div class="param-box param-output">
+              <div class="param-header">
+                <div class="param-header-left">
+                  <div class="param-dot" />
+                  <span class="param-label">输出</span>
                 </div>
-                <span class="bg-blue-200 text-blue-700 text-xs px-2 py-1 rounded-full font-medium">
-                  {{ service.outputParams?.length || 0 }}
-                </span>
+                <span class="param-count">{{ service.outputParams?.length || 0 }}</span>
               </div>
-              <div class="space-y-1 min-h-12">
+              <div class="param-list">
                 <div v-if="service.outputParams && service.outputParams.length > 0">
                   <div
                     v-for="param in service.outputParams.slice(0, 2)"
                     :key="param.identifier"
-                    class="text-xs bg-white text-blue-700 px-2 py-1 rounded border border-blue-300 truncate"
+                    class="param-item"
                     :title="param.name"
                   >
                     {{ param.name }}
                   </div>
-                  <div v-if="service.outputParams.length > 2" class="text-xs text-blue-600 font-medium">
+                  <div v-if="service.outputParams.length > 2" class="param-more">
                     +{{ service.outputParams.length - 2 }} 更多
                   </div>
                 </div>
-                <div v-else class="text-xs text-blue-600 italic">
+                <div v-else class="param-empty">
                   无输出参数
                 </div>
               </div>
@@ -279,11 +279,9 @@ function renderFormItem(param) {
           </div>
 
           <!-- 操作按钮 -->
-          <div class="flex justify-end pt-4 border-t border-gray-100">
+          <div class="service-action">
             <el-button
               type="primary"
-              size="default"
-              class="px-6 font-medium"
               @click="showServiceDialog(service)"
             >
               调用服务
@@ -301,10 +299,10 @@ function renderFormItem(param) {
       :close-on-click-modal="false"
     >
       <div v-if="activeService">
-        <div class="bg-gray-50 p-4 rounded mb-5">
-          <div class="flex items-center gap-2 mb-2">
+        <div class="dialog-info">
+          <div class="info-row">
             <strong>服务标识:</strong>
-            <code class="bg-gray-200 px-2 py-1 rounded text-sm">{{ activeService.identifier }}</code>
+            <code class="info-code">{{ activeService.identifier }}</code>
             <el-tag v-if="activeService.async" type="warning" size="small">
               异步
             </el-tag>
@@ -312,7 +310,7 @@ function renderFormItem(param) {
               必选
             </el-tag>
           </div>
-          <p v-if="activeService.remark" class="mb-0 text-gray-700">
+          <p v-if="activeService.remark" class="info-desc">
             <strong>服务描述:</strong> {{ activeService.remark }}
           </p>
         </div>
@@ -345,6 +343,22 @@ function renderFormItem(param) {
               :active-text="param.trueText || '开'"
               :inactive-text="param.falseText || '关'"
             />
+
+            <!-- 枚举类型 -->
+            <el-select
+              v-else-if="renderFormItem(param) === 'enum'"
+              v-model="serviceForm[param.identifier]"
+              :placeholder="`请选择${param.name}`"
+              style="width: 100%"
+              clearable
+            >
+              <el-option
+                v-for="item in param.enums"
+                :key="item.key"
+                :label="item.value"
+                :value="item.key"
+              />
+            </el-select>
 
             <!-- 数值类型 -->
             <el-input-number
@@ -387,23 +401,21 @@ function renderFormItem(param) {
               clearable
             />
 
-            <div v-if="param.description" class="text-xs text-gray-500 mt-1 leading-relaxed">
+            <div v-if="param.description" class="form-item-hint">
               {{ param.description }}
             </div>
           </el-form-item>
         </el-form>
 
         <!-- 调用结果显示 -->
-        <div v-if="showResult" class="mt-5">
+        <div v-if="showResult" class="result-section">
           <el-divider content-position="left">
             调用结果
           </el-divider>
-          <div v-if="callResult" class="bg-gray-50 border border-gray-200 rounded p-4 max-h-50 overflow-y-auto">
-            <pre class="m-0 font-mono text-xs leading-relaxed text-gray-800">{{
-                JSON.stringify(callResult, null, 2)
-            }}</pre>
+          <div v-if="callResult" class="result-content">
+            <pre>{{ JSON.stringify(callResult, null, 2) }}</pre>
           </div>
-          <div v-else class="text-center py-3">
+          <div v-else class="result-empty">
             <el-tag type="success">
               服务调用成功，无返回数据
             </el-tag>
@@ -412,7 +424,7 @@ function renderFormItem(param) {
       </div>
 
       <template #footer>
-        <div class="flex justify-end gap-3">
+        <div class="dialog-footer">
           <el-button @click="serviceDialogVisible = false">
             取消
           </el-button>
@@ -431,3 +443,274 @@ function renderFormItem(param) {
     </el-dialog>
   </div>
 </template>
+
+<style lang="scss" scoped>
+.service-container {
+  padding: var(--space-lg);
+  height: 100%;
+  overflow-y: auto;
+}
+
+.empty-state {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 300px;
+}
+
+.service-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+  gap: var(--space-lg);
+}
+
+.service-card {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  transition: all var(--transition-base);
+
+  &:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-lg);
+    border-color: rgba(99, 102, 241, 0.3);
+  }
+}
+
+.service-header {
+  background: linear-gradient(135deg, rgba(99, 102, 241, 0.08) 0%, rgba(6, 182, 212, 0.08) 100%);
+  padding: var(--space-lg);
+  border-bottom: 1px solid var(--iot-glass-border);
+}
+
+.service-title-row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: var(--space-sm);
+}
+
+.service-name {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--iot-color-text-primary);
+  margin: 0;
+}
+
+.service-tag {
+  font-weight: 500;
+}
+
+.service-meta {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  margin-bottom: var(--space-md);
+}
+
+.service-identifier {
+  background: var(--iot-glass-bg);
+  color: var(--iot-color-text-secondary);
+  padding: 2px 8px;
+  border-radius: var(--radius-sm);
+  font-size: 12px;
+  font-family: 'Fira Code', monospace;
+}
+
+.service-desc {
+  background: rgba(99, 102, 241, 0.1);
+  border-left: 3px solid var(--iot-color-primary);
+  padding: var(--space-md);
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+
+  p {
+    margin: 0;
+    font-size: 14px;
+    color: var(--iot-color-text-secondary);
+    line-height: 1.5;
+  }
+}
+
+.service-body {
+  padding: var(--space-lg);
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.params-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-md);
+  margin-bottom: var(--space-lg);
+}
+
+.param-box {
+  background: var(--iot-glass-bg);
+  border: 1px solid var(--iot-glass-border);
+  border-radius: var(--radius-md);
+  padding: var(--space-md);
+}
+
+.param-input {
+  .param-dot {
+    background: var(--iot-color-success);
+  }
+  .param-count {
+    background: rgba(16, 185, 129, 0.15);
+    color: var(--iot-color-success);
+  }
+}
+
+.param-output {
+  .param-dot {
+    background: var(--iot-color-primary);
+  }
+  .param-count {
+    background: rgba(99, 102, 241, 0.15);
+    color: var(--iot-color-primary);
+  }
+}
+
+.param-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--space-sm);
+}
+
+.param-header-left {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+}
+
+.param-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+}
+
+.param-label {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--iot-color-text-secondary);
+}
+
+.param-count {
+  font-size: 12px;
+  padding: 2px 8px;
+  border-radius: var(--radius-full);
+  font-weight: 600;
+}
+
+.param-list {
+  min-height: 48px;
+}
+
+.param-item {
+  font-size: 12px;
+  background: var(--iot-color-bg-card);
+  color: var(--iot-color-text-secondary);
+  padding: 4px 8px;
+  border-radius: var(--radius-sm);
+  margin-bottom: 4px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  border: 1px solid var(--iot-glass-border);
+}
+
+.param-more {
+  font-size: 12px;
+  color: var(--iot-color-text-muted);
+  font-weight: 500;
+}
+
+.param-empty {
+  font-size: 12px;
+  color: var(--iot-color-text-muted);
+  font-style: italic;
+}
+
+.service-action {
+  display: flex;
+  justify-content: flex-end;
+  padding-top: var(--space-md);
+  border-top: 1px solid var(--iot-glass-border);
+  margin-top: auto;
+}
+
+/* Dialog styles */
+.dialog-info {
+  background: var(--iot-glass-bg);
+  border: 1px solid var(--iot-glass-border);
+  border-radius: var(--radius-md);
+  padding: var(--space-lg);
+  margin-bottom: var(--space-lg);
+}
+
+.info-row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  margin-bottom: var(--space-sm);
+
+  strong {
+    color: var(--iot-color-text-secondary);
+  }
+}
+
+.info-code {
+  background: var(--iot-color-bg-card);
+  padding: 2px 8px;
+  border-radius: var(--radius-sm);
+  font-size: 14px;
+  font-family: 'Fira Code', monospace;
+}
+
+.info-desc {
+  margin: 0;
+  color: var(--iot-color-text-secondary);
+  font-size: 14px;
+}
+
+.form-item-hint {
+  font-size: 12px;
+  color: var(--iot-color-text-muted);
+  margin-top: 4px;
+  line-height: 1.4;
+}
+
+.result-section {
+  margin-top: var(--space-lg);
+}
+
+.result-content {
+  background: var(--iot-glass-bg);
+  border: 1px solid var(--iot-glass-border);
+  border-radius: var(--radius-md);
+  padding: var(--space-md);
+  max-height: 200px;
+  overflow-y: auto;
+
+  pre {
+    margin: 0;
+    font-family: 'Fira Code', monospace;
+    font-size: 12px;
+    line-height: 1.5;
+    color: var(--iot-color-text-primary);
+  }
+}
+
+.result-empty {
+  text-align: center;
+  padding: var(--space-md);
+}
+
+.dialog-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--space-sm);
+}
+</style>

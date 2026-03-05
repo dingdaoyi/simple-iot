@@ -13,6 +13,7 @@ const params = ref({
   beginTime: DateUtils.formatDate(DateUtils.getStartOfDay()),
   endTime: DateUtils.formatDate(DateUtils.getEndOfDay()),
 })
+const dateRange = ref([DateUtils.getStartOfDay(), DateUtils.getEndOfDay()])
 const options = ref({
   tooltip: {
     trigger: 'axis',
@@ -85,6 +86,13 @@ function loadChartDate() {
       options.value.series[0].data = data.map(item => item.value || 0)
     })
 }
+
+function handleDateChange(val) {
+  if (val && val.length === 2) {
+    params.value.beginTime = DateUtils.formatDate(val[0])
+    params.value.endTime = DateUtils.formatDate(val[1])
+  }
+}
 const renderChart = ref(false)
 // wait container expand
 nextTick(() => {
@@ -104,10 +112,14 @@ loadChartDate()
           {{ tslPropOpt.name }}
         </div>
         <div>
-          <DwPicker
-            v-model:start="params.beginTime"
-            v-model:end="params.endTime"
-            class="mr-12px picker"
+          <el-date-picker
+            v-model="dateRange"
+            type="datetimerange"
+            range-separator="至"
+            start-placeholder="开始时间"
+            end-placeholder="结束时间"
+            class="mr-12px"
+            @change="handleDateChange"
           />
           <el-button type="info" @click="loadChartDate">
             搜索

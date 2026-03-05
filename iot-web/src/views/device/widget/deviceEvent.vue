@@ -1,5 +1,5 @@
 <script setup>
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
 import { deviceEventLogsApi } from '@/api/index.js'
 import IotTable from '@/components/IotTable.vue'
 import { useTable } from '@/composables/useTable.js'
@@ -57,18 +57,27 @@ const {
     endTime: DateUtils.formatDate(DateUtils.getEndOfDay()),
   },
 })
+
+const dateRange = ref([DateUtils.getStartOfDay(), DateUtils.getEndOfDay()])
+
+function handleDateChange(val) {
+  if (val && val.length === 2) {
+    params.beginTime = DateUtils.formatDate(val[0])
+    params.endTime = DateUtils.formatDate(val[1])
+  }
+}
 </script>
 
 <template>
-  <div class="flex flex-col h-full p-4">
+  <div class="event-container">
     <!-- 搜索区域 -->
-    <div class="flex items-center gap-4 mb-6 p-4 bg-gray-50 rounded-lg">
-      <div class="flex items-center gap-2 w-300px">
-        <span class="text-sm font-medium text-gray-700 w-100px">事件类型:</span>
+    <div class="search-area glass-card">
+      <div class="search-item">
+        <span class="search-label">事件类型:</span>
         <el-select
           v-model="params.identifier"
           placeholder="请选择事件类型"
-          class="w-48"
+          class="search-select"
           filterable
           clearable
         >
@@ -81,23 +90,26 @@ const {
         </el-select>
       </div>
 
-      <div class="flex items-center gap-2">
-        <span class="text-sm font-medium text-gray-700">时间范围:</span>
-        <DwPicker
-          v-model:start="params.beginTime"
-          v-model:end="params.endTime"
-          placeholder="请选择时间范围"
-          class="w-80"
+      <div class="search-item">
+        <span class="search-label">时间范围:</span>
+        <el-date-picker
+          v-model="dateRange"
+          type="datetimerange"
+          range-separator="至"
+          start-placeholder="开始时间"
+          end-placeholder="结束时间"
+          class="search-date"
+          @change="handleDateChange"
         />
       </div>
 
       <el-button type="primary" @click="onSearch">
-        <i class="i-ep-search mr-1" />搜索
+        搜索
       </el-button>
     </div>
 
     <!-- 表格区域 -->
-    <div class="flex-1 bg-white rounded-lg border border-gray-200">
+    <div class="table-area glass-card">
       <IotTable
         ref="dwTable"
         row-key="id"
@@ -109,3 +121,46 @@ const {
     </div>
   </div>
 </template>
+
+<style lang="scss" scoped>
+.event-container {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-lg);
+  height: 100%;
+  padding: var(--space-lg);
+}
+
+.search-area {
+  display: flex;
+  align-items: center;
+  gap: var(--space-lg);
+  flex-wrap: wrap;
+}
+
+.search-item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+}
+
+.search-label {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--iot-color-text-secondary);
+  min-width: 70px;
+}
+
+.search-select {
+  width: 200px;
+}
+
+.search-date {
+  width: 360px;
+}
+
+.table-area {
+  flex: 1;
+  overflow: hidden;
+}
+</style>

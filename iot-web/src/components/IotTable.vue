@@ -80,7 +80,8 @@ const finalColumns = computed(() => {
 
     // 处理 formatter 函数 - 转换为 render 函数
     if (column.formatter && typeof column.formatter === 'function') {
-      column.render = row => column.formatter(row, column, row[column.prop])
+      const formatterFn = column.formatter
+      column.render = ({ row }) => formatterFn(row, column, row[column.prop])
     }
 
     // 处理 slot: 'expand' - 转换为 type: 'expand'

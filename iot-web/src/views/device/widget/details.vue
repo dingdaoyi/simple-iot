@@ -10,7 +10,7 @@ import LabelItem from '@/views/device/widget/LabelItem.vue'
 import PropChart from '@/views/device/widget/propChart.vue'
 import PropMetric from '@/views/device/widget/PropMetric.vue'
 
-const activeName = ref('设备事件')
+const activeName = ref('设备控制')
 const route = useRoute()
 const id = route.query.id
 const deviceDetail = ref({})
@@ -86,7 +86,7 @@ loadData()
         <el-tab-pane label="设备事件" name="设备事件">
           <DeviceEvent v-if="deviceDetail.deviceKey" :device-detail="deviceDetail" />
         </el-tab-pane>
-        <el-tab-pane label="服务定义" name="服务定义">
+        <el-tab-pane label="设备控制" name="设备控制">
           <DeviceService v-if="deviceDetail.deviceKey" :device-detail="deviceDetail" />
         </el-tab-pane>
       </el-tabs>

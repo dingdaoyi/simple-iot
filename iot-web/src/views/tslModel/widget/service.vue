@@ -1,5 +1,5 @@
 <script lang="jsx" setup>
-import { ElButton } from 'element-plus'
+import { ElButton, ElMessage, ElMessageBox } from 'element-plus'
 import { h, ref } from 'vue'
 import {
   customServiceListApi,
@@ -17,10 +17,37 @@ const props = defineProps(['typeId', 'productId', 'showEdite'])
 const propertiesDct = ref([])
 const dialogVisibleParams = ref(false)
 const showDetailRow = ref()
+const iotTableRef = ref()
+
 function handleShowParams(row) {
   showDetailRow.value = row
   dialogVisibleParams.value = true
 }
+
+// 刷新表格数据
+function refreshTable() {
+  iotTableRef.value?.refresh()
+}
+
+// 自定义删除方法
+async function handleDelete(row) {
+  try {
+    await ElMessageBox.confirm('确定要删除服务吗?', '提示', {
+      confirmButtonText: '确定',
+      cancelButtonText: '取消',
+      type: 'warning',
+    })
+    await serviceDeleteApi(row.id)
+    ElMessage.success('删除成功')
+    refreshTable()
+  }
+  catch (error) {
+    if (error !== 'cancel') {
+      console.error('删除失败:', error)
+    }
+  }
+}
+
 const column = [
   {
     prop: 'id',
@@ -73,16 +100,12 @@ const column = [
 const {
   params,
   dialogVisible,
-  updatePage,
   onSearch,
-  dwTable,
-  onDelete,
   onEdit,
   onAdd,
   diaTitle,
   currentItem,
 } = useTable({
-  deleteApi: serviceDeleteApi,
   diaName: '服务',
   defParams: {
     productTypeId: props.typeId,
@@ -117,7 +140,7 @@ loadPropertiesDict()
       </ElButton>
     </div>
     <IotTable
-      ref="dwTable"
+      ref="iotTableRef"
       row-key="id"
       :column="column"
       :params="params"
@@ -125,7 +148,7 @@ loadPropertiesDict()
       :api="productId ? customServiceListApi : standardServiceListApi"
     >
       <template #cz="{ row }">
-        <ElButton v-if="showEdite" type="danger" link @click="onDelete(row)">
+        <ElButton v-if="showEdite" type="danger" link @click="handleDelete(row)">
           删除
         </ElButton>
         <ElButton v-if="showEdite" type="primary" link @click="onEdit(row)">
@@ -141,7 +164,7 @@ loadPropertiesDict()
       :product-id="productId"
       :datas="currentItem"
       :properties="propertiesDct"
-      @update="updatePage"
+      @update="refreshTable"
     />
     <ParamShow
       v-if="dialogVisibleParams"
