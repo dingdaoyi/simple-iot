@@ -77,9 +77,22 @@
             <artifactId>influxdb3-java</artifactId>
         </dependency>
 
+        <!-- Netty 依赖 (InfluxDB 3 Arrow Flight 需要) -->
         <dependency>
             <groupId>io.netty</groupId>
-            <artifactId>netty-codec</artifactId>
+            <artifactId>netty-handler</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.netty</groupId>
+            <artifactId>netty-handler-proxy</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.netty</groupId>
+            <artifactId>netty-codec-http</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.netty</groupId>
+            <artifactId>netty-codec-http2</artifactId>
         </dependency>
         <dependency>
             <groupId>com.github.dingdaoyi</groupId>

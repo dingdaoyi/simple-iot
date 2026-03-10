@@ -32,7 +32,7 @@ spring:
     password: ${POSTGRES_PASSWORD:postgres123}
   autoconfigure:
     exclude:
-      - org.springframework.boot.autoconfigure.mail.MailSenderAutoConfiguration
+      - org.springframework.boot.mail.autoconfigure.MailSenderAutoConfiguration
 # springdoc-openapi项目配置
 springdoc:
   swagger-ui:
@@ -152,4 +152,4 @@ sample:
       token: ${INFLUXDB_TOKEN:iot_token_123456}
       prop-database: prop_data
       event-database: even_data
-      database: ${INFLUXDB_DATABASE:_internal}
+      database: ${INFLUXDB_DATABASE:simple}
