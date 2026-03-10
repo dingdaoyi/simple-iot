@@ -977,3 +977,58 @@ ALTER TABLE "public"."tb_model_property" ADD CONSTRAINT "property_type_fk" FOREI
 ALTER TABLE "public"."tb_service_property" ADD CONSTRAINT "spfk_property" FOREIGN KEY ("property_id") REFERENCES "public"."tb_model_property" ("id") ON DELETE NO ACTION ON UPDATE NO ACTION;
 ALTER TABLE "public"."tb_service_property" ADD CONSTRAINT "spfk_service" FOREIGN KEY ("service_id") REFERENCES "public"."tb_model_service" ("id") ON DELETE NO ACTION ON UPDATE NO ACTION;
 COMMENT ON CONSTRAINT "spfk_property" ON "public"."tb_service_property" IS '关联属性';
+
+-- ============================================
+-- 邮箱配置表
+-- 用于存储SMTP邮箱服务配置，替代配置文件中的邮箱配置
+-- ============================================
+
+-- 创建序列
+DROP SEQUENCE IF EXISTS "public"."tb_email_config_id_seq";
+CREATE SEQUENCE "public"."tb_email_config_id_seq"
+    INCREMENT 1
+    MINVALUE 1
+    MAXVALUE 2147483647
+    START 1
+    CACHE 1;
+
+-- 创建邮箱配置表
+DROP TABLE IF EXISTS "public"."tb_email_config";
+CREATE TABLE "public"."tb_email_config" (
+                                            "id" int4 NOT NULL DEFAULT nextval('tb_email_config_id_seq'::regclass),
+                                            "name" varchar(100) COLLATE "pg_catalog"."default" NOT NULL,
+                                            "host" varchar(255) COLLATE "pg_catalog"."default" NOT NULL,
+                                            "port" int4 NOT NULL,
+                                            "username" varchar(255) COLLATE "pg_catalog"."default" NOT NULL,
+                                            "password" varchar(255) COLLATE "pg_catalog"."default" NOT NULL,
+                                            "protocol" varchar(50) COLLATE "pg_catalog"."default" DEFAULT 'smtp',
+                                            "encoding" varchar(50) COLLATE "pg_catalog"."default" DEFAULT 'UTF-8',
+                                            "ssl_enabled" bool DEFAULT true,
+                                            "is_default" bool DEFAULT false,
+                                            "status" int4 DEFAULT 1,
+                                            "create_time" timestamp(6),
+                                            "update_time" timestamp(6)
+);
+
+-- 添加主键
+ALTER TABLE "public"."tb_email_config" ADD CONSTRAINT "tb_email_config_pkey" PRIMARY KEY ("id");
+
+-- 添加注释
+COMMENT ON TABLE "public"."tb_email_config" IS '邮箱配置表';
+COMMENT ON COLUMN "public"."tb_email_config"."id" IS '主键ID';
+COMMENT ON COLUMN "public"."tb_email_config"."name" IS '配置名称';
+COMMENT ON COLUMN "public"."tb_email_config"."host" IS 'SMTP服务器地址';
+COMMENT ON COLUMN "public"."tb_email_config"."port" IS 'SMTP端口';
+COMMENT ON COLUMN "public"."tb_email_config"."username" IS '发件人邮箱';
+COMMENT ON COLUMN "public"."tb_email_config"."password" IS '邮箱密码/授权码';
+COMMENT ON COLUMN "public"."tb_email_config"."protocol" IS '协议';
+COMMENT ON COLUMN "public"."tb_email_config"."encoding" IS '编码';
+COMMENT ON COLUMN "public"."tb_email_config"."ssl_enabled" IS '是否启用SSL';
+COMMENT ON COLUMN "public"."tb_email_config"."is_default" IS '是否默认配置';
+COMMENT ON COLUMN "public"."tb_email_config"."status" IS '状态 1启用 2禁用';
+COMMENT ON COLUMN "public"."tb_email_config"."create_time" IS '创建时间';
+COMMENT ON COLUMN "public"."tb_email_config"."update_time" IS '更新时间';
+
+-- 创建索引
+CREATE INDEX "idx_email_config_is_default" ON "public"."tb_email_config" ("is_default");
+CREATE INDEX "idx_email_config_status" ON "public"."tb_email_config" ("status");

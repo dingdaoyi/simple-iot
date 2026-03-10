@@ -64,3 +64,4 @@ yarn.lock
 /.env
 /iot-web/src/.env
 /iot-web/.env.development
+CLAUDE.md

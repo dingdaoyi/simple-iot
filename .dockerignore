@@ -1,0 +1,48 @@
+# Git
+.git
+.gitignore
+
+# IDE
+.idea
+*.iml
+.vscode
+
+# Node
+**/node_modules
+**/dist
+
+# Java
+**/target
+**/*.class
+**/*.jar
+**/*.war
+
+# Logs
+**/*.log
+logs/
+
+# Environment
+.env
+.env.local
+
+# Docker
+docker-compose*.yml
+Dockerfile
+.dockerignore
+
+# Documentation
+*.md
+!README.md
+
+# Test
+**/test
+**/__tests__
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Misc
+*.bak
+*.swp
+*~

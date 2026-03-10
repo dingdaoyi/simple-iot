@@ -6,6 +6,7 @@ import {
   Connection,
   Document,
   House,
+  Message,
   Operation,
   Picture,
   Setting,
@@ -23,6 +24,7 @@ import rule from '@/views/rule'
 import icon from '@/views/system/icon'
 import messageReceive from '@/views/system/messageReceive'
 import sms from '@/views/system/sms'
+import email from '@/views/system/email'
 import tslModel from '@/views/tslModel'
 
 export default [
@@ -148,6 +150,15 @@ export default [
             meta: {
               title: '短信配置',
               icon: ChatDotRound,
+            },
+          },
+          {
+            path: '/email',
+            name: 'email',
+            component: email,
+            meta: {
+              title: '邮箱配置',
+              icon: Message,
             },
           },
           {

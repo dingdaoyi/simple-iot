@@ -3,6 +3,16 @@ server:
   servlet:
     context-path: /iot
 
+# Actuator 健康检查配置
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health
+  endpoint:
+    health:
+      show-details: never
+
 spring:
   application:
     name: iot-server
@@ -19,15 +29,10 @@ spring:
     driver-class-name: org.postgresql.Driver
     url: jdbc:postgresql://${POSTGRES_HOST:127.0.0.1}:${POSTGRES_PORT:5432}/${DATABASE:simple}?stringtype=unspecified
     username: ${POSTGRES_USERNAME:postgres}
-    password: ${POSTGRES_PASSWORD:postgres}
-  mail:
-    host: ${MAIL_HOST:smtp.example.com}
-    port: ${MAIL_PORT:587}
-    username: ${MAIL_USERNAME:your_email@example.com}
-    password: ${MAIL_PASSWORD:your_password}
-    protocol: smtp
-    test-connection: false
-    default-encoding: UTF-8
+    password: ${POSTGRES_PASSWORD:postgres123}
+  autoconfigure:
+    exclude:
+      - org.springframework.boot.autoconfigure.mail.MailSenderAutoConfiguration
 # springdoc-openapi项目配置
 springdoc:
   swagger-ui:
@@ -143,8 +148,8 @@ sample:
         topic-prefix: simple/iot
     device-channel-type: single
     influxdb:
-      url: ${INFLUXDB_URL:http://127.0.0.1:8086}
-      token: ${INFLUXDB_TOKEN:Evc2GMqMqWS}
+      url: ${INFLUXDB_URL:http://127.0.0.1:8181}
+      token: ${INFLUXDB_TOKEN:iot_token_123456}
       prop-database: prop_data
       event-database: even_data
-      database: simple
+      database: ${INFLUXDB_DATABASE:_internal}

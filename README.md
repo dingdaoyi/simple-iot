@@ -1,9 +1,9 @@
 # Simple IoT Platform
 
 <p align="center">
-  <img src="https://img.shields.io/badge/Spring%20Boot-4.0.1-brightgreen" alt="Spring Boot">
+  <img src="https://img.shields.io/badge/Spring%20Boot-4.0.2-brightgreen" alt="Spring Boot">
   <img src="https://img.shields.io/badge/Vue-3.x-42b883" alt="Vue 3">
-  <img src="https://img.shields.io/badge/Java-25-orange" alt="Java 21">
+  <img src="https://img.shields.io/badge/Java-25-orange" alt="Java 25">
   <img src="https://img.shields.io/badge/License-Apache-blue" alt="License">
 </p>
 
@@ -20,7 +20,7 @@
 
 ## 在线体验
 
-- **演示地址**：http://106.13.72.27:8962
+- **演示地址**：http://122.51.129.91:8962
 - **体验账号**：`admin` / `123456`
 
 ---
@@ -28,7 +28,7 @@
 ## 核心亮点
 
 ### 现代化技术栈
-- **后端**：Java 21 + Spring Boot 4.0.1，拥抱最新技术
+- **后端**：Java 25 + Spring Boot 4.0.2，拥抱最新技术
 - **前端**：Vue 3 + Vite + Element Plus，极速开发体验
 - **数据库**：PostgreSQL + InfluxDB 3，业务数据与时序数据分离
 
@@ -68,8 +68,8 @@
 
 | 组件 | 版本 | 说明 |
 |------|------|------|
-| Spring Boot | 4.0.1 | 核心框架 |
-| Java | 21 | 运行时环境 |
+| Spring Boot | 4.0.2 | 核心框架 |
+| Java | 25 | 运行时环境 |
 | Sa-Token | - | 认证鉴权 |
 | MyBatis-Plus | - | ORM 框架 |
 | PostgreSQL | - | 业务数据库 |
@@ -95,7 +95,7 @@
 
 ### 环境要求
 
-- JDK 21+
+- JDK 25+
 - Node.js 18+
 - PostgreSQL 14+
 - InfluxDB 3.0 (可选)
@@ -191,6 +191,41 @@ sample-iot/
 - 多语言脚本支持
 - 动态协议加载
 - 一键启用/禁用
+
+---
+
+## 部署指南
+
+### Docker 部署（推荐）
+
+```bash
+# 1. 赋予脚本执行权限
+chmod +x deploy.sh
+
+# 2. 一键部署
+./deploy.sh deploy
+```
+
+详细部署说明请查看 [Docker 部署文档](doc/deploy.md)
+
+### 部署命令速查
+
+| 命令 | 说明 |
+|------|------|
+| `./deploy.sh deploy` | 完整部署 |
+| `./deploy.sh start` | 启动服务 |
+| `./deploy.sh stop` | 停止服务 |
+| `./deploy.sh restart` | 重启服务 |
+| `./deploy.sh logs` | 查看日志 |
+| `./deploy.sh status` | 查看状态 |
+
+### 访问地址
+
+| 服务 | 地址 |
+|------|------|
+| 前端 | http://localhost |
+| API 文档 | http://localhost:5010/iot/doc.html |
+| MQTT | localhost:1883 |
 
 ---
 

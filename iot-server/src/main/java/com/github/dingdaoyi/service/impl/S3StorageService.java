@@ -42,17 +42,17 @@ public class S3StorageService implements StorageService {
                 s3Client.createBucket(CreateBucketRequest.builder().bucket(bucketName).build());
                 log.info("存储桶创建成功: {}", bucketName);
             } catch (S3Exception ex) {
-                String errorMsg = ex.awsErrorDetails() != null ? 
+                String errorMsg = ex.awsErrorDetails() != null ?
                         ex.awsErrorDetails().errorMessage() : ex.getMessage();
                 log.error("创建存储桶失败: {}", errorMsg);
-                throw new BusinessException(ResultCode.BAD_REQUEST.getCode(), 
+                throw new BusinessException(ResultCode.BAD_REQUEST.getCode(),
                         "创建存储桶失败: " + errorMsg);
             }
         } catch (S3Exception e) {
-            String errorMsg = e.awsErrorDetails() != null ? 
+            String errorMsg = e.awsErrorDetails() != null ?
                     e.awsErrorDetails().errorMessage() : e.getMessage();
             log.error("连接存储服务失败: {}", errorMsg);
-            throw new BusinessException(ResultCode.BAD_REQUEST.getCode(), 
+            throw new BusinessException(ResultCode.BAD_REQUEST.getCode(),
                     "连接存储服务失败: " + errorMsg);
         }
     }
@@ -85,7 +85,7 @@ public class S3StorageService implements StorageService {
             log.error("文件读取失败: {}", e.getMessage());
             throw new BusinessException(ResultCode.BAD_REQUEST.getCode(), "文件上传失败");
         } catch (S3Exception e) {
-            String errorMsg = e.awsErrorDetails() != null ? 
+            String errorMsg = e.awsErrorDetails() != null ?
                     e.awsErrorDetails().errorMessage() : e.getMessage();
             log.error("存储服务上传失败: {}", errorMsg);
             throw new BusinessException(ResultCode.BAD_REQUEST.getCode(), "文件上传失败");
@@ -95,18 +95,17 @@ public class S3StorageService implements StorageService {
     @Override
     public FileMetadata getFileMetadata(String path) throws IOException {
         try {
-            HeadObjectResponse headResponse = s3Client.headObject(
-                    HeadObjectRequest.builder().bucket(bucketName).key(path).build());
-
+            // 直接使用 getObject 获取文件内容和元数据，避免 headObject 兼容性问题
             ResponseInputStream<GetObjectResponse> objectResponse = s3Client.getObject(
                     GetObjectRequest.builder().bucket(bucketName).key(path).build());
 
+            GetObjectResponse response = objectResponse.response();
             String filename = path.substring(path.lastIndexOf('/') + 1);
 
             FileMetadata metadata = new FileMetadata();
             metadata.setFilename(filename);
-            metadata.setContentType(headResponse.contentType());
-            metadata.setContentLength(headResponse.contentLength());
+            metadata.setContentType(response.contentType());
+            metadata.setContentLength(response.contentLength());
             metadata.setInputStream(objectResponse);
             metadata.setExists(true);
             return metadata;
