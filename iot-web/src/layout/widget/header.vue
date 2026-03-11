@@ -1,9 +1,9 @@
 <script setup>
 import { ArrowDown, Check, Expand, Fold, Lightning, Monitor, Moon, Sunny, SwitchButton, User } from '@element-plus/icons-vue'
 import { useRouter } from 'vue-router'
+import { useSidebar } from '@/composables/useSidebar.js'
 import { useTheme } from '@/composables/useTheme.js'
 import { useAccountStore } from '@/store'
-import { useSidebar } from '@/composables/useSidebar.js'
 
 const router = useRouter()
 const store = useAccountStore()

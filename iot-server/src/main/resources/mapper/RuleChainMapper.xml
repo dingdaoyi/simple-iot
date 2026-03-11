@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.github.dingdaoyi.mapper.RuleChainMapper">
+
+    <resultMap id="PageVoResultMap" type="com.github.dingdaoyi.model.vo.RuleChainPageVo">
+        <id column="id" property="id"/>
+        <result column="name" property="name"/>
+        <result column="description" property="description"/>
+        <result column="is_root" property="isRoot"/>
+        <result column="is_enabled" property="isEnabled"/>
+        <result column="source_type" property="sourceType"/>
+        <result column="source_id" property="sourceId"/>
+        <result column="source_name" property="sourceName"/>
+        <result column="node_count" property="nodeCount"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_time" property="updateTime"/>
+    </resultMap>
+
+    <select id="pageByQuery" resultMap="PageVoResultMap">
+        SELECT
+            rc.id,
+            rc.name,
+            rc.description,
+            rc.is_root,
+            rc.is_enabled,
+            rc.source_type,
+            rc.source_id,
+            rc.create_time,
+            rc.update_time,
+            jsonb_array_length(rc.configuration -> 'nodes') as node_count,
+            CASE
+                WHEN rc.source_type = 'PRODUCT' THEN p.model
+                WHEN rc.source_type = 'DEVICE' THEN d.device_name
+                ELSE NULL
+            END as source_name
+        FROM tb_rule_chain rc
+        LEFT JOIN tb_product p ON rc.source_type = 'PRODUCT' AND rc.source_id = p.id
+        LEFT JOIN tb_device d ON rc.source_type = 'DEVICE' AND rc.source_id = d.id
+        <where>
+            <if test="query.name != null and query.name != ''">
+                AND rc.name LIKE CONCAT('%', #{query.name}, '%')
+            </if>
+            <if test="query.sourceType != null">
+                AND rc.source_type = #{query.sourceType}
+            </if>
+            <if test="query.isEnabled != null">
+                AND rc.is_enabled = #{query.isEnabled}
+            </if>
+        </where>
+        ORDER BY rc.update_time DESC
+    </select>
+
+</mapper>

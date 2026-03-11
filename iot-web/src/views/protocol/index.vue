@@ -1,7 +1,6 @@
 <script setup>
-import { h } from 'vue'
-import { ElTag, ElMessage, ElMessageBox } from 'element-plus'
-import { onMounted } from 'vue'
+import { ElMessage, ElMessageBox, ElTag } from 'element-plus'
+import { h, onMounted } from 'vue'
 import { protocolDeleteApi, protocolListApi, protocolSetStatusApi } from '@/api/index.js'
 import IotTable from '@/components/IotTable.vue'
 import { useTable } from '@/composables/useTable.js'
@@ -66,7 +65,8 @@ const column = [
     label: '脚本语言',
     width: 120,
     render({ row }) {
-      if (row.protoType !== 3) return '-'
+      if (row.protoType !== 3)
+        return '-'
       const lang = scriptLangOpt[row.scriptLang]
       return lang ? `${lang.icon} ${lang.label}` : '-'
     },

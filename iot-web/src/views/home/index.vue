@@ -1,22 +1,22 @@
 <script setup>
-import { onMounted, ref, computed } from 'vue'
+import {
+  Bell,
+  Box,
+  CircleCheck,
+  CircleClose,
+  Connection,
+  Cpu,
+  Grid,
+  Lightning,
+  Monitor,
+  Plus,
+  Setting,
+  TrendCharts,
+} from '@element-plus/icons-vue'
+import { computed, onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { getDashboardStatistics } from '@/api/dashboard'
 import { devicePageApi } from '@/api/index.js'
-import {
-  Monitor,
-  CircleCheck,
-  CircleClose,
-  Plus,
-  Cpu,
-  Bell,
-  Setting,
-  Lightning,
-  Box,
-  Grid,
-  TrendCharts,
-  Connection,
-} from '@element-plus/icons-vue'
 
 const router = useRouter()
 
@@ -36,7 +36,8 @@ const devicesLoading = ref(false)
 
 // 计算在线率
 const onlineRate = computed(() => {
-  if (stats.value.total === 0) return 0
+  if (stats.value.total === 0)
+    return 0
   return ((stats.value.online / stats.value.total) * 100).toFixed(1)
 })
 

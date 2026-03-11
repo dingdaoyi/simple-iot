@@ -1,5 +1,5 @@
 <script lang="jsx" setup>
-import { ref, watch } from 'vue'
+import { ref } from 'vue'
 import { productTypeAddApi, productTypeEditeApi } from '@/api'
 import { useForm } from '@/composables/useForm.js'
 

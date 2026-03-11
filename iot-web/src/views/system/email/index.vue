@@ -2,13 +2,13 @@
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { nextTick, reactive, ref } from 'vue'
 import {
-  getEmailConfigList,
   addEmailConfig,
-  updateEmailConfig,
   deleteEmailConfig,
-  setDefaultEmailConfig,
-  updateEmailConfigStatus,
+  getEmailConfigList,
   sendTestEmail,
+  setDefaultEmailConfig,
+  updateEmailConfig,
+  updateEmailConfigStatus,
 } from '@/api/email'
 
 const listLoading = ref(true)

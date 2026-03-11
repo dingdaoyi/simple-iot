@@ -1,5 +1,5 @@
 <script lang="jsx" setup>
-import { ref, watch, computed } from 'vue'
+import { computed, ref, watch } from 'vue'
 import { protocolAddApi, protocolEditApi } from '@/api'
 import { useForm } from '@/composables/useForm.js'
 import CodeEditor from './CodeEditor.vue'
@@ -303,7 +303,8 @@ function onCancel() {
 watch(() => props.datas, (val) => {
   if (val) {
     form.value = { ...val }
-  } else {
+  }
+  else {
     form.value = {
       protoType: 3,
       scriptLang: 'javascript',
@@ -484,8 +485,12 @@ watch(() => form.value.scriptLang, () => {
       </el-form-item>
     </el-form>
     <template #footer>
-      <el-button @click="onCancel">取消</el-button>
-      <el-button type="primary" :loading="loading" @click="onSubmit">确定</el-button>
+      <el-button @click="onCancel">
+        取消
+      </el-button>
+      <el-button type="primary" :loading="loading" @click="onSubmit">
+        确定
+      </el-button>
     </template>
   </el-dialog>
 </template>

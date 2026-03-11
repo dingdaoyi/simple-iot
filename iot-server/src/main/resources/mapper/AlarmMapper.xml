@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.github.dingdaoyi.mapper.AlarmMapper">
+
+    <select id="pageByQuery" resultType="com.github.dingdaoyi.model.vo.AlarmPageVo">
+        SELECT * FROM tb_alarm
+        <where>
+            <if test="query.deviceKey != null and query.deviceKey != ''">
+                AND device_key = #{query.deviceKey}
+            </if>
+            <if test="query.alarmType != null and query.alarmType != ''">
+                AND alarm_type = #{query.alarmType}
+            </if>
+            <if test="query.severity != null">
+                AND severity = #{query.severity}
+            </if>
+            <if test="query.status != null">
+                AND status = #{query.status}
+            </if>
+        </where>
+        ORDER BY start_ts DESC
+    </select>
+
+    <select id="findActiveAlarm" resultType="com.github.dingdaoyi.entity.Alarm">
+        SELECT * FROM tb_alarm
+        WHERE device_key = #{deviceKey}
+          AND alarm_type = #{alarmType}
+          AND status = 'ACTIVE'
+        ORDER BY start_ts DESC
+        LIMIT 1
+    </select>
+
+</mapper>

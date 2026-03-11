@@ -1,21 +1,21 @@
 <script setup>
-import { onMounted, ref, computed } from 'vue'
-import { useRouter } from 'vue-router'
-import { productDeleteApi, productPageApi, productTypeListApi } from '@/api/index.js'
-import { useTable } from '@/composables/useTable.js'
-import EditDia from '@/views/product/widget/editDia.vue'
-import IotTable from '@/components/IotTable.vue'
 import {
   Box,
-  Setting,
-  Edit,
   Delete,
-  Plus,
-  Search,
+  Edit,
   Grid,
   List,
   Monitor,
+  Plus,
+  Search,
+  Setting,
 } from '@element-plus/icons-vue'
+import { computed, onMounted, ref } from 'vue'
+import { useRouter } from 'vue-router'
+import { productDeleteApi, productPageApi, productTypeListApi } from '@/api/index.js'
+import IotTable from '@/components/IotTable.vue'
+import { useTable } from '@/composables/useTable.js'
+import EditDia from '@/views/product/widget/editDia.vue'
 
 const router = useRouter()
 const parentId = ref(-1)
@@ -134,7 +134,7 @@ onMounted(() => {
   updatePage()
   productTypeListApi().then(({ data }) => {
     productTypeList.value = data
-  }).catch(err => {
+  }).catch((err) => {
     console.error('获取产品类型失败:', err)
   })
 })
@@ -218,9 +218,13 @@ onMounted(() => {
             </el-icon>
           </div>
           <div class="product-info">
-            <div class="product-model">{{ product.model }}</div>
+            <div class="product-model">
+              {{ product.model }}
+            </div>
             <div class="product-type-tag">
-              <el-tag size="small" type="info">{{ getProductTypeName(product.productTypeId) }}</el-tag>
+              <el-tag size="small" type="info">
+                {{ getProductTypeName(product.productTypeId) }}
+              </el-tag>
             </div>
           </div>
         </div>
@@ -231,7 +235,7 @@ onMounted(() => {
             <span class="detail-label">厂家</span>
             <span class="detail-value">{{ product.manufacturer || '未设置' }}</span>
           </div>
-          <div class="detail-row" v-if="product.remark">
+          <div v-if="product.remark" class="detail-row">
             <span class="detail-label">备注</span>
             <span class="detail-value">{{ product.remark }}</span>
           </div>
@@ -257,7 +261,9 @@ onMounted(() => {
                   <el-icon><Edit /></el-icon>编辑
                 </el-dropdown-item>
                 <el-dropdown-item command="delete" divided>
-                  <el-icon color="#f56c6c"><Delete /></el-icon>
+                  <el-icon color="#f56c6c">
+                    <Delete />
+                  </el-icon>
                   <span style="color: #f56c6c">删除</span>
                 </el-dropdown-item>
               </el-dropdown-menu>
@@ -288,8 +294,8 @@ onMounted(() => {
         :current-page="params.page"
         :page-size="params.size"
         :loading="loading"
-        @pageChange="onPageChange"
-        @sizeChange="onSizeChange"
+        @page-change="onPageChange"
+        @size-change="onSizeChange"
       >
         <template #expand="{ row }">
           <div class="expand-content">

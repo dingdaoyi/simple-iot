@@ -1032,3 +1032,149 @@ COMMENT ON COLUMN "public"."tb_email_config"."update_time" IS '更新时间';
 -- 创建索引
 CREATE INDEX "idx_email_config_is_default" ON "public"."tb_email_config" ("is_default");
 CREATE INDEX "idx_email_config_status" ON "public"."tb_email_config" ("status");
+
+
+-- ============================================
+-- 规则链和告警相关表
+-- ============================================
+
+-- 规则链表
+DROP TABLE IF EXISTS tb_rule_chain;
+CREATE TABLE tb_rule_chain (
+                               id SERIAL PRIMARY KEY,
+                               name VARCHAR(100) NOT NULL,
+                               description VARCHAR(500),
+                               is_root BOOLEAN DEFAULT FALSE,
+                               is_enabled BOOLEAN DEFAULT TRUE,
+    -- 数据源配置: PRODUCT-产品, DEVICE_GROUP-设备分组, DEVICE-特定设备
+                               source_type VARCHAR(20) DEFAULT 'PRODUCT',
+                               source_id INTEGER,
+    -- 节点和连接配置 (JSON格式)
+                               configuration JSONB,
+                               create_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                               update_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+COMMENT ON TABLE tb_rule_chain IS '规则链表';
+COMMENT ON COLUMN tb_rule_chain.id IS '规则链ID';
+COMMENT ON COLUMN tb_rule_chain.name IS '规则链名称';
+COMMENT ON COLUMN tb_rule_chain.description IS '描述';
+COMMENT ON COLUMN tb_rule_chain.is_root IS '是否为根规则链';
+COMMENT ON COLUMN tb_rule_chain.is_enabled IS '是否启用';
+COMMENT ON COLUMN tb_rule_chain.source_type IS '数据源类型: PRODUCT-产品, DEVICE_GROUP-设备分组, DEVICE-特定设备';
+COMMENT ON COLUMN tb_rule_chain.source_id IS '数据源ID';
+COMMENT ON COLUMN tb_rule_chain.configuration IS '节点和连接配置(JSON)';
+
+-- 告警表
+DROP TABLE IF EXISTS tb_alarm;
+CREATE TABLE tb_alarm (
+                          id SERIAL PRIMARY KEY,
+                          alarm_type VARCHAR(100) NOT NULL,
+                          alarm_name VARCHAR(200),
+                          severity VARCHAR(20),           -- CRITICAL, MAJOR, MINOR, WARNING
+                          status VARCHAR(20) DEFAULT 'ACTIVE',  -- ACTIVE, CLEARED, ACKNOWLEDGED
+                          message TEXT,
+                          device_id INTEGER,
+                          device_key VARCHAR(100),
+                          device_name VARCHAR(200),
+                          rule_chain_id INTEGER,
+                          details JSONB,
+                          start_ts TIMESTAMP,
+                          end_ts TIMESTAMP,
+                          clear_ts TIMESTAMP,
+                          clear_by VARCHAR(100),
+                          created_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                          updated_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+COMMENT ON TABLE tb_alarm IS '告警表';
+COMMENT ON COLUMN tb_alarm.id IS '告警ID';
+COMMENT ON COLUMN tb_alarm.alarm_type IS '告警类型';
+COMMENT ON COLUMN tb_alarm.alarm_name IS '告警名称';
+COMMENT ON COLUMN tb_alarm.severity IS '严重程度: CRITICAL-严重, MAJOR-主要, MINOR-次要, WARNING-警告';
+COMMENT ON COLUMN tb_alarm.status IS '状态: ACTIVE-活动, CLEARED-已清除, ACKNOWLEDGED-已确认';
+COMMENT ON COLUMN tb_alarm.message IS '告警消息';
+COMMENT ON COLUMN tb_alarm.device_id IS '设备ID';
+COMMENT ON COLUMN tb_alarm.device_key IS '设备Key';
+COMMENT ON COLUMN tb_alarm.device_name IS '设备名称';
+COMMENT ON COLUMN tb_alarm.rule_chain_id IS '触发规则链ID';
+COMMENT ON COLUMN tb_alarm.details IS '告警详情(JSON)';
+COMMENT ON COLUMN tb_alarm.start_ts IS '告警开始时间';
+COMMENT ON COLUMN tb_alarm.end_ts IS '告警结束时间';
+COMMENT ON COLUMN tb_alarm.clear_ts IS '告警清除时间';
+COMMENT ON COLUMN tb_alarm.clear_by IS '清除人';
+
+-- 创建索引
+CREATE INDEX idx_rule_chain_source ON tb_rule_chain(source_type, source_id);
+CREATE INDEX idx_rule_chain_enabled ON tb_rule_chain(is_enabled);
+
+CREATE INDEX idx_alarm_device ON tb_alarm(device_key);
+CREATE INDEX idx_alarm_status ON tb_alarm(status);
+CREATE INDEX idx_alarm_type ON tb_alarm(alarm_type);
+CREATE INDEX idx_alarm_severity ON tb_alarm(severity);
+CREATE INDEX idx_alarm_start_ts ON tb_alarm(start_ts);
+
+
+
+CREATE TABLE tb_push_config (
+    -- ==================== 基础字段 ====================
+                                id SERIAL PRIMARY KEY,
+                                name VARCHAR(100) NOT NULL,
+                                type VARCHAR(20) NOT NULL,              -- HTTP / MQTT
+                                description VARCHAR(500),
+                                is_enabled BOOLEAN DEFAULT TRUE,
+
+    -- ==================== HTTP 配置 ====================
+                                http_url VARCHAR(500),                   -- HTTP请求URL
+                                http_method VARCHAR(10) DEFAULT 'POST',  -- GET / POST / PUT
+                                http_headers JSONB,                      -- 请求头 [{"key":"Content-Type","value":"application/json"}]
+                                http_timeout INTEGER DEFAULT 5000,       -- 超时时间(毫秒)
+
+    -- ==================== MQTT 配置 ====================
+                                mqtt_broker VARCHAR(255),                -- Broker地址 (tcp://host:1883)
+                                mqtt_username VARCHAR(100),              -- 用户名
+                                mqtt_password VARCHAR(100),              -- 密码
+                                mqtt_client_id VARCHAR(100),             -- 客户端ID
+                                mqtt_topic VARCHAR(200),                 -- 目标Topic
+                                mqtt_qos INTEGER DEFAULT 0,              -- QoS: 0/1/2
+                                mqtt_retain BOOLEAN DEFAULT FALSE,       -- 保留消息
+                                mqtt_keep_alive INTEGER DEFAULT 60,      -- 心跳间隔(秒)
+                                mqtt_clean_session BOOLEAN DEFAULT TRUE, -- 清除会话
+                                mqtt_options JSONB,                      -- 扩展配置 [{"key":"autoReconnect","value":"true"}]
+
+    -- ==================== 系统字段 ====================
+                                create_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                                update_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- 表注释
+COMMENT ON TABLE tb_push_config IS '推送配置表';
+
+-- 字段注释
+COMMENT ON COLUMN tb_push_config.id IS '配置ID';
+COMMENT ON COLUMN tb_push_config.name IS '配置名称';
+COMMENT ON COLUMN tb_push_config.type IS '配置类型: HTTP/MQTT';
+COMMENT ON COLUMN tb_push_config.description IS '描述';
+COMMENT ON COLUMN tb_push_config.is_enabled IS '是否启用';
+
+-- HTTP 配置注释
+COMMENT ON COLUMN tb_push_config.http_url IS 'HTTP请求URL';
+COMMENT ON COLUMN tb_push_config.http_method IS 'HTTP请求方法: GET/POST/PUT';
+COMMENT ON COLUMN tb_push_config.http_headers IS 'HTTP请求头(JSON数组格式)';
+COMMENT ON COLUMN tb_push_config.http_timeout IS '超时时间(毫秒)';
+
+-- MQTT 配置注释
+COMMENT ON COLUMN tb_push_config.mqtt_broker IS 'MQTT Broker地址 (如: tcp://localhost:1883)';
+COMMENT ON COLUMN tb_push_config.mqtt_username IS 'MQTT用户名';
+COMMENT ON COLUMN tb_push_config.mqtt_password IS 'MQTT密码';
+COMMENT ON COLUMN tb_push_config.mqtt_client_id IS 'MQTT客户端ID';
+COMMENT ON COLUMN tb_push_config.mqtt_topic IS 'MQTT目标Topic';
+COMMENT ON COLUMN tb_push_config.mqtt_qos IS 'MQTT QoS等级: 0/1/2';
+COMMENT ON COLUMN tb_push_config.mqtt_retain IS 'MQTT保留消息';
+COMMENT ON COLUMN tb_push_config.mqtt_keep_alive IS 'MQTT心跳间隔(秒)';
+COMMENT ON COLUMN tb_push_config.mqtt_clean_session IS 'MQTT清除会话';
+COMMENT ON COLUMN tb_push_config.mqtt_options IS 'MQTT扩展配置(JSON数组格式)';
+
+-- 创建索引
+CREATE INDEX idx_push_config_type ON tb_push_config(type);
+CREATE INDEX idx_push_config_enabled ON tb_push_config(is_enabled);

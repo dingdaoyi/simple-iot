@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.github.dingdaoyi.mapper.PushConfigMapper">
+
+    <resultMap id="BaseResultMap" type="com.github.dingdaoyi.entity.PushConfig" autoMapping="true">
+        <id column="id" property="id"/>
+        <result column="type" property="type"/>
+        <result column="http_headers" property="httpHeaders" typeHandler="com.baomidou.mybatisplus.extension.handlers.JacksonTypeHandler"/>
+        <result column="mqtt_options" property="mqttOptions" typeHandler="com.baomidou.mybatisplus.extension.handlers.JacksonTypeHandler"/>
+    </resultMap>
+
+    <resultMap id="PageVoResultMap" type="com.github.dingdaoyi.model.vo.PushConfigPageVo" autoMapping="true">
+        <id column="id" property="id"/>
+        <result column="type" property="type"/>
+    </resultMap>
+
+    <select id="pageByQuery" resultMap="PageVoResultMap">
+        SELECT
+            id, name, type, description, is_enabled,
+            http_url, http_method, http_timeout,
+            mqtt_broker, mqtt_topic, mqtt_qos, mqtt_retain,
+            create_time, update_time
+        FROM tb_push_config
+        <where>
+            <if test="query.name != null and query.name != ''">
+                AND name LIKE CONCAT('%', #{query.name}, '%')
+            </if>
+            <if test="query.type != null">
+                AND type = #{query.type}
+            </if>
+            <if test="query.isEnabled != null">
+                AND is_enabled = #{query.isEnabled}
+            </if>
+        </where>
+        ORDER BY create_time DESC
+    </select>
+
+    <select id="listEnabled" resultMap="BaseResultMap">
+        SELECT * FROM tb_push_config
+        WHERE is_enabled = true
+        ORDER BY name
+    </select>
+
+</mapper>

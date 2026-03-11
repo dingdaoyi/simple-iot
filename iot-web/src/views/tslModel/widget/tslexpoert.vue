@@ -1,9 +1,9 @@
 <script setup>
-import { ref, onMounted } from 'vue'
+import { Document, Loading, WarningFilled } from '@element-plus/icons-vue'
 import { ElMessage } from 'element-plus'
-import { Loading, WarningFilled, Document } from '@element-plus/icons-vue'
-import { loadTslData } from '../../../api/index.js'
+import { onMounted, ref } from 'vue'
 import JsonViewer from 'vue-json-viewer'
+import { loadTslData } from '@/api/index.js'
 
 const props = defineProps(['productId'])
 

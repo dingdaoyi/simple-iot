@@ -1,9 +1,9 @@
 <script lang="jsx" setup>
-import { ref, watch } from 'vue'
+import { Plus } from '@element-plus/icons-vue'
 import { ElMessage } from 'element-plus'
+import { ref, watch } from 'vue'
 import { productAddApi, productEditeApi, uploadMoreApi } from '@/api'
 import { useForm } from '@/composables/useForm.js'
-import { Plus, Upload } from '@element-plus/icons-vue'
 
 const props = defineProps(['datas', 'productTypeList', 'modelValue'])
 
@@ -197,7 +197,9 @@ watch(() => props.datas, (val) => {
     </el-form>
 
     <template #footer>
-      <el-button @click="onClose">取消</el-button>
+      <el-button @click="onClose">
+        取消
+      </el-button>
       <el-button type="primary" :loading="loading" @click="onSubmit">
         确定
       </el-button>

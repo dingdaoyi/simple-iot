@@ -65,3 +65,4 @@ yarn.lock
 /iot-web/src/.env
 /iot-web/.env.development
 CLAUDE.md
+/.planning/

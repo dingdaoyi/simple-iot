@@ -3,6 +3,10 @@ import { onMounted } from 'vue'
 import { iconDeleteApi, iconListApi } from '@/api/index.js'
 import { useTable } from '@/composables/useTable.js'
 import EditDia from '@/views/system/icon/widget/editDia.vue'
+</script>
+
+<script>
+import { Delete, Edit, Loading } from '@element-plus/icons-vue'
 
 const {
   params,
@@ -30,6 +34,9 @@ function closeEdite() {
 onMounted(() => {
   updatePage()
 })
+export default {
+  components: { Loading, Edit, Delete },
+}
 </script>
 
 <template>
@@ -78,8 +85,12 @@ onMounted(() => {
       <div v-loading="loading" class="icon-grid">
         <!-- 空状态 -->
         <div v-if="!tableData?.length && !loading" class="empty-state">
-          <div class="empty-icon">📁</div>
-          <p class="empty-text">暂无图标数据</p>
+          <div class="empty-icon">
+            📁
+          </div>
+          <p class="empty-text">
+            暂无图标数据
+          </p>
           <el-button type="primary" @click="onAdd">
             添加第一个图标
           </el-button>
@@ -153,13 +164,6 @@ onMounted(() => {
     />
   </div>
 </template>
-
-<script>
-import { Loading, Edit, Delete } from '@element-plus/icons-vue'
-export default {
-  components: { Loading, Edit, Delete },
-}
-</script>
 
 <style scoped lang="scss">
 .icon-page {

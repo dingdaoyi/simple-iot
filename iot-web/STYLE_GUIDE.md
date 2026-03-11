@@ -60,7 +60,9 @@ async function loadData() {
   <div class="wh-full flex flex-col gap-5 p-6 bg-gray-50">
     <!-- 头部区域 -->
     <div class="bg-white rounded-lg p-4 shadow-sm">
-      <h2 class="text-lg font-semibold text-gray-800 mb-4">标题</h2>
+      <h2 class="text-lg font-semibold text-gray-800 mb-4">
+        标题
+      </h2>
     </div>
 
     <!-- 内容区域 -->
@@ -238,13 +240,13 @@ src/
 ### 2. 导入顺序
 
 ```javascript
+import { dwHooks } from 'dwyl-ui'
+// 2. 第三方库
+import { ElMessage } from 'element-plus'
+
 // 1. Vue 相关
 import { computed, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-
-// 2. 第三方库
-import { ElMessage } from 'element-plus'
-import { dwHooks } from 'dwyl-ui'
 
 // 3. 项目内部
 import { apiFunction } from '@/api/index.js'

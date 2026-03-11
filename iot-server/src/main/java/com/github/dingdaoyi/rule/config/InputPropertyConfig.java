@@ -1,0 +1,20 @@
+package com.github.dingdaoyi.rule.config;
+
+import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+
+import java.util.List;
+
+/**
+ * 属性上报输入节点配置
+ * @author dingyunwei
+ */
+@Data
+@EqualsAndHashCode(callSuper = true)
+@Schema(description = "属性上报输入节点配置")
+public class InputPropertyConfig extends NodeConfig {
+
+    @Schema(description = "要监听的属性标识符列表，为空则监听所有属性")
+    private List<String> identifiers;
+}

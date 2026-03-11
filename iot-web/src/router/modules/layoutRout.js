@@ -9,9 +9,11 @@ import {
   Message,
   Operation,
   Picture,
+  Promotion,
   Setting,
   Tools,
   TrendCharts,
+  Warning,
 } from '@element-plus/icons-vue'
 import layout from '@/layout'
 import device from '@/views/device'
@@ -20,11 +22,10 @@ import home from '@/views/home'
 import product from '@/views/product'
 import productType from '@/views/productType'
 import protocol from '@/views/protocol'
-import rule from '@/views/rule'
+import email from '@/views/system/email'
 import icon from '@/views/system/icon'
 import messageReceive from '@/views/system/messageReceive'
 import sms from '@/views/system/sms'
-import email from '@/views/system/email'
 import tslModel from '@/views/tslModel'
 
 export default [
@@ -87,15 +88,6 @@ export default [
             },
           },
           {
-            path: '/rule',
-            name: 'rule',
-            component: rule,
-            meta: {
-              title: '规则处理',
-              icon: Operation,
-            },
-          },
-          {
             path: '/device',
             name: 'device',
             component: device,
@@ -122,6 +114,44 @@ export default [
               hidden: true,
               title: '设备详情',
               icon: Document,
+            },
+          },
+          {
+            path: '/rule-chain',
+            name: 'ruleChain',
+            component: () => import('@/views/rule-chain/index.vue'),
+            meta: {
+              title: '规则链',
+              icon: Operation,
+            },
+          },
+          {
+            path: '/rule-chain/editor',
+            name: 'ruleChainEditor',
+            component: () => import('@/views/rule-chain/editor/index.vue'),
+            meta: {
+              hidden: true,
+              title: '规则链编辑器',
+              icon: Operation,
+            },
+          },
+          {
+            path: '/rule-chain/editor/:id',
+            name: 'ruleChainEditorEdit',
+            component: () => import('@/views/rule-chain/editor/index.vue'),
+            meta: {
+              hidden: true,
+              title: '编辑规则链',
+              icon: Operation,
+            },
+          },
+          {
+            path: '/alarm',
+            name: 'alarm',
+            component: () => import('@/views/alarm/index.vue'),
+            meta: {
+              title: '告警管理',
+              icon: Warning,
             },
           },
         ],
@@ -168,6 +198,15 @@ export default [
             meta: {
               title: '消息通知',
               icon: Bell,
+            },
+          },
+          {
+            path: '/push-config',
+            name: 'pushConfig',
+            component: () => import('@/views/push-config/index.vue'),
+            meta: {
+              title: '推送配置',
+              icon: Promotion,
             },
           },
         ],

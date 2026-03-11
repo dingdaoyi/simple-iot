@@ -495,62 +495,6 @@ export function deviceEventLogsApi(data) {
 }
 
 /**
- * 设备指标
- * @param data 参数上
- */
-export function rulePageApi(data) {
-  return request({
-    url: `/rule/page`,
-    method: 'post',
-    data,
-  })
-}
-/**
- * 设备指标
- * @param data 参数上
- */
-export function ruleAddApi(data) {
-  return request({
-    url: `/rule`,
-    method: 'post',
-    data,
-  })
-}
-
-/**
- * 设备指标
- * @param data 参数上
- */
-export function ruleEditApi(data) {
-  return request({
-    url: `/rule`,
-    method: 'put',
-    data,
-  })
-}
-
-/**
- * 规则详情
- * @param id 规则id
- */
-export function ruleDetailsApi(id) {
-  return request({
-    url: `/rule/${id}`,
-    method: 'get',
-  })
-}
-
-/**
- * 设备指标
- */
-export function ruleDeleteApi(id) {
-  return request({
-    url: `/rule/${id}`,
-    method: 'delete',
-  })
-}
-
-/**
  * 添加消息接收者
  * @param data 参数上
  */
@@ -609,6 +553,72 @@ export function messageReceiveListApi(params) {
   })
 }
 
+// ==================== 推送配置 API ====================
+
+/**
+ * 推送配置分页列表
+ */
+export function pushConfigPageApi(data) {
+  return request({
+    url: '/push-config/page',
+    method: 'post',
+    data,
+  })
+}
+
+/**
+ * 推送配置详情
+ */
+export function pushConfigDetailApi(id) {
+  return request({
+    url: `/push-config/${id}`,
+    method: 'get',
+  })
+}
+
+/**
+ * 新增推送配置
+ */
+export function pushConfigAddApi(data) {
+  return request({
+    url: '/push-config',
+    method: 'post',
+    data,
+  })
+}
+
+/**
+ * 修改推送配置
+ */
+export function pushConfigEditApi(data) {
+  return request({
+    url: '/push-config',
+    method: 'put',
+    data,
+  })
+}
+
+/**
+ * 删除推送配置
+ */
+export function pushConfigDeleteApi(id) {
+  return request({
+    url: `/push-config/${id}`,
+    method: 'delete',
+  })
+}
+
+/**
+ * 获取启用的推送配置列表
+ */
+export function pushConfigListApi(params) {
+  return request({
+    url: '/push-config/list',
+    method: 'get',
+    params,
+  })
+}
+
 /**
  * 调用设备服务
  * @param deviceKey 设备编号
@@ -620,5 +630,146 @@ export function callDeviceServiceApi(deviceKey, identifier, params) {
     url: `/service/${deviceKey}/${identifier}`,
     method: 'POST',
     data: params,
+  })
+}
+
+// ==================== 规则链 API ====================
+
+/**
+ * 规则链分页列表
+ */
+export function ruleChainPageApi(data) {
+  return request({
+    url: '/rule-chain/page',
+    method: 'post',
+    data,
+  })
+}
+
+/**
+ * 规则链详情
+ */
+export function ruleChainDetailApi(id) {
+  return request({
+    url: `/rule-chain/${id}`,
+    method: 'get',
+  })
+}
+
+/**
+ * 规则链添加
+ */
+export function ruleChainAddApi(data) {
+  return request({
+    url: '/rule-chain',
+    method: 'post',
+    data,
+  })
+}
+
+/**
+ * 规则链更新
+ */
+export function ruleChainUpdateApi(data) {
+  return request({
+    url: '/rule-chain',
+    method: 'put',
+    data,
+  })
+}
+
+/**
+ * 规则链删除
+ */
+export function ruleChainDeleteApi(id) {
+  return request({
+    url: `/rule-chain/${id}`,
+    method: 'delete',
+  })
+}
+
+/**
+ * 规则链启用/禁用
+ */
+export function ruleChainToggleApi(id, enabled) {
+  return request({
+    url: `/rule-chain/${id}/enable`,
+    method: 'put',
+    params: { enabled },
+  })
+}
+
+/**
+ * 获取节点类型列表
+ */
+export function ruleChainNodeTypesApi() {
+  return request({
+    url: '/rule-chain/node-types',
+    method: 'get',
+  })
+}
+
+/**
+ * 获取模板变量列表
+ * @param {number} productId - 产品ID，用于获取物模型属性
+ */
+export function ruleChainTemplateVariablesApi(productId) {
+  return request({
+    url: '/rule-chain/template-variables',
+    method: 'get',
+    params: { productId },
+  })
+}
+
+// ==================== 告警 API ====================
+
+/**
+ * 告警分页列表
+ */
+export function alarmPageApi(data) {
+  return request({
+    url: '/alarm/page',
+    method: 'post',
+    data,
+  })
+}
+
+/**
+ * 告警详情
+ */
+export function alarmDetailApi(id) {
+  return request({
+    url: `/alarm/${id}`,
+    method: 'get',
+  })
+}
+
+/**
+ * 确认告警
+ */
+export function alarmAcknowledgeApi(id) {
+  return request({
+    url: `/alarm/${id}/acknowledge`,
+    method: 'put',
+  })
+}
+
+/**
+ * 清除告警
+ */
+export function alarmClearApi(id) {
+  return request({
+    url: `/alarm/${id}/clear`,
+    method: 'put',
+  })
+}
+
+/**
+ * 告警统计
+ */
+export function alarmStatisticsApi() {
+  return request({
+    url: '/alarm/statistics',
+    method: 'get',
   })
 }

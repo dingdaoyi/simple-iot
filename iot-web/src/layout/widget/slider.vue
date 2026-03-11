@@ -121,11 +121,7 @@ const currRoute = computed(() => route.path)
   }
 
   :deep(.el-menu-item.is-active) {
-    background: linear-gradient(
-      90deg,
-      rgba(99, 102, 241, 0.15),
-      rgba(99, 102, 241, 0.05)
-    );
+    background: linear-gradient(90deg, rgba(99, 102, 241, 0.15), rgba(99, 102, 241, 0.05));
     color: var(--iot-color-primary);
     font-weight: 600;
     border-left: 3px solid var(--iot-color-primary);

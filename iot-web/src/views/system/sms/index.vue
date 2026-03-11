@@ -442,7 +442,7 @@ getTemplateTypes()
               </el-select>
             </el-form-item>
             <el-form-item v-if="sendTemp.sendType === 'template'" label="模板参数">
-              <el-input v-model="sendTemp.templateParamsStr" type="textarea" :rows="2" placeholder='{"code":"123456"}' />
+              <el-input v-model="sendTemp.templateParamsStr" type="textarea" :rows="2" placeholder="{&quot;code&quot;:&quot;123456&quot;}" />
             </el-form-item>
             <el-form-item label="配置">
               <el-select v-model="sendTemp.configId" placeholder="使用默认配置" clearable>
