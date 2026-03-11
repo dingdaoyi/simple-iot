@@ -9,12 +9,14 @@ import com.github.dingdaoyi.mapper.EmailConfigMapper;
 import com.github.dingdaoyi.model.query.EmailConfigAddQuery;
 import com.github.dingdaoyi.model.query.EmailConfigPageQuery;
 import com.github.dingdaoyi.model.query.EmailConfigUpdateQuery;
+import com.github.dingdaoyi.model.vo.EmailConfigVo;
 import com.github.dingdaoyi.service.EmailConfigService;
 import com.github.dingdaoyi.utils.PageHelper;
 import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -25,7 +27,7 @@ import java.util.Optional;
 public class EmailConfigServiceImpl extends ServiceImpl<EmailConfigMapper, EmailConfig> implements EmailConfigService {
 
     @Override
-    public PageResult<EmailConfig> pageByQuery(EmailConfigPageQuery query) {
+    public PageResult<EmailConfigVo> pageByQuery(EmailConfigPageQuery query) {
         Page<EmailConfig> page = PageHelper.page(query);
         Page<EmailConfig> result = baseMapper.selectPage(page, Wrappers.<EmailConfig>lambdaQuery()
             .like(query.getName() != null, EmailConfig::getName, query.getName())
@@ -33,12 +35,16 @@ public class EmailConfigServiceImpl extends ServiceImpl<EmailConfigMapper, Email
             .orderByDesc(EmailConfig::getIsDefault)
             .orderByDesc(EmailConfig::getCreateTime)
         );
-        return PageResult.of(result.getRecords(), result.getTotal(), result.getCurrent(), result.getSize());
+        // 转换为 VO，脱敏密码
+        List<EmailConfigVo> voList = result.getRecords().stream()
+            .map(EmailConfigVo::build)
+            .toList();
+        return PageResult.of(voList, result.getTotal(), result.getCurrent(), result.getSize());
     }
 
     @Override
-    public Optional<EmailConfig> getDefaultConfig() {
-        return baseMapper.findDefaultConfig();
+    public Optional<EmailConfigVo> getDefaultConfig() {
+        return baseMapper.findDefaultConfig().map(EmailConfigVo::build);
     }
 
     @Override

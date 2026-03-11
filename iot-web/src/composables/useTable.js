@@ -36,7 +36,9 @@ export function useTable(options = {}) {
 
     loading.value = true
     try {
-      const res = await fetchApi(params)
+      // 添加时间戳防止 GET 请求缓存
+      const queryParams = { ...params, _t: Date.now() }
+      const res = await fetchApi(queryParams)
       if (res && res.data) {
         tableData.value = res.data.records || res.data.data || res.data
         total.value = res.data.total || 0

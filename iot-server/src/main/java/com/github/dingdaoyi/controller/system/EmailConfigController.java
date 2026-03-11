@@ -5,6 +5,7 @@ import com.github.dingdaoyi.core.base.PageResult;
 import com.github.dingdaoyi.model.query.EmailConfigAddQuery;
 import com.github.dingdaoyi.model.query.EmailConfigPageQuery;
 import com.github.dingdaoyi.model.query.EmailConfigUpdateQuery;
+import com.github.dingdaoyi.model.vo.EmailConfigVo;
 import com.github.dingdaoyi.service.EmailConfigService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -26,7 +27,7 @@ public class EmailConfigController {
 
     @PostMapping("/page")
     @Operation(summary = "分页列表")
-    public PageResult<com.github.dingdaoyi.entity.EmailConfig> page(@RequestBody @Valid EmailConfigPageQuery query) {
+    public PageResult<EmailConfigVo> page(@RequestBody @Valid EmailConfigPageQuery query) {
         return emailConfigService.pageByQuery(query);
     }
 
@@ -64,7 +65,7 @@ public class EmailConfigController {
 
     @GetMapping("/default")
     @Operation(summary = "获取默认配置")
-    public BaseResult<com.github.dingdaoyi.entity.EmailConfig> getDefault() {
+    public BaseResult<EmailConfigVo> getDefault() {
         return BaseResult.success(emailConfigService.getDefaultConfig().orElse(null));
     }
 }

@@ -6,6 +6,7 @@ import com.github.dingdaoyi.entity.EmailConfig;
 import com.github.dingdaoyi.model.query.EmailConfigPageQuery;
 import com.github.dingdaoyi.model.query.EmailConfigAddQuery;
 import com.github.dingdaoyi.model.query.EmailConfigUpdateQuery;
+import com.github.dingdaoyi.model.vo.EmailConfigVo;
 
 import java.util.Optional;
 
@@ -18,12 +19,12 @@ public interface EmailConfigService extends IService<EmailConfig> {
     /**
      * 分页查询
      */
-    PageResult<EmailConfig> pageByQuery(EmailConfigPageQuery query);
+    PageResult<EmailConfigVo> pageByQuery(EmailConfigPageQuery query);
 
     /**
      * 获取启用的默认配置
      */
-    Optional<EmailConfig> getDefaultConfig();
+    Optional<EmailConfigVo> getDefaultConfig();
 
     /**
      * 设置默认配置
