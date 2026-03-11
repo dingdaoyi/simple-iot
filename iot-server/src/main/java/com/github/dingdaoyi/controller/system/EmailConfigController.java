@@ -66,6 +66,6 @@ public class EmailConfigController {
     @GetMapping("/default")
     @Operation(summary = "获取默认配置")
     public BaseResult<EmailConfigVo> getDefault() {
-        return BaseResult.success(emailConfigService.getDefaultConfig().orElse(null));
+        return BaseResult.success(emailConfigService.getDefaultConfigVo().orElse(null));
     }
 }

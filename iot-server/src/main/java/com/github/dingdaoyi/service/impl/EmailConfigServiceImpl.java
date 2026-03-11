@@ -43,7 +43,12 @@ public class EmailConfigServiceImpl extends ServiceImpl<EmailConfigMapper, Email
     }
 
     @Override
-    public Optional<EmailConfigVo> getDefaultConfig() {
+    public Optional<EmailConfig> getDefaultConfig() {
+        return baseMapper.findDefaultConfig();
+    }
+
+    @Override
+    public Optional<EmailConfigVo> getDefaultConfigVo() {
         return baseMapper.findDefaultConfig().map(EmailConfigVo::build);
     }
 

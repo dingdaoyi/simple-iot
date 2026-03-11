@@ -22,9 +22,14 @@ public interface EmailConfigService extends IService<EmailConfig> {
     PageResult<EmailConfigVo> pageByQuery(EmailConfigPageQuery query);
 
     /**
-     * 获取启用的默认配置
+     * 获取启用的默认配置（内部使用，包含密码）
      */
-    Optional<EmailConfigVo> getDefaultConfig();
+    Optional<EmailConfig> getDefaultConfig();
+
+    /**
+     * 获取默认配置 VO（对外接口，密码脱敏）
+     */
+    Optional<EmailConfigVo> getDefaultConfigVo();
 
     /**
      * 设置默认配置
