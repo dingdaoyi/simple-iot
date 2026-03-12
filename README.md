@@ -172,33 +172,65 @@ sample-iot/
 ## 界面预览
 
 ### 首页仪表盘
+
+![首页仪表盘](doc/screenshots/dashboard.png)
+
 - 设备概览统计（总数、在线、离线、今日新增）
 - 系统资源监控（CPU、内存、磁盘）
 - 最近设备列表
 - 告警动态通知
 
+### 产品类型管理
+
+![产品类型](doc/screenshots/product-type.png)
+
+- 树形结构展示产品分类
+- 支持多级嵌套
+
 ### 产品管理
+
+![产品管理](doc/screenshots/product.png)
+
 - 卡片视图 / 列表视图切换
 - 产品图标自定义上传
 - 快速跳转设备列表
 
 ### 设备管理
+
+![设备管理](doc/screenshots/device.png)
+
 - 设备状态实时监控
 - 物模型数据展示
 - 在线/离线状态管理
 
 ### 协议管理
-- 多语言脚本支持
+
+![协议管理](doc/screenshots/protocol.png)
+
+- 多语言脚本支持（Java / JavaScript / Groovy / Lua）
 - 动态协议加载
 - 一键启用/禁用
 
 ### 规则引擎
+
+![规则链列表](doc/screenshots/rule-chain-list.png)
+
+![规则链编辑器](doc/screenshots/rule-chain-editor.png)
+
 - **可视化编辑器**：拖拽式节点编排，实时预览连接关系
 - **输入节点**：属性上报、事件上报、设备上下线监听
 - **过滤节点**：属性条件过滤、事件类型过滤、脚本过滤（JavaScript）
 - **输出节点**：消息推送（邮件/短信）、HTTP 回调、MQTT 转发、设备指令
 - **告警节点**：创建告警、清除告警，支持多级严重程度
 - **模板变量**：支持 `${deviceName}`, `${eventTime}`, `${属性标识符}` 等变量替换
+
+### 告警管理
+
+![告警管理](doc/screenshots/alarm.png)
+
+- 设备告警实时监控
+- 多级严重程度（提示/警告/严重/紧急）
+- 告警状态管理（活动/已清除）
 
 ---
 
