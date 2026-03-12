@@ -822,7 +822,7 @@ onMounted(async () => {
         <el-button @click="handleBack">
           <span>← 返回</span>
         </el-button>
-        <span class="title">{{ isEdit ? '编辑规则链' : '新建规则链' }}</span>
+        <span class="title">{{ isEdit ? '编辑规则引擎' : '新建规则引擎' }}</span>
       </div>
       <div class="header-right">
         <el-button type="primary" :loading="saving" @click="handleSave">
@@ -841,7 +841,7 @@ onMounted(async () => {
         <!-- 巻加产品类型和产品的辅助字段 -->
         <el-form label-width="70px" size="small">
           <el-form-item label="名称">
-            <el-input v-model="ruleChain.name" placeholder="规则链名称" />
+            <el-input v-model="ruleChain.name" placeholder="规则名称" />
           </el-form-item>
           <el-form-item label="数据源">
             <el-select v-model="ruleChain.sourceType" @change="onSourceTypeChange">

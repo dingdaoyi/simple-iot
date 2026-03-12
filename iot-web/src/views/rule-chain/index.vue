@@ -21,7 +21,7 @@ const sourceTypeOpt = [
 const column = [
   {
     prop: 'name',
-    label: '规则链名称',
+    label: '规则名称',
     minWidth: 150,
   },
   {
@@ -51,7 +51,7 @@ const column = [
   },
   {
     prop: 'isRoot',
-    label: '根规则链',
+    label: '根规则',
     width: 90,
     align: 'center',
     formatter(row) {
@@ -91,7 +91,7 @@ const {
 } = useTable({
   deleteApi: ruleChainDeleteApi,
   fetchApi: ruleChainPageApi,
-  diaName: '规则链',
+  diaName: '规则',
   defParams: {},
 })
 
@@ -131,10 +131,10 @@ onMounted(() => {
           <el-icon :size="24" class="title-icon">
             <Operation />
           </el-icon>
-          规则链管理
+          规则引擎
         </h1>
         <p class="page-subtitle">
-          可视化配置设备数据处理规则链
+          可视化配置设备数据处理规则
         </p>
       </div>
     </div>
@@ -143,8 +143,8 @@ onMounted(() => {
     <div class="search-bar glass-card">
       <el-form :inline="false" class="search-form">
         <div class="form-row">
-          <el-form-item label="规则链名称">
-            <el-input v-model="params.name" clearable placeholder="请输入规则链名称" />
+          <el-form-item label="规则名称">
+            <el-input v-model="params.name" clearable placeholder="请输入规则名称" />
           </el-form-item>
 
           <el-form-item label="数据源类型">
@@ -178,7 +178,7 @@ onMounted(() => {
           </el-button>
           <el-button type="success" @click="onAdd">
             <el-icon><Plus /></el-icon>
-            新建规则链
+            新建规则
           </el-button>
         </div>
       </el-form>

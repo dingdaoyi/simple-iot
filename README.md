@@ -213,9 +213,9 @@ sample-iot/
 
 ### 规则引擎
 
-![规则链列表](doc/screenshots/rule-chain-list.png)
+![规则引擎列表](doc/screenshots/rule-chain-list.png)
 
-![规则链编辑器](doc/screenshots/rule-chain-editor.png)
+![规则引擎编辑器](doc/screenshots/rule-chain-editor.png)
 
 - **可视化编辑器**：拖拽式节点编排，实时预览连接关系
 - **输入节点**：属性上报、事件上报、设备上下线监听

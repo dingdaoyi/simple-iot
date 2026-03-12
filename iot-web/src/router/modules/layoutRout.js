@@ -121,7 +121,7 @@ export default [
             name: 'ruleChain',
             component: () => import('@/views/rule-chain/index.vue'),
             meta: {
-              title: '规则链',
+              title: '规则引擎',
               icon: Operation,
             },
           },
@@ -131,7 +131,7 @@ export default [
             component: () => import('@/views/rule-chain/editor/index.vue'),
             meta: {
               hidden: true,
-              title: '规则链编辑器',
+              title: '规则引擎编辑器',
               icon: Operation,
             },
           },
@@ -141,7 +141,7 @@ export default [
             component: () => import('@/views/rule-chain/editor/index.vue'),
             meta: {
               hidden: true,
-              title: '编辑规则链',
+              title: '编辑规则引擎',
               icon: Operation,
             },
           },

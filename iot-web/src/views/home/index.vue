@@ -94,8 +94,8 @@ const quickLinks = [
   { name: '设备管理', icon: Monitor, path: '/device', color: '#6366f1' },
   { name: '产品管理', icon: Box, path: '/product', color: '#8b5cf6' },
   { name: '协议管理', icon: Connection, path: '/protocol', color: '#10b981' },
-  { name: '规则引擎', icon: Lightning, path: '/rule', color: '#f59e0b' },
-  { name: '数据统计', icon: TrendCharts, path: '/icon', color: '#ec4899' },
+  { name: '规则引擎', icon: Lightning, path: '/rule-chain', color: '#f59e0b' },
+  { name: '告警管理', icon: Bell, path: '/alarm', color: '#ec4899' },
   { name: '系统设置', icon: Setting, path: '/icon', color: '#06b6d4' },
 ]
 
