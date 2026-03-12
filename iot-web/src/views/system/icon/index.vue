@@ -1,12 +1,9 @@
 <script setup>
+import { Delete, Edit, Loading } from '@element-plus/icons-vue'
 import { onMounted } from 'vue'
 import { iconDeleteApi, iconListApi } from '@/api/index.js'
 import { useTable } from '@/composables/useTable.js'
 import EditDia from '@/views/system/icon/widget/editDia.vue'
-</script>
-
-<script>
-import { Delete, Edit, Loading } from '@element-plus/icons-vue'
 
 const {
   params,
@@ -34,9 +31,6 @@ function closeEdite() {
 onMounted(() => {
   updatePage()
 })
-export default {
-  components: { Loading, Edit, Delete },
-}
 </script>
 
 <template>

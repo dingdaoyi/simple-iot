@@ -1083,8 +1083,8 @@ CREATE TABLE tb_alarm (
                           end_ts TIMESTAMP,
                           clear_ts TIMESTAMP,
                           clear_by VARCHAR(100),
-                          created_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                          updated_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+                          create_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                          update_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
 COMMENT ON TABLE tb_alarm IS '告警表';

@@ -40,8 +40,9 @@ export function useTable(options = {}) {
       const queryParams = { ...params, _t: Date.now() }
       const res = await fetchApi(queryParams)
       if (res && res.data) {
-        tableData.value = res.data.records || res.data.data || res.data
-        total.value = res.data.total || 0
+        // 后端 PageResult 格式: {data: [...], total: 1, current: 1, size: 20, code: 200}
+        tableData.value = res.data
+        total.value = res.total || 0
       }
     }
     catch (error) {

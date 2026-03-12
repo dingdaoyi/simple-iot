@@ -1,5 +1,6 @@
 package com.github.dingdaoyi.controller.iot;
 
+import com.github.dingdaoyi.auth.AuthUtil;
 import com.github.dingdaoyi.core.base.BaseResult;
 import com.github.dingdaoyi.core.base.PageResult;
 import com.github.dingdaoyi.core.enums.ResultCode;
@@ -15,7 +16,6 @@ import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Arrays;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -60,7 +60,9 @@ public class AlarmController {
     @PutMapping("{id}/clear")
     @Operation(summary = "清除告警")
     public BaseResult<Boolean> clear(@PathVariable Integer id) {
-        return BaseResult.success(alarmService.clearAlarm(id, "manual"));
+        // 使用 AuthUtil 获取当前登录用户名
+        String clearBy = AuthUtil.getUsername();
+        return BaseResult.success(alarmService.clearAlarm(id, clearBy));
     }
 
     @GetMapping("statistics")

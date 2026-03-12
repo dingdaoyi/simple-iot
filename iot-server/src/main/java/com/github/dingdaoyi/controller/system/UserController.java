@@ -37,6 +37,8 @@ public class UserController {
             }
             if (BCrypt.checkpw(loginQuery.getPassword(), user.getPassword())) {
                 StpUtil.login(user.getId());
+                // 在登录时缓存 user 对象
+                StpUtil.getSession().set("user", user);
                 return BaseResult.success(StpUtil.getTokenInfo());
             }
             return BaseResult.fail(ResultCode.BAD_REQUEST.getCode(), "登录密码错误");

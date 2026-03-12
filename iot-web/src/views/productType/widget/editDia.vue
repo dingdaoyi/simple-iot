@@ -72,7 +72,7 @@ if (props?.datas) {
       <el-button
         type="primary"
         :loading="loading"
-        @click="onSubmit"
+        @click="handleSubmit"
       >
         {{ datas?.id ? '保存' : '新增' }}
       </el-button>

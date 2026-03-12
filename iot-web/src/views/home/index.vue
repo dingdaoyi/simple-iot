@@ -16,7 +16,8 @@ import {
 import { computed, onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { getDashboardStatistics } from '@/api/dashboard'
-import { devicePageApi } from '@/api/index.js'
+import { alarmPageApi, alarmStatisticsApi, devicePageApi } from '@/api/index.js'
+import AlarmDetailDialog from '@/components/AlarmDetailDialog.vue'
 
 const router = useRouter()
 
@@ -33,6 +34,17 @@ const stats = ref({
 // 最近设备
 const recentDevices = ref([])
 const devicesLoading = ref(false)
+
+// 告警数据
+const alerts = ref([])
+const alertsLoading = ref(false)
+const alertStats = ref({
+  activeCount: 0,
+})
+
+// 告警详情弹窗
+const detailVisible = ref(false)
+const currentAlarm = ref(null)
 
 // 计算在线率
 const onlineRate = computed(() => {
@@ -87,14 +99,6 @@ const quickLinks = [
   { name: '系统设置', icon: Setting, path: '/icon', color: '#06b6d4' },
 ]
 
-// 告警数据（模拟）
-const alerts = ref([
-  { time: '10:23', device: '温湿度传感器-A01', message: '温度超限告警', level: 'danger' },
-  { time: '09:45', device: '智能电表-B12', message: '设备离线', level: 'danger' },
-  { time: '09:12', device: '网关设备-G03', message: '电池低电量', level: 'warning' },
-  { time: '08:30', device: '压力传感器-P08', message: '数据异常', level: 'warning' },
-])
-
 // 跳转页面
 function navigateTo(path) {
   router.push(path)
@@ -115,6 +119,92 @@ async function loadRecentDevices() {
   }
 }
 
+// 加载告警数据
+async function loadAlerts() {
+  alertsLoading.value = true
+  try {
+    const res = await alarmPageApi({
+      page: 1,
+      size: 5,
+      status: 'ACTIVE',
+    })
+    const records = res.data?.records || res.data || []
+    alerts.value = records.map(alarm => ({
+      ...alarm,
+      device: alarm.deviceName || alarm.deviceKey || '未知设备',
+      message: alarm.message || alarm.alarmName || '告警',
+      level: getAlarmLevel(alarm.severity),
+      time: formatRelativeTime(alarm.startTs),
+    }))
+  }
+  catch (e) {
+    console.error('加载告警失败:', e)
+  }
+  finally {
+    alertsLoading.value = false
+  }
+}
+
+// 加载告警统计
+async function loadAlertStats() {
+  try {
+    const res = await alarmStatisticsApi()
+    const data = res.data || res
+    alertStats.value.activeCount = data.activeCount || 0
+  }
+  catch (e) {
+    console.error('加载告警统计失败:', e)
+  }
+}
+
+// 根据严重程度获取告警级别
+function getAlarmLevel(severity) {
+  const map = {
+    CRITICAL: 'danger',
+    MAJOR: 'danger',
+    MINOR: 'warning',
+    WARNING: 'warning',
+  }
+  return map[severity] || 'warning'
+}
+
+// 格式化相对时间
+function formatRelativeTime(timeStr) {
+  if (!timeStr) return ''
+  const date = new Date(timeStr)
+  if (isNaN(date.getTime())) return timeStr
+
+  const now = new Date()
+  const diff = now - date
+  const minutes = Math.floor(diff / 60000)
+  const hours = Math.floor(diff / 3600000)
+  const days = Math.floor(diff / 86400000)
+
+  if (minutes < 1) return '刚刚'
+  if (minutes < 60) return `${minutes}分钟前`
+  if (hours < 24) return `${hours}小时前`
+  if (days < 7) return `${days}天前`
+
+  return date.toLocaleDateString('zh-CN', {
+    month: '2-digit',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
+  })
+}
+
+// 查看告警详情
+function handleAlarmDetail(alert) {
+  currentAlarm.value = alert
+  detailVisible.value = true
+}
+
+// 刷新告警数据
+function refreshAlerts() {
+  loadAlerts()
+  loadAlertStats()
+}
+
 // 获取设备状态标签类型
 function getDeviceStatusType(online) {
   return online ? 'success' : 'danger'
@@ -126,14 +216,14 @@ function getDeviceStatusText(online) {
 }
 
 onMounted(() => {
-  // 统计数据加载
   getDashboardStatistics().then((res) => {
     if (res && res.data)
       Object.assign(stats.value, res.data)
   })
 
-  // 加载最近设备
   loadRecentDevices()
+  loadAlerts()
+  loadAlertStats()
 })
 </script>
 
@@ -284,14 +374,18 @@ onMounted(() => {
               <Bell />
             </el-icon>
             <h3>告警动态</h3>
-            <el-badge :value="alerts.length" class="alert-badge" />
+            <el-badge :value="alertStats.activeCount" class="alert-badge" :hidden="alertStats.activeCount === 0" />
+            <el-button type="primary" link size="small" class="view-all" @click="navigateTo('/alarm')">
+              查看全部
+            </el-button>
           </div>
-          <div class="alerts-list">
+          <div v-loading="alertsLoading" class="alerts-list">
             <div
-              v-for="(alert, index) in alerts"
-              :key="index"
+              v-for="alert in alerts"
+              :key="alert.id"
               class="alert-item"
               :class="`alert-item--${alert.level}`"
+              @click="handleAlarmDetail(alert)"
             >
               <div class="alert-indicator" />
               <div class="alert-content">
@@ -304,10 +398,20 @@ onMounted(() => {
                 </div>
               </div>
             </div>
+            <div v-if="!alertsLoading && alerts.length === 0" class="empty-tip">
+              暂无活动告警
+            </div>
           </div>
         </div>
       </div>
     </div>
+
+    <!-- 告警详情弹窗 -->
+    <AlarmDetailDialog
+      v-model="detailVisible"
+      :alarm="currentAlarm"
+      @refresh="refreshAlerts"
+    />
   </div>
 </template>
 

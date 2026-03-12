@@ -65,10 +65,20 @@ public class AlarmCreateNode implements RuleNodeExecutor {
         // 创建告警
         Alarm alarm = new Alarm();
         alarm.setAlarmType(alarmType);
-        alarm.setAlarmName(replaceTemplate(cfg.getAlarmName() != null ? cfg.getAlarmName() : alarmType, variables));
+        String alarmName = replaceTemplate(cfg.getAlarmName() != null ? cfg.getAlarmName() : alarmType, variables);
+        alarm.setAlarmName(alarmName);
         alarm.setSeverity(severity);
         alarm.setStatus(AlarmStatus.ACTIVE);
-        alarm.setMessage(replaceTemplate(cfg.getMessage() != null ? cfg.getMessage() : "", variables));
+
+        // 告警消息：如果未配置则使用默认格式 "设备 {deviceName} 触发 {alarmType} 告警"
+        String message;
+        if (cfg.getMessage() != null && !cfg.getMessage().trim().isEmpty()) {
+            message = replaceTemplate(cfg.getMessage(), variables);
+        } else {
+            message = String.format("设备 %s 触发 %s 告警", context.getDeviceName(), alarmType);
+        }
+        alarm.setMessage(message);
+
         alarm.setDeviceId(context.getDeviceId());
         alarm.setDeviceKey(context.getDeviceKey());
         alarm.setDeviceName(context.getDeviceName());
