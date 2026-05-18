@@ -16,7 +16,9 @@ public class ConfigReadDefault {
 
     @EventListener
     public void init(ContextRefreshedEvent event){
-        // 创建SmsBlend 短信实例
-        SmsFactory.createSmsBlend(config,"1");
+        // 创建SmsBlend 短信实例，无配置时跳过
+        if (config.getSupplierConfig("1") != null) {
+            SmsFactory.createSmsBlend(config, "1");
+        }
     }
 }
