@@ -1,0 +1,56 @@
+name: ✨ Feature Request
+description: Suggest a new feature or enhancement
+title: "[Feature] "
+labels: ["enhancement", "needs-triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        For larger ideas, consider opening a [Discussion](https://github.com/dingdaoyi/simple-iot/discussions) first.
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: What problem does this solve?
+      placeholder: As a <user>, I want <goal>, so that <reason>.
+    validations:
+      required: true
+
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed solution
+      placeholder: Describe the feature, expected UI/API, edge cases.
+    validations:
+      required: true
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered
+      placeholder: Other approaches you thought about and why you ruled them out.
+
+  - type: dropdown
+    id: scope
+    attributes:
+      label: Affected area
+      multiple: true
+      options:
+        - Backend (iot-server)
+        - Frontend (iot-web)
+        - Rule engine
+        - Protocol scripts
+        - MQTT broker
+        - Deployment / Docker
+        - Documentation
+        - Other
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: terms
+    attributes:
+      label: Pre-flight checklist
+      options:
+        - label: I searched existing issues and discussions for this idea
+          required: true
