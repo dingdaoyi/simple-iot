@@ -1,0 +1,60 @@
+<svg width="256" height="256" viewBox="0 0 256 256" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#6366f1"/>
+      <stop offset="100%" stop-color="#06b6d4"/>
+    </linearGradient>
+    <linearGradient id="glassGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#ffffff" stop-opacity="0.45"/>
+      <stop offset="50%" stop-color="#ffffff" stop-opacity="0.15"/>
+      <stop offset="100%" stop-color="#ffffff" stop-opacity="0.05"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#a5f3fc" stop-opacity="0.9"/>
+      <stop offset="100%" stop-color="#a5f3fc" stop-opacity="0"/>
+    </radialGradient>
+    <filter id="softShadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur in="SourceAlpha" stdDeviation="3"/>
+      <feOffset dx="0" dy="2" result="offsetblur"/>
+      <feComponentTransfer><feFuncA type="linear" slope="0.4"/></feComponentTransfer>
+      <feMerge><feMergeNode/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+  </defs>
+
+  <!-- 圆角方形背景 -->
+  <rect x="8" y="8" width="240" height="240" rx="56" fill="url(#bgGrad)"/>
+
+  <!-- 玻璃高光层 -->
+  <rect x="8" y="8" width="240" height="120" rx="56" fill="url(#glassGrad)"/>
+
+  <!-- 中心发光 -->
+  <circle cx="128" cy="128" r="80" fill="url(#glow)"/>
+
+  <!-- 中心节点（设备） -->
+  <circle cx="128" cy="128" r="22" fill="#ffffff" filter="url(#softShadow)"/>
+  <circle cx="128" cy="128" r="10" fill="#6366f1"/>
+
+  <!-- 4 个外围节点 -->
+  <g fill="#ffffff" opacity="0.95">
+    <circle cx="128" cy="56"  r="11"/>
+    <circle cx="200" cy="128" r="11"/>
+    <circle cx="128" cy="200" r="11"/>
+    <circle cx="56"  cy="128" r="11"/>
+  </g>
+
+  <!-- 4 条连接线（脉搏感） -->
+  <g stroke="#ffffff" stroke-width="3" stroke-linecap="round" opacity="0.85">
+    <line x1="128" y1="67"  x2="128" y2="106"/>
+    <line x1="189" y1="128" x2="150" y2="128"/>
+    <line x1="128" y1="189" x2="128" y2="150"/>
+    <line x1="67"  y1="128" x2="106" y2="128"/>
+  </g>
+
+  <!-- 4 个角落小信号点（数据流动感） -->
+  <g fill="#a5f3fc">
+    <circle cx="86"  cy="86"  r="4"/>
+    <circle cx="170" cy="86"  r="4"/>
+    <circle cx="170" cy="170" r="4"/>
+    <circle cx="86"  cy="170" r="4"/>
+  </g>
+</svg>
