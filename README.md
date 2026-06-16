@@ -1,294 +1,250 @@
-# Simple IoT Platform
+<div align="center">
 
-<p align="center">
-  <img src="https://img.shields.io/badge/Spring%20Boot-4.0.2-brightgreen" alt="Spring Boot">
-  <img src="https://img.shields.io/badge/Vue-3.x-42b883" alt="Vue 3">
-  <img src="https://img.shields.io/badge/Java-25-orange" alt="Java 25">
-  <img src="https://img.shields.io/badge/License-Apache-blue" alt="License">
-</p>
+<img src="doc/brand/banner.png" alt="Simple IoT — The Glass IoT Platform" width="100%"/>
 
-<p align="center">
-  <b>轻量级 · 易部署 · 高性能</b>
-</p>
+# Simple IoT
 
-<p align="center">
-  一款面向中小企业的轻量级物联网管理平台，采用单体架构设计，<br>
-  聚焦核心功能，降低分布式复杂度，开箱即用。
-</p>
+**The Glass IoT Platform — lightweight, single-binary, ready in 60 seconds.**
 
----
+[![CI](https://github.com/dingdaoyi/simple-iot/actions/workflows/ci.yml/badge.svg)](https://github.com/dingdaoyi/simple-iot/actions/workflows/ci.yml)
+[![License](https://img.shields.io/github/license/dingdaoyi/simple-iot?color=blue)](LICENSE)
+[![Java](https://img.shields.io/badge/Java-25-orange?logo=openjdk)](https://openjdk.org/)
+[![Spring Boot](https://img.shields.io/badge/Spring%20Boot-4.0.2-6DB33F?logo=springboot)](https://spring.io/projects/spring-boot)
+[![Vue](https://img.shields.io/badge/Vue-3.x-42b883?logo=vue.js)](https://vuejs.org/)
+[![Docker](https://img.shields.io/badge/Docker-Ready-2496ED?logo=docker)](docker-compose.yml)
+[![GitHub Stars](https://img.shields.io/github/stars/dingdaoyi/simple-iot?style=social)](https://github.com/dingdaoyi/simple-iot/stargazers)
 
-## 在线体验
+**English** · [简体中文](README.zh-CN.md) · [Live Demo](http://122.51.129.91) · [Documentation](doc/) · [Report Bug](https://github.com/dingdaoyi/simple-iot/issues)
 
-- **演示地址**：http://122.51.129.91
-- **体验账号**：`admin` / `123456`
+</div>
 
 ---
 
-## 核心亮点
+## ✨ Why Simple IoT?
 
-### 现代化技术栈
-- **后端**：Java 25 + Spring Boot 4.0.2，拥抱最新技术
-- **前端**：Vue 3 + Vite + Element Plus，极速开发体验
-- **数据库**：PostgreSQL + InfluxDB 3，业务数据与时序数据分离
+Most IoT platforms are heavy, distributed, and overkill for small/mid-size deployments.
+**Simple IoT** is the opposite: a single Spring Boot binary + a Vue 3 web app, **no Kafka, no Zookeeper, no microservice mess**. You can run the whole stack on a 2 GB VPS and connect thousands of devices in minutes.
 
-### 精美的 UI 设计
-- **玻璃态设计** (Glassmorphism)，现代感十足
-- **暗色/亮色主题** 自动切换，护眼舒适
-- **响应式布局**，完美适配各种屏幕尺寸
+| | Simple IoT | ThingsBoard CE | EMQX + custom UI |
+|---|---|---|---|
+| Architecture | Single binary | Multiple services | Broker + you build the rest |
+| Memory footprint | ~ 512 MB | ~ 2 GB+ | ~ 1 GB + your stack |
+| MQTT broker | Built-in (mica-mqtt) | Built-in | Yes (this is the only feature) |
+| Visual rule engine | ✅ Drag-and-drop | ✅ | ❌ |
+| Scriptable protocols | ✅ Java / JS / Groovy / Lua | Limited | ❌ |
+| Time-series storage | InfluxDB 3 | Cassandra / Postgres | You pick |
+| Modern UI | Glassmorphism, dark mode | Material, dated | Build your own |
+| One-command deploy | `./deploy.sh` | `docker-compose` (heavy) | DIY |
+| Best fit | SMB, internal tools, edge gateways | Enterprise, multi-tenant SaaS | Pure messaging |
 
-### 灵活的协议支持
-- 内置 **MQTT Broker**，无需额外部署
-- 支持 **Java / JavaScript / Groovy / Lua** 脚本协议
-- 动态协议加载，无需重启服务
-
-### 高效的数据处理
-- **时序数据库** InfluxDB 3，高效存储设备遥测数据
-- **本地缓存** Caffeine，降低数据库压力
-- **细粒度权限** Sa-Token，安全可控
+> **TL;DR** — if you want a real, production-grade IoT platform that you can actually self-host, read, fork and ship without becoming a distributed-systems expert, **Simple IoT** is for you.
 
 ---
 
-## 功能模块
-
-| 模块 | 功能描述 |
-|------|----------|
-| **设备管理** | 设备注册、在线状态监控、批量操作 |
-| **产品管理** | 产品类型定义、物模型配置、产品图标 |
-| **协议管理** | 多语言协议脚本、动态加载、启用/禁用 |
-| **规则引擎** | 可视化规则链编辑器、多类型输入/过滤/输出节点、告警管理 |
-| **数据监控** | 实时数据展示、历史数据查询 |
-| **系统设置** | 用户管理、权限配置、系统参数 |
-
----
-
-## 技术架构
-
-### 后端技术
-
-| 组件 | 版本 | 说明 |
-|------|------|------|
-| Spring Boot | 4.0.2 | 核心框架 |
-| Java | 25 | 运行时环境 |
-| Sa-Token | - | 认证鉴权 |
-| MyBatis-Plus | - | ORM 框架 |
-| PostgreSQL | - | 业务数据库 |
-| InfluxDB | 3.0 | 时序数据库 |
-| Caffeine | - | 本地缓存 |
-| mica-mqtt | - | MQTT Broker |
-| Hutool | - | 工具库 |
-
-### 前端技术
-
-| 组件 | 版本 | 说明 |
-|------|------|------|
-| Vue | 3.x | 渐进式框架 |
-| Vite | - | 构建工具 |
-| Element Plus | - | UI 组件库 |
-| Pinia | - | 状态管理 |
-| Vue Router | - | 路由管理 |
-| Axios | - | HTTP 客户端 |
-
----
-
-## 快速开始
-
-### 环境要求
-
-- JDK 25+
-- Node.js 18+
-- PostgreSQL 14+
-- InfluxDB 3.0 (可选)
-
-### 后端启动
+## 🚀 Quick Start (60 seconds with Docker)
 
 ```bash
-# 克隆项目
 git clone https://github.com/dingdaoyi/simple-iot.git
 cd simple-iot
+chmod +x deploy.sh
+./deploy.sh deploy
+```
 
-# 配置数据库 (修改 application.yml)
-# 创建 PostgreSQL 数据库
+Then open:
 
-# 启动后端服务
+| Service | URL | Default credentials |
+|---------|-----|--------------------|
+| Web UI | http://localhost | `admin` / `123456` |
+| API docs | http://localhost:5010/iot/doc.html | — |
+| MQTT broker | `mqtt://localhost:1883` | — |
+| MQTT WebSocket | `ws://localhost:8083/mqtt` | — |
+
+That's it. PostgreSQL, RustFS (S3-compatible), the backend and the frontend all spin up together.
+
+> Want to develop locally? See the [development guide](#-development).
+
+---
+
+## 🎯 Core Features
+
+| Module | What it does |
+|--------|--------------|
+| **Device Management** | Registration, online/offline tracking, batch operations, command dispatch |
+| **Product & Thing Model** | Product types, properties, services, events — TSL inspired by Alink |
+| **Protocol Engine** | Hot-loaded scripts in **Java / JavaScript / Groovy / Lua**, no restart needed |
+| **Visual Rule Engine** | Drag-and-drop chain editor: input → filter → transform → action |
+| **Alarm Center** | Severity levels (info / warning / critical / urgent), active / cleared lifecycle |
+| **Data Ingestion** | InfluxDB 3 time-series storage, Caffeine in-process cache |
+| **Notifications** | Email & SMS push, HTTP callbacks, MQTT forward, device commands |
+| **Dashboard** | Device totals, online stats, system metrics (CPU / memory / disk), live alarms |
+| **Auth & Permissions** | Sa-Token based, fine-grained, role/menu/button level |
+| **Glass UI** | Glassmorphism design, light/dark/auto theme, responsive |
+
+---
+
+## 🖼️ Screenshots
+
+<div align="center">
+
+### Dashboard
+<img src="doc/screenshots/dashboard.png" alt="Dashboard" width="80%"/>
+
+### Visual Rule Engine
+<img src="doc/screenshots/rule-chain-editor.png" alt="Rule Engine Editor" width="80%"/>
+
+### Device Management
+<img src="doc/screenshots/device.png" alt="Device" width="80%"/>
+
+### Protocol Scripts
+<img src="doc/screenshots/protocol.png" alt="Protocol" width="80%"/>
+
+### Alarms
+<img src="doc/screenshots/alarm.png" alt="Alarm" width="80%"/>
+
+</div>
+
+---
+
+## 🏗️ Architecture
+
+```
+┌──────────────────────────────────────────────────────────────────┐
+│                          Simple IoT                              │
+├──────────────────────────────────────────────────────────────────┤
+│                                                                  │
+│   Vue 3 + Vite + Element Plus  (Glassmorphism UI)                │
+│           │                                                      │
+│           ▼  REST / WebSocket                                    │
+│   ┌──────────────────────────────────────────────────────────┐   │
+│   │   Spring Boot 4 (single JVM, single binary)              │   │
+│   │                                                          │   │
+│   │   • Sa-Token auth         • MyBatis-Plus                 │   │
+│   │   • Caffeine local cache  • Knife4j OpenAPI              │   │
+│   │   • Visual rule engine    • Hot-loaded protocol scripts  │   │
+│   │   • mica-mqtt broker (1883 / 8083 ws)                    │   │
+│   └──────────────────────────────────────────────────────────┘   │
+│           │                          │                           │
+│           ▼                          ▼                           │
+│   ┌──────────────┐          ┌────────────────┐                   │
+│   │ PostgreSQL   │          │ InfluxDB 3     │                   │
+│   │ (business)   │          │ (telemetry)    │                   │
+│   └──────────────┘          └────────────────┘                   │
+│                                                                  │
+│   ┌──────────────────────────────────────────────────────────┐   │
+│   │  Devices  →  MQTT / TCP / HTTP  →  Protocol scripts      │   │
+│   └──────────────────────────────────────────────────────────┘   │
+└──────────────────────────────────────────────────────────────────┘
+```
+
+### Stack
+
+**Backend** — Java 25 · Spring Boot 4.0.2 · Sa-Token · MyBatis-Plus · PostgreSQL · InfluxDB 3 · mica-mqtt · Caffeine · Hutool · AWS S3 SDK
+**Frontend** — Vue 3 · Vite · Element Plus · Pinia · Vue Router · Axios · ECharts
+**Infra** — Docker Compose · RustFS (S3-compatible) · GitHub Actions
+
+---
+
+## 📦 Project Layout
+
+```
+simple-iot/
+├── iot-server/         # Main Spring Boot service (REST + MQTT broker + rule engine)
+├── iot-common/         # Shared base classes (BaseEntity, ResultCode, paging)
+├── iot-driver/         # System-supplied protocol drivers
+├── iot-web/            # Vue 3 admin frontend
+├── doc/                # Docs, SQL schema, screenshots, brand assets
+├── docker-compose.yml  # Stack: postgres + rustfs + iot-server + iot-web
+├── deploy.sh           # One-command deploy / start / stop / logs
+└── pom.xml             # Maven multi-module build
+```
+
+---
+
+## 🛠️ Development
+
+### Prerequisites
+- JDK 25+
+- Node.js 18+
+- pnpm 8+
+- PostgreSQL 14+
+- Docker & Docker Compose (optional, recommended)
+
+### Backend
+
+```bash
+# 1. Start PostgreSQL + RustFS only (skip backend/frontend)
+docker compose up -d postgres rustfs
+
+# 2. Run the server in your IDE / via Maven
 cd iot-server
 mvn spring-boot:run
 ```
 
-### 前端启动
+API ready at `http://localhost:5010/iot/`, OpenAPI at `http://localhost:5010/iot/doc.html`.
+
+### Frontend
 
 ```bash
-# 安装依赖
 cd iot-web
 pnpm install
-
-# 启动开发服务器
 pnpm dev
 ```
 
-### 访问系统
+Web ready at `http://localhost:5173`. Vite proxies `/iot` → `http://localhost:5010` automatically.
 
-- 前端地址：http://localhost:5173
-- API 文档：http://localhost:8080/doc.html
-- 默认账号：`admin` / `123456`
+> See [`AGENTS.md`](AGENTS.md) for the full coding conventions used by this project (component patterns, design tokens, naming rules).
 
 ---
 
-## 项目结构
+## 🗺️ Roadmap
 
-```
-sample-iot/
-├── iot-server/                 # 后端服务
-│   ├── src/main/java/
-│   │   └── com/github/dingdaoyi/
-│   │       ├── config/         # 配置类
-│   │       ├── controller/     # 控制器
-│   │       ├── service/        # 业务逻辑
-│   │       ├── mapper/         # 数据访问
-│   │       ├── entity/         # 实体类
-│   │       └── model/          # 数据模型
-│   └── src/main/resources/
-│       ├── mapper/             # MyBatis XML
-│       └── application.yml     # 配置文件
-│
-├── iot-web/                    # 前端项目
-│   ├── src/
-│   │   ├── api/                # API 接口
-│   │   ├── components/         # 公共组件
-│   │   ├── composables/        # 组合式函数
-│   │   ├── layout/             # 布局组件
-│   │   ├── router/             # 路由配置
-│   │   ├── store/              # 状态管理
-│   │   ├── styles/             # 全局样式
-│   │   └── views/              # 页面组件
-│   └── vite.config.mjs         # Vite 配置
-│
-├── iot-protocol-core/          # 协议核心模块
-└── iot-common/                 # 公共模块
-```
+- [ ] **v0.1** — Stable single-node release, English docs, Docker Hub images
+- [ ] **v0.2** — i18n (English UI), thing-model import/export, device groups
+- [ ] **v0.3** — Custom data dashboards (drag-and-drop widgets)
+- [ ] **v0.4** — OTA upgrade flow, edge gateway packaging
+- [ ] **v0.5** — Plugin system (protocol packs as standalone JARs)
+- [ ] **v1.0** — Production hardening, performance benchmarks, helm chart
+
+Open an issue or [Discussion](https://github.com/dingdaoyi/simple-iot/discussions) if there's a feature you want to see prioritised.
 
 ---
 
-## 界面预览
+## 🤝 Contributing
 
-### 首页仪表盘
+Contributions are very welcome. Whether it's a typo fix, a new protocol script, a UI tweak, or a translation — every PR helps.
 
-![首页仪表盘](doc/screenshots/dashboard.png)
+1. Read [CONTRIBUTING.md](CONTRIBUTING.md)
+2. Fork → branch → commit (use [Conventional Commits](https://www.conventionalcommits.org/): `feat:`, `fix:`, `docs:`, ...)
+3. Open a Pull Request
 
-- 设备概览统计（总数、在线、离线、今日新增）
-- 系统资源监控（CPU、内存、磁盘）
-- 最近设备列表
-- 告警动态通知
-
-### 产品类型管理
-
-![产品类型](doc/screenshots/product-type.png)
-
-- 树形结构展示产品分类
-- 支持多级嵌套
-
-### 产品管理
-
-![产品管理](doc/screenshots/product.png)
-
-- 卡片视图 / 列表视图切换
-- 产品图标自定义上传
-- 快速跳转设备列表
-
-### 设备管理
-
-![设备管理](doc/screenshots/device.png)
-
-- 设备状态实时监控
-- 物模型数据展示
-- 在线/离线状态管理
-
-### 协议管理
-
-![协议管理](doc/screenshots/protocol.png)
-
-- 多语言脚本支持（Java / JavaScript / Groovy / Lua）
-- 动态协议加载
-- 一键启用/禁用
-
-### 规则引擎
-
-![规则引擎列表](doc/screenshots/rule-chain-list.png)
-
-![规则引擎编辑器](doc/screenshots/rule-chain-editor.png)
-
-- **可视化编辑器**：拖拽式节点编排，实时预览连接关系
-- **输入节点**：属性上报、事件上报、设备上下线监听
-- **过滤节点**：属性条件过滤、事件类型过滤、脚本过滤（JavaScript）
-- **输出节点**：消息推送（邮件/短信）、HTTP 回调、MQTT 转发、设备指令
-- **告警节点**：创建告警、清除告警，支持多级严重程度
-- **模板变量**：支持 `${deviceName}`, `${eventTime}`, `${属性标识符}` 等变量替换
-
-### 告警管理
-
-![告警管理](doc/screenshots/alarm.png)
-
-- 设备告警实时监控
-- 多级严重程度（提示/警告/严重/紧急）
-- 告警状态管理（活动/已清除）
+Found a bug or have a question? [Open an issue](https://github.com/dingdaoyi/simple-iot/issues/new/choose) or join the [Discussions](https://github.com/dingdaoyi/simple-iot/discussions).
 
 ---
 
-## 部署指南
+## 🛡️ Security
 
-### Docker 部署（推荐）
-
-```bash
-# 1. 赋予脚本执行权限
-chmod +x deploy.sh
-
-# 2. 一键部署
-./deploy.sh deploy
-```
-
-详细部署说明请查看 [Docker 部署文档](doc/deploy.md)
-
-### 部署命令速查
-
-| 命令 | 说明 |
-|------|------|
-| `./deploy.sh deploy` | 完整部署 |
-| `./deploy.sh start` | 启动服务 |
-| `./deploy.sh stop` | 停止服务 |
-| `./deploy.sh restart` | 重启服务 |
-| `./deploy.sh logs` | 查看日志 |
-| `./deploy.sh status` | 查看状态 |
-
-### 访问地址
-
-| 服务 | 地址 |
-|------|------|
-| 前端 | http://localhost |
-| API 文档 | http://localhost:5010/iot/doc.html |
-| MQTT | localhost:1883 |
+If you discover a security vulnerability, please **do not** open a public issue. See [SECURITY.md](SECURITY.md) for the responsible-disclosure process.
 
 ---
 
-## 贡献指南
+## ⭐ Star History
 
-1. Fork 本仓库
-2. 创建特性分支 (`git checkout -b feature/AmazingFeature`)
-3. 提交更改 (`git commit -m 'Add some AmazingFeature'`)
-4. 推送到分支 (`git push origin feature/AmazingFeature`)
-5. 提交 Pull Request
+<a href="https://star-history.com/#dingdaoyi/simple-iot&Date">
+  <img src="https://api.star-history.com/svg?repos=dingdaoyi/simple-iot&type=Date" alt="Star History" width="600"/>
+</a>
 
----
-
-## 开源协议
-
-本项目基于 [Apache](LICENSE) 协议开源。
+If this project helps you, please **drop a star ⭐** — it's the easiest way to support the work and helps others discover it.
 
 ---
 
-## 联系方式
+## 📄 License
 
-如有问题或建议，欢迎提交 Issue 或 Pull Request。
+[Apache License 2.0](LICENSE) © dingdaoyi & contributors
 
-<p align="center">
-  <b>⭐ 如果这个项目对你有帮助，请给一个 Star 支持一下！⭐</b>
-</p>
+---
+
+<div align="center">
+
+<sub>Built with ❤️ for makers, integrators and small teams who want IoT done right — without the complexity tax.</sub>
+
+</div>
