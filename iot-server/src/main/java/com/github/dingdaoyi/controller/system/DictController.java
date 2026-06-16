@@ -1,8 +1,10 @@
 package com.github.dingdaoyi.controller.system;
 
 import com.github.dingdaoyi.core.base.BaseResult;
+import com.github.dingdaoyi.core.driver.DriverTypeEnum;
 import com.github.dingdaoyi.entity.enu.ServiceTypeEnum;
 import com.github.dingdaoyi.entity.enu.StatusEnum;
+import com.github.dingdaoyi.model.enu.ConnectionTypeEnum;
 import com.github.dingdaoyi.model.enu.NotifyType;
 import com.github.dingdaoyi.model.enu.SmsSupplier;
 import com.github.dingdaoyi.model.enu.SmsTemplateType;
@@ -74,5 +76,17 @@ public class DictController {
     @Operation(summary = "事件类型字典")
     public BaseResult<List<Map<String, Object>>> getEventType() {
         return BaseResult.success(EnumUtils.enumToMapList(EventTypeEnum.class));
+    }
+
+    @GetMapping("/driver-type")
+    @Operation(summary = "驱动类型字典")
+    public BaseResult<List<Map<String, Object>>> getDriverType() {
+        return BaseResult.success(EnumUtils.enumToMapList(DriverTypeEnum.class));
+    }
+
+    @GetMapping("/connection-type")
+    @Operation(summary = "连接类型字典")
+    public BaseResult<List<Map<String, Object>>> getConnectionType() {
+        return BaseResult.success(EnumUtils.enumToMapList(ConnectionTypeEnum.class));
     }
 }
