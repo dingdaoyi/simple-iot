@@ -66,3 +66,7 @@ yarn.lock
 /iot-web/.env.development
 CLAUDE.md
 /.planning/
+
+# Codex / OMC local state
+.omc
+AGENTS.md

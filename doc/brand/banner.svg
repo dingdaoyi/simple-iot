@@ -1,0 +1,88 @@
+<svg width="1280" height="320" viewBox="0 0 1280 320" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%"   stop-color="#0f172a"/>
+      <stop offset="50%"  stop-color="#1e1b4b"/>
+      <stop offset="100%" stop-color="#0c4a6e"/>
+    </linearGradient>
+    <linearGradient id="textGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#a5b4fc"/>
+      <stop offset="60%" stop-color="#67e8f9"/>
+      <stop offset="100%" stop-color="#a5f3fc"/>
+    </linearGradient>
+    <linearGradient id="badgeGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#6366f1"/>
+      <stop offset="100%" stop-color="#06b6d4"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#6366f1" stop-opacity="0.55"/>
+      <stop offset="100%" stop-color="#6366f1" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="glow2" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#06b6d4" stop-opacity="0.45"/>
+      <stop offset="100%" stop-color="#06b6d4" stop-opacity="0"/>
+    </radialGradient>
+    <pattern id="dots" x="0" y="0" width="32" height="32" patternUnits="userSpaceOnUse">
+      <circle cx="2" cy="2" r="1" fill="#a5b4fc" opacity="0.18"/>
+    </pattern>
+  </defs>
+
+  <!-- 背景 -->
+  <rect width="1280" height="320" fill="url(#bgGrad)"/>
+  <rect width="1280" height="320" fill="url(#dots)"/>
+  <ellipse cx="320" cy="160"  rx="380" ry="220" fill="url(#glow)"/>
+  <ellipse cx="1080" cy="160" rx="380" ry="220" fill="url(#glow2)"/>
+
+  <!-- 左侧 logo -->
+  <g transform="translate(80, 80)">
+    <rect x="0" y="0" width="160" height="160" rx="36" fill="url(#badgeGrad)"/>
+    <rect x="0" y="0" width="160" height="80"  rx="36" fill="#ffffff" opacity="0.18"/>
+    <circle cx="80" cy="80" r="14" fill="#ffffff"/>
+    <circle cx="80" cy="80" r="6" fill="#6366f1"/>
+    <g fill="#ffffff" opacity="0.95">
+      <circle cx="80" cy="36"  r="7"/>
+      <circle cx="124" cy="80" r="7"/>
+      <circle cx="80" cy="124" r="7"/>
+      <circle cx="36" cy="80"  r="7"/>
+    </g>
+    <g stroke="#ffffff" stroke-width="2" stroke-linecap="round" opacity="0.85">
+      <line x1="80" y1="43"  x2="80"  y2="66"/>
+      <line x1="117" y1="80" x2="94"  y2="80"/>
+      <line x1="80" y1="117" x2="80"  y2="94"/>
+      <line x1="43" y1="80"  x2="66"  y2="80"/>
+    </g>
+  </g>
+
+  <!-- 文字主体 -->
+  <g transform="translate(280, 0)">
+    <text x="0" y="140" font-family="'Inter','SF Pro Display','Helvetica Neue',sans-serif" font-size="92" font-weight="800" fill="url(#textGrad)" letter-spacing="-2">Simple IoT</text>
+    <text x="0" y="190" font-family="'Inter','SF Pro Display','Helvetica Neue',sans-serif" font-size="26" font-weight="500" fill="#cbd5e1" letter-spacing="0.5">The Glass IoT Platform · 玻璃态物联网平台</text>
+
+    <!-- 一句话价值主张 -->
+    <text x="0" y="232" font-family="'Inter','SF Pro Display','Helvetica Neue',sans-serif" font-size="18" font-weight="400" fill="#94a3b8">Lightweight · Single-binary · Spring Boot 4 + Vue 3 · MQTT built-in · Visual rule engine</text>
+
+    <!-- Badge 按钮 -->
+    <g transform="translate(0, 256)">
+      <g>
+        <rect x="0"   y="0" width="92"  height="32" rx="16" fill="#1e293b" stroke="#334155"/>
+        <text x="46" y="21" font-family="'Inter',sans-serif" font-size="13" font-weight="600" fill="#a5f3fc" text-anchor="middle">Java 25</text>
+      </g>
+      <g>
+        <rect x="100" y="0" width="120" height="32" rx="16" fill="#1e293b" stroke="#334155"/>
+        <text x="160" y="21" font-family="'Inter',sans-serif" font-size="13" font-weight="600" fill="#a5b4fc" text-anchor="middle">Spring Boot 4</text>
+      </g>
+      <g>
+        <rect x="228" y="0" width="76"  height="32" rx="16" fill="#1e293b" stroke="#334155"/>
+        <text x="266" y="21" font-family="'Inter',sans-serif" font-size="13" font-weight="600" fill="#86efac" text-anchor="middle">Vue 3</text>
+      </g>
+      <g>
+        <rect x="312" y="0" width="92"  height="32" rx="16" fill="#1e293b" stroke="#334155"/>
+        <text x="358" y="21" font-family="'Inter',sans-serif" font-size="13" font-weight="600" fill="#fcd34d" text-anchor="middle">MQTT</text>
+      </g>
+      <g>
+        <rect x="412" y="0" width="120" height="32" rx="16" fill="#1e293b" stroke="#334155"/>
+        <text x="472" y="21" font-family="'Inter',sans-serif" font-size="13" font-weight="600" fill="#fda4af" text-anchor="middle">Rule Engine</text>
+      </g>
+    </g>
+  </g>
+</svg>
