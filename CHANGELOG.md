@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+- **Driver page dropdowns** — added two missing dictionary endpoints (`GET /dict/driver-type`, `GET /dict/connection-type`) on the backend and the corresponding `getDriverTypeEnum()` / `getConnectionTypeEnum()` exports in `iot-web/src/api/dict.js`. The driver list page now loads its protocol-type and connection-type filters correctly. ([#0fa7f53](https://github.com/dingdaoyi/simple-iot/commit/0fa7f53))
+
 ## [0.1.0] — 2026-06-17
 
 First public release. The platform has been used internally for over a year and is now opened up with proper docs, branding and community infrastructure.
