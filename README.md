@@ -14,7 +14,7 @@
 [![Docker](https://img.shields.io/badge/Docker-Ready-2496ED?logo=docker)](docker-compose.yml)
 [![GitHub Stars](https://img.shields.io/github/stars/dingdaoyi/simple-iot?style=social)](https://github.com/dingdaoyi/simple-iot/stargazers)
 
-**English** · [简体中文](README.zh-CN.md) · [Live Demo](http://122.51.129.91) · [Documentation](doc/) · [Report Bug](https://github.com/dingdaoyi/simple-iot/issues)
+**English** · [简体中文](README.zh-CN.md) · [Live Demo](http://122.51.129.91) · [Documentation](https://dingdaoyi.github.io/simple-iot/) · [Report Bug](https://github.com/dingdaoyi/simple-iot/issues)
 
 </div>
 
