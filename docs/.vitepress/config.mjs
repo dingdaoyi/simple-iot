@@ -34,7 +34,7 @@ export default defineConfig({
       themeConfig: {
         nav: [
           { text: 'Guide', link: '/guide/getting-started' },
-          { text: 'API', link: '/api/dict' },
+          { text: 'API', link: '/api/openapi' },
           { text: 'Live Demo', link: '/guide/demo' },
           { text: 'Changelog', link: 'https://github.com/dingdaoyi/simple-iot/blob/main/CHANGELOG.md' },
         ],
@@ -61,6 +61,7 @@ export default defineConfig({
             {
               text: 'REST API',
               items: [
+                { text: 'OpenAPI', link: '/api/openapi' },
                 { text: 'Dictionary Endpoints', link: '/api/dict' },
               ],
             },
@@ -75,7 +76,7 @@ export default defineConfig({
       themeConfig: {
         nav: [
           { text: '指南', link: '/zh/guide/getting-started' },
-          { text: 'API', link: '/zh/api/dict' },
+          { text: 'API', link: '/zh/api/openapi' },
           { text: '在线演示', link: '/zh/guide/demo' },
           { text: '更新日志', link: 'https://github.com/dingdaoyi/simple-iot/blob/main/CHANGELOG.md' },
         ],
@@ -102,6 +103,7 @@ export default defineConfig({
             {
               text: 'REST API',
               items: [
+                { text: 'OpenAPI', link: '/zh/api/openapi' },
                 { text: '字典端点', link: '/zh/api/dict' },
               ],
             },
