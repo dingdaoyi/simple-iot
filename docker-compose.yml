@@ -13,7 +13,8 @@ services:
       - postgres_data:/var/lib/postgresql/data
       - ./doc/sql:/docker-entrypoint-initdb.d:ro
     ports:
-      - "${POSTGRES_PORT:-5432}:5432"
+      # 仅本机访问；远程访问请用 ssh -L 5432:127.0.0.1:5432 ubuntu@host
+      - "127.0.0.1:${POSTGRES_PORT:-5432}:5432"
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USERNAME:-postgres}"]
       interval: 10s
@@ -38,8 +39,9 @@ services:
     volumes:
       - rustfs_data:/data
     ports:
-      - "${RUSTFS_PORT:-9000}:9000"
-      - "${RUSTFS_CONSOLE_PORT:-9001}:9001"
+      # 仅本机访问，前端通过 docker bridge 内部访问；远程用 ssh -L 隧道
+      - "127.0.0.1:${RUSTFS_PORT:-9000}:9000"
+      - "127.0.0.1:${RUSTFS_CONSOLE_PORT:-9001}:9001"
     healthcheck:
       # RustFS 官方健康检查
       test: ["CMD-SHELL", "curl -f http://127.0.0.1:9000/health || exit 1"]
@@ -79,10 +81,12 @@ services:
       S3_REGION: ${S3_REGION:-us-east-1}
       S3_ENDPOINT: ${S3_ENDPOINT:-http://rustfs:9000}
     ports:
-      - "${SERVER_PORT:-5010}:5010"
+      # 公网：仅 MQTT TCP，给 IoT 设备直连
       - "${MQTT_PORT:-1883}:1883"
-      - "${MQTT_WS_PORT:-8083}:8083"
-      - "${MQTT_HTTP_PORT:-18083}:18083"
+      # 仅本机：HTTP API 走前端 nginx 反代（/iot/ → iot-server:5010），不需公网直连
+      - "127.0.0.1:${SERVER_PORT:-5010}:5010"
+      - "127.0.0.1:${MQTT_WS_PORT:-8083}:8083"   # MQTT-WS，前端 nginx /mqtt 反代
+      - "127.0.0.1:${MQTT_HTTP_PORT:-18083}:18083" # MQTT 管理 HTTP（建议改走 ssh -L）
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:5010/iot/actuator/health"]
       interval: 30s
