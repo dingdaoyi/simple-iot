@@ -1,0 +1,113 @@
+name: Deploy to Demo
+
+# 触发：push 到 main + 手动
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'iot-web/**'
+      - 'docker-compose.yml'
+      - 'scripts/backup.sh'
+      - '.github/workflows/deploy.yml'
+  workflow_dispatch:
+
+concurrency:
+  group: deploy-demo
+  cancel-in-progress: false
+
+jobs:
+  deploy-web:
+    name: Build iot-web locally → ship to demo
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    if: github.repository == 'dingdaoyi/simple-iot'
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build iot-web image (linux/amd64)
+        uses: docker/build-push-action@v5
+        with:
+          context: ./iot-web
+          file: ./iot-web/Dockerfile
+          platforms: linux/amd64
+          push: false
+          load: true
+          tags: simple-iot-iot-web:latest
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Save image as gzipped tarball
+        run: |
+          docker save simple-iot-iot-web:latest | gzip -1 > /tmp/iot-web.tar.gz
+          ls -lh /tmp/iot-web.tar.gz
+
+      - name: Configure SSH
+        env:
+          SSH_KEY: ${{ secrets.DEPLOY_SSH_KEY }}
+          SSH_HOST: ${{ secrets.DEPLOY_HOST }}
+        run: |
+          mkdir -p ~/.ssh && chmod 700 ~/.ssh
+          printf '%s\n' "$SSH_KEY" > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
+          ssh-keyscan -t ed25519,rsa -H "$SSH_HOST" >> ~/.ssh/known_hosts 2>/dev/null
+          cat >> ~/.ssh/config <<EOF
+          Host demo
+            HostName $SSH_HOST
+            User ${{ secrets.DEPLOY_USER }}
+            Port 22
+            IdentityFile ~/.ssh/deploy_key
+            StrictHostKeyChecking accept-new
+            ServerAliveInterval 30
+          EOF
+
+      - name: Ship image via rsync
+        run: |
+          rsync -az --partial --info=progress2 \
+            -e "ssh -o StrictHostKeyChecking=accept-new" \
+            /tmp/iot-web.tar.gz demo:/tmp/iot-web.tar.gz
+
+      - name: Load image + sync repo + restart iot-web
+        run: |
+          ssh demo bash <<'REMOTE'
+          set -e
+          cd /opt/simple-iot
+
+          echo "[1/4] git pull (via gh-proxy)"
+          git fetch origin main
+          git merge --ff-only origin/main
+          git log --oneline -1
+
+          echo "[2/4] docker load new iot-web image"
+          sudo docker load < /tmp/iot-web.tar.gz | tail -3
+          rm -f /tmp/iot-web.tar.gz
+
+          echo "[3/4] recreate iot-web container only"
+          sudo docker compose up -d --no-deps --force-recreate iot-web
+
+          echo "[4/4] wait healthy + smoke test"
+          for i in $(seq 1 20); do
+            status=$(sudo docker inspect iot-web --format '{{.State.Health.Status}}' 2>/dev/null || echo "starting")
+            echo "  attempt $i: $status"
+            [ "$status" = "healthy" ] && break
+            sleep 3
+          done
+          curl -fsS -o /dev/null -w 'HTTP %{http_code} in %{time_total}s\n' http://localhost/
+          REMOTE
+
+      - name: Verify from public internet
+        run: |
+          # 等容器完全 ready
+          sleep 5
+          # 拿 dist 里 index.js 的 hash，确认上线版本
+          HASH=$(curl -fsS http://${{ secrets.DEPLOY_HOST }}/ | grep -oE 'index-[A-Za-z0-9_-]+\.js' | head -1)
+          echo "deployed asset: $HASH"
+          [ -n "$HASH" ] || { echo "FAIL: no asset hash in HTML"; exit 1; }
+
+      - name: Cleanup SSH
+        if: always()
+        run: rm -f ~/.ssh/deploy_key
