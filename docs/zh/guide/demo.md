@@ -4,11 +4,15 @@
 
 ## 演示地址
 
-**Demo URL：** <http://122.51.129.91>
+**Demo URL：** <https://daily-expectations-listprice-reproductive.trycloudflare.com>
 
-> 演示环境跑在 2 核 2G 的腾讯云轻量服务器上，目前还没有 HTTPS。
-> 等之后申请到稳定的免费域名会更新本页，旧的 IP 仍然会通过跳转保持兼容。
-> **文章和 README 故意都指向本页面**，这样以后演示地址变化时不需要到处改链接。
+> 演示环境跑在北京区 2 核 2G 的腾讯云轻量服务器上，前面套了一层
+> [Cloudflare Quick Tunnel](https://developers.cloudflare.com/cloudflare-one/connections/connect-networks/do-more-with-tunnels/trycloudflare/)，
+> 顺手白嫖了 HTTPS，国内国外都能直连。**文章和 README 故意都指向本页面**，
+> 这样以后演示地址变化（Quick Tunnel URL 在进程不重启时稳定，重启会换一个）
+> 只需要更新这一页。
+>
+> 如果上面的链接挂了，裸 IP `http://122.51.129.91` 在境外可能仍然可用。
 
 ## 只读账号
 

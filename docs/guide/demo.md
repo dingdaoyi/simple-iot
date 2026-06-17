@@ -4,12 +4,17 @@
 
 ## Where
 
-**Demo URL:** <http://122.51.129.91>
+**Demo URL:** <https://daily-expectations-listprice-reproductive.trycloudflare.com>
 
-> The demo runs on a 2 vCPU / 2 GB Tencent Cloud VM. There is no HTTPS yet —
-> when a stable free domain is in place this page will be updated and the bare
-> IP will keep redirecting. **Articles and READMEs link to this page on
-> purpose**, so the demo address can move without breaking anything.
+> The demo runs on a 2 vCPU / 2 GB Tencent Cloud VM in Beijing, fronted by a
+> [Cloudflare Quick Tunnel](https://developers.cloudflare.com/cloudflare-one/connections/connect-networks/do-more-with-tunnels/trycloudflare/)
+> so you get free HTTPS and a reachable URL no matter which side of the GFW you
+> sit on. **Articles and READMEs link to this page on purpose**, so when the
+> demo URL changes (Quick Tunnel hostnames are stable while the process runs but
+> rotate on restart) only this one page needs updating.
+>
+> If the link above is dead, the bare IP `http://122.51.129.91` may still work
+> from outside mainland China.
 
 ## Read-only credentials
 
