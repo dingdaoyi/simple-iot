@@ -14,7 +14,7 @@ hero:
       link: /guide/getting-started
     - theme: alt
       text: Live Demo
-      link: http://122.51.129.91
+      link: /guide/demo
     - theme: alt
       text: View on GitHub
       link: https://github.com/dingdaoyi/simple-iot

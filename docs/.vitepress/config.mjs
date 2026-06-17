@@ -35,14 +35,15 @@ export default defineConfig({
         nav: [
           { text: 'Guide', link: '/guide/getting-started' },
           { text: 'API', link: '/api/dict' },
-          { text: 'Live Demo', link: 'http://122.51.129.91' },
+          { text: 'Live Demo', link: '/guide/demo' },
           { text: 'Changelog', link: 'https://github.com/dingdaoyi/simple-iot/blob/main/CHANGELOG.md' },
         ],
         sidebar: {
           '/guide/': [
             {
-              text: 'Introduction',
+              text: 'Try It',
               items: [
+                { text: 'Live Demo', link: '/guide/demo' },
                 { text: 'Getting Started', link: '/guide/getting-started' },
                 { text: 'Architecture', link: '/guide/architecture' },
               ],
@@ -75,14 +76,15 @@ export default defineConfig({
         nav: [
           { text: '指南', link: '/zh/guide/getting-started' },
           { text: 'API', link: '/zh/api/dict' },
-          { text: '在线演示', link: 'http://122.51.129.91' },
+          { text: '在线演示', link: '/zh/guide/demo' },
           { text: '更新日志', link: 'https://github.com/dingdaoyi/simple-iot/blob/main/CHANGELOG.md' },
         ],
         sidebar: {
           '/zh/guide/': [
             {
-              text: '介绍',
+              text: '试用',
               items: [
+                { text: '在线演示', link: '/zh/guide/demo' },
                 { text: '快速开始', link: '/zh/guide/getting-started' },
                 { text: '架构总览', link: '/zh/guide/architecture' },
               ],
