@@ -135,7 +135,7 @@ loadPropertiesDict()
       <ElButton type="primary" @click="onSearch">
         搜索
       </ElButton>
-      <ElButton v-if="showEdite" type="success" @click="onAdd">
+      <ElButton v-if="showEdite" type="primary" @click="onAdd">
         添加
       </ElButton>
     </div>

@@ -112,7 +112,7 @@ function tslConfig(row) {
             <span class="btn-icon">⌕</span>
             搜索
           </el-button>
-          <el-button type="success" @click="onAdd">
+          <el-button type="primary" @click="onAdd">
             <span class="btn-icon">+</span>
             添加类型
           </el-button>
@@ -158,7 +158,7 @@ function tslConfig(row) {
           <el-button type="primary" link @click="onEdit(row)">
             编辑
           </el-button>
-          <el-button v-if="row.parentId === -1" type="success" link @click="onAddChild(row)">
+          <el-button v-if="row.parentId === -1" type="primary" link @click="onAddChild(row)">
             添加子级
           </el-button>
           <el-button type="danger" link @click="onDelete(row)">

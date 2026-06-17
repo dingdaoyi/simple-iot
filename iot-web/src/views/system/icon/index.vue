@@ -66,7 +66,7 @@ onMounted(() => {
             <span class="btn-icon">⌕</span>
             搜索
           </el-button>
-          <el-button type="success" @click="onAdd">
+          <el-button type="primary" @click="onAdd">
             <span class="btn-icon">+</span>
             添加图标
           </el-button>

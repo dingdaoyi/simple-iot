@@ -176,7 +176,7 @@ onMounted(() => {
             <span class="btn-icon">⌕</span>
             搜索
           </el-button>
-          <el-button type="success" @click="onAdd">
+          <el-button type="primary" @click="onAdd">
             <el-icon><Plus /></el-icon>
             新建规则
           </el-button>

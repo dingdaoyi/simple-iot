@@ -72,7 +72,7 @@ const {
       <el-button type="primary" @click="onSearch">
         搜索
       </el-button>
-      <el-button v-if="showEdite" type="success" @click="onAdd">
+      <el-button v-if="showEdite" type="primary" @click="onAdd">
         添加
       </el-button>
     </div>

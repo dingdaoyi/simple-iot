@@ -116,7 +116,7 @@ onMounted(() => {
           <el-button type="primary" @click="onSearch">
             搜索
           </el-button>
-          <el-button type="success" @click="onAdd">
+          <el-button type="primary" @click="onAdd">
             添加通知
           </el-button>
         </div>

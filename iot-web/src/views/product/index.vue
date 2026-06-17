@@ -194,7 +194,7 @@ onMounted(() => {
             <el-icon><Search /></el-icon>
             搜索
           </el-button>
-          <el-button type="success" @click="onAdd">
+          <el-button type="primary" @click="onAdd">
             <el-icon><Plus /></el-icon>
             添加产品
           </el-button>
@@ -334,7 +334,7 @@ onMounted(() => {
           <el-button type="primary" link @click="onEdit(row)">
             编辑
           </el-button>
-          <el-button v-if="row.parentId === -1" type="success" link @click="onAddChild(row)">
+          <el-button v-if="row.parentId === -1" type="primary" link @click="onAddChild(row)">
             添加子级
           </el-button>
           <el-button type="danger" link @click="onDelete(row)">

@@ -227,7 +227,7 @@ getList()
         <el-button type="primary" @click="handleFilter">
           搜索
         </el-button>
-        <el-button type="success" @click="handleCreate">
+        <el-button type="primary" @click="handleCreate">
           添加配置
         </el-button>
       </div>
