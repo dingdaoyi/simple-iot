@@ -2,7 +2,7 @@ import { defineConfig } from 'vitepress'
 
 export default defineConfig({
   title: 'Simple IoT',
-  description: 'The Glass IoT Platform — lightweight, single-binary, ready in 60 seconds.',
+  description: 'The Minimal IoT Platform — self-hosted, single-binary, ready in 60 seconds.',
   cleanUrls: true,
   lastUpdated: true,
   base: '/simple-iot/',

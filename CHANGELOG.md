@@ -30,7 +30,7 @@ First public release. The platform has been used internally for over a year and 
 - **Time-series storage** on InfluxDB 3.
 - **Notifications** — email, SMS, HTTP callback, MQTT forward, device commands.
 - **Alarm center** with severity levels and active / cleared lifecycle.
-- **Glassmorphism UI** with light / dark / auto themes.
+- **Minimal UI** with light / dark / auto themes.
 - **One-command deploy** — `./deploy.sh deploy` brings up the whole stack via Docker Compose.
 
 ### Stack

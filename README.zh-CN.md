@@ -1,10 +1,10 @@
 <div align="center">
 
-<img src="doc/brand/banner.png" alt="Simple IoT — 玻璃态物联网平台" width="100%"/>
+<img src="doc/brand/banner.png" alt="Simple IoT — 极简物联网平台" width="100%"/>
 
 # Simple IoT
 
-**玻璃态物联网平台 — 轻量、单体、60 秒可用。**
+**极简物联网平台 — 轻量、单体、60 秒可用。**
 
 [![CI](https://github.com/dingdaoyi/simple-iot/actions/workflows/ci.yml/badge.svg)](https://github.com/dingdaoyi/simple-iot/actions/workflows/ci.yml)
 [![License](https://img.shields.io/github/license/dingdaoyi/simple-iot?color=blue)](LICENSE)
@@ -33,7 +33,7 @@
 | 可视化规则引擎 | ✅ 拖拽式 | ✅ | ❌ |
 | 脚本化协议 | ✅ Java / JS / Groovy / Lua | 有限 | ❌ |
 | 时序存储 | InfluxDB 3 | Cassandra / Postgres | 自选 |
-| 现代 UI | 玻璃态 + 暗色模式 | Material（偏旧） | 自己做 |
+| 现代 UI | 极简风 + 暗色模式 | Material（偏旧） | 自己做 |
 | 一键部署 | `./deploy.sh` | docker-compose（重） | DIY |
 | 适用场景 | 中小企业、内部系统、边缘网关 | 企业级、多租户 SaaS | 纯消息中转 |
 
@@ -78,7 +78,7 @@ chmod +x deploy.sh
 | **通知推送** | 邮件、短信、HTTP 回调、MQTT 转发、设备指令 |
 | **仪表盘** | 设备总数、在线统计、系统资源（CPU / 内存 / 磁盘）、实时告警 |
 | **认证权限** | 基于 Sa-Token，细粒度，角色 / 菜单 / 按钮级 |
-| **玻璃态 UI** | Glassmorphism 设计，亮色 / 暗色 / 跟随系统 |
+| **极简 UI** | 极简 Linear 风设计，亮色 / 暗色 / 跟随系统 |
 
 ---
 
@@ -112,7 +112,7 @@ chmod +x deploy.sh
 │                          Simple IoT                              │
 ├──────────────────────────────────────────────────────────────────┤
 │                                                                  │
-│   Vue 3 + Vite + Element Plus  (玻璃态 UI)                       │
+│   Vue 3 + Vite + Element Plus  (极简 UI)                       │
 │           │                                                      │
 │           ▼  REST / WebSocket                                    │
 │   ┌──────────────────────────────────────────────────────────┐   │

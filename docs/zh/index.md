@@ -3,7 +3,7 @@ layout: home
 
 hero:
   name: Simple IoT
-  text: 玻璃态物联网平台
+  text: 极简物联网平台
   tagline: 轻量、单体、60 秒可用。
   image:
     src: /banner.png
@@ -36,7 +36,7 @@ features:
     title: 内置 MQTT Broker
     details: 基于 <code>mica-mqtt</code>，TCP 1883 + WebSocket 8083，开箱即用。
   - icon: 🌗
-    title: 玻璃态 UI
+    title: 极简 UI
     details: Vue 3 管理后台，浅色 / 深色 / 自动三主题，专为遥测大屏调优。
 ---
 

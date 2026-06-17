@@ -56,7 +56,7 @@
   <!-- 文字主体 -->
   <g transform="translate(280, 0)">
     <text x="0" y="140" font-family="'Inter','SF Pro Display','Helvetica Neue',sans-serif" font-size="92" font-weight="800" fill="url(#textGrad)" letter-spacing="-2">Simple IoT</text>
-    <text x="0" y="190" font-family="'Inter','SF Pro Display','Helvetica Neue',sans-serif" font-size="26" font-weight="500" fill="#cbd5e1" letter-spacing="0.5">The Glass IoT Platform · 玻璃态物联网平台</text>
+    <text x="0" y="190" font-family="'Inter','SF Pro Display','Helvetica Neue',sans-serif" font-size="26" font-weight="500" fill="#cbd5e1" letter-spacing="0.5">The Minimal IoT Platform · 极简物联网平台</text>
 
     <!-- 一句话价值主张 -->
     <text x="0" y="232" font-family="'Inter','SF Pro Display','Helvetica Neue',sans-serif" font-size="18" font-weight="400" fill="#94a3b8">Lightweight · Single-binary · Spring Boot 4 + Vue 3 · MQTT built-in · Visual rule engine</text>

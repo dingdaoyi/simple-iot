@@ -1,0 +1,89 @@
+# Roadmap
+
+> Last updated: 2026-06-17 · Maintainer: [@dingdaoyi](https://github.com/dingdaoyi)
+>
+> Have an idea? Open a [GitHub Discussion](https://github.com/dingdaoyi/simple-iot/discussions) or vote on an item below 👍.
+
+This roadmap is the honest list of what is **missing**, **rough**, or **deserves a rewrite**. Items are bucketed by priority, not by date — Simple IoT is a side-project, things ship when they ship.
+
+---
+
+## P0 — quality / production readiness
+
+| # | Item | Why it matters |
+|---|---|---|
+| P0-1 | **Test coverage** — currently 2 test files vs 320 main classes. Add unit tests for `RuleEngine`, `MqttDriver`, `InfluxDataProcessor`, `ProtocolDecoder` registry; target ≥ 40% line coverage on `iot-server` core packages. | The platform handles real devices — silent regressions are unacceptable. |
+| P0-2 | **Integration test** harness with Testcontainers (Postgres + InfluxDB + embedded MQTT) and a smoke test that boots the whole stack and pushes a telemetry sample end-to-end. | Catches Docker / wiring breakage before release. |
+| P0-3 | **Open API spec** — generate OpenAPI 3.1 from controllers (`springdoc-openapi`) and publish under `/v3/api-docs` + a hosted Swagger UI. | Currently API docs are hand-written under `/api/dict` only. |
+| P0-4 | **Auth hardening** — JWT secret rotation, refresh-token revocation list, password complexity policy (currently any length accepted). | Default deployments expose admin/123456 — needs a forced change-password on first login. |
+| P0-5 | **Data retention** — InfluxDB bucket retention policies, RustFS lifecycle, alarm history cleanup job. | Disks fill up silently today. |
+| P0-6 | **Backup / restore** scripts — `deploy.sh backup` and `deploy.sh restore` for Postgres + Influx + RustFS. | Required before anyone uses this in prod. |
+| P0-7 | **Observability** — Micrometer + Prometheus endpoint, Grafana dashboard JSON in `doc/grafana/`, JVM + MQTT + rule-engine metrics. | Today there is no way to tell if the broker is dropping packets. |
+
+## P1 — features users keep asking for
+
+| # | Item | Why it matters |
+|---|---|---|
+| P1-1 | **Multi-tenant** — tenant_id on every table, row-level security, per-tenant quotas. | Right now everyone shares one space. |
+| P1-2 | **Device groups & tags** — bulk operations, tag-based rule routing. | Hard to operate >1000 devices without grouping. |
+| P1-3 | **Alarm enhancements** — escalation policies, on-call schedule, snooze, alarm comments. | Current alarm is fire-and-forget. |
+| P1-4 | **Rule-engine v2** — branching nodes, sub-flows, debug-replay (record incoming payload → replay through chain). | Complex flows are hard to author and debug today. |
+| P1-5 | **Custom dashboards** — drag-and-drop widget canvas (line, gauge, value card, map, table) bound to device telemetry. | Required to call this an "IoT platform" with a straight face. |
+| P1-6 | **OTA firmware** — upload firmware → push to device groups → progress + rollback. | Most real IoT projects need OTA on day 1. |
+| P1-7 | **Mobile-friendly Web UI** — current admin is desktop-only; need a responsive read-only view for ops on the phone. | Tied to the UI overhaul (see "Frontend" below). |
+| P1-8 | **i18n** — Web UI is Chinese-only today; add English locale and a vue-i18n scaffold. | English README is misleading without it. |
+
+## P2 — protocol / driver expansion
+
+| # | Item | Notes |
+|---|---|---|
+| P2-1 | **Modbus TCP/RTU** driver | most-requested industrial protocol |
+| P2-2 | **OPC UA** client driver | factory / SCADA integrations |
+| P2-3 | **CoAP** server | low-power devices |
+| P2-4 | **HTTP webhook** ingress with HMAC verification | third-party platforms push to us |
+| P2-5 | **LwM2M** driver | mobile / NB-IoT modules |
+| P2-6 | Driver SDK + Maven archetype `simple-iot-driver-archetype` | so contributors can publish drivers without forking |
+
+## P3 — frontend / UI overhaul (tracked separately in `UI-DESIGN.md`)
+
+The current Web UI works, but visually it is closer to "internal admin tool" than to "modern IoT platform". A redesign is being scoped:
+
+- New design tokens (typography scale, semantic colors, spacing rhythm) — Linear / Vercel inspired, no glassmorphism gimmicks.
+- Component audit (forms, tables, dialogs, empty states, dark mode parity).
+- Real telemetry-oriented dashboard widgets (sparkline cards, status grids, alarm timeline).
+- Onboarding flow (first-run wizard, sample device + sample rule chain).
+- Accessibility pass (focus rings, keyboard nav, ARIA on table actions).
+
+→ Detailed proposal lives in [`UI-DESIGN.md`](./UI-DESIGN.md).
+
+## P4 — DX / community
+
+| # | Item |
+|---|---|
+| P4-1 | Helm chart + Kubernetes manifests |
+| P4-2 | One-click cloud deploy buttons (Sealos / Zeabur / Render / Railway) |
+| P4-3 | Demo seed script — fake devices + simulated MQTT publisher |
+| P4-4 | English-language video tour (3–5 min) |
+| P4-5 | Contributor guide deep-dive: how to add a driver, how to add a rule node |
+
+---
+
+## Done recently
+
+- ✅ v0.1.0 release — Spring Boot 4 + JDK 25 baseline
+- ✅ Bilingual README (EN + zh-CN)
+- ✅ Brand identity — logo, banner, tagline
+- ✅ GitHub Discussions, Issue / PR templates, CODE_OF_CONDUCT, SECURITY policy
+- ✅ CI: build + frontend lint + commitlint
+- ✅ VitePress documentation site at <https://dingdaoyi.github.io/simple-iot/>
+- ✅ Driver-page dictionary endpoint fix
+
+## Not planned
+
+- ❌ Microservice split. Simple IoT's value proposition is "one jar". A multi-service variant is out of scope.
+- ❌ Kafka / Pulsar dependency. We will not require an external message bus.
+- ❌ Commercial / enterprise edition. Single MIT-licensed codebase forever.
+
+---
+
+Want to take one of these on? Comment on the matching Discussion or open a draft PR — happy to pair on it.

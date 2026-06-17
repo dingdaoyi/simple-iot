@@ -24,7 +24,7 @@
   <!-- 圆角方形背景 -->
   <rect x="8" y="8" width="240" height="240" rx="56" fill="url(#bgGrad)"/>
 
-  <!-- 玻璃高光层 -->
+  <!-- 高光层 -->
   <rect x="8" y="8" width="240" height="120" rx="56" fill="url(#glassGrad)"/>
 
   <!-- 中心发光 -->

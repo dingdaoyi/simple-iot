@@ -3,7 +3,7 @@ layout: home
 
 hero:
   name: Simple IoT
-  text: The Glass IoT Platform
+  text: The Minimal IoT Platform
   tagline: Lightweight, single-binary, ready in 60 seconds.
   image:
     src: /banner.png
@@ -36,7 +36,7 @@ features:
     title: Built-in MQTT broker
     details: <code>mica-mqtt</code> on TCP 1883 and WebSocket 8083, ready out of the box.
   - icon: 🌗
-    title: Glassmorphism UI
+    title: Minimal UI
     details: Modern Vue 3 admin UI with light / dark / auto themes, designed for telemetry dashboards.
 ---
 

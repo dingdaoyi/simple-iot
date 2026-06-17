@@ -1,10 +1,10 @@
 <div align="center">
 
-<img src="doc/brand/banner.png" alt="Simple IoT — The Glass IoT Platform" width="100%"/>
+<img src="doc/brand/banner.png" alt="Simple IoT — The Minimal IoT Platform" width="100%"/>
 
 # Simple IoT
 
-**The Glass IoT Platform — lightweight, single-binary, ready in 60 seconds.**
+**The Minimal IoT Platform — lightweight, single-binary, ready in 60 seconds.**
 
 [![CI](https://github.com/dingdaoyi/simple-iot/actions/workflows/ci.yml/badge.svg)](https://github.com/dingdaoyi/simple-iot/actions/workflows/ci.yml)
 [![License](https://img.shields.io/github/license/dingdaoyi/simple-iot?color=blue)](LICENSE)
@@ -33,7 +33,7 @@ Most IoT platforms are heavy, distributed, and overkill for small/mid-size deplo
 | Visual rule engine | ✅ Drag-and-drop | ✅ | ❌ |
 | Scriptable protocols | ✅ Java / JS / Groovy / Lua | Limited | ❌ |
 | Time-series storage | InfluxDB 3 | Cassandra / Postgres | You pick |
-| Modern UI | Glassmorphism, dark mode | Material, dated | Build your own |
+| Modern UI | Minimal, Linear-style, dark mode | Material, dated | Build your own |
 | One-command deploy | `./deploy.sh` | `docker-compose` (heavy) | DIY |
 | Best fit | SMB, internal tools, edge gateways | Enterprise, multi-tenant SaaS | Pure messaging |
 
@@ -78,7 +78,7 @@ That's it. PostgreSQL, RustFS (S3-compatible), the backend and the frontend all 
 | **Notifications** | Email & SMS push, HTTP callbacks, MQTT forward, device commands |
 | **Dashboard** | Device totals, online stats, system metrics (CPU / memory / disk), live alarms |
 | **Auth & Permissions** | Sa-Token based, fine-grained, role/menu/button level |
-| **Glass UI** | Glassmorphism design, light/dark/auto theme, responsive |
+| **Minimal UI** | Minimal, Linear-style design, light/dark/auto theme, responsive |
 
 ---
 
@@ -112,7 +112,7 @@ That's it. PostgreSQL, RustFS (S3-compatible), the backend and the frontend all 
 │                          Simple IoT                              │
 ├──────────────────────────────────────────────────────────────────┤
 │                                                                  │
-│   Vue 3 + Vite + Element Plus  (Glassmorphism UI)                │
+│   Vue 3 + Vite + Element Plus  (Minimal UI)                │
 │           │                                                      │
 │           ▼  REST / WebSocket                                    │
 │   ┌──────────────────────────────────────────────────────────┐   │
