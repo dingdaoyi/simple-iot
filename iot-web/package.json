@@ -6,9 +6,9 @@
   "scripts": {
     "dev": "vite serve --mode development",
     "build": "vite build",
-    "lint": "eslint . --ext .js,.ts,.vue --ignore-path .gitignore",
+    "lint": "eslint \"src/**/*.{js,vue}\" vite.config.mjs eslint.config.js",
     "preview": "vite preview",
-    "lint:fix": "eslint . --fix"
+    "lint:fix": "eslint \"src/**/*.{js,vue}\" vite.config.mjs eslint.config.js --fix"
   },
   "dependencies": {
     "@amap/amap-jsapi-loader": "^1.0.1",
