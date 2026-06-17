@@ -72,3 +72,17 @@ CLAUDE.md
 # Codex / OMC local state
 .omc
 AGENTS.md
+
+# Server / infra docs（含 IP/端口/凭证位置等敏感信息，绝对不可入库）
+# 真档案存放在本机 ~/.simple-iot/SERVER.md
+infra/SERVER.md
+infra/SERVER.local.md
+infra/server-*.md
+infra/private/
+
+# infra 本地工作产物
+infra/.cache/
+infra/snapshot/
+
+# marketing 草稿（dev.to / HN 文章草稿，发布前留本地迭代）
+doc/marketing/
