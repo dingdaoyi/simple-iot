@@ -27,8 +27,12 @@ public class MqttTopic {
         if (!matcher.find()) {
             return Optional.empty();
         }
+        Optional<ProtoMessageType> messageType = ProtoMessageType.fromCode(matcher.group(1));
+        if (messageType.isEmpty()) {
+            return Optional.empty();
+        }
         MqttTopic mqttTopic = new MqttTopic();
-        mqttTopic.setMessageType(ProtoMessageType.fromCode(matcher.group(1)).orElse(null));
+        mqttTopic.setMessageType(messageType.get());
         mqttTopic.setProductKey(matcher.group(2));
         return Optional.of(mqttTopic);
     }
