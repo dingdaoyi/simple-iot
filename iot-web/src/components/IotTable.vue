@@ -62,6 +62,12 @@ const props = defineProps({
     type: Boolean,
     default: true,
   },
+  // 表格密度: 'compact' | 'comfortable'
+  density: {
+    type: String,
+    default: 'comfortable',
+    validator: v => ['compact', 'comfortable'].includes(v),
+  },
 })
 
 const emit = defineEmits(['pageChange', 'sizeChange', 'selectionChange'])
@@ -183,10 +189,11 @@ defineExpose({
   <div class="iot-table-wrapper">
     <el-table
       ref="dwTable"
+      v-loading="tableLoading"
       :data="tableData"
-      :loading="tableLoading"
       :row-key="rowKey"
       :table-layout="autoFit ? 'auto' : 'fixed'"
+      :size="density === 'compact' ? 'small' : 'default'"
       stripe
       style="width: 100%"
       @selection-change="selectionChange"
@@ -221,8 +228,8 @@ defineExpose({
         :width="col.width"
         :min-width="col.minWidth || (autoFit && !col.width ? 120 : undefined)"
         :fixed="col.fixed"
-        :align="col.align || 'center'"
-        header-align="center"
+        :align="col.align || 'left'"
+        :header-align="col.headerAlign || col.align || 'left'"
       >
         <template #default="{ row, $index }">
           <slot
@@ -259,17 +266,12 @@ defineExpose({
     </div>
 
     <!-- 空状态提示 -->
-    <div
+    <el-empty
       v-if="!tableLoading && tableData.length === 0"
       class="iot-table-empty"
-    >
-      <div class="empty-icon">
-        📭
-      </div>
-      <div class="empty-text">
-        暂无数据
-      </div>
-    </div>
+      :image-size="72"
+      description="暂无数据"
+    />
   </div>
 </template>
 
@@ -342,6 +344,20 @@ defineExpose({
   }
 }
 
+:deep(.el-table--small) {
+  .el-table__header-wrapper th {
+    padding: 6px 8px;
+
+    .cell { padding: 0 8px; }
+  }
+
+  .el-table__body-wrapper .el-table__row td {
+    padding: 6px 8px;
+
+    .cell { padding: 0 8px; }
+  }
+}
+
 :deep(.el-loading-mask) {
   background: rgba(255, 255, 255, 0.8);
   backdrop-filter: blur(8px);
@@ -409,22 +425,6 @@ defineExpose({
 
 // 空状态
 .iot-table-empty {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
   padding: var(--space-2xl) var(--space-xl);
-  min-height: 200px;
-
-  .empty-icon {
-    font-size: 48px;
-    margin-bottom: var(--space-md);
-    opacity: 0.5;
-  }
-
-  .empty-text {
-    color: var(--iot-color-text-muted);
-    font-size: 14px;
-  }
 }
 </style>
