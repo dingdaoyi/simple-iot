@@ -25,13 +25,14 @@ public class SaTokenConfigure implements WebMvcConfigurer {
 
     static {
         DEFAULT_SKIP_URL.add("/doc.html");
+        DEFAULT_SKIP_URL.add("/swagger-ui.html");
+        DEFAULT_SKIP_URL.add("/swagger-ui/**");
         DEFAULT_SKIP_URL.add("/v2/api-docs");
+        DEFAULT_SKIP_URL.add("/v3/api-docs");
         DEFAULT_SKIP_URL.add("/v3/api-docs/**");
         DEFAULT_SKIP_URL.add("/favicon.ico");
         DEFAULT_SKIP_URL.add("/error");
         DEFAULT_SKIP_URL.add("/static/**");
-        DEFAULT_SKIP_URL.add("/webjars*");
-        DEFAULT_SKIP_URL.add("/webjars*");
         DEFAULT_SKIP_URL.add("/webjars/**");
         DEFAULT_SKIP_URL.add("/swagger-resources/**");
     }
