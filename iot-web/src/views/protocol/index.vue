@@ -1,8 +1,10 @@
 <script setup>
 import { ElMessage, ElMessageBox, ElTag } from 'element-plus'
 import { h, onMounted } from 'vue'
+import { Connection } from '@element-plus/icons-vue'
 import { protocolDeleteApi, protocolListApi, protocolSetStatusApi } from '@/api/index.js'
 import IotTable from '@/components/IotTable.vue'
+import PageHeader from '@/components/PageHeader.vue'
 import { useTable } from '@/composables/useTable.js'
 import EditDia from '@/views/protocol/widget/editDia.vue'
 
@@ -149,17 +151,11 @@ onMounted(() => {
 <template>
   <div class="protocol-page">
     <!-- 页面标题 -->
-    <div class="page-header">
-      <div class="header-content">
-        <h1 class="page-title">
-          <span class="title-icon">◊</span>
-          协议管理
-        </h1>
-        <p class="page-subtitle">
-          管理设备通信协议，支持 Java、JavaScript 等多种协议类型
-        </p>
-      </div>
-    </div>
+    <PageHeader
+      title="协议管理"
+      subtitle="管理设备通信协议，支持 Java、JavaScript 等多种协议类型"
+      :icon="Connection"
+    />
 
     <!-- 搜索栏 -->
     <div class="search-bar glass-card">

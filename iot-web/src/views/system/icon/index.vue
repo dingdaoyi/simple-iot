@@ -1,7 +1,8 @@
 <script setup>
-import { Delete, Edit, Loading } from '@element-plus/icons-vue'
+import { Delete, Edit, Loading, Picture } from '@element-plus/icons-vue'
 import { onMounted } from 'vue'
 import { iconDeleteApi, iconListApi } from '@/api/index.js'
+import PageHeader from '@/components/PageHeader.vue'
 import { useTable } from '@/composables/useTable.js'
 import EditDia from '@/views/system/icon/widget/editDia.vue'
 

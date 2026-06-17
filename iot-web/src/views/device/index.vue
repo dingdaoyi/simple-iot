@@ -1,8 +1,10 @@
 <script setup>
 import { onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
+import { Cpu } from '@element-plus/icons-vue'
 import { deviceDeleteApi, devicePageApi, manufacturerListApi, productListApi, productTypeListApi } from '@/api/index.js'
 import IotTable from '@/components/IotTable.vue'
+import PageHeader from '@/components/PageHeader.vue'
 import { useTable } from '@/composables/useTable.js'
 import { activateOpts, onlineOpts } from '@/utils/base.jsx'
 import EditDia from '@/views/device/widget/editDia.vue'
@@ -133,17 +135,11 @@ onMounted(() => {
 <template>
   <div class="device-page">
     <!-- 页面标题 -->
-    <div class="page-header">
-      <div class="header-content">
-        <h1 class="page-title">
-          <span class="title-icon">◈</span>
-          设备管理
-        </h1>
-        <p class="page-subtitle">
-          管理物联网设备连接与状态监控
-        </p>
-      </div>
-    </div>
+    <PageHeader
+      title="设备管理"
+      subtitle="管理物联网设备连接与状态监控"
+      :icon="Cpu"
+    />
 
     <!-- 搜索栏 -->
     <div class="search-bar glass-card">

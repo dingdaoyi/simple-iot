@@ -8,6 +8,7 @@ import {
   alarmStatisticsApi,
 } from '@/api/index.js'
 import IotTable from '@/components/IotTable.vue'
+import PageHeader from '@/components/PageHeader.vue'
 import { useTable } from '@/composables/useTable.js'
 
 // 统计数据
@@ -290,32 +291,24 @@ onMounted(() => {
 <template>
   <div class="alarm-page">
     <!-- 页面标题 -->
-    <div class="page-header">
-      <div class="header-content">
-        <div class="title-row">
-          <div class="title-area">
-            <h1 class="page-title">
-              <span class="title-icon">◈</span>
-              告警管理
-            </h1>
-            <p class="page-subtitle">
-              设备告警监控与处理
-            </p>
-          </div>
-          <!-- 统计卡片 -->
-          <div class="stat-cards">
-            <div class="stat-card active">
-              <div class="stat-value">
-                {{ statistics.activeCount }}
-              </div>
-              <div class="stat-label">
-                活动告警
-              </div>
+    <PageHeader
+      title="告警管理"
+      subtitle="设备告警监控与处理"
+      :icon="Bell"
+    >
+      <template #actions>
+        <div class="stat-cards">
+          <div class="stat-card active">
+            <div class="stat-value">
+              {{ statistics.activeCount }}
+            </div>
+            <div class="stat-label">
+              活动告警
             </div>
           </div>
         </div>
-      </div>
-    </div>
+      </template>
+    </PageHeader>
 
     <!-- 搜索栏 -->
     <div class="search-bar glass-card">
