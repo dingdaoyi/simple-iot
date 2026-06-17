@@ -2,7 +2,14 @@
 @use 'element-plus/theme-chalk/dark/css-vars.css';
 
 :root {
-  --el-color-primary: #167eff;
+  /* Element Plus primary aligns with IoT brand token */
+  --el-color-primary: var(--iot-color-primary);
+  --el-color-primary-light-3: color-mix(in srgb, var(--iot-color-primary) 70%, white);
+  --el-color-primary-light-5: color-mix(in srgb, var(--iot-color-primary) 50%, white);
+  --el-color-primary-light-7: color-mix(in srgb, var(--iot-color-primary) 30%, white);
+  --el-color-primary-light-8: color-mix(in srgb, var(--iot-color-primary) 20%, white);
+  --el-color-primary-light-9: color-mix(in srgb, var(--iot-color-primary) 10%, white);
+  --el-color-primary-dark-2: color-mix(in srgb, var(--iot-color-primary) 80%, black);
   --el-color-danger: #ff4400;
 
   --dw-bg: #f7f8fa;

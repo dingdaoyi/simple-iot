@@ -7,8 +7,16 @@ import { getItem, setItem } from '@/utils/storage' // getItem和setItem是封装
 const themeKey = 'theme'
 const key = 'primary'
 
+function readBrandPrimary() {
+  if (typeof window === 'undefined' || !document?.documentElement) return '#6366f1'
+  const value = getComputedStyle(document.documentElement)
+    .getPropertyValue('--iot-color-primary')
+    .trim()
+  return value || '#6366f1'
+}
+
 const defaultConfig = {
-  elColorPrimary: '#167EFF',
+  elColorPrimary: readBrandPrimary(),
   dwSliderActiveBg: '#465D83',
 }
 

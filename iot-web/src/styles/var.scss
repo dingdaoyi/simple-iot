@@ -1,4 +1,7 @@
-$mainColor: #409eff; // 网站主题色
+// 网站主题色 — 与 IoT 品牌 token 同源 (--iot-color-primary)
+// 注意：CSS 变量不能在 Sass 字符串上下文中使用，因此暴露一个 Sass 兼容色，
+// 业务样式应优先使用 `var(--iot-color-primary)`。
+$mainColor: #6366f1;
 
 /* 暗色主题颜色配置 */
 
