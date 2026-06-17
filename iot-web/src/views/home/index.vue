@@ -91,12 +91,12 @@ const overviewCards = computed(() => [
 
 // 快捷入口
 const quickLinks = [
-  { name: '设备管理', icon: Monitor, path: '/device', color: '#6366f1' },
-  { name: '产品管理', icon: Box, path: '/product', color: '#8b5cf6' },
-  { name: '协议管理', icon: Connection, path: '/protocol', color: '#10b981' },
-  { name: '规则引擎', icon: Lightning, path: '/rule-chain', color: '#f59e0b' },
-  { name: '告警管理', icon: Bell, path: '/alarm', color: '#ec4899' },
-  { name: '系统设置', icon: Setting, path: '/icon', color: '#06b6d4' },
+  { name: '设备管理', icon: Monitor, path: '/device', color: 'var(--iot-color-primary)' },
+  { name: '产品管理', icon: Box, path: '/product', color: 'var(--iot-color-secondary)' },
+  { name: '协议管理', icon: Connection, path: '/protocol', color: 'var(--iot-color-success)' },
+  { name: '规则引擎', icon: Lightning, path: '/rule-chain', color: 'var(--iot-color-warning)' },
+  { name: '告警管理', icon: Bell, path: '/alarm', color: 'var(--iot-color-danger)' },
+  { name: '系统设置', icon: Setting, path: '/icon', color: 'var(--iot-color-accent)' },
 ]
 
 // 跳转页面
@@ -277,7 +277,7 @@ onMounted(() => {
               <el-progress
                 :percentage="stats.cpuUsage"
                 :stroke-width="8"
-                :color="stats.cpuUsage > 80 ? '#ef4444' : '#6366f1'"
+                :color="stats.cpuUsage > 80 ? 'var(--iot-color-danger)' : 'var(--iot-color-primary)'"
                 :show-text="false"
               />
             </div>
@@ -289,7 +289,7 @@ onMounted(() => {
               <el-progress
                 :percentage="stats.memoryUsage"
                 :stroke-width="8"
-                :color="stats.memoryUsage > 80 ? '#ef4444' : '#8b5cf6'"
+                :color="stats.memoryUsage > 80 ? 'var(--iot-color-danger)' : 'var(--iot-color-secondary)'"
                 :show-text="false"
               />
             </div>
@@ -301,7 +301,7 @@ onMounted(() => {
               <el-progress
                 :percentage="stats.diskUsage"
                 :stroke-width="8"
-                :color="stats.diskUsage > 80 ? '#ef4444' : '#06b6d4'"
+                :color="stats.diskUsage > 80 ? 'var(--iot-color-danger)' : 'var(--iot-color-accent)'"
                 :show-text="false"
               />
             </div>
@@ -484,22 +484,22 @@ onMounted(() => {
   }
 
   &--primary .card-icon {
-    background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
+    background: linear-gradient(135deg, var(--iot-color-primary) 0%, var(--iot-color-primary-dark) 100%);
     box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
   }
 
   &--success .card-icon {
-    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    background: linear-gradient(135deg, var(--iot-color-success) 0%, #059669 100%);
     box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
   }
 
   &--danger .card-icon {
-    background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+    background: linear-gradient(135deg, var(--iot-color-danger) 0%, #dc2626 100%);
     box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
   }
 
   &--accent .card-icon {
-    background: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%);
+    background: linear-gradient(135deg, var(--iot-color-accent) 0%, #0891b2 100%);
     box-shadow: 0 4px 12px rgba(6, 182, 212, 0.3);
   }
 }
