@@ -1,0 +1,28 @@
+spring:
+  sql:
+    init:
+      mode: always
+      schema-locations: classpath:integration/init-postgres.sql
+  datasource:
+    driver-class-name: org.postgresql.Driver
+  main:
+    lazy-initialization: false
+
+server:
+  port: 0
+
+mqtt:
+  server:
+    enabled: false
+
+sample:
+  iot:
+    storage-type: file
+    localstorage:
+      local-dir: ${java.io.tmpdir}/simple-iot-integration-upload
+    influxdb:
+      url: http://127.0.0.1:8086
+      token: ${SIMPLE_IOT_INTEGRATION_INFLUX_TOKEN:}
+      database: sample
+      prop-database: prop_data
+      event-database: event_data

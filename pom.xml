@@ -56,6 +56,7 @@
         <graalvm-js.version>24.1.1</graalvm-js.version>
         <groovy.version>4.0.24</groovy.version>
         <jython.version>2.7.4</jython.version>
+        <testcontainers.version>1.21.3</testcontainers.version>
     </properties>
     <dependencyManagement>
         <dependencies>
@@ -181,6 +182,20 @@
                 <groupId>org.python</groupId>
                 <artifactId>jython-standalone</artifactId>
                 <version>${jython.version}</version>
+            </dependency>
+
+            <!-- Integration testing -->
+            <dependency>
+                <groupId>org.testcontainers</groupId>
+                <artifactId>junit-jupiter</artifactId>
+                <version>${testcontainers.version}</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.testcontainers</groupId>
+                <artifactId>postgresql</artifactId>
+                <version>${testcontainers.version}</version>
+                <scope>test</scope>
             </dependency>
         </dependencies>
     </dependencyManagement>
