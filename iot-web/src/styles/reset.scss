@@ -78,8 +78,8 @@ input:focus {
 
 html,
 body {
-  min-width: 1440px;
-  min-height: 680px;
+  min-width: 0;
+  min-height: 100vh;
 }
 
 /* 浏览器自动回填，用户名密码输入框颜色更改 */
