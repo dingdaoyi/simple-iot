@@ -1,6 +1,6 @@
 # Live Demo
 
-> A free, public read-only demo so you can poke at Simple IoT before installing anything.
+> A free, public demo so you can poke at Simple IoT before installing anything.
 
 ## Where
 
@@ -16,32 +16,43 @@
 > If the link above is dead, the bare IP `http://122.51.129.91` may still work
 > from outside mainland China.
 
-## Read-only credentials
+## Demo credentials
 
-| Username | Password | Permissions |
+| Username | Password | Notes |
 |---|---|---|
-| `demo` | `demo123` | read-only on dashboard, devices, rules, history |
+| `admin` | `123456` | Full admin access — please be a polite guest |
 
-> ⚠️ Please don't change passwords or delete shared resources. The demo is
-> wiped and reset every night at 03:00 (UTC+8), but please be kind to other
-> visitors during the day.
+> ⚠️ **This account has full admin permissions.** It's the same default
+> `admin / 123456` you get from a fresh self-deploy, so the demo can show every
+> feature. **Please be kind to other visitors:**
+>
+> - Don't change the password (you'll lock everyone else out — but the demo
+>   resets nightly at 03:00 UTC+8)
+> - Don't delete the seeded devices, products, or rules — those are what
+>   makes the dashboard look populated
+> - Don't upload anything you wouldn't post on a public bulletin board
+>
+> Repeated abuse will get the demo locked behind invite-only credentials.
 
-## What you can do
+## What to look at
 
-- **Dashboard** — see live telemetry from a few simulated devices (temperature, humidity, pressure)
+- **Dashboard** — live telemetry from a few simulated devices (temperature, humidity, pressure)
 - **Device Management** — browse the device list, products, attributes
-- **Rule Engine** — open one of the existing rules to see how a drag-and-drop chain looks
-- **Protocol Drivers** — view the script-driven decoder gallery
+- **Rule Engine** — open one of the existing rules to see how a drag-and-drop chain looks; feel free to clone one and tweak it
+- **Protocol Drivers** — script-driven decoder gallery (Java / JavaScript / Groovy / Lua)
 - **History** — replay yesterday's data from InfluxDB
 
-## What you can't do (yet)
+You *can* create / edit / delete things — but please don't wipe the seeded
+content. Anything you create gets cleaned up nightly along with everything
+else.
 
-- Create / delete / edit anything (read-only login)
-- Connect a real MQTT device — the broker port `1883` is open but rate-limited and topics are namespaced
-- Access InfluxDB / Postgres / RustFS directly — only the application UI is exposed
-- File uploads / firmware OTA — disabled on the demo
+## What's intentionally locked down
 
-## Want to try the full experience?
+- **MQTT broker** — port `1883` is open but rate-limited and topics are namespaced (you can't connect a real device, but you can watch the broker's metrics)
+- **InfluxDB / Postgres / RustFS** — only the application UI is exposed; storage backends are firewalled
+- **Firmware OTA / file uploads** — disabled on the demo to save bandwidth and avoid abuse
+
+## Want the full thing?
 
 Spin up your own copy on any 2 GB VPS in 60 seconds:
 
@@ -52,8 +63,9 @@ cp .env.example .env
 ./deploy.sh deploy
 ```
 
-Open `http://localhost`, log in with `admin / admin`, and you have a full
-read-write platform — no demo limits, no shared state.
+Open `http://localhost`, log in with `admin / 123456` (please change this
+before exposing it to the internet!), and you have a full read-write platform
+— no demo limits, no shared state, no nightly reset.
 
 ## Reporting issues
 
