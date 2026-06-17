@@ -3,7 +3,6 @@ import { Close } from '@element-plus/icons-vue'
 import { ElMessage } from 'element-plus'
 import { computed, onMounted, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import NodeConfigPanel from './NodeConfigPanel.vue'
 import {
   deviceListApi,
   loadTslData,
@@ -16,6 +15,7 @@ import {
   ruleChainNodeTypesApi,
   ruleChainUpdateApi,
 } from '@/api/index.js'
+import NodeConfigPanel from './NodeConfigPanel.vue'
 
 const route = useRoute()
 const router = useRouter()
@@ -254,6 +254,55 @@ function getConnectionType(conn) {
   return conn.type || conn.connectionType || 'Success'
 }
 
+function normalizeApiData(payload) {
+  return payload?.data ?? payload ?? {}
+}
+
+function normalizeList(payload) {
+  const value = payload?.records
+    ?? payload?.list
+    ?? payload?.rows
+    ?? payload?.data?.records
+    ?? payload?.data?.list
+    ?? payload?.data?.rows
+    ?? payload?.data
+    ?? payload
+  return Array.isArray(value) ? value : []
+}
+
+function getNodeTypeMeta(type) {
+  return nodeTypes.value.find(item => item.type === type) || {}
+}
+
+function normalizeRuleChainDetail(detail) {
+  const configuration = detail.configuration || {}
+  const nodes = normalizeList(configuration.nodes).map((node) => {
+    const meta = getNodeTypeMeta(node.type || node.config?.nodeType)
+    const nodeType = node.type || node.config?.nodeType || meta.type
+    return {
+      ...node,
+      type: nodeType,
+      name: node.name || meta.name || nodeType,
+      color: node.color || meta.color || '#6366f1',
+      config: node.config || {},
+      x: Number.isFinite(Number(node.x)) ? Number(node.x) : 0,
+      y: Number.isFinite(Number(node.y)) ? Number(node.y) : 0,
+    }
+  })
+
+  return {
+    ...detail,
+    configuration: {
+      ...configuration,
+      nodes,
+      connections: normalizeList(configuration.connections).map(conn => ({
+        ...conn,
+        type: getConnectionType(conn),
+      })),
+    },
+  }
+}
+
 // 计算连接线
 const connectionLines = computed(() => {
   return ruleChain.value.configuration.connections.map((conn) => {
@@ -300,7 +349,7 @@ async function loadNodeTypes() {
     const { data } = await ruleChainNodeTypesApi()
     const entries = Object.entries(data || {})
     const result = []
-    for (const [category, types] of entries) {
+    for (const [, types] of entries) {
       result.push(...types)
     }
     nodeTypes.value = result
@@ -351,7 +400,7 @@ async function loadProducts() {
   }
   try {
     const { data } = await productListApi({ productTypeId: ruleChain.value.productTypeId })
-    productOptions.value = data || []
+    productOptions.value = normalizeList(data)
   }
   catch (e) {
     console.error('加载产品失败', e)
@@ -366,7 +415,7 @@ async function loadDevices() {
   }
   try {
     const { data } = await deviceListApi({ productId: ruleChain.value.productId })
-    deviceOptions.value = data || []
+    deviceOptions.value = normalizeList(data)
   }
   catch (e) {
     console.error('加载设备失败', e)
@@ -429,8 +478,7 @@ async function loadDetail() {
     return
   try {
     const { data } = await ruleChainDetailApi(route.params.id)
-    // 处理响应数据格式
-    const detail = data.data || data
+    const detail = normalizeRuleChainDetail(normalizeApiData(data))
     Object.assign(ruleChain.value, detail)
 
     // 根据sourceType和sourceId反推级联选择字段(编辑模式回显)
@@ -439,8 +487,9 @@ async function loadDetail() {
       ruleChain.value.productId = detail.sourceId
       // 遍历所有产品类型，找到包含该产品的类型
       for (const pt of productTypeOptions.value) {
-        const { data: products } = await productListApi({ productTypeId: pt.id })
-        const product = (products || []).find(p => p.id === detail.sourceId)
+        const { data: productResponse } = await productListApi({ productTypeId: pt.id })
+        const products = normalizeList(productResponse)
+        const product = products.find(p => p.id === detail.sourceId)
         if (product) {
           ruleChain.value.productTypeId = pt.id
           productOptions.value = products
@@ -452,10 +501,12 @@ async function loadDetail() {
       // sourceId 是设备ID，需要找到对应的 productId 和 productTypeId
       // 遍历所有产品类型和产品，找到包含该设备的产品
       for (const pt of productTypeOptions.value) {
-        const { data: products } = await productListApi({ productTypeId: pt.id })
-        for (const p of products || []) {
-          const { data: devices } = await deviceListApi({ productId: p.id })
-          const device = (devices || []).find(d => d.id === detail.sourceId)
+        const { data: productResponse } = await productListApi({ productTypeId: pt.id })
+        const products = normalizeList(productResponse)
+        for (const p of products) {
+          const { data: deviceResponse } = await deviceListApi({ productId: p.id })
+          const devices = normalizeList(deviceResponse)
+          const device = devices.find(d => d.id === detail.sourceId)
           if (device) {
             ruleChain.value.productTypeId = pt.id
             ruleChain.value.productId = p.id
@@ -649,7 +700,8 @@ function stopConnection(event) {
           type: connectionType, // 使用 type 字段与后端保持一致
         })
       }
-    } else {
+    }
+    else {
       // 没有连接到节点，显示节点创建菜单
       showNodeCreateMenu(event.clientX, event.clientY, dropX, dropY, connectionType)
     }
@@ -663,15 +715,14 @@ function stopConnection(event) {
 // 显示节点创建菜单
 function showNodeCreateMenu(clientX, clientY, canvasX, canvasY, connectionType) {
   const sourceNode = connectionDrag.value.sourceNode
-  const sourceCategory = getNodeCategory(sourceNode.type)
-
   // 根据源节点类型过滤可连接的节点类型
   // INPUT 节点只能连到 FILTER/ALARM/OUTPUT
   // FILTER/ALARM/OUTPUT 可以互相连接
   const availableTypes = nodeTypes.value.filter((type) => {
     const targetCategory = getNodeCategory(type.type)
     // 排除 INPUT 类型（不能作为目标）
-    if (targetCategory === 'INPUT') return false
+    if (targetCategory === 'INPUT')
+      return false
     // 验证连接有效性
     return isValidConnection(sourceNode.type, type.type, connectionType)
   })
