@@ -1,5 +1,5 @@
 <script setup>
-import { RefreshRight } from '@element-plus/icons-vue'
+import { Delete, Edit, Plus, RefreshRight, Setting } from '@element-plus/icons-vue'
 import { nextTick, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { productTypeDelApi, productTypeListApi } from '@/api/index.js'
@@ -162,16 +162,16 @@ function tslConfig(row) {
         </template>
 
         <template #cz="{ row }">
-          <el-button type="primary" link @click="tslConfig(row)">
+          <el-button type="primary" link :icon="Setting" @click="tslConfig(row)">
             功能配置
           </el-button>
-          <el-button type="primary" link @click="onEdit(row)">
+          <el-button type="primary" link :icon="Edit" @click="onEdit(row)">
             编辑
           </el-button>
-          <el-button v-if="row.parentId === -1" type="primary" link @click="onAddChild(row)">
+          <el-button v-if="row.parentId === -1" type="primary" link :icon="Plus" @click="onAddChild(row)">
             添加子级
           </el-button>
-          <el-button type="danger" link @click="onDelete(row)">
+          <el-button type="danger" link :icon="Delete" @click="onDelete(row)">
             删除
           </el-button>
         </template>

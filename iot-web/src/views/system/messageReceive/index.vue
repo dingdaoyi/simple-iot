@@ -1,5 +1,5 @@
 <script setup>
-import { RefreshRight } from '@element-plus/icons-vue'
+import { Delete, Edit, RefreshRight } from '@element-plus/icons-vue'
 import { onMounted } from 'vue'
 import { messageReceiveDeleteApi, messageReceivePageApi } from '@/api/index.js'
 import IotTable from '@/components/IotTable.vue'
@@ -141,10 +141,10 @@ onMounted(() => {
         @size-change="onSizeChange"
       >
         <template #cz="{ row }">
-          <el-button type="primary" link @click="onEdit(row)">
+          <el-button type="primary" link :icon="Edit" @click="onEdit(row)">
             编辑
           </el-button>
-          <el-button type="danger" link @click="onDelete(row)">
+          <el-button type="danger" link :icon="Delete" @click="onDelete(row)">
             删除
           </el-button>
         </template>

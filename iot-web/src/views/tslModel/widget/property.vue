@@ -1,4 +1,5 @@
 <script setup>
+import { Delete, Edit } from '@element-plus/icons-vue'
 import { propertyDeleteApi, propertyListApi } from '@/api/index.js'
 import IotTable from '@/components/IotTable.vue'
 import { useTable } from '@/composables/useTable.js'
@@ -85,10 +86,10 @@ const {
       :api="propertyListApi"
     >
       <template #cz="{ row }">
-        <el-button v-if="showEdite" type="primary" link @click="onEdit(row)">
+        <el-button v-if="showEdite" type="primary" link :icon="Edit" @click="onEdit(row)">
           编辑定义
         </el-button>
-        <el-button v-if="showEdite" type="danger" link @click="onDelete(row)">
+        <el-button v-if="showEdite" type="danger" link :icon="Delete" @click="onDelete(row)">
           删除
         </el-button>
       </template>
