@@ -146,7 +146,7 @@ onMounted(() => {
       <el-form :inline="false" class="search-form">
         <div class="form-row">
           <el-form-item label="规则名称">
-            <el-input v-model="params.name" clearable placeholder="请输入规则名称" />
+            <el-input v-model="params.name" clearable placeholder="请输入规则名称" @keyup.enter="onSearch" />
           </el-form-item>
 
           <el-form-item label="数据源类型">

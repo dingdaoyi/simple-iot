@@ -202,6 +202,7 @@ onMounted(() => {
               clearable
               placeholder="输入协议名称"
               style="width: 200px"
+              @keyup.enter="onSearch"
             />
           </el-form-item>
 
@@ -211,6 +212,7 @@ onMounted(() => {
               clearable
               placeholder="输入协议 Key"
               style="width: 180px"
+              @keyup.enter="onSearch"
             />
           </el-form-item>
         </div>

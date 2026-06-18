@@ -116,6 +116,7 @@ onMounted(() => {
             placeholder="请输入配置名称"
             clearable
             style="width: 200px"
+            @keyup.enter="onSearch"
           />
         </div>
         <div class="search-field">

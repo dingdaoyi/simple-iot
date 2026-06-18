@@ -130,7 +130,7 @@ loadPropertiesDict()
   <div class="wh-full">
     <div class="flex flex-row mb-12px">
       <div class="w-240px mr-12px">
-        <el-input v-model="params.search" clearable placeholder="请输入服务名称或标识符搜索" />
+        <el-input v-model="params.search" clearable placeholder="请输入服务名称或标识符搜索" @keyup.enter="onSearch" />
       </div>
       <ElButton type="primary" @click="onSearch">
         搜索
