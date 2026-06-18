@@ -1,5 +1,5 @@
 <script lang="jsx" setup>
-import { Delete, Edit } from '@element-plus/icons-vue'
+import { Delete, Edit, RefreshRight } from '@element-plus/icons-vue'
 import { ElButton, ElMessage, ElMessageBox } from 'element-plus'
 import { h, ref } from 'vue'
 import {
@@ -102,6 +102,7 @@ const {
   params,
   dialogVisible,
   onSearch,
+  onReset,
   onEdit,
   onAdd,
   diaTitle,
@@ -135,6 +136,9 @@ loadPropertiesDict()
       </div>
       <ElButton type="primary" @click="onSearch">
         搜索
+      </ElButton>
+      <ElButton :icon="RefreshRight" @click="onReset">
+        重置
       </ElButton>
       <ElButton v-if="showEdite" type="primary" @click="onAdd">
         添加

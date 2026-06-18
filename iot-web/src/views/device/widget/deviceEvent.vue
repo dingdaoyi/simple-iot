@@ -1,4 +1,5 @@
 <script setup>
+import { RefreshRight } from '@element-plus/icons-vue'
 import { computed, ref } from 'vue'
 import { deviceEventLogsApi } from '@/api/index.js'
 import IotTable from '@/components/IotTable.vue'
@@ -49,6 +50,7 @@ const column = [
 const {
   params,
   onSearch,
+  onReset,
   dwTable,
 } = useTable({
   defParams: {
@@ -65,6 +67,11 @@ function handleDateChange(val) {
     params.beginTime = DateUtils.formatDate(val[0])
     params.endTime = DateUtils.formatDate(val[1])
   }
+}
+
+function resetFilters() {
+  dateRange.value = [DateUtils.getStartOfDay(), DateUtils.getEndOfDay()]
+  onReset()
 }
 </script>
 
@@ -105,6 +112,9 @@ function handleDateChange(val) {
 
       <el-button type="primary" @click="onSearch">
         搜索
+      </el-button>
+      <el-button :icon="RefreshRight" @click="resetFilters">
+        重置
       </el-button>
     </div>
 
