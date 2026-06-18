@@ -61,7 +61,7 @@ async function handleUpload(options) {
       ElMessage.error('上传失败：未返回文件地址')
     }
   }
-  catch (e) {
+  catch {
     ElMessage.error('上传失败')
   }
   finally {

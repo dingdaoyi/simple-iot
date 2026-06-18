@@ -39,9 +39,11 @@ function getStatusTag(status) {
 
 // 格式化时间
 function formatTime(timeStr) {
-  if (!timeStr) return '-'
+  if (!timeStr)
+    return '-'
   const date = new Date(timeStr)
-  if (isNaN(date.getTime())) return timeStr
+  if (Number.isNaN(date.getTime()))
+    return timeStr
   return date.toLocaleString('zh-CN', {
     year: 'numeric',
     month: '2-digit',
@@ -54,7 +56,8 @@ function formatTime(timeStr) {
 
 // 详情数据格式化
 const detailSections = computed(() => {
-  if (!props.alarm) return []
+  if (!props.alarm)
+    return []
 
   const alarm = props.alarm
   const sections = []
@@ -121,7 +124,8 @@ function handleClose() {
 
 // 确认告警
 async function handleAcknowledge() {
-  if (!props.alarm) return
+  if (!props.alarm)
+    return
   try {
     await alarmAcknowledgeApi(props.alarm.id)
     emits('refresh')
@@ -133,7 +137,8 @@ async function handleAcknowledge() {
 
 // 清除告警
 async function handleClear() {
-  if (!props.alarm) return
+  if (!props.alarm)
+    return
   try {
     await alarmClearApi(props.alarm.id)
     handleClose()

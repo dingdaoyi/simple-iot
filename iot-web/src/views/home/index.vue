@@ -11,7 +11,6 @@ import {
   Monitor,
   Plus,
   Setting,
-  TrendCharts,
 } from '@element-plus/icons-vue'
 import { computed, onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
@@ -170,9 +169,11 @@ function getAlarmLevel(severity) {
 
 // 格式化相对时间
 function formatRelativeTime(timeStr) {
-  if (!timeStr) return ''
+  if (!timeStr)
+    return ''
   const date = new Date(timeStr)
-  if (isNaN(date.getTime())) return timeStr
+  if (Number.isNaN(date.getTime()))
+    return timeStr
 
   const now = new Date()
   const diff = now - date
@@ -180,10 +181,14 @@ function formatRelativeTime(timeStr) {
   const hours = Math.floor(diff / 3600000)
   const days = Math.floor(diff / 86400000)
 
-  if (minutes < 1) return '刚刚'
-  if (minutes < 60) return `${minutes}分钟前`
-  if (hours < 24) return `${hours}小时前`
-  if (days < 7) return `${days}天前`
+  if (minutes < 1)
+    return '刚刚'
+  if (minutes < 60)
+    return `${minutes}分钟前`
+  if (hours < 24)
+    return `${hours}小时前`
+  if (days < 7)
+    return `${days}天前`
 
   return date.toLocaleDateString('zh-CN', {
     month: '2-digit',

@@ -1,5 +1,6 @@
 package com.github.dingdaoyi.rule.node;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.dingdaoyi.entity.PushConfig;
 import com.github.dingdaoyi.entity.enu.RuleNodeType;
 import com.github.dingdaoyi.rule.RuleContext;
@@ -30,7 +31,11 @@ public class HttpOutputNode implements RuleNodeExecutor {
     @Resource
     private PushConfigService pushConfigService;
 
-    private final RestTemplate restTemplate = new RestTemplate();
+    @Resource
+    private RestTemplate restTemplate;
+
+    @Resource
+    private ObjectMapper objectMapper;
 
     private static final Pattern TEMPLATE_PATTERN = Pattern.compile("\\$\\{(\\w+)}");
 
@@ -172,8 +177,9 @@ public class HttpOutputNode implements RuleNodeExecutor {
         });
 
         try {
-            return new com.fasterxml.jackson.databind.ObjectMapper().writeValueAsString(body);
+            return objectMapper.writeValueAsString(body);
         } catch (Exception e) {
+            log.warn("构建HTTP默认请求体失败", e);
             return "{}";
         }
     }

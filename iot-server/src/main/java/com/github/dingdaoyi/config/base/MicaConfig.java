@@ -10,6 +10,7 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.web.client.RestTemplate;
 
 /**
  * @author dingyunwei
@@ -17,7 +18,7 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class MicaConfig {
     @Bean
-    public SpringUtil springContextUtil(ApplicationContext applicationContext) {
+    public static SpringUtil springContextUtil(ApplicationContext applicationContext) {
         SpringUtil contextUtil = new SpringUtil();
         contextUtil.setApplicationContext(applicationContext);
         return contextUtil;
@@ -38,5 +39,13 @@ public class MicaConfig {
         // 忽略 null 值
         mapper.setDefaultPropertyInclusion(JsonInclude.Include.NON_NULL);
         return mapper;
+    }
+
+    /**
+     * 规则链 HTTP 输出节点复用的客户端。
+     */
+    @Bean
+    public RestTemplate restTemplate() {
+        return new RestTemplate();
     }
 }

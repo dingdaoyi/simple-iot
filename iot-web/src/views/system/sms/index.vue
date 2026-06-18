@@ -1,8 +1,8 @@
 <script setup>
-import { getSmsSupplier, getSmsTemplateType } from '@/api/dict'
-import { addSmsConfig, addSmsTemplate, deleteSmsConfig, deleteSmsTemplate, getSmsConfigList, getSmsTemplateList, sendSms, sendSmsWithTemplate, setDefaultConfig, updateConfigStatus, updateSmsConfig, updateSmsTemplate } from '@/api/sms'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { nextTick, reactive, ref } from 'vue'
+import { getSmsSupplier, getSmsTemplateType } from '@/api/dict'
+import { addSmsConfig, addSmsTemplate, deleteSmsConfig, deleteSmsTemplate, getSmsConfigList, getSmsTemplateList, sendSms, sendSmsWithTemplate, setDefaultConfig, updateConfigStatus, updateSmsConfig, updateSmsTemplate } from '@/api/sms'
 
 const activeTab = ref('config')
 const listLoading = ref(true)
@@ -84,12 +84,13 @@ const sendForm = ref()
 const templateForm = ref()
 
 // 模板内容映射
+const templateVariablePrefix = '$'
 const templateContentMap = {
-  verify_code: '您的验证码是${code}，5分钟内有效',
-  login_notify: '您的账号于${time}在${location}登录',
-  alarm_notify: '设备${deviceName}发生${alarmType}告警',
-  device_offline: '设备${deviceName}已离线，请及时处理',
-  system_notify: '系统通知：${message}',
+  verify_code: `您的验证码是${templateVariablePrefix}{code}，5分钟内有效`,
+  login_notify: `您的账号于${templateVariablePrefix}{time}在${templateVariablePrefix}{location}登录`,
+  alarm_notify: `设备${templateVariablePrefix}{deviceName}发生${templateVariablePrefix}{alarmType}告警`,
+  device_offline: `设备${templateVariablePrefix}{deviceName}已离线，请及时处理`,
+  system_notify: `系统通知：${templateVariablePrefix}{message}`,
 }
 
 async function getList() {
@@ -284,7 +285,7 @@ async function sendSmsMessage() {
         try {
           templateParams = JSON.parse(sendTemp.templateParamsStr)
         }
-        catch (e) {
+        catch {
           ElMessage.error('模板参数格式错误')
           return
         }

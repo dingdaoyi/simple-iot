@@ -2,7 +2,7 @@
 /**
  * 属性上报输入节点配置
  */
-const props = defineProps({
+defineProps({
   config: {
     type: Object,
     required: true,

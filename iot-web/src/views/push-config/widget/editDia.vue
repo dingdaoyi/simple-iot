@@ -1,5 +1,5 @@
 <script setup>
-import { ref, watch, computed } from 'vue'
+import { computed, ref, watch } from 'vue'
 import { pushConfigAddApi, pushConfigEditApi } from '@/api/index.js'
 import { useForm } from '@/composables/useForm.js'
 
@@ -86,7 +86,8 @@ function removeMqttOption(index) {
 function onTypeChange(val) {
   if (val === 'HTTP') {
     resetMqttFields()
-  } else if (val === 'MQTT') {
+  }
+  else if (val === 'MQTT') {
     resetHttpFields()
   }
 }
@@ -117,16 +118,19 @@ watch(() => props.datas, (val) => {
     // 解析 httpHeaders
     if (Array.isArray(val.httpHeaders)) {
       httpHeaders.value = val.httpHeaders
-    } else {
+    }
+    else {
       httpHeaders.value = []
     }
     // 解析 mqttOptions
     if (Array.isArray(val.mqttOptions)) {
       mqttOptions.value = val.mqttOptions
-    } else {
+    }
+    else {
       mqttOptions.value = []
     }
-  } else {
+  }
+  else {
     form.value = {
       name: '',
       type: 'HTTP',
@@ -233,9 +237,13 @@ watch(() => props.datas, (val) => {
             <div v-for="(header, index) in httpHeaders" :key="index" class="kv-item">
               <el-input v-model="header.key" placeholder="Key" style="width: 150px" />
               <el-input v-model="header.value" placeholder="Value" style="flex: 1" />
-              <el-button type="danger" link @click="removeHeader(index)">删除</el-button>
+              <el-button type="danger" link @click="removeHeader(index)">
+                删除
+              </el-button>
             </div>
-            <el-button type="primary" link @click="addHeader">+ 添加请求头</el-button>
+            <el-button type="primary" link @click="addHeader">
+              + 添加请求头
+            </el-button>
           </div>
         </el-form-item>
 
@@ -247,7 +255,9 @@ watch(() => props.datas, (val) => {
             :step="1000"
             style="width: 100%"
           />
-          <div class="form-tip">单位：毫秒</div>
+          <div class="form-tip">
+            单位：毫秒
+          </div>
         </el-form-item>
       </template>
 
@@ -284,7 +294,9 @@ watch(() => props.datas, (val) => {
             clearable
             placeholder="device/{deviceKey}/forward"
           />
-          <div class="form-tip">支持变量: {deviceKey}, {productId}, {deviceName}</div>
+          <div class="form-tip">
+            支持变量: {deviceKey}, {productId}, {deviceName}
+          </div>
         </el-form-item>
 
         <el-form-item label="QoS等级" prop="mqttQos">
@@ -309,7 +321,9 @@ watch(() => props.datas, (val) => {
             :max="300"
             style="width: 100%"
           />
-          <div class="form-tip">单位：秒</div>
+          <div class="form-tip">
+            单位：秒
+          </div>
         </el-form-item>
 
         <el-form-item label="清除会话" prop="mqttCleanSession">
@@ -321,17 +335,25 @@ watch(() => props.datas, (val) => {
             <div v-for="(opt, index) in mqttOptions" :key="index" class="kv-item">
               <el-input v-model="opt.key" placeholder="Key (如: autoReconnect)" style="width: 180px" />
               <el-input v-model="opt.value" placeholder="Value" style="flex: 1" />
-              <el-button type="danger" link @click="removeMqttOption(index)">删除</el-button>
+              <el-button type="danger" link @click="removeMqttOption(index)">
+                删除
+              </el-button>
             </div>
-            <el-button type="primary" link @click="addMqttOption">+ 添加配置项</el-button>
+            <el-button type="primary" link @click="addMqttOption">
+              + 添加配置项
+            </el-button>
           </div>
         </el-form-item>
       </template>
     </el-form>
 
     <template #footer>
-      <el-button @click="onCancel">取消</el-button>
-      <el-button type="primary" :loading="loading" @click="onSubmit">确定</el-button>
+      <el-button @click="onCancel">
+        取消
+      </el-button>
+      <el-button type="primary" :loading="loading" @click="onSubmit">
+        确定
+      </el-button>
     </template>
   </el-dialog>
 </template>

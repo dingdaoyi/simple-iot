@@ -4,7 +4,7 @@
  * 统一管理所有节点类型的配置界面
  */
 import { computed, ref, watch } from 'vue'
-import { productListApi, deviceListApi, ruleChainTemplateVariablesApi } from '@/api/index.js'
+import { deviceListApi, productListApi, ruleChainTemplateVariablesApi } from '@/api/index.js'
 
 const props = defineProps({
   selectedNode: {
@@ -93,14 +93,6 @@ const propertyVariables = computed(() =>
   templateVariables.value.filter(v => v.category === 'PROPERTY'),
 )
 
-// 变量提示文本
-const variableHintText = computed(() => {
-  const system = systemVariables.value.map(v => v.variable).join(', ')
-  const props = propertyVariables.value.slice(0, 5).map(v => v.variable).join(', ')
-  const more = propertyVariables.value.length > 5 ? '...' : ''
-  return `可用变量: ${system}, ${props}${more}`
-})
-
 // 插入变量到输入框
 function insertVariable(variable, configKey) {
   const currentValue = config.value[configKey] || ''
@@ -184,15 +176,6 @@ function updateConfig(key, value) {
   emit('update:node', {
     ...props.selectedNode,
     config: { ...config.value, [key]: value },
-  })
-}
-
-function clearConfigKey(key) {
-  const newConfig = { ...config.value }
-  delete newConfig[key]
-  emit('update:node', {
-    ...props.selectedNode,
-    config: newConfig,
   })
 }
 
@@ -610,7 +593,7 @@ function onDeviceCascadeChange(value) {
               </el-tag>
             </template>
           </div>
-            @update:model-value="updateConfig('message', $event)"
+          @update:model-value="updateConfig('message', $event)"
           />
         </el-form-item>
       </template>

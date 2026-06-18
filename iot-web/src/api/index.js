@@ -23,7 +23,7 @@ export function productTypeListApi(params) {
 /**
  * 修改产品,暂时不需要
  * @param data
- * @returns {*}
+ * @returns {Promise} API 响应
  */
 export function productTypeEditeApi(data) {
   return request({
@@ -58,7 +58,7 @@ export function productTypeDetailApi(id) {
 /**
  * 属性列表
  * @param params
- * @returns {*}
+ * @returns {Promise} API 响应
  */
 export function propertyListApi(params) {
   return request({
@@ -71,7 +71,7 @@ export function propertyListApi(params) {
 /**
  * 属性列表
  * @param id
- * @returns {*}
+ * @returns {Promise} API 响应
  */
 export function propertyDeleteApi(id) {
   return request({
@@ -83,7 +83,7 @@ export function propertyDeleteApi(id) {
 /**
  * 保存标准属性
  * @param data
- * @returns {*}
+ * @returns {Promise} API 响应
  */
 export function standardPropertyAddApi(data) {
   return request({
@@ -96,7 +96,7 @@ export function standardPropertyAddApi(data) {
 /**
  * 保存自定义属性
  * @param data
- * @returns {*}
+ * @returns {Promise} API 响应
  */
 export function customPropertyAddApi(data) {
   return request({
@@ -109,7 +109,7 @@ export function customPropertyAddApi(data) {
 /**
  * 修改标准属性
  * @param data
- * @returns {*}
+ * @returns {Promise} API 响应
  */
 export function standardPropertyEditApi(data) {
   return request({
@@ -162,7 +162,7 @@ export function serviceEditeApi(data) {
 /**
  * 产品分页
  * @param data
- * @returns {*}
+ * @returns {Promise} API 响应
  */
 export function productPageApi(data) {
   return request({
@@ -174,8 +174,9 @@ export function productPageApi(data) {
 
 /**
  * 产品列表
- * @param data
- * @returns {*}
+ * @param {object} data 查询参数
+ * @param {number|string} data.productTypeId 产品类型ID
+ * @returns {Promise} API 响应
  */
 export function manufacturerListApi({ productTypeId }) {
   return request({
@@ -189,8 +190,10 @@ export function manufacturerListApi({ productTypeId }) {
 
 /**
  * 产品列表
- * @param data
- * @returns {*}
+ * @param {object} data 查询参数
+ * @param {number|string} data.productTypeId 产品类型ID
+ * @param {string} data.manufacturer 厂商
+ * @returns {Promise} API 响应
  */
 export function productListApi({ productTypeId, manufacturer }) {
   return request({
@@ -206,7 +209,7 @@ export function productListApi({ productTypeId, manufacturer }) {
 /**
  * 产品添加
  * @param data
- * @returns {*}
+ * @returns {Promise} API 响应
  */
 export function productAddApi(data) {
   return request({
@@ -219,7 +222,7 @@ export function productAddApi(data) {
 /**
  * 产品编辑
  * @param data
- * @returns {*}
+ * @returns {Promise} API 响应
  */
 export function productEditeApi(data) {
   return request({
@@ -232,7 +235,7 @@ export function productEditeApi(data) {
 /**
  * 产品删除
  * @param id
- * @returns {*}
+ * @returns {Promise} API 响应
  */
 export function productDeleteApi(id) {
   return request({
@@ -245,7 +248,7 @@ export function productDeleteApi(id) {
 /**
  * 产品详情
  * @param id
- * @returns {*}
+ * @returns {Promise} API 响应
  */
 export function productDetailApi(id) {
   return request({
@@ -257,7 +260,7 @@ export function productDetailApi(id) {
 /**
  * 协议列表
  * @param params
- * @returns {*}
+ * @returns {Promise} API 响应
  */
 export function protocolListApi(params) {
   return request({
@@ -270,7 +273,7 @@ export function protocolListApi(params) {
 /**
  * 协议添加
  * @param data
- * @returns {*}
+ * @returns {Promise} API 响应
  */
 export function protocolAddApi(data) {
   return request({
@@ -283,7 +286,7 @@ export function protocolAddApi(data) {
 /**
  * 协议添加
  * @param data
- * @returns {*}
+ * @returns {Promise} API 响应
  */
 export function protocolEditApi(data) {
   return request({
@@ -296,7 +299,7 @@ export function protocolEditApi(data) {
 /**
  * 协议删除
  * @param id
- * @returns {*}
+ * @returns {Promise} API 响应
  */
 export function protocolDeleteApi(id) {
   return request({
@@ -309,7 +312,7 @@ export function protocolDeleteApi(id) {
  * 协议设置状态
  * @param id 协议ID
  * @param enable true=启用, false=禁用
- * @returns {*}
+ * @returns {Promise} API 响应
  */
 export function protocolSetStatusApi(id, enable) {
   return request({
@@ -322,7 +325,7 @@ export function protocolSetStatusApi(id, enable) {
 /**
  * 图标列表
  * @param params
- * @returns {*}
+ * @returns {Promise} API 响应
  */
 export function iconListApi(params) {
   return request({
@@ -335,7 +338,7 @@ export function iconListApi(params) {
 /**
  * 图标添加
  * @param data
- * @returns {*}
+ * @returns {Promise} API 响应
  */
 export function iconAddApi(data) {
   return request({
@@ -348,7 +351,7 @@ export function iconAddApi(data) {
 /**
  * 图标修改
  * @param data
- * @returns {*}
+ * @returns {Promise} API 响应
  */
 export function iconEditeApi(data) {
   return request({
@@ -361,7 +364,7 @@ export function iconEditeApi(data) {
 /**
  * 图标删除
  * @param id
- * @returns {*}
+ * @returns {Promise} API 响应
  */
 export function iconDeleteApi(id) {
   return request({
@@ -410,7 +413,7 @@ export function deviceDetailApi(id) {
 /**
  * 设备编辑
  * @param data
- * @returns {*}
+ * @returns {Promise} API 响应
  */
 export function deviceEditeApi(data) {
   return request({
@@ -423,7 +426,7 @@ export function deviceEditeApi(data) {
 /**
  * 设备编辑
  * @param data
- * @returns {*}
+ * @returns {Promise} API 响应
  */
 export function deviceAddApi(data) {
   return request({
@@ -436,7 +439,7 @@ export function deviceAddApi(data) {
 /**
  * 设备搜索
  * @param params
- * @returns {*}
+ * @returns {Promise} API 响应
  */
 export function deviceListApi(params) {
   return request({
