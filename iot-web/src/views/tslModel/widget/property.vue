@@ -1,5 +1,5 @@
 <script setup>
-import { Delete, Edit } from '@element-plus/icons-vue'
+import { Delete, Edit, RefreshRight } from '@element-plus/icons-vue'
 import { propertyDeleteApi, propertyListApi } from '@/api/index.js'
 import IotTable from '@/components/IotTable.vue'
 import { useTable } from '@/composables/useTable.js'
@@ -48,6 +48,7 @@ const {
   dialogVisible,
   updatePage,
   onSearch,
+  onReset,
   dwTable,
   onDelete,
   onEdit,
@@ -72,6 +73,9 @@ const {
       </div>
       <el-button type="primary" @click="onSearch">
         搜索
+      </el-button>
+      <el-button :icon="RefreshRight" @click="onReset">
+        重置
       </el-button>
       <el-button v-if="showEdite" type="primary" @click="onAdd">
         添加
