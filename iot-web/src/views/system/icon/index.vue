@@ -1,8 +1,7 @@
 <script setup>
-import { Delete, Edit, Loading, Picture } from '@element-plus/icons-vue'
+import { Delete, Edit, Loading, RefreshRight } from '@element-plus/icons-vue'
 import { onMounted } from 'vue'
 import { iconDeleteApi, iconListApi } from '@/api/index.js'
-import PageHeader from '@/components/PageHeader.vue'
 import { useTable } from '@/composables/useTable.js'
 import EditDia from '@/views/system/icon/widget/editDia.vue'
 
@@ -11,6 +10,7 @@ const {
   dialogVisible,
   updatePage,
   onSearch,
+  onReset,
   tableData,
   loading,
   onDelete,
@@ -66,6 +66,9 @@ onMounted(() => {
           <el-button type="primary" @click="onSearch">
             <span class="btn-icon">⌕</span>
             搜索
+          </el-button>
+          <el-button :icon="RefreshRight" @click="onReset">
+            重置
           </el-button>
           <el-button type="primary" @click="onAdd">
             <span class="btn-icon">+</span>
