@@ -85,11 +85,11 @@ const {
       :api="propertyListApi"
     >
       <template #cz="{ row }">
-        <el-button v-if="showEdite" type="danger" link @click="onDelete(row)">
-          删除
-        </el-button>
         <el-button v-if="showEdite" type="primary" link @click="onEdit(row)">
           编辑定义
+        </el-button>
+        <el-button v-if="showEdite" type="danger" link @click="onDelete(row)">
+          删除
         </el-button>
       </template>
     </IotTable>
