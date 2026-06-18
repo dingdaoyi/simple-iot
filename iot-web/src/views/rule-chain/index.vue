@@ -1,5 +1,6 @@
 <script setup>
-import { Delete, Edit, Operation, Plus } from '@element-plus/icons-vue'
+import { Delete, Edit, Operation, Plus, RefreshRight } from '@element-plus/icons-vue'
+import { ElMessage } from 'element-plus'
 import { onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import {
@@ -82,6 +83,7 @@ const {
   params,
   updatePage,
   onSearch,
+  onReset,
   tableData,
   total,
   loading,
@@ -175,6 +177,9 @@ onMounted(() => {
           <el-button type="primary" @click="onSearch">
             <span class="btn-icon">⌕</span>
             搜索
+          </el-button>
+          <el-button :icon="RefreshRight" @click="onReset">
+            重置
           </el-button>
           <el-button type="primary" @click="onAdd">
             <el-icon><Plus /></el-icon>
