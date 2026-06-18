@@ -1,7 +1,7 @@
 <script setup>
+import { Cpu, RefreshRight } from '@element-plus/icons-vue'
 import { onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
-import { Cpu } from '@element-plus/icons-vue'
 import { deviceDeleteApi, devicePageApi, manufacturerListApi, productListApi, productTypeListApi } from '@/api/index.js'
 import IotTable from '@/components/IotTable.vue'
 import PageHeader from '@/components/PageHeader.vue'
@@ -73,6 +73,7 @@ const {
   loading,
   onDelete,
   onAdd,
+  onReset,
   diaTitle,
   currentItem,
   onEdit,
@@ -96,6 +97,10 @@ function showDetails(row) {
 }
 
 function changeProductType() {
+  params.manufacturer = undefined
+  params.productId = undefined
+  productListOpt.value = []
+
   if (params.productTypeId) {
     manufacturerListApi({
       productTypeId: params.productTypeId,
@@ -110,6 +115,8 @@ function changeProductType() {
 }
 
 function changeManufacturer() {
+  params.productId = undefined
+
   if (!params.manufacturer) {
     productListOpt.value = []
     return
@@ -121,6 +128,12 @@ function changeManufacturer() {
     .then(({ data }) => {
       productListOpt.value = data
     })
+}
+
+function resetFilters() {
+  manufacturerListOpt.value = []
+  productListOpt.value = []
+  onReset()
 }
 
 onMounted(() => {
@@ -204,6 +217,9 @@ onMounted(() => {
           <el-button type="primary" @click="onSearch">
             <span class="btn-icon">⌕</span>
             搜索
+          </el-button>
+          <el-button :icon="RefreshRight" @click="resetFilters">
+            重置
           </el-button>
           <el-button type="primary" @click="onAdd">
             <span class="btn-icon">+</span>
