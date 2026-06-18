@@ -1,4 +1,5 @@
 <script setup>
+import { RefreshRight } from '@element-plus/icons-vue'
 import { onMounted } from 'vue'
 import { messageReceiveDeleteApi, messageReceivePageApi } from '@/api/index.js'
 import IotTable from '@/components/IotTable.vue'
@@ -51,6 +52,7 @@ const {
   dialogVisible,
   updatePage,
   onSearch,
+  onReset,
   tableData,
   total,
   loading,
@@ -115,6 +117,9 @@ onMounted(() => {
         <div class="search-actions">
           <el-button type="primary" @click="onSearch">
             搜索
+          </el-button>
+          <el-button :icon="RefreshRight" @click="onReset">
+            重置
           </el-button>
           <el-button type="primary" @click="onAdd">
             添加通知
