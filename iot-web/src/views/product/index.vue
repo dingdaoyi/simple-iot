@@ -183,12 +183,14 @@ onMounted(() => {
             placeholder="输入产品型号"
             :prefix-icon="Search"
             class="search-input"
+            @keyup.enter="onSearch"
           />
           <el-input
             v-model="params.manufacturer"
             clearable
             placeholder="输入厂家名称"
             class="search-input"
+            @keyup.enter="onSearch"
           />
         </div>
         <div class="search-actions">
