@@ -1,5 +1,5 @@
 <script setup>
-import { Bell, Check, Close, View } from '@element-plus/icons-vue'
+import { Bell, Check, Close, RefreshRight, View } from '@element-plus/icons-vue'
 import { ElMessage } from 'element-plus'
 import { computed, onMounted, ref } from 'vue'
 import {
@@ -81,6 +81,7 @@ const {
   params,
   updatePage,
   onSearch,
+  onReset,
   tableData,
   total,
   loading,
@@ -340,6 +341,9 @@ onMounted(() => {
           <el-button type="primary" @click="onSearch">
             <span class="btn-icon">⌕</span>
             搜索
+          </el-button>
+          <el-button :icon="RefreshRight" @click="onReset">
+            重置
           </el-button>
         </div>
       </el-form>
