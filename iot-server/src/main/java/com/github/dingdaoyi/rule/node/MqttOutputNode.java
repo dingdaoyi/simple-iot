@@ -37,7 +37,8 @@ public class MqttOutputNode implements RuleNodeExecutor {
     @Lazy
     private MqttServerTemplate mqttServerTemplate;
 
-    private final ObjectMapper objectMapper = new ObjectMapper();
+    @Resource
+    private ObjectMapper objectMapper;
 
     private static final Pattern TEMPLATE_PATTERN = Pattern.compile("\\$\\{(\\w+)}");
     private static final Pattern TOPIC_VAR_PATTERN = Pattern.compile("\\{(\\w+)}");
@@ -187,6 +188,7 @@ public class MqttOutputNode implements RuleNodeExecutor {
         try {
             return objectMapper.writeValueAsString(payload);
         } catch (Exception e) {
+            log.warn("构建MQTT默认Payload失败", e);
             return "{}";
         }
     }

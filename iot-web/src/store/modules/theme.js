@@ -8,7 +8,8 @@ const themeKey = 'theme'
 const key = 'primary'
 
 function readBrandPrimary() {
-  if (typeof window === 'undefined' || !document?.documentElement) return '#6366f1'
+  if (typeof window === 'undefined' || !document?.documentElement)
+    return '#6366f1'
   const value = getComputedStyle(document.documentElement)
     .getPropertyValue('--iot-color-primary')
     .trim()

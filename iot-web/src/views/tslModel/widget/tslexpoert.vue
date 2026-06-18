@@ -17,7 +17,7 @@ async function copyJson() {
     await navigator.clipboard.writeText(JSON.stringify(jsonData.value, null, 2))
     ElMessage.success('已复制到剪贴板')
   }
-  catch (e) {
+  catch {
     ElMessage.error('复制失败')
   }
 }

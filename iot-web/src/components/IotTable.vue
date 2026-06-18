@@ -348,13 +348,17 @@ defineExpose({
   .el-table__header-wrapper th {
     padding: 6px 8px;
 
-    .cell { padding: 0 8px; }
+    .cell {
+      padding: 0 8px;
+    }
   }
 
   .el-table__body-wrapper .el-table__row td {
     padding: 6px 8px;
 
-    .cell { padding: 0 8px; }
+    .cell {
+      padding: 0 8px;
+    }
   }
 }
 
