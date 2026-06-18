@@ -29,7 +29,7 @@ public class MqttServerAuthHandler implements IMqttServerAuthHandler {
 
     @Override
     public boolean authenticate(ChannelContext context, String uniqueId, String clientId, String userName, String password) {
-        log.info("authenticate client {} user {} password {}", clientId, userName, password);
+        log.info("authenticate client {} user {} password {}", clientId, userName, maskSecret(password));
         if (ERROR_UNIQUE_ID.equals(uniqueId)) {
             return false;
         }
@@ -40,5 +40,15 @@ public class MqttServerAuthHandler implements IMqttServerAuthHandler {
                 .map(item -> (!iotConfigProperties.isEnableDeviceSecret())
                                           || StringUtils.equals(password, item.getDeviceSecret()))
                 .orElse(false);
+    }
+
+    static String maskSecret(String secret) {
+        if (StringUtils.isBlank(secret)) {
+            return "<empty>";
+        }
+        if (secret.length() <= 4) {
+            return "****";
+        }
+        return StringUtils.repeat('*', secret.length() - 4) + secret.substring(secret.length() - 4);
     }
 }
