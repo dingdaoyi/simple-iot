@@ -307,11 +307,11 @@ onMounted(() => {
       <el-form :inline="false" class="search-form">
         <div class="form-row">
           <el-form-item label="设备Key">
-            <el-input v-model="params.deviceKey" clearable placeholder="请输入设备Key" />
+            <el-input v-model="params.deviceKey" clearable placeholder="请输入设备Key" @keyup.enter="onSearch" />
           </el-form-item>
 
           <el-form-item label="告警类型">
-            <el-input v-model="params.alarmType" clearable placeholder="请输入告警类型" />
+            <el-input v-model="params.alarmType" clearable placeholder="请输入告警类型" @keyup.enter="onSearch" />
           </el-form-item>
 
           <el-form-item label="严重程度">

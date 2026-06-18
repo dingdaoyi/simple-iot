@@ -209,7 +209,7 @@ onMounted(() => {
           </el-form-item>
 
           <el-form-item label="设备编号">
-            <el-input v-model="params.deviceKey" clearable placeholder="输入设备编号" />
+            <el-input v-model="params.deviceKey" clearable placeholder="输入设备编号" @keyup.enter="onSearch" />
           </el-form-item>
         </div>
 
