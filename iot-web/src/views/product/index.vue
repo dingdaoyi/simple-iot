@@ -7,6 +7,7 @@ import {
   List,
   Monitor,
   Plus,
+  RefreshRight,
   Search,
   Setting,
 } from '@element-plus/icons-vue'
@@ -27,6 +28,7 @@ const {
   dialogVisible,
   updatePage,
   onSearch,
+  onReset,
   tableData,
   total,
   loading,
@@ -193,6 +195,9 @@ onMounted(() => {
           <el-button type="primary" @click="onSearch">
             <el-icon><Search /></el-icon>
             搜索
+          </el-button>
+          <el-button :icon="RefreshRight" @click="onReset">
+            重置
           </el-button>
           <el-button type="primary" @click="onAdd">
             <el-icon><Plus /></el-icon>
