@@ -1,6 +1,7 @@
 <script setup>
 import { Bell, Check, Close, View } from '@element-plus/icons-vue'
-import { onMounted, ref, computed } from 'vue'
+import { ElMessage } from 'element-plus'
+import { computed, onMounted, ref } from 'vue'
 import {
   alarmAcknowledgeApi,
   alarmClearApi,
@@ -21,21 +22,6 @@ const statistics = ref({
 // 告警详情弹窗
 const detailVisible = ref(false)
 const currentAlarm = ref(null)
-
-// 告警严重程度颜色映射
-const severityColors = {
-  CRITICAL: '#dc2626',
-  MAJOR: '#ea580c',
-  MINOR: '#f59e0b',
-  WARNING: '#3b82f6',
-}
-
-// 告警状态颜色映射
-const statusColors = {
-  ACTIVE: '#dc2626',
-  CLEARED: '#22c55e',
-  ACKNOWLEDGED: '#f59e0b',
-}
 
 const severityOpt = ref([])
 const statusOpt = ref([])
@@ -86,7 +72,7 @@ const column = [
   {
     prop: 'cz',
     slot: 'cz',
-    width: 80,
+    width: 180,
     label: '操作',
   },
 ]
@@ -119,14 +105,24 @@ async function loadStatistics() {
   }
 }
 
+async function refreshAlarmView() {
+  await updatePage()
+  await loadStatistics()
+}
+
 // 确认告警
 async function handleAcknowledge(row) {
   try {
     await alarmAcknowledgeApi(row.id)
-    updatePage()
+    ElMessage.success('告警已确认')
+    if (currentAlarm.value?.id === row.id) {
+      currentAlarm.value = { ...currentAlarm.value, status: 'ACKNOWLEDGED' }
+    }
+    await refreshAlarmView()
   }
   catch (e) {
     console.error('确认失败', e)
+    ElMessage.error('确认失败')
   }
 }
 
@@ -134,39 +130,31 @@ async function handleAcknowledge(row) {
 async function handleClear(row) {
   try {
     await alarmClearApi(row.id)
-    updatePage()
+    ElMessage.success('告警已清除')
+    if (currentAlarm.value?.id === row.id) {
+      currentAlarm.value = { ...currentAlarm.value, status: 'CLEARED' }
+      detailVisible.value = false
+    }
+    await refreshAlarmView()
   }
   catch (e) {
     console.error('清除失败', e)
+    ElMessage.error('清除失败')
   }
 }
 
 // 在详情弹窗中确认告警
 async function handleAcknowledgeInDetail() {
-  if (!currentAlarm.value) return
-  try {
-    await alarmAcknowledgeApi(currentAlarm.value.id)
-    // 更新当前告警状态
-    currentAlarm.value = { ...currentAlarm.value, status: 'ACKNOWLEDGED' }
-    updatePage()
-  }
-  catch (e) {
-    console.error('确认失败', e)
-  }
+  if (!currentAlarm.value)
+    return
+  await handleAcknowledge(currentAlarm.value)
 }
 
 // 在详情弹窗中清除告警
 async function handleClearInDetail() {
-  if (!currentAlarm.value) return
-  try {
-    await alarmClearApi(currentAlarm.value.id)
-    // 更新当前告警状态并关闭弹窗
-    detailVisible.value = false
-    updatePage()
-  }
-  catch (e) {
-    console.error('清除失败', e)
-  }
+  if (!currentAlarm.value)
+    return
+  await handleClear(currentAlarm.value)
 }
 
 // 查看详情
@@ -206,10 +194,12 @@ function getDisplayMessage(row) {
 
 // 格式化时间
 function formatTime(timeStr) {
-  if (!timeStr) return '-'
+  if (!timeStr)
+    return '-'
   // 处理 ISO 格式时间
   const date = new Date(timeStr)
-  if (isNaN(date.getTime())) return timeStr
+  if (Number.isNaN(date.getTime()))
+    return timeStr
   return date.toLocaleString('zh-CN', {
     year: 'numeric',
     month: '2-digit',
@@ -222,7 +212,8 @@ function formatTime(timeStr) {
 
 // 详情数据格式化
 const detailSections = computed(() => {
-  if (!currentAlarm.value) return []
+  if (!currentAlarm.value)
+    return []
 
   const alarm = currentAlarm.value
   const sections = []
@@ -388,6 +379,24 @@ onMounted(() => {
           <el-button type="primary" link @click="handleDetail(row)">
             <el-icon><View /></el-icon>
             详情
+          </el-button>
+          <el-button
+            v-if="row.status === 'ACTIVE'"
+            type="warning"
+            link
+            @click="handleAcknowledge(row)"
+          >
+            <el-icon><Check /></el-icon>
+            确认
+          </el-button>
+          <el-button
+            v-if="row.status !== 'CLEARED'"
+            type="success"
+            link
+            @click="handleClear(row)"
+          >
+            <el-icon><Close /></el-icon>
+            清除
           </el-button>
         </template>
       </IotTable>
