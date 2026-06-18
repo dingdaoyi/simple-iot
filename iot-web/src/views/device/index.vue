@@ -1,5 +1,5 @@
 <script setup>
-import { Cpu, RefreshRight } from '@element-plus/icons-vue'
+import { Cpu, Delete, Edit, Monitor, RefreshRight } from '@element-plus/icons-vue'
 import { onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { deviceDeleteApi, devicePageApi, manufacturerListApi, productListApi, productTypeListApi } from '@/api/index.js'
@@ -242,13 +242,13 @@ onMounted(() => {
         @size-change="onSizeChange"
       >
         <template #cz="{ row }">
-          <el-button type="primary" link @click="showDetails(row)">
+          <el-button type="primary" link :icon="Monitor" @click="showDetails(row)">
             设备详情
           </el-button>
-          <el-button type="primary" link @click="onEdit(row)">
+          <el-button type="primary" link :icon="Edit" @click="onEdit(row)">
             编辑
           </el-button>
-          <el-button type="danger" link @click="onDelete(row)">
+          <el-button type="danger" link :icon="Delete" @click="onDelete(row)">
             删除
           </el-button>
         </template>

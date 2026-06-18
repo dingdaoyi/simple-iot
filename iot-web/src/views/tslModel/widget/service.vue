@@ -1,4 +1,5 @@
 <script lang="jsx" setup>
+import { Delete, Edit } from '@element-plus/icons-vue'
 import { ElButton, ElMessage, ElMessageBox } from 'element-plus'
 import { h, ref } from 'vue'
 import {
@@ -148,11 +149,11 @@ loadPropertiesDict()
       :api="productId ? customServiceListApi : standardServiceListApi"
     >
       <template #cz="{ row }">
-        <ElButton v-if="showEdite" type="danger" link @click="handleDelete(row)">
-          删除
-        </ElButton>
-        <ElButton v-if="showEdite" type="primary" link @click="onEdit(row)">
+        <ElButton v-if="showEdite" type="primary" link :icon="Edit" @click="onEdit(row)">
           编辑定义
+        </ElButton>
+        <ElButton v-if="showEdite" type="danger" link :icon="Delete" @click="handleDelete(row)">
+          删除
         </ElButton>
       </template>
     </IotTable>
