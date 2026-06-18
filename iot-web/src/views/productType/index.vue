@@ -111,6 +111,7 @@ function tslConfig(row) {
             clearable
             placeholder="输入产品类型名称搜索..."
             prefix-icon="Search"
+            @keyup.enter="onSearch"
           />
         </div>
         <div class="search-actions">
