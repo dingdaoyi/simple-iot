@@ -1,4 +1,5 @@
 <script setup>
+import { RefreshRight } from '@element-plus/icons-vue'
 import { nextTick, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { productTypeDelApi, productTypeListApi } from '@/api/index.js'
@@ -43,7 +44,6 @@ const column = [
 const {
   params,
   dialogVisible,
-  updatePage,
   onDelete,
   onAdd,
   onEdit,
@@ -60,6 +60,12 @@ const {
 
 // 搜索时刷新 IotTable
 function onSearch() {
+  params.page = 1
+  iotTableRef.value?.refresh()
+}
+
+function onReset() {
+  params.name = undefined
   params.page = 1
   iotTableRef.value?.refresh()
 }
@@ -111,6 +117,9 @@ function tslConfig(row) {
           <el-button type="primary" @click="onSearch">
             <span class="btn-icon">⌕</span>
             搜索
+          </el-button>
+          <el-button :icon="RefreshRight" @click="onReset">
+            重置
           </el-button>
           <el-button type="primary" @click="onAdd">
             <span class="btn-icon">+</span>
