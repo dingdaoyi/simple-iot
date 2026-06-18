@@ -1,7 +1,7 @@
 <script setup>
+import { Connection, RefreshRight } from '@element-plus/icons-vue'
 import { ElMessage, ElMessageBox, ElTag } from 'element-plus'
 import { h, onMounted } from 'vue'
-import { Connection } from '@element-plus/icons-vue'
 import { protocolDeleteApi, protocolListApi, protocolSetStatusApi } from '@/api/index.js'
 import IotTable from '@/components/IotTable.vue'
 import PageHeader from '@/components/PageHeader.vue'
@@ -93,6 +93,7 @@ const {
   dialogVisible,
   updatePage,
   onSearch,
+  onReset,
   tableData,
   total,
   loading,
@@ -218,6 +219,9 @@ onMounted(() => {
           <el-button type="primary" @click="onSearch">
             <span class="btn-icon">⌕</span>
             搜索
+          </el-button>
+          <el-button :icon="RefreshRight" @click="onReset">
+            重置
           </el-button>
           <el-button type="primary" @click="onAdd">
             <span class="btn-icon">+</span>
