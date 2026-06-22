@@ -5,6 +5,7 @@ import cn.hutool.core.collection.CollectionUtil;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.github.dingdaoyi.controller.iot.dto.RuleChainDebugRequest;
 import com.github.dingdaoyi.core.base.PageResult;
 import com.github.dingdaoyi.entity.Device;
 import com.github.dingdaoyi.entity.Product;
@@ -14,8 +15,15 @@ import com.github.dingdaoyi.mapper.RuleChainMapper;
 import com.github.dingdaoyi.model.query.RuleChainAddQuery;
 import com.github.dingdaoyi.model.query.RuleChainPageQuery;
 import com.github.dingdaoyi.model.query.RuleChainUpdateQuery;
+import com.github.dingdaoyi.model.vo.RuleChainDebugResultVo;
 import com.github.dingdaoyi.model.vo.RuleChainDetailVo;
 import com.github.dingdaoyi.model.vo.RuleChainPageVo;
+import com.github.dingdaoyi.proto.model.DataTypeEnum;
+import com.github.dingdaoyi.proto.model.DecodeResult;
+import com.github.dingdaoyi.proto.model.DeviceData;
+import com.github.dingdaoyi.proto.model.DeviceEventData;
+import com.github.dingdaoyi.rule.RuleChainEngine;
+import com.github.dingdaoyi.rule.RuleContext;
 import com.github.dingdaoyi.service.DeviceService;
 import com.github.dingdaoyi.service.ProductService;
 import com.github.dingdaoyi.service.RuleChainService;
@@ -26,6 +34,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 /**
@@ -41,6 +50,9 @@ public class RuleChainServiceImpl extends ServiceImpl<RuleChainMapper, RuleChain
 
     @Resource
     private ProductService productService;
+
+    @Resource
+    private RuleChainEngine ruleChainEngine;
 
     @Override
     public PageResult<RuleChainPageVo> pageByQuery(RuleChainPageQuery query) {
@@ -110,6 +122,74 @@ public class RuleChainServiceImpl extends ServiceImpl<RuleChainMapper, RuleChain
             .eq(RuleChain::getIsEnabled, true)
             .eq(RuleChain::getSourceType, RuleSourceType.PRODUCT)
             .eq(RuleChain::getSourceId, productId));
+    }
+
+    @Override
+    public RuleChainDebugResultVo debug(RuleChainDebugRequest request) {
+        RuleChain ruleChain = request.getRuleChain();
+        if (ruleChain.getIsEnabled() == null) {
+            ruleChain.setIsEnabled(true);
+        }
+
+        RuleContext context = buildDebugContext(request);
+        long start = System.nanoTime();
+        ruleChainEngine.execute(ruleChain, context);
+        long durationMs = (System.nanoTime() - start) / 1_000_000;
+
+        RuleChainDebugResultVo result = new RuleChainDebugResultVo();
+        result.setRuleChainId(ruleChain.getId());
+        result.setRuleChainName(ruleChain.getName());
+        result.setDurationMs(durationMs);
+        result.setTraces(context.getTraces());
+        result.setExecutedNodeCount(context.getTraces().size());
+        result.setSuccess(context.getTraces().stream()
+            .noneMatch(trace -> "FAILED".equals(trace.getStatus()) || "ERROR".equals(trace.getStatus())));
+        return result;
+    }
+
+    private RuleContext buildDebugContext(RuleChainDebugRequest request) {
+        RuleContext context = new RuleContext();
+        context.setDeviceKey(request.getDeviceKey());
+        context.setDeviceId(request.getDeviceId());
+        context.setDeviceName(request.getDeviceName());
+        context.setMessageType(request.getMessageType());
+        if (request.getEnrichedData() != null) {
+            context.getEnrichedData().putAll(request.getEnrichedData());
+        }
+
+        DecodeResult decodeResult = new DecodeResult();
+        if (request.getProperties() != null) {
+            request.getProperties().forEach((identifier, value) ->
+                decodeResult.getDataList().add(new DeviceData(identifier, inferDataType(value), value))
+            );
+        }
+        if (request.getEventIdentifier() != null) {
+            DeviceEventData eventData = new DeviceEventData(request.getEventIdentifier(), null);
+            if (request.getEventParams() != null) {
+                request.getEventParams().forEach((identifier, value) ->
+                    eventData.getParams().add(new DeviceData(identifier, inferDataType(value), value))
+                );
+            }
+            decodeResult.setEventData(eventData);
+        }
+        context.setDecodeResult(decodeResult);
+        return context;
+    }
+
+    private DataTypeEnum inferDataType(Object value) {
+        if (value instanceof Boolean) {
+            return DataTypeEnum.BOOL;
+        }
+        if (value instanceof Float || value instanceof Double || value instanceof java.math.BigDecimal) {
+            return DataTypeEnum.DOUBLE;
+        }
+        if (value instanceof Number) {
+            return DataTypeEnum.INT;
+        }
+        if (value instanceof Map<?, ?>) {
+            return DataTypeEnum.STRUCT;
+        }
+        return DataTypeEnum.TEXT;
     }
 
     private void fillSourceName(RuleChainDetailVo vo, RuleChain ruleChain) {

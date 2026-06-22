@@ -7,6 +7,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import jakarta.annotation.Resource;
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -67,14 +68,39 @@ public class RuleChainEngine {
 
         if (executor == null) {
             log.warn("未找到节点执行器: {}", nodeType);
+            context.addTrace(RuleContext.ExecutionTrace.builder()
+                .nodeId(node.getId())
+                .nodeName(node.getName())
+                .nodeType(nodeType.name())
+                .connectionType("Failure")
+                .status("SKIPPED")
+                .detail("未找到节点执行器: " + nodeType)
+                .timestamp(LocalDateTime.now())
+                .input(snapshotContext(context))
+                .output(Map.of("connectionType", "Failure"))
+                .build());
             return;
         }
 
+        long start = System.nanoTime();
+        Map<String, Object> inputSnapshot = snapshotContext(context);
         try {
             RuleNodeExecutor.NodeResult result = executor.execute(context, node.getConfig());
+            long durationMs = (System.nanoTime() - start) / 1_000_000;
             String connectionType = result.connectionType();
             String message = result.message();
-            context.addTrace(node.getId(), node.getName(), connectionType, message);
+            context.addTrace(RuleContext.ExecutionTrace.builder()
+                .nodeId(node.getId())
+                .nodeName(node.getName())
+                .nodeType(nodeType.name())
+                .connectionType(connectionType)
+                .status(result.success() ? "SUCCESS" : "FAILED")
+                .detail(message)
+                .durationMs(durationMs)
+                .timestamp(LocalDateTime.now())
+                .input(inputSnapshot)
+                .output(snapshotResult(result))
+                .build());
 
             List<Connection> connections = connectionMap.getOrDefault(node.getId(), Collections.emptyList());
             connections.stream()
@@ -87,9 +113,59 @@ public class RuleChainEngine {
                 });
 
         } catch (Exception e) {
+            long durationMs = (System.nanoTime() - start) / 1_000_000;
             log.error("节点执行失败: {} - {}", node.getName(), e.getMessage(), e);
-            context.addTrace(node.getId(), node.getName(), "Failure", e.getMessage());
+            context.addTrace(RuleContext.ExecutionTrace.builder()
+                .nodeId(node.getId())
+                .nodeName(node.getName())
+                .nodeType(nodeType.name())
+                .connectionType("Failure")
+                .status("ERROR")
+                .detail(e.getMessage())
+                .error(e.getMessage())
+                .durationMs(durationMs)
+                .timestamp(LocalDateTime.now())
+                .input(inputSnapshot)
+                .output(Map.of("connectionType", "Failure"))
+                .build());
         }
+    }
+
+    private Map<String, Object> snapshotContext(RuleContext context) {
+        Map<String, Object> snapshot = new LinkedHashMap<>();
+        snapshot.put("deviceKey", context.getDeviceKey());
+        snapshot.put("deviceId", context.getDeviceId());
+        snapshot.put("deviceName", context.getDeviceName());
+        snapshot.put("messageType", context.getMessageType() != null ? context.getMessageType().name() : null);
+        snapshot.put("eventTime", context.getEventTime());
+        snapshot.put("properties", context.getAllProperties().stream()
+            .collect(Collectors.toMap(
+                data -> data.getIdentifier(),
+                data -> data.getValue(),
+                (left, right) -> right,
+                LinkedHashMap::new
+            )));
+        context.getEventData().ifPresent(eventData -> {
+            snapshot.put("eventIdentifier", eventData.getIdentifier());
+            snapshot.put("eventParams", eventData.getParams().stream()
+                .collect(Collectors.toMap(
+                    data -> data.getIdentifier(),
+                    data -> data.getValue(),
+                    (left, right) -> right,
+                    LinkedHashMap::new
+                )));
+        });
+        snapshot.put("enrichedData", new LinkedHashMap<>(context.getEnrichedData()));
+        return snapshot;
+    }
+
+    private Map<String, Object> snapshotResult(RuleNodeExecutor.NodeResult result) {
+        Map<String, Object> output = new LinkedHashMap<>();
+        output.put("success", result.success());
+        output.put("connectionType", result.connectionType());
+        output.put("message", result.message());
+        output.put("data", result.data());
+        return output;
     }
 
     private Map<String, List<Connection>> buildConnectionMap(List<RuleChain.RuleConnection> connections) {

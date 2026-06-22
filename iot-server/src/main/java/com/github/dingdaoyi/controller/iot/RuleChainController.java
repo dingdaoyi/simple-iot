@@ -1,5 +1,6 @@
 package com.github.dingdaoyi.controller.iot;
 
+import com.github.dingdaoyi.controller.iot.dto.RuleChainDebugRequest;
 import com.github.dingdaoyi.core.base.BaseResult;
 import com.github.dingdaoyi.core.base.PageResult;
 import com.github.dingdaoyi.core.enums.ResultCode;
@@ -9,6 +10,7 @@ import com.github.dingdaoyi.entity.enu.RuleNodeType;
 import com.github.dingdaoyi.model.query.RuleChainAddQuery;
 import com.github.dingdaoyi.model.query.RuleChainPageQuery;
 import com.github.dingdaoyi.model.query.RuleChainUpdateQuery;
+import com.github.dingdaoyi.model.vo.RuleChainDebugResultVo;
 import com.github.dingdaoyi.model.vo.RuleChainDetailVo;
 import com.github.dingdaoyi.model.vo.RuleChainPageVo;
 import com.github.dingdaoyi.proto.model.tsl.TslModel;
@@ -78,6 +80,12 @@ public class RuleChainController {
         ruleChain.setId(id);
         ruleChain.setIsEnabled(enabled);
         return BaseResult.success(ruleChainService.updateById(ruleChain));
+    }
+
+    @PostMapping("debug")
+    @Operation(summary = "调试执行规则链草稿")
+    public BaseResult<RuleChainDebugResultVo> debug(@RequestBody @Valid RuleChainDebugRequest request) {
+        return BaseResult.success(ruleChainService.debug(request));
     }
 
     @GetMapping("node-types")

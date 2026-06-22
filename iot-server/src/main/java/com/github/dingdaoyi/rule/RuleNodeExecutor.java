@@ -41,8 +41,8 @@ public interface RuleNodeExecutor {
             return new NodeResult(true, "Success", null, data);
         }
 
-        public static NodeResult ok(String connectionType) {
-            return new NodeResult(true, connectionType, null, null);
+        public static NodeResult ok(String message) {
+            return new NodeResult(true, "Success", message, null);
         }
 
         /**
