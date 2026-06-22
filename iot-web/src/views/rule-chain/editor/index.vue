@@ -11,9 +11,11 @@ import {
   productTypeListApi,
   pushConfigListApi,
   ruleChainAddApi,
+  ruleChainDebugApi,
   ruleChainDetailApi,
   ruleChainNodeTypesApi,
   ruleChainUpdateApi,
+  ruleChainValidateApi,
 } from '@/api/index.js'
 import NodeConfigPanel from './NodeConfigPanel.vue'
 
@@ -63,6 +65,21 @@ const selectedNode = ref(null)
 
 // 保存加载状态
 const saving = ref(false)
+
+// 规则链调试状态
+const debugDialogVisible = ref(false)
+const debugRunning = ref(false)
+const debugResult = ref(null)
+const debugForm = ref({
+  deviceKey: 'demo-device-001',
+  deviceId: null,
+  deviceName: '演示设备',
+  messageType: 'PROPERTY',
+  propertiesJson: '{\n  "temperature": 36.5,\n  "humidity": 62\n}',
+  eventIdentifier: '',
+  eventParamsJson: '{}',
+  enrichedDataJson: '{}',
+})
 
 // 画布引用
 const canvasRef = ref(null)
@@ -342,6 +359,35 @@ const connectionLines = computed(() => {
     }
   }).filter(Boolean)
 })
+
+const debugTraceMap = computed(() => {
+  const map = {}
+  ;(debugResult.value?.traces || []).forEach((trace, index) => {
+    map[trace.nodeId] = { ...trace, index: index + 1 }
+  })
+  return map
+})
+
+const debugExecutedConnectionSet = computed(() => {
+  const set = new Set()
+  ;(debugResult.value?.executedConnections || []).forEach((conn) => {
+    set.add(`${conn.source}->${conn.target}:${getConnectionType(conn)}`)
+  })
+  return set
+})
+
+const validationIssues = computed(() => [
+  ...(debugResult.value?.validation?.errors || []),
+  ...(debugResult.value?.validation?.warnings || []),
+])
+
+function isDebugConnectionExecuted(line) {
+  return debugExecutedConnectionSet.value.has(`${line.sourceNode}->${line.targetNode}:${line.connectionType}`)
+}
+
+function getValidationIssueType(issue) {
+  return (debugResult.value?.validation?.errors || []).includes(issue) ? 'danger' : 'warning'
+}
 
 // 加载节点类型
 async function loadNodeTypes() {
@@ -814,27 +860,122 @@ function generateBezierPath(x1, y1, x2, y2) {
   const cpOffset = Math.min(Math.abs(x2 - x1) * 0.5, 100)
   return `M ${x1} ${y1} C ${x1 + cpOffset} ${y1}, ${x2 - cpOffset} ${y2}, ${x2} ${y2}`
 }
+
+function buildRuleChainDraft() {
+  const configuration = {
+    nodes: ruleChain.value.configuration.nodes.map(node => ({
+      ...node,
+      config: node.config ? { ...node.config, nodeType: node.type } : null,
+    })),
+    connections: ruleChain.value.configuration.connections,
+  }
+
+  return {
+    ...ruleChain.value,
+    configuration,
+    sourceId: ruleChain.value.sourceType === 'PRODUCT'
+      ? ruleChain.value.productId
+      : ruleChain.value.sourceId,
+  }
+}
+
+function parseJsonField(value, fieldName) {
+  if (!value || !value.trim())
+    return {}
+  try {
+    return JSON.parse(value)
+  }
+  catch (e) {
+    throw new Error(`${fieldName} 不是合法 JSON: ${e.message}`)
+  }
+}
+
+function formatJson(value) {
+  return JSON.stringify(value ?? {}, null, 2)
+}
+
+function getTraceStatusType(status) {
+  if (status === 'SUCCESS')
+    return 'success'
+  if (status === 'FAILED' || status === 'ERROR')
+    return 'danger'
+  return 'warning'
+}
+
+function openDebugDialog() {
+  debugDialogVisible.value = true
+}
+
+async function handleDebugRun() {
+  if (ruleChain.value.configuration.nodes.length === 0) {
+    ElMessage.warning('请先添加规则节点')
+    return
+  }
+
+  debugRunning.value = true
+  try {
+    const payload = {
+      ruleChain: buildRuleChainDraft(),
+      deviceKey: debugForm.value.deviceKey,
+      deviceId: debugForm.value.deviceId,
+      deviceName: debugForm.value.deviceName,
+      messageType: debugForm.value.messageType,
+      properties: parseJsonField(debugForm.value.propertiesJson, '属性数据'),
+      eventIdentifier: debugForm.value.eventIdentifier || null,
+      eventParams: parseJsonField(debugForm.value.eventParamsJson, '事件参数'),
+      enrichedData: parseJsonField(debugForm.value.enrichedDataJson, '扩展变量'),
+    }
+    const { data } = await ruleChainDebugApi(payload)
+    debugResult.value = normalizeApiData(data)
+    ElMessage.success('调试执行完成，已在画布高亮执行路径')
+  }
+  catch (e) {
+    ElMessage.error(e.message || '调试执行失败')
+    console.error('调试执行失败', e)
+  }
+  finally {
+    debugRunning.value = false
+  }
+}
+
+async function validateRuleChainDraft() {
+  const { data } = await ruleChainValidateApi(buildRuleChainDraft())
+  return normalizeApiData(data)
+}
+
+async function handleValidateDraft() {
+  debugRunning.value = true
+  try {
+    const validation = await validateRuleChainDraft()
+    debugResult.value = {
+      success: validation.valid,
+      executedNodeCount: 0,
+      durationMs: 0,
+      traces: [],
+      executedConnections: [],
+      validation,
+    }
+    if (validation.valid) {
+      ElMessage.success('规则链结构校验通过')
+    }
+    else {
+      ElMessage.warning(`规则链校验发现 ${validation.errors?.length || 0} 个错误`)
+    }
+  }
+  catch (e) {
+    ElMessage.error(e.message || '规则链校验失败')
+    console.error('规则链校验失败', e)
+  }
+  finally {
+    debugRunning.value = false
+  }
+}
+
 // 保存
 async function handleSave() {
   saving.value = true
   try {
-    // 构建提交数据 - 为每个节点的 config 添加 nodeType 以支持后端多态反序列化
-    const configuration = {
-      nodes: ruleChain.value.configuration.nodes.map(node => ({
-        ...node,
-        config: node.config ? { ...node.config, nodeType: node.type } : null,
-      })),
-      connections: ruleChain.value.configuration.connections,
-    }
-
-    const submitData = {
-      ...ruleChain.value,
-      configuration,
-      // 如果sourceType是PRODUCT,sourceId就是productId
-      sourceId: ruleChain.value.sourceType === 'PRODUCT'
-        ? ruleChain.value.productId
-        : ruleChain.value.sourceId,
-    }
+    const submitData = buildRuleChainDraft()
     if (isEdit.value) {
       await ruleChainUpdateApi(submitData)
     }
@@ -876,6 +1017,9 @@ onMounted(async () => {
         <span class="title">{{ isEdit ? '编辑规则引擎' : '新建规则引擎' }}</span>
       </div>
       <div class="header-right">
+        <el-button :loading="debugRunning" @click="openDebugDialog">
+          调试运行
+        </el-button>
         <el-button type="primary" :loading="saving" @click="handleSave">
           保存
         </el-button>
@@ -994,13 +1138,19 @@ onMounted(async () => {
             <path
               :d="generateBezierPath(line.source.x, line.source.y, line.target.x, line.target.y)"
               class="connection-line"
-              :class="`connection-${(line.connectionType || 'Success').toLowerCase()}`"
+              :class="[
+                `connection-${(line.connectionType || 'Success').toLowerCase()}`,
+                { 'debug-executed': isDebugConnectionExecuted(line) },
+              ]"
             />
             <!-- 箭头 -->
             <polygon
               :points="`${line.target.x - 8},${line.target.y - 5} ${line.target.x},${line.target.y} ${line.target.x - 8},${line.target.y + 5}`"
               class="connection-arrow"
-              :class="`connection-${(line.connectionType || 'Success').toLowerCase()}`"
+              :class="[
+                `connection-${(line.connectionType || 'Success').toLowerCase()}`,
+                { 'debug-executed': isDebugConnectionExecuted(line) },
+              ]"
             />
             <!-- 删除提示（hover时显示） -->
             <circle
@@ -1044,6 +1194,8 @@ onMounted(async () => {
             'selected': selectedNode?.id === node.id,
             'is-input': isInputNode(node.type),
             'is-filter': isFilterNode(node.type),
+            'debug-success': debugTraceMap[node.id]?.status === 'SUCCESS',
+            'debug-failed': ['FAILED', 'ERROR'].includes(debugTraceMap[node.id]?.status),
           }"
           :style="{ 'left': `${node.x}px`, 'top': `${node.y}px`, '--node-color': node.color }"
           @click="selectedNode = selectedNode?.id === node.id ? null : node"
@@ -1065,6 +1217,9 @@ onMounted(async () => {
           <div class="node-body">
             <div class="node-type">
               {{ node.type }}
+            </div>
+            <div v-if="debugTraceMap[node.id]" class="node-debug-badge">
+              #{{ debugTraceMap[node.id].index }} · {{ debugTraceMap[node.id].status }} · {{ debugTraceMap[node.id].connectionType }}
             </div>
           </div>
 
@@ -1107,6 +1262,113 @@ onMounted(async () => {
         </div>
       </div>
     </div>
+
+    <el-dialog v-model="debugDialogVisible" title="规则链调试运行" width="980px" destroy-on-close>
+      <div class="debug-dialog-content">
+        <el-form class="debug-form" label-width="90px" size="small">
+          <el-form-item label="消息类型">
+            <el-radio-group v-model="debugForm.messageType">
+              <el-radio-button label="PROPERTY">
+                属性
+              </el-radio-button>
+              <el-radio-button label="EVENT">
+                事件
+              </el-radio-button>
+              <el-radio-button label="ONLINE">
+                上线
+              </el-radio-button>
+              <el-radio-button label="OFFLINE">
+                下线
+              </el-radio-button>
+            </el-radio-group>
+          </el-form-item>
+          <el-form-item label="设备Key">
+            <el-input v-model="debugForm.deviceKey" placeholder="deviceKey" />
+          </el-form-item>
+          <el-form-item label="设备名称">
+            <el-input v-model="debugForm.deviceName" placeholder="设备名称" />
+          </el-form-item>
+          <el-form-item label="属性JSON">
+            <el-input v-model="debugForm.propertiesJson" type="textarea" :rows="5" placeholder="{ &quot;temperature&quot;: 36.5 }" />
+          </el-form-item>
+          <el-form-item label="事件标识">
+            <el-input v-model="debugForm.eventIdentifier" placeholder="event identifier，例如 high_temperature" />
+          </el-form-item>
+          <el-form-item label="事件参数">
+            <el-input v-model="debugForm.eventParamsJson" type="textarea" :rows="3" placeholder="{ &quot;level&quot;: &quot;HIGH&quot; }" />
+          </el-form-item>
+          <el-form-item label="扩展变量">
+            <el-input v-model="debugForm.enrichedDataJson" type="textarea" :rows="3" placeholder="{ &quot;tenant&quot;: &quot;demo&quot; }" />
+          </el-form-item>
+        </el-form>
+
+        <div class="debug-result-panel">
+          <div class="debug-result-header">
+            <div>
+              <strong>执行轨迹</strong>
+              <span v-if="debugResult" class="debug-summary">
+                {{ debugResult.success ? '成功' : '失败' }} · {{ debugResult.executedNodeCount || 0 }} 个节点 · {{ debugResult.durationMs || 0 }}ms
+              </span>
+            </div>
+            <div class="debug-actions">
+              <el-button :loading="debugRunning" @click="handleValidateDraft">
+                校验结构
+              </el-button>
+              <el-button type="primary" :loading="debugRunning" @click="handleDebugRun">
+                运行调试
+              </el-button>
+            </div>
+          </div>
+
+          <div v-if="validationIssues.length" class="validation-issues">
+            <el-alert
+              v-for="issue in validationIssues"
+              :key="`${issue.code}-${issue.nodeId || issue.connectionId || issue.message}`"
+              :type="getValidationIssueType(issue)"
+              :closable="false"
+              show-icon
+            >
+              <template #title>
+                {{ issue.message }}
+                <span class="issue-meta">
+                  {{ issue.nodeId || '' }} {{ issue.connectionId || '' }}
+                </span>
+              </template>
+            </el-alert>
+          </div>
+
+          <el-empty v-if="!debugResult" description="运行后展示节点执行轨迹" />
+          <el-timeline v-else class="debug-timeline">
+            <el-timeline-item
+              v-for="trace in debugResult.traces || []"
+              :key="`${trace.nodeId}-${trace.timestamp}`"
+              :type="getTraceStatusType(trace.status)"
+              :timestamp="trace.timestamp"
+            >
+              <div class="trace-card">
+                <div class="trace-title">
+                  <span>{{ trace.nodeName || trace.nodeId }}</span>
+                  <el-tag size="small" :type="getTraceStatusType(trace.status)">
+                    {{ trace.status }} / {{ trace.connectionType }} / {{ trace.durationMs || 0 }}ms
+                  </el-tag>
+                </div>
+                <div class="trace-detail">
+                  {{ trace.detail || trace.error || '无详情' }}
+                </div>
+                <el-collapse>
+                  <el-collapse-item title="输入快照" name="input">
+                    <pre>{{ formatJson(trace.input) }}</pre>
+                  </el-collapse-item>
+                  <el-collapse-item title="输出快照" name="output">
+                    <pre>{{ formatJson(trace.output) }}</pre>
+                  </el-collapse-item>
+                </el-collapse>
+              </div>
+            </el-timeline-item>
+          </el-timeline>
+        </div>
+      </div>
+    </el-dialog>
 
     <!-- 节点创建菜单 -->
     <Teleport to="body">
@@ -1159,18 +1421,20 @@ onMounted(async () => {
   align-items: center;
   padding: var(--space-md) var(--space-lg);
 
-  .header-left {
+  .header-left,
+  .header-right {
     display: flex;
     align-items: center;
     gap: var(--space-md);
+  }
 
+  .header-left {
     .title {
       font-size: 18px;
       font-weight: 600;
     }
   }
 }
-
 .editor-main {
   flex: 1;
   display: flex;
@@ -1305,6 +1569,13 @@ onMounted(async () => {
         opacity: 0.7;
         pointer-events: none;
       }
+
+      &.debug-executed {
+        stroke-width: 4;
+        stroke-dasharray: 8, 4;
+        filter: drop-shadow(0 0 6px rgba(16, 185, 129, 0.75));
+        animation: executedFlow 1.2s linear infinite;
+      }
     }
 
     // hover 时连接线变粗
@@ -1325,6 +1596,10 @@ onMounted(async () => {
       }
       &.connection-success {
         fill: var(--iot-color-primary);
+      }
+
+      &.debug-executed {
+        filter: drop-shadow(0 0 6px rgba(16, 185, 129, 0.75));
       }
     }
     // 删除提示（hover 时显示）
@@ -1375,6 +1650,14 @@ onMounted(async () => {
       box-shadow:
         0 6px 20px rgba(0, 0, 0, 0.15),
         0 0 0 3px rgba(99, 102, 241, 0.2);
+    }
+    &.debug-success {
+      border-color: #10b981;
+      box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.18);
+    }
+    &.debug-failed {
+      border-color: #ef4444;
+      box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.2);
     }
     // 输入节点样式（绿色边框）
     &.is-input {
@@ -1491,6 +1774,18 @@ onMounted(async () => {
         font-size: 11px;
         color: var(--iot-color-text-muted);
       }
+      .node-debug-badge {
+        margin-top: 4px;
+        font-size: 10px;
+        font-weight: 600;
+        color: #047857;
+        background: rgba(16, 185, 129, 0.1);
+        border-radius: var(--radius-sm);
+        padding: 2px 6px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
     }
   }
 }
@@ -1530,6 +1825,95 @@ onMounted(async () => {
     }
   }
 }
+
+.debug-dialog-content {
+  display: grid;
+  grid-template-columns: 380px 1fr;
+  gap: var(--space-lg);
+  min-height: 520px;
+
+  .debug-form {
+    padding-right: var(--space-md);
+    border-right: 1px solid var(--iot-color-border);
+  }
+
+  .debug-result-panel {
+    min-width: 0;
+  }
+
+  .debug-result-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--space-md);
+  }
+
+  .debug-actions {
+    display: flex;
+    gap: var(--space-sm);
+  }
+
+  .validation-issues {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-xs);
+    margin-bottom: var(--space-md);
+
+    .issue-meta {
+      margin-left: var(--space-sm);
+      color: var(--iot-color-text-muted);
+      font-size: 12px;
+      font-weight: 400;
+    }
+  }
+
+  .debug-summary {
+    margin-left: var(--space-sm);
+    color: var(--iot-color-text-muted);
+    font-size: 12px;
+  }
+
+  .debug-timeline {
+    max-height: 500px;
+    overflow-y: auto;
+    padding-right: var(--space-sm);
+  }
+
+  .trace-card {
+    padding: var(--space-sm) var(--space-md);
+    border: 1px solid var(--iot-color-border);
+    border-radius: var(--radius-md);
+    background: rgba(255, 255, 255, 0.7);
+  }
+
+  .trace-title {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: var(--space-sm);
+    margin-bottom: 6px;
+    font-weight: 600;
+  }
+
+  .trace-detail {
+    margin-bottom: var(--space-sm);
+    color: var(--iot-color-text-secondary);
+    font-size: 12px;
+  }
+
+  pre {
+    margin: 0;
+    padding: var(--space-sm);
+    max-height: 180px;
+    overflow: auto;
+    border-radius: var(--radius-sm);
+    background: #0f172a;
+    color: #d1fae5;
+    font-size: 12px;
+    line-height: 1.5;
+  }
+}
+
 // 暗色模式适配
 :global(.dark) {
   .canvas-panel {
@@ -1624,6 +2008,15 @@ onMounted(async () => {
   to {
     opacity: 1;
     transform: translateY(0);
+  }
+}
+
+@keyframes executedFlow {
+  from {
+    stroke-dashoffset: 0;
+  }
+  to {
+    stroke-dashoffset: -24;
   }
 }
 </style>

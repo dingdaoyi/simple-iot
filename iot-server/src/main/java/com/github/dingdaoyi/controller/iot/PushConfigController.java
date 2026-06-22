@@ -1,5 +1,6 @@
 package com.github.dingdaoyi.controller.iot;
 
+import com.github.dingdaoyi.controller.iot.dto.PushTestRequest;
 import com.github.dingdaoyi.core.base.BaseResult;
 import com.github.dingdaoyi.core.base.PageResult;
 import com.github.dingdaoyi.core.enums.ResultCode;
@@ -10,6 +11,7 @@ import com.github.dingdaoyi.model.query.PushConfigUpdateQuery;
 import com.github.dingdaoyi.model.vo.PushConfigDetailVo;
 import com.github.dingdaoyi.model.vo.PushConfigPageVo;
 import com.github.dingdaoyi.service.PushConfigService;
+import com.github.dingdaoyi.service.push.PushDeliveryResult;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -55,6 +57,12 @@ public class PushConfigController {
     @Operation(summary = "删除配置")
     public BaseResult<Boolean> delete(@PathVariable Integer id) {
         return BaseResult.success(pushConfigService.removeById(id));
+    }
+
+    @PostMapping("{id}/test")
+    @Operation(summary = "测试推送配置")
+    public BaseResult<PushDeliveryResult> testPush(@PathVariable Integer id, @RequestBody PushTestRequest request) {
+        return BaseResult.success(pushConfigService.testPush(id, request));
     }
 
     @PostMapping("page")

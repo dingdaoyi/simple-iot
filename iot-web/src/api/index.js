@@ -323,6 +323,32 @@ export function protocolSetStatusApi(id, enable) {
 }
 
 /**
+ * 测试脚本协议解码
+ * @param data 协议草稿和测试报文
+ * @returns {Promise} API 响应
+ */
+export function protocolTestDecodeApi(data) {
+  return request({
+    url: '/protocol/test/decode',
+    method: 'post',
+    data,
+  })
+}
+
+/**
+ * 测试脚本协议编码
+ * @param data 协议草稿和测试命令
+ * @returns {Promise} API 响应
+ */
+export function protocolTestEncodeApi(data) {
+  return request({
+    url: '/protocol/test/encode',
+    method: 'post',
+    data,
+  })
+}
+
+/**
  * 图标列表
  * @param params
  * @returns {Promise} API 响应
@@ -623,6 +649,17 @@ export function pushConfigListApi(params) {
 }
 
 /**
+ * 测试推送配置
+ */
+export function pushConfigTestApi(id, data) {
+  return request({
+    url: `/push-config/${id}/test`,
+    method: 'post',
+    data,
+  })
+}
+
+/**
  * 调用设备服务
  * @param deviceKey 设备编号
  * @param identifier 服务标识符
@@ -709,6 +746,28 @@ export function ruleChainNodeTypesApi() {
   return request({
     url: '/rule-chain/node-types',
     method: 'get',
+  })
+}
+
+/**
+ * 调试执行规则链草稿
+ */
+export function ruleChainDebugApi(data) {
+  return request({
+    url: '/rule-chain/debug',
+    method: 'post',
+    data,
+  })
+}
+
+/**
+ * 校验规则链草稿
+ */
+export function ruleChainValidateApi(data) {
+  return request({
+    url: '/rule-chain/validate',
+    method: 'post',
+    data,
   })
 }
 

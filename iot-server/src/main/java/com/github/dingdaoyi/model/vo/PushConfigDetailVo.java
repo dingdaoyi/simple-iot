@@ -44,6 +44,12 @@ public class PushConfigDetailVo {
     @Schema(description = "超时时间(毫秒)")
     private Integer httpTimeout;
 
+    @Schema(description = "是否启用 HTTP HMAC 签名")
+    private Boolean httpSignEnabled;
+
+    @Schema(description = "HTTP HMAC 签名密钥")
+    private String httpSignSecret;
+
     // ==================== MQTT 配置 ====================
 
     @Schema(description = "MQTT Broker地址")

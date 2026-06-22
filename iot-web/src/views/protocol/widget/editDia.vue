@@ -1,6 +1,7 @@
 <script lang="jsx" setup>
+import { ElMessage } from 'element-plus'
 import { computed, ref, watch } from 'vue'
-import { protocolAddApi, protocolEditApi } from '@/api'
+import { protocolAddApi, protocolEditApi, protocolTestDecodeApi, protocolTestEncodeApi } from '@/api'
 import { useForm } from '@/composables/useForm.js'
 import CodeEditor from './CodeEditor.vue'
 
@@ -143,6 +144,23 @@ const { form, onSubmit: handleSubmit, editRef, loading } = useForm({
 })
 
 const isScriptType = computed(() => form.value.protoType === 3)
+const testDialogVisible = ref(false)
+const testMode = ref('decode')
+const testLoading = ref(false)
+const testResult = ref(null)
+const testForm = ref({
+  deviceKey: 'debug-device-001',
+  productKey: 'debug-product',
+  messageType: 'PROPERTY',
+  data: '{"temperature": 25.5, "humidity": 60}',
+  identifier: 'setPower',
+  paramsText: `{
+  "power": "on"
+}`,
+})
+
+const testDialogTitle = computed(() => testMode.value === 'decode' ? '测试解码' : '测试编码')
+const formattedTestResult = computed(() => testResult.value ? JSON.stringify(testResult.value, null, 2) : '')
 
 // 默认脚本模板
 const scriptTemplates = {
@@ -300,6 +318,76 @@ function onCancel() {
   emits('update:modelValue', false)
 }
 
+function openTestDialog(mode) {
+  if (!isScriptType.value) {
+    ElMessage.warning('仅脚本协议支持在线调试')
+    return
+  }
+  if (!form.value.scriptContent) {
+    ElMessage.warning('请先填写脚本内容')
+    return
+  }
+  testMode.value = mode
+  testResult.value = null
+  testDialogVisible.value = true
+}
+
+function buildProtocolDraft() {
+  return {
+    ...form.value,
+    protoType: 3,
+    scriptLang: form.value.scriptLang || 'javascript',
+    protoKey: form.value.protoKey || 'debug-script',
+    name: form.value.name || '脚本调试协议',
+  }
+}
+
+async function runProtocolTest() {
+  try {
+    testLoading.value = true
+    testResult.value = null
+    if (testMode.value === 'decode') {
+      const { data } = await protocolTestDecodeApi({
+        protocol: buildProtocolDraft(),
+        deviceKey: testForm.value.deviceKey,
+        productKey: testForm.value.productKey,
+        messageType: testForm.value.messageType,
+        data: testForm.value.data,
+      })
+      testResult.value = data
+      ElMessage.success('解码测试成功')
+      return
+    }
+
+    let params = {}
+    if (testForm.value.paramsText?.trim()) {
+      params = JSON.parse(testForm.value.paramsText)
+    }
+    const { data } = await protocolTestEncodeApi({
+      protocol: buildProtocolDraft(),
+      deviceKey: testForm.value.deviceKey,
+      productKey: testForm.value.productKey,
+      identifier: testForm.value.identifier,
+      params,
+    })
+    testResult.value = data
+    ElMessage.success('编码测试成功')
+  }
+  catch (error) {
+    testResult.value = {
+      success: false,
+      message: error?.msg || error?.message || '测试失败',
+      detail: error,
+    }
+    if (error instanceof SyntaxError) {
+      ElMessage.error('编码参数不是合法 JSON')
+    }
+  }
+  finally {
+    testLoading.value = false
+  }
+}
+
 watch(() => props.datas, (val) => {
   if (val) {
     form.value = { ...val }
@@ -444,6 +532,12 @@ watch(() => form.value.scriptLang, () => {
                 📄 重置模板
               </el-button>
               <!-- API 文档提示 -->
+              <el-button size="small" type="success" plain @click="openTestDialog('decode')">
+                测试解码
+              </el-button>
+              <el-button size="small" type="warning" plain @click="openTestDialog('encode')">
+                测试编码
+              </el-button>
               <el-popover
                 placement="bottom"
                 :width="480"
@@ -493,6 +587,75 @@ watch(() => form.value.scriptLang, () => {
       </el-button>
     </template>
   </el-dialog>
+
+  <el-dialog
+    v-model="testDialogVisible"
+    :title="testDialogTitle"
+    width="720px"
+  >
+    <el-form label-width="110px" :model="testForm">
+      <el-row :gutter="16">
+        <el-col :span="12">
+          <el-form-item label="设备Key">
+            <el-input v-model="testForm.deviceKey" clearable />
+          </el-form-item>
+        </el-col>
+        <el-col :span="12">
+          <el-form-item label="产品Key">
+            <el-input v-model="testForm.productKey" clearable />
+          </el-form-item>
+        </el-col>
+      </el-row>
+
+      <template v-if="testMode === 'decode'">
+        <el-form-item label="消息类型">
+          <el-select v-model="testForm.messageType" style="width: 100%">
+            <el-option label="属性上报 PROPERTY" value="PROPERTY" />
+            <el-option label="事件上报 EVENT" value="EVENT" />
+            <el-option label="服务响应 SERVICE_RES" value="SERVICE_RES" />
+          </el-select>
+        </el-form-item>
+        <el-form-item label="原始报文">
+          <el-input
+            v-model="testForm.data"
+            type="textarea"
+            :rows="5"
+            placeholder="请输入设备原始报文，例如 JSON 字符串"
+          />
+        </el-form-item>
+      </template>
+
+      <template v-else>
+        <el-form-item label="功能标识符">
+          <el-input v-model="testForm.identifier" clearable placeholder="例如 setPower" />
+        </el-form-item>
+        <el-form-item label="下行参数">
+          <el-input
+            v-model="testForm.paramsText"
+            type="textarea"
+            :rows="6"
+            placeholder="请输入 JSON 对象"
+          />
+        </el-form-item>
+      </template>
+    </el-form>
+
+    <div v-if="testResult" class="test-result">
+      <div class="test-result-title">
+        执行结果
+      </div>
+      <pre>{{ formattedTestResult }}</pre>
+    </div>
+
+    <template #footer>
+      <el-button @click="testDialogVisible = false">
+        关闭
+      </el-button>
+      <el-button type="primary" :loading="testLoading" @click="runProtocolTest">
+        运行测试
+      </el-button>
+    </template>
+  </el-dialog>
 </template>
 
 <style lang="scss" scoped>
@@ -515,6 +678,35 @@ watch(() => form.value.scriptLang, () => {
       align-items: center;
       gap: var(--space-sm);
     }
+  }
+}
+
+.test-result {
+  margin-top: var(--space-md);
+  border: 1px solid var(--iot-color-border);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+
+  .test-result-title {
+    padding: var(--space-sm) var(--space-md);
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--iot-color-text-primary);
+    background: var(--iot-glass-bg);
+    border-bottom: 1px solid var(--iot-color-border);
+  }
+
+  pre {
+    margin: 0;
+    padding: var(--space-md);
+    max-height: 320px;
+    overflow: auto;
+    font-size: 12px;
+    line-height: 1.6;
+    color: #d4d4d4;
+    background: #1e1e1e;
+    white-space: pre-wrap;
+    word-break: break-all;
   }
 }
 

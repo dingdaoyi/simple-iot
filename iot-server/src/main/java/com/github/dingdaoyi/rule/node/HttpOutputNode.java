@@ -8,13 +8,12 @@ import com.github.dingdaoyi.rule.RuleNodeExecutor;
 import com.github.dingdaoyi.rule.config.NodeConfig;
 import com.github.dingdaoyi.rule.config.OutputHttpConfig;
 import com.github.dingdaoyi.service.PushConfigService;
+import com.github.dingdaoyi.service.push.HttpPushDeliveryService;
+import com.github.dingdaoyi.service.push.PushDeliveryResult;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.*;
 import org.springframework.stereotype.Component;
-import org.springframework.web.client.RestTemplate;
 
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.regex.Matcher;
@@ -32,7 +31,7 @@ public class HttpOutputNode implements RuleNodeExecutor {
     private PushConfigService pushConfigService;
 
     @Resource
-    private RestTemplate restTemplate;
+    private HttpPushDeliveryService httpPushDeliveryService;
 
     @Resource
     private ObjectMapper objectMapper;
@@ -67,22 +66,10 @@ public class HttpOutputNode implements RuleNodeExecutor {
         // 2. 构建模板变量
         Map<String, Object> variables = context.buildVariables();
 
-        // 3. 构建请求
-        String url = replaceTemplate(pushConfig.getHttpUrl(), variables);
-        String method = pushConfig.getHttpMethod() != null ? pushConfig.getHttpMethod() : "POST";
+        // 3. 构建模板化推送配置
+        PushConfig runtimeConfig = buildRuntimeConfig(pushConfig, variables);
 
-        // 4. 构建请求头
-        HttpHeaders headers = new HttpHeaders();
-        if (pushConfig.getHttpHeaders() != null) {
-            pushConfig.getHttpHeaders().forEach(kv ->
-                headers.set(kv.getKey(), replaceTemplate(kv.getValue(), variables)));
-        }
-        // 默认Content-Type
-        if (headers.getContentType() == null) {
-            headers.setContentType(MediaType.APPLICATION_JSON);
-        }
-
-        // 5. 构建请求体
+        // 4. 构建请求体
         String body;
         String customBody = cfg.getCustomBody();
         if (customBody != null) {
@@ -92,27 +79,36 @@ public class HttpOutputNode implements RuleNodeExecutor {
             body = buildDefaultBody(context, variables);
         }
 
-        // 6. 发送请求
-        try {
-            HttpEntity<String> entity = new HttpEntity<>(body, headers);
-
-            ResponseEntity<String> response;
-            if ("GET".equalsIgnoreCase(method)) {
-                response = restTemplate.exchange(url, HttpMethod.GET, entity, String.class);
-            } else if ("PUT".equalsIgnoreCase(method)) {
-                response = restTemplate.exchange(url, HttpMethod.PUT, entity, String.class);
-            } else {
-                response = restTemplate.exchange(url, HttpMethod.POST, entity, String.class);
-            }
-
+        // 5. 发送请求
+        PushDeliveryResult result = httpPushDeliveryService.deliverHttp(runtimeConfig, body, "rule.output.http");
+        if (result.isSuccess()) {
             String detail = String.format("HTTP推送 -> %s %s (状态: %s)",
-                    method, url, response.getStatusCode());
+                    runtimeConfig.getHttpMethod(), runtimeConfig.getHttpUrl(), result.getStatusCode());
             return NodeResult.ok(detail);
-
-        } catch (Exception e) {
-            log.error("HTTP推送失败: {} {}", method, url, e);
-            return NodeResult.fail("HTTP推送失败: " + e.getMessage());
         }
+        return NodeResult.fail(result.getMessage());
+    }
+
+    private PushConfig buildRuntimeConfig(PushConfig source, Map<String, Object> variables) {
+        PushConfig runtime = new PushConfig();
+        runtime.setId(source.getId());
+        runtime.setName(source.getName());
+        runtime.setType(source.getType());
+        runtime.setIsEnabled(source.getIsEnabled());
+        runtime.setHttpUrl(replaceTemplate(source.getHttpUrl(), variables));
+        runtime.setHttpMethod(source.getHttpMethod() != null ? source.getHttpMethod() : "POST");
+        runtime.setHttpTimeout(source.getHttpTimeout());
+        runtime.setHttpSignEnabled(source.getHttpSignEnabled());
+        runtime.setHttpSignSecret(source.getHttpSignSecret());
+        if (source.getHttpHeaders() != null) {
+            runtime.setHttpHeaders(source.getHttpHeaders().stream().map(kv -> {
+                PushConfig.KeyValue copied = new PushConfig.KeyValue();
+                copied.setKey(kv.getKey());
+                copied.setValue(replaceTemplate(kv.getValue(), variables));
+                return copied;
+            }).toList());
+        }
+        return runtime;
     }
 
     /**

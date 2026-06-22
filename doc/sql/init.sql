@@ -1129,6 +1129,8 @@ CREATE TABLE tb_push_config (
                                 http_method VARCHAR(10) DEFAULT 'POST',  -- GET / POST / PUT
                                 http_headers JSONB,                      -- 请求头 [{"key":"Content-Type","value":"application/json"}]
                                 http_timeout INTEGER DEFAULT 5000,       -- 超时时间(毫秒)
+                                http_sign_enabled BOOLEAN DEFAULT FALSE, -- 是否启用 HMAC 签名
+                                http_sign_secret VARCHAR(255),           -- HMAC 签名密钥
 
     -- ==================== MQTT 配置 ====================
                                 mqtt_broker VARCHAR(255),                -- Broker地址 (tcp://host:1883)
@@ -1162,6 +1164,8 @@ COMMENT ON COLUMN tb_push_config.http_url IS 'HTTP请求URL';
 COMMENT ON COLUMN tb_push_config.http_method IS 'HTTP请求方法: GET/POST/PUT';
 COMMENT ON COLUMN tb_push_config.http_headers IS 'HTTP请求头(JSON数组格式)';
 COMMENT ON COLUMN tb_push_config.http_timeout IS '超时时间(毫秒)';
+COMMENT ON COLUMN tb_push_config.http_sign_enabled IS '是否启用 HTTP HMAC 签名';
+COMMENT ON COLUMN tb_push_config.http_sign_secret IS 'HTTP HMAC 签名密钥';
 
 -- MQTT 配置注释
 COMMENT ON COLUMN tb_push_config.mqtt_broker IS 'MQTT Broker地址 (如: tcp://localhost:1883)';

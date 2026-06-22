@@ -4,6 +4,7 @@ import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.github.dingdaoyi.controller.iot.dto.PushTestRequest;
 import com.github.dingdaoyi.core.base.PageResult;
 import com.github.dingdaoyi.core.enums.ResultCode;
 import com.github.dingdaoyi.core.exception.BusinessException;
@@ -14,7 +15,10 @@ import com.github.dingdaoyi.model.query.PushConfigPageQuery;
 import com.github.dingdaoyi.model.vo.PushConfigDetailVo;
 import com.github.dingdaoyi.model.vo.PushConfigPageVo;
 import com.github.dingdaoyi.service.PushConfigService;
+import com.github.dingdaoyi.service.push.HttpPushDeliveryService;
+import com.github.dingdaoyi.service.push.PushDeliveryResult;
 import com.github.dingdaoyi.utils.PageHelper;
+import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -26,6 +30,9 @@ import java.util.Optional;
  */
 @Service
 public class PushConfigServiceImpl extends ServiceImpl<PushConfigMapper, PushConfig> implements PushConfigService {
+
+    @Resource
+    private HttpPushDeliveryService httpPushDeliveryService;
 
     @Override
     public boolean save(PushConfig entity) {
@@ -142,5 +149,30 @@ public class PushConfigServiceImpl extends ServiceImpl<PushConfigMapper, PushCon
     @Override
     public List<PushConfig> listEnabled() {
         return baseMapper.listEnabled();
+    }
+
+    @Override
+    public PushDeliveryResult testPush(Integer id, PushTestRequest request) {
+        PushConfig config = getById(id);
+        if (config == null) {
+            return PushDeliveryResult.failure("推送配置不存在: " + id);
+        }
+        if (!Boolean.TRUE.equals(config.getIsEnabled())) {
+            return PushDeliveryResult.failure("推送配置已禁用: " + config.getName());
+        }
+        if (config.getType() != PushConfigType.HTTP) {
+            return PushDeliveryResult.failure("当前仅支持 HTTP 推送配置测试");
+        }
+        Object payload = request != null && request.getPayload() != null ? request.getPayload() : defaultTestPayload();
+        String eventType = request != null && request.getEventType() != null ? request.getEventType() : "push.test";
+        return httpPushDeliveryService.deliverHttp(config, payload, eventType);
+    }
+
+    private Object defaultTestPayload() {
+        return java.util.Map.of(
+            "event", "push.test",
+            "deviceKey", "demo-device",
+            "properties", java.util.Map.of("temperature", 36.5)
+        );
     }
 }

@@ -50,6 +50,12 @@ public class PushConfigUpdateQuery implements ToEntity<PushConfig> {
     @Schema(description = "超时时间(毫秒)")
     private Integer httpTimeout = 5000;
 
+    @Schema(description = "是否启用 HTTP HMAC 签名")
+    private Boolean httpSignEnabled = false;
+
+    @Schema(description = "HTTP HMAC 签名密钥")
+    private String httpSignSecret;
+
     // ==================== MQTT 配置 ====================
 
     @Schema(description = "MQTT Broker地址")
@@ -96,6 +102,8 @@ public class PushConfigUpdateQuery implements ToEntity<PushConfig> {
         config.setHttpMethod(httpMethod);
         config.setHttpHeaders(httpHeaders);
         config.setHttpTimeout(httpTimeout);
+        config.setHttpSignEnabled(httpSignEnabled);
+        config.setHttpSignSecret(httpSignSecret);
 
         // MQTT 配置
         config.setMqttBroker(mqttBroker);

@@ -5,9 +5,12 @@ import com.github.dingdaoyi.core.base.PageResult;
 import com.github.dingdaoyi.entity.RuleChain;
 import com.github.dingdaoyi.model.query.RuleChainAddQuery;
 import com.github.dingdaoyi.model.query.RuleChainPageQuery;
+import com.github.dingdaoyi.controller.iot.dto.RuleChainDebugRequest;
 import com.github.dingdaoyi.model.query.RuleChainUpdateQuery;
+import com.github.dingdaoyi.model.vo.RuleChainDebugResultVo;
 import com.github.dingdaoyi.model.vo.RuleChainDetailVo;
 import com.github.dingdaoyi.model.vo.RuleChainPageVo;
+import com.github.dingdaoyi.model.vo.RuleChainValidationResultVo;
 
 import java.util.List;
 import java.util.Optional;
@@ -53,4 +56,15 @@ public interface RuleChainService extends IService<RuleChain> {
      * 根据产品ID获取规则链
      */
     List<RuleChain> getByProductId(Integer productId);
+
+    /**
+     * 校验规则链草稿结构。
+     */
+    RuleChainValidationResultVo validateDraft(RuleChain ruleChain);
+
+    /**
+     * 调试执行规则链草稿。
+     * 不要求先保存规则链，用于编辑器内模拟消息并查看节点执行轨迹。
+     */
+    RuleChainDebugResultVo debug(RuleChainDebugRequest request);
 }

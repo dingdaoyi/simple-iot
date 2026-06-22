@@ -3,8 +3,13 @@ package com.github.dingdaoyi.service;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.github.dingdaoyi.entity.Protocol;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.github.dingdaoyi.proto.model.DecodeResult;
+import com.github.dingdaoyi.proto.model.EncoderResult;
+import com.github.dingdaoyi.proto.model.ProtoMessageType;
+import com.github.dingdaoyi.proto.model.ProtocolException;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 /**
@@ -37,5 +42,31 @@ public interface ProtocolService extends IService<Protocol>{
      * @return 是否成功
      */
     boolean setProtocolStatus(Integer id, boolean enable);
+
+    /**
+     * 测试脚本协议解码，不保存协议草稿，不影响当前已加载协议。
+     *
+     * @param protocol 协议草稿
+     * @param deviceKey 设备Key
+     * @param productKey 产品Key
+     * @param messageType 消息类型
+     * @param data 原始报文
+     * @return 解码结果
+     */
+    DecodeResult testDecode(Protocol protocol, String deviceKey, String productKey,
+                            ProtoMessageType messageType, String data) throws ProtocolException;
+
+    /**
+     * 测试脚本协议编码，不保存协议草稿，不影响当前已加载协议。
+     *
+     * @param protocol 协议草稿
+     * @param deviceKey 设备Key
+     * @param productKey 产品Key
+     * @param identifier 功能/属性标识符
+     * @param params 下行参数
+     * @return 编码结果
+     */
+    EncoderResult testEncode(Protocol protocol, String deviceKey, String productKey,
+                             String identifier, Map<String, Object> params) throws ProtocolException;
 
 }

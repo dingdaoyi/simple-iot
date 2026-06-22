@@ -4,6 +4,7 @@ import com.github.dingdaoyi.proto.model.DecodeResult;
 import com.github.dingdaoyi.proto.model.DeviceData;
 import com.github.dingdaoyi.proto.model.tsl.TslModel;
 import com.github.dingdaoyi.proto.model.tsl.TslProperty;
+import lombok.Builder;
 import lombok.Data;
 
 import java.time.LocalDateTime;
@@ -117,10 +118,24 @@ public class RuleContext {
     }
 
     /**
-     * 添加执行轨迹
+     * 添加执行轨迹（兼容旧调用）。
      */
     public void addTrace(String nodeId, String nodeName, String connectionType, String detail) {
-        traces.add(new ExecutionTrace(nodeId, nodeName, connectionType, detail, LocalDateTime.now()));
+        traces.add(ExecutionTrace.builder()
+            .nodeId(nodeId)
+            .nodeName(nodeName)
+            .connectionType(connectionType)
+            .detail(detail)
+            .status("SUCCESS")
+            .timestamp(LocalDateTime.now())
+            .build());
+    }
+
+    /**
+     * 添加完整执行轨迹。
+     */
+    public void addTrace(ExecutionTrace trace) {
+        traces.add(trace);
     }
 
     /**
@@ -147,19 +162,18 @@ public class RuleContext {
     }
 
     @Data
+    @Builder
     public static class ExecutionTrace {
         private String nodeId;
         private String nodeName;
+        private String nodeType;
         private String connectionType;
+        private String status;
         private String detail;
+        private String error;
+        private Long durationMs;
+        private Map<String, Object> input;
+        private Map<String, Object> output;
         private LocalDateTime timestamp;
-
-        public ExecutionTrace(String nodeId, String nodeName, String connectionType, String detail, LocalDateTime timestamp) {
-            this.nodeId = nodeId;
-            this.nodeName = nodeName;
-            this.connectionType = connectionType;
-            this.detail = detail;
-            this.timestamp = timestamp;
-        }
     }
 }

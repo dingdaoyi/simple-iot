@@ -1,5 +1,7 @@
 package com.github.dingdaoyi.controller.iot;
 
+import com.github.dingdaoyi.controller.iot.dto.ProtocolDecodeTestRequest;
+import com.github.dingdaoyi.controller.iot.dto.ProtocolEncodeTestRequest;
 import com.github.dingdaoyi.entity.Protocol;
 import com.github.dingdaoyi.core.base.BaseResult;
 import com.github.dingdaoyi.service.ProductService;
@@ -58,5 +60,29 @@ public class ProtocolController {
     @Operation(summary = "设置协议状态")
     public BaseResult<Boolean> setStatus(@PathVariable Integer id, @RequestParam Boolean enable) {
         return BaseResult.success(protocolService.setProtocolStatus(id, enable));
+    }
+
+    @PostMapping("/test/decode")
+    @Operation(summary = "测试脚本协议解码")
+    public BaseResult<?> testDecode(@RequestBody ProtocolDecodeTestRequest request) throws Exception {
+        return BaseResult.success(protocolService.testDecode(
+                request.getProtocol(),
+                request.getDeviceKey(),
+                request.getProductKey(),
+                request.getMessageType(),
+                request.getData()
+        ));
+    }
+
+    @PostMapping("/test/encode")
+    @Operation(summary = "测试脚本协议编码")
+    public BaseResult<?> testEncode(@RequestBody ProtocolEncodeTestRequest request) throws Exception {
+        return BaseResult.success(protocolService.testEncode(
+                request.getProtocol(),
+                request.getDeviceKey(),
+                request.getProductKey(),
+                request.getIdentifier(),
+                request.getParams()
+        ));
     }
 }
