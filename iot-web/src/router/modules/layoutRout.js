@@ -16,17 +16,23 @@ import {
   Warning,
 } from '@element-plus/icons-vue'
 import layout from '@/layout'
-import device from '@/views/device'
-import deviceDetails from '@/views/device/widget/details.vue'
-import home from '@/views/home'
-import product from '@/views/product'
-import productType from '@/views/productType'
-import protocol from '@/views/protocol'
-import email from '@/views/system/email'
-import icon from '@/views/system/icon'
-import messageReceive from '@/views/system/messageReceive'
-import sms from '@/views/system/sms'
-import tslModel from '@/views/tslModel'
+
+const home = () => import('@/views/home')
+const productType = () => import('@/views/productType')
+const protocol = () => import('@/views/protocol')
+const product = () => import('@/views/product')
+const device = () => import('@/views/device')
+const tslModel = () => import('@/views/tslModel')
+const deviceDetails = () => import('@/views/device/widget/details.vue')
+const icon = () => import('@/views/system/icon')
+const sms = () => import('@/views/system/sms')
+const email = () => import('@/views/system/email')
+const messageReceive = () => import('@/views/system/messageReceive')
+const pushConfig = () => import('@/views/push-config/index.vue')
+const driver = () => import('@/views/driver/index.vue')
+const ruleChain = () => import('@/views/rule-chain/index.vue')
+const ruleChainEditor = () => import('@/views/rule-chain/editor/index.vue')
+const alarm = () => import('@/views/alarm/index.vue')
 
 export default [
   {
@@ -63,7 +69,7 @@ export default [
           {
             path: '/driver',
             name: 'driver',
-            component: () => import('@/views/driver/index.vue'),
+            component: driver,
             meta: {
               title: '驱动管理',
               icon: Tools,
@@ -119,7 +125,7 @@ export default [
           {
             path: '/rule-chain',
             name: 'ruleChain',
-            component: () => import('@/views/rule-chain/index.vue'),
+            component: ruleChain,
             meta: {
               title: '规则引擎',
               icon: Operation,
@@ -128,7 +134,7 @@ export default [
           {
             path: '/rule-chain/editor',
             name: 'ruleChainEditor',
-            component: () => import('@/views/rule-chain/editor/index.vue'),
+            component: ruleChainEditor,
             meta: {
               hidden: true,
               title: '规则引擎编辑器',
@@ -138,7 +144,7 @@ export default [
           {
             path: '/rule-chain/editor/:id',
             name: 'ruleChainEditorEdit',
-            component: () => import('@/views/rule-chain/editor/index.vue'),
+            component: ruleChainEditor,
             meta: {
               hidden: true,
               title: '编辑规则引擎',
@@ -148,7 +154,7 @@ export default [
           {
             path: '/alarm',
             name: 'alarm',
-            component: () => import('@/views/alarm/index.vue'),
+            component: alarm,
             meta: {
               title: '告警管理',
               icon: Warning,
@@ -192,14 +198,6 @@ export default [
             },
           },
           {
-            path: '/sms',
-            name: '短信配置',
-            component: sms,
-            meta: {
-              title: '短信配置',
-            },
-          },
-          {
             path: '/message',
             name: 'message',
             component: messageReceive,
@@ -211,7 +209,7 @@ export default [
           {
             path: '/push-config',
             name: 'pushConfig',
-            component: () => import('@/views/push-config/index.vue'),
+            component: pushConfig,
             meta: {
               title: '推送配置',
               icon: Promotion,
