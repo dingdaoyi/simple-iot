@@ -761,6 +761,17 @@ export function ruleChainDebugApi(data) {
 }
 
 /**
+ * 校验规则链草稿
+ */
+export function ruleChainValidateApi(data) {
+  return request({
+    url: '/rule-chain/validate',
+    method: 'post',
+    data,
+  })
+}
+
+/**
  * 获取模板变量列表
  * @param {number} productId - 产品ID，用于获取物模型属性
  */

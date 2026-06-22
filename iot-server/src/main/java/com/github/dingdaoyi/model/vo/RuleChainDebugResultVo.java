@@ -5,6 +5,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * 规则链调试结果。
@@ -32,4 +33,10 @@ public class RuleChainDebugResultVo {
 
     @Schema(description = "执行轨迹")
     private List<RuleContext.ExecutionTrace> traces;
+
+    @Schema(description = "调试执行经过的连接路径")
+    private List<Map<String, String>> executedConnections;
+
+    @Schema(description = "规则链结构校验结果")
+    private RuleChainValidationResultVo validation;
 }

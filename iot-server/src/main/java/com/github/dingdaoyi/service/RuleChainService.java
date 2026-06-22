@@ -10,6 +10,7 @@ import com.github.dingdaoyi.model.query.RuleChainUpdateQuery;
 import com.github.dingdaoyi.model.vo.RuleChainDebugResultVo;
 import com.github.dingdaoyi.model.vo.RuleChainDetailVo;
 import com.github.dingdaoyi.model.vo.RuleChainPageVo;
+import com.github.dingdaoyi.model.vo.RuleChainValidationResultVo;
 
 import java.util.List;
 import java.util.Optional;
@@ -55,6 +56,11 @@ public interface RuleChainService extends IService<RuleChain> {
      * 根据产品ID获取规则链
      */
     List<RuleChain> getByProductId(Integer productId);
+
+    /**
+     * 校验规则链草稿结构。
+     */
+    RuleChainValidationResultVo validateDraft(RuleChain ruleChain);
 
     /**
      * 调试执行规则链草稿。

@@ -4,6 +4,7 @@ import com.github.dingdaoyi.controller.iot.dto.RuleChainDebugRequest;
 import com.github.dingdaoyi.core.base.BaseResult;
 import com.github.dingdaoyi.entity.RuleChain;
 import com.github.dingdaoyi.model.vo.RuleChainDebugResultVo;
+import com.github.dingdaoyi.model.vo.RuleChainValidationResultVo;
 import com.github.dingdaoyi.rule.RuleContext;
 import com.github.dingdaoyi.service.ProductService;
 import com.github.dingdaoyi.service.RuleChainService;
@@ -47,5 +48,21 @@ class RuleChainControllerDebugTest {
         assertThat(response.isSuccess()).isTrue();
         assertThat(response.getData()).isSameAs(result);
         verify(ruleChainService).debug(request);
+    }
+
+    @Test
+    void validateDelegatesDraftRuleChainToService() {
+        RuleChain ruleChain = new RuleChain();
+        ruleChain.setName("草稿规则链");
+        RuleChainValidationResultVo result = new RuleChainValidationResultVo();
+        result.setValid(true);
+
+        when(ruleChainService.validateDraft(ruleChain)).thenReturn(result);
+
+        BaseResult<RuleChainValidationResultVo> response = controller.validate(ruleChain);
+
+        assertThat(response.isSuccess()).isTrue();
+        assertThat(response.getData()).isSameAs(result);
+        verify(ruleChainService).validateDraft(ruleChain);
     }
 }

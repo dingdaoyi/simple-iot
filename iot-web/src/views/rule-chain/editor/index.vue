@@ -15,6 +15,7 @@ import {
   ruleChainDetailApi,
   ruleChainNodeTypesApi,
   ruleChainUpdateApi,
+  ruleChainValidateApi,
 } from '@/api/index.js'
 import NodeConfigPanel from './NodeConfigPanel.vue'
 
@@ -366,6 +367,27 @@ const debugTraceMap = computed(() => {
   })
   return map
 })
+
+const debugExecutedConnectionSet = computed(() => {
+  const set = new Set()
+  ;(debugResult.value?.executedConnections || []).forEach((conn) => {
+    set.add(`${conn.source}->${conn.target}:${getConnectionType(conn)}`)
+  })
+  return set
+})
+
+const validationIssues = computed(() => [
+  ...(debugResult.value?.validation?.errors || []),
+  ...(debugResult.value?.validation?.warnings || []),
+])
+
+function isDebugConnectionExecuted(line) {
+  return debugExecutedConnectionSet.value.has(`${line.sourceNode}->${line.targetNode}:${line.connectionType}`)
+}
+
+function getValidationIssueType(issue) {
+  return (debugResult.value?.validation?.errors || []).includes(issue) ? 'danger' : 'warning'
+}
 
 // 加载节点类型
 async function loadNodeTypes() {
@@ -905,11 +927,44 @@ async function handleDebugRun() {
     }
     const { data } = await ruleChainDebugApi(payload)
     debugResult.value = normalizeApiData(data)
-    ElMessage.success('调试执行完成')
+    ElMessage.success('调试执行完成，已在画布高亮执行路径')
   }
   catch (e) {
     ElMessage.error(e.message || '调试执行失败')
     console.error('调试执行失败', e)
+  }
+  finally {
+    debugRunning.value = false
+  }
+}
+
+async function validateRuleChainDraft() {
+  const { data } = await ruleChainValidateApi(buildRuleChainDraft())
+  return normalizeApiData(data)
+}
+
+async function handleValidateDraft() {
+  debugRunning.value = true
+  try {
+    const validation = await validateRuleChainDraft()
+    debugResult.value = {
+      success: validation.valid,
+      executedNodeCount: 0,
+      durationMs: 0,
+      traces: [],
+      executedConnections: [],
+      validation,
+    }
+    if (validation.valid) {
+      ElMessage.success('规则链结构校验通过')
+    }
+    else {
+      ElMessage.warning(`规则链校验发现 ${validation.errors?.length || 0} 个错误`)
+    }
+  }
+  catch (e) {
+    ElMessage.error(e.message || '规则链校验失败')
+    console.error('规则链校验失败', e)
   }
   finally {
     debugRunning.value = false
@@ -1083,13 +1138,19 @@ onMounted(async () => {
             <path
               :d="generateBezierPath(line.source.x, line.source.y, line.target.x, line.target.y)"
               class="connection-line"
-              :class="`connection-${(line.connectionType || 'Success').toLowerCase()}`"
+              :class="[
+                `connection-${(line.connectionType || 'Success').toLowerCase()}`,
+                { 'debug-executed': isDebugConnectionExecuted(line) },
+              ]"
             />
             <!-- 箭头 -->
             <polygon
               :points="`${line.target.x - 8},${line.target.y - 5} ${line.target.x},${line.target.y} ${line.target.x - 8},${line.target.y + 5}`"
               class="connection-arrow"
-              :class="`connection-${(line.connectionType || 'Success').toLowerCase()}`"
+              :class="[
+                `connection-${(line.connectionType || 'Success').toLowerCase()}`,
+                { 'debug-executed': isDebugConnectionExecuted(line) },
+              ]"
             />
             <!-- 删除提示（hover时显示） -->
             <circle
@@ -1249,9 +1310,31 @@ onMounted(async () => {
                 {{ debugResult.success ? '成功' : '失败' }} · {{ debugResult.executedNodeCount || 0 }} 个节点 · {{ debugResult.durationMs || 0 }}ms
               </span>
             </div>
-            <el-button type="primary" :loading="debugRunning" @click="handleDebugRun">
-              运行调试
-            </el-button>
+            <div class="debug-actions">
+              <el-button :loading="debugRunning" @click="handleValidateDraft">
+                校验结构
+              </el-button>
+              <el-button type="primary" :loading="debugRunning" @click="handleDebugRun">
+                运行调试
+              </el-button>
+            </div>
+          </div>
+
+          <div v-if="validationIssues.length" class="validation-issues">
+            <el-alert
+              v-for="issue in validationIssues"
+              :key="`${issue.code}-${issue.nodeId || issue.connectionId || issue.message}`"
+              :type="getValidationIssueType(issue)"
+              :closable="false"
+              show-icon
+            >
+              <template #title>
+                {{ issue.message }}
+                <span class="issue-meta">
+                  {{ issue.nodeId || '' }} {{ issue.connectionId || '' }}
+                </span>
+              </template>
+            </el-alert>
           </div>
 
           <el-empty v-if="!debugResult" description="运行后展示节点执行轨迹" />
@@ -1486,6 +1569,13 @@ onMounted(async () => {
         opacity: 0.7;
         pointer-events: none;
       }
+
+      &.debug-executed {
+        stroke-width: 4;
+        stroke-dasharray: 8, 4;
+        filter: drop-shadow(0 0 6px rgba(16, 185, 129, 0.75));
+        animation: executedFlow 1.2s linear infinite;
+      }
     }
 
     // hover 时连接线变粗
@@ -1506,6 +1596,10 @@ onMounted(async () => {
       }
       &.connection-success {
         fill: var(--iot-color-primary);
+      }
+
+      &.debug-executed {
+        filter: drop-shadow(0 0 6px rgba(16, 185, 129, 0.75));
       }
     }
     // 删除提示（hover 时显示）
@@ -1754,6 +1848,25 @@ onMounted(async () => {
     margin-bottom: var(--space-md);
   }
 
+  .debug-actions {
+    display: flex;
+    gap: var(--space-sm);
+  }
+
+  .validation-issues {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-xs);
+    margin-bottom: var(--space-md);
+
+    .issue-meta {
+      margin-left: var(--space-sm);
+      color: var(--iot-color-text-muted);
+      font-size: 12px;
+      font-weight: 400;
+    }
+  }
+
   .debug-summary {
     margin-left: var(--space-sm);
     color: var(--iot-color-text-muted);
@@ -1895,6 +2008,15 @@ onMounted(async () => {
   to {
     opacity: 1;
     transform: translateY(0);
+  }
+}
+
+@keyframes executedFlow {
+  from {
+    stroke-dashoffset: 0;
+  }
+  to {
+    stroke-dashoffset: -24;
   }
 }
 </style>
