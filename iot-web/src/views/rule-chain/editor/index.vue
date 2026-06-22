@@ -1143,6 +1143,21 @@ onMounted(async () => {
                 { 'debug-executed': isDebugConnectionExecuted(line) },
               ]"
             />
+            <!-- 连接类型标签（色盲友好） -->
+            <rect
+              :x="(line.source.x + line.target.x) / 2 - 14"
+              :y="(line.source.y + line.target.y) / 2 - 10"
+              width="28"
+              height="20"
+              rx="4"
+              class="connection-label-bg"
+              :class="`connection-${(line.connectionType || 'Success').toLowerCase()}`"
+            />
+            <text
+              :x="(line.source.x + line.target.x) / 2"
+              :y="(line.source.y + line.target.y) / 2"
+              class="connection-label-text"
+            >{{ line.connectionType === 'True' ? 'T' : line.connectionType === 'False' ? 'F' : '→' }}</text>
             <!-- 箭头 -->
             <polygon
               :points="`${line.target.x - 8},${line.target.y - 5} ${line.target.x},${line.target.y} ${line.target.x - 8},${line.target.y + 5}`"
@@ -1190,13 +1205,16 @@ onMounted(async () => {
           v-for="node in ruleChain.configuration.nodes"
           :key="node.id"
           class="canvas-node"
-          :class="{
-            'selected': selectedNode?.id === node.id,
-            'is-input': isInputNode(node.type),
-            'is-filter': isFilterNode(node.type),
-            'debug-success': debugTraceMap[node.id]?.status === 'SUCCESS',
-            'debug-failed': ['FAILED', 'ERROR'].includes(debugTraceMap[node.id]?.status),
-          }"
+          :class="[
+            `category-${getNodeCategory(node.type).toLowerCase()}`,
+            {
+              'selected': selectedNode?.id === node.id,
+              'is-input': isInputNode(node.type),
+              'is-filter': isFilterNode(node.type),
+              'debug-success': debugTraceMap[node.id]?.status === 'SUCCESS',
+              'debug-failed': ['FAILED', 'ERROR'].includes(debugTraceMap[node.id]?.status),
+            },
+          ]"
           :style="{ 'left': `${node.x}px`, 'top': `${node.y}px`, '--node-color': node.color }"
           @click="selectedNode = selectedNode?.id === node.id ? null : node"
           @mousedown="startDragNode(node, $event)"
@@ -1207,12 +1225,12 @@ onMounted(async () => {
           </div>
 
           <div class="node-header">
+            <span class="node-name-text">{{ node.name }}</span>
             <el-button link type="danger" size="small" class="delete-btn" @click.stop="deleteNode(node.id)">
               <el-icon :size="14">
                 <Close />
               </el-icon>
             </el-button>
-            <span class="node-name-text">{{ node.name }}</span>
           </div>
           <div class="node-body">
             <div class="node-type">
@@ -1551,7 +1569,9 @@ onMounted(async () => {
       stroke: var(--iot-color-primary);
       stroke-width: 2;
       pointer-events: none;
-      transition: stroke-width 0.15s ease-out;
+      transition:
+        stroke-width 0.15s ease-out,
+        opacity 0.2s ease-out;
 
       // 不同连接类型的颜色
       &.connection-true {
@@ -1570,12 +1590,46 @@ onMounted(async () => {
         pointer-events: none;
       }
 
+      // 调试运行后的"叠加层"效果：原线条降低不透明度，让动画明显
       &.debug-executed {
-        stroke-width: 4;
-        stroke-dasharray: 8, 4;
-        filter: drop-shadow(0 0 6px rgba(16, 185, 129, 0.75));
-        animation: executedFlow 1.2s linear infinite;
+        stroke-width: 3.5;
+        opacity: 0.95;
+        stroke-dasharray: 10, 5;
+        filter: drop-shadow(0 0 8px currentColor);
+        animation: executedFlow 1s linear infinite;
       }
+    }
+
+    // 连接类型标签底色和文字
+    .connection-label-bg {
+      fill: white;
+      stroke-width: 1.5;
+      pointer-events: none;
+
+      &.connection-true {
+        stroke: #10b981;
+      }
+      &.connection-false {
+        stroke: #ef4444;
+      }
+      &.connection-success {
+        stroke: var(--iot-color-primary);
+      }
+    }
+    .connection-label-text {
+      font-size: 11px;
+      font-weight: 700;
+      text-anchor: middle;
+      dominant-baseline: central;
+      fill: var(--iot-color-text-secondary);
+      pointer-events: none;
+      user-select: none;
+    }
+    // 悬停时隐藏标签让出位置给删除按钮
+    .connection-group:hover .connection-label-bg,
+    .connection-group:hover .connection-label-text {
+      opacity: 0;
+      transition: opacity 0.15s;
     }
 
     // hover 时连接线变粗
@@ -1645,12 +1699,6 @@ onMounted(async () => {
     &:hover {
       box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
     }
-    &.selected {
-      border-color: var(--iot-color-primary);
-      box-shadow:
-        0 6px 20px rgba(0, 0, 0, 0.15),
-        0 0 0 3px rgba(99, 102, 241, 0.2);
-    }
     &.debug-success {
       border-color: #10b981;
       box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.18);
@@ -1659,13 +1707,37 @@ onMounted(async () => {
       border-color: #ef4444;
       box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.2);
     }
-    // 输入节点样式（绿色边框）
-    &.is-input {
-      border-color: #10b981;
+    // === 按 Category 分组的节点配色 ===
+    // INPUT - 翠绿色（数据源）
+    &.category-input {
+      --node-header-bg: linear-gradient(135deg, #10b981, #059669);
+      border-color: rgba(16, 185, 129, 0.35);
     }
-    // 过滤节点样式
-    &.is-filter {
-      // 过滤节点有额外的输出端口
+    // FILTER - 琥珀色（判断/分流）
+    &.category-filter {
+      --node-header-bg: linear-gradient(135deg, #f59e0b, #d97706);
+      border-color: rgba(245, 158, 11, 0.35);
+    }
+    // ALARM - 红色（告警）
+    &.category-alarm {
+      --node-header-bg: linear-gradient(135deg, #ef4444, #dc2626);
+      border-color: rgba(239, 68, 68, 0.35);
+    }
+    // OUTPUT - 紫色（输出/动作）
+    &.category-output {
+      --node-header-bg: linear-gradient(135deg, #8b5cf6, #6366f1);
+      border-color: rgba(139, 92, 246, 0.35);
+    }
+    // 老的 is-input 兜底（保持向后兼容，但被 category-input 覆盖）
+    &.is-input {
+      // 不再硬覆盖 border-color, 让 category-input 优先
+    }
+    &.selected {
+      // 选中时 border 高亮覆盖 category 颜色
+      border-color: var(--iot-color-primary);
+      box-shadow:
+        0 6px 20px rgba(0, 0, 0, 0.15),
+        0 0 0 3px rgba(99, 102, 241, 0.25);
     }
     .node-port {
       position: absolute;
@@ -1709,10 +1781,11 @@ onMounted(async () => {
       }
       // 过滤节点的双输出端口 - 放在后面以覆盖默认样式
       &.output.true {
-        top: 24px; // 靠近顶部
+        top: var(--filter-true-port-y, 24px);
         .port-dot {
           border-color: #10b981;
           background: #10b981;
+          box-shadow: 0 0 4px rgba(16, 185, 129, 0.4);
         }
         .port-label {
           color: #10b981 !important;
@@ -1721,14 +1794,15 @@ onMounted(async () => {
         &:hover .port-dot {
           transform: scale(1.3);
           background: #10b981;
-          box-shadow: 0 0 6px rgba(16, 185, 129, 0.5);
+          box-shadow: 0 0 10px rgba(16, 185, 129, 0.6);
         }
       }
       &.output.false {
-        top: 52px; // 靠近底部
+        top: var(--filter-false-port-y, 52px);
         .port-dot {
           border-color: #ef4444;
           background: #ef4444;
+          box-shadow: 0 0 4px rgba(239, 68, 68, 0.4);
         }
         .port-label {
           color: #ef4444 !important;
@@ -1737,7 +1811,7 @@ onMounted(async () => {
         &:hover .port-dot {
           transform: scale(1.3);
           background: #ef4444;
-          box-shadow: 0 0 6px rgba(239, 68, 68, 0.5);
+          box-shadow: 0 0 10px rgba(239, 68, 68, 0.6);
         }
       }
     }
@@ -1745,17 +1819,23 @@ onMounted(async () => {
       display: flex;
       align-items: center;
       padding: var(--space-sm) var(--space-md);
-      background: linear-gradient(135deg, var(--node-color, var(--iot-color-primary)), var(--iot-color-accent));
+      background: var(
+        --node-header-bg,
+        linear-gradient(135deg, var(--node-color, var(--iot-color-primary)), var(--iot-color-accent))
+      );
       color: white;
-      border-radius: var(--radius-md) var(--radius-md) 0 0;
+      border-radius: calc(var(--radius-md) - 2px) calc(var(--radius-md) - 2px) 0 0;
       font-size: 13px;
-      font-weight: 500;
+      font-weight: 600;
       gap: var(--space-sm);
+      letter-spacing: 0.2px;
 
       .delete-btn {
-        opacity: 0.7;
+        opacity: 0;
         color: white;
         padding: 2px;
+        transition: opacity 0.15s ease-out;
+        margin-left: auto;
         &:hover {
           opacity: 1;
           color: #fecaca;
@@ -1767,6 +1847,10 @@ onMounted(async () => {
         text-overflow: ellipsis;
         white-space: nowrap;
       }
+    }
+    &:hover .node-header .delete-btn,
+    &.selected .node-header .delete-btn {
+      opacity: 0.85;
     }
     .node-body {
       padding: var(--space-sm) var(--space-md);
@@ -1921,14 +2005,43 @@ onMounted(async () => {
       linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
   }
   .canvas-node {
-    background: rgba(30, 41, 59, 0.9);
+    background: rgba(30, 41, 59, 0.95);
     border-color: rgba(255, 255, 255, 0.1);
+
+    .node-port .port-dot {
+      background: #1e293b;
+    }
+    // 暗色下的 category 边框稍微提亮
+    &.category-input {
+      border-color: rgba(52, 211, 153, 0.5);
+    }
+    &.category-filter {
+      border-color: rgba(251, 191, 36, 0.5);
+    }
+    &.category-alarm {
+      border-color: rgba(248, 113, 113, 0.5);
+    }
+    &.category-output {
+      border-color: rgba(167, 139, 250, 0.5);
+    }
   }
   .node-item {
     background: rgba(30, 41, 59, 0.5);
     &:hover {
       background: rgba(30, 41, 59, 0.8);
     }
+  }
+  // 连接标签暗色
+  .connection-label-bg {
+    fill: #1e293b;
+  }
+  .connection-label-text {
+    fill: #e2e8f0;
+  }
+  // debug trace 卡片暗色
+  .trace-card {
+    background: rgba(30, 41, 59, 0.7);
+    border-color: rgba(255, 255, 255, 0.1);
   }
 }
 

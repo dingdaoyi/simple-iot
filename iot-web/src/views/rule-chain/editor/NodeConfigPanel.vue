@@ -5,6 +5,7 @@
  */
 import { computed, ref, watch } from 'vue'
 import { deviceListApi, productListApi, ruleChainTemplateVariablesApi } from '@/api/index.js'
+import VariableInserter from './VariableInserter.vue'
 
 const props = defineProps({
   selectedNode: {
@@ -93,11 +94,14 @@ const propertyVariables = computed(() =>
   templateVariables.value.filter(v => v.category === 'PROPERTY'),
 )
 
-// 插入变量到输入框
-function insertVariable(variable, configKey) {
-  const currentValue = config.value[configKey] || ''
-  updateConfig(configKey, currentValue + variable)
-}
+// 输入框 ref 集合（用于光标位置插入）
+const alarmMessageRef = ref(null)
+const outputTitleRef = ref(null)
+const outputContentRef = ref(null)
+const httpBodyRef = ref(null)
+const mqttPayloadRef = ref(null)
+const cmdParamsRef = ref(null)
+const filterScriptRef = ref(null)
 
 // ==================== 计算属性 ====================
 
@@ -150,25 +154,32 @@ const selectedEventParam = computed(() => {
   )
 })
 
+// 属性阈值是否有 min/max
+const propertyMin = computed(() => {
+  const v = selectedProperty.value?.min
+  return v === null || v === undefined || v === '' ? null : Number(v)
+})
+const propertyMax = computed(() => {
+  const v = selectedProperty.value?.max
+  return v === null || v === undefined || v === '' ? null : Number(v)
+})
+const propertyStep = computed(() => {
+  const t = selectedProperty.value?.dataType?.type
+  return t === 'int' || t === 'INT' || t === 'long' ? 1 : 0.1
+})
+
 // ==================== 操作符选项 ====================
 
 const propertyOperatorOptions = [
-  { label: '大于 (GT)', value: 'GT' },
-  { label: '大于等于 (GE)', value: 'GE' },
-  { label: '等于 (EQ)', value: 'EQ' },
-  { label: '小于 (LT)', value: 'LT' },
-  { label: '小于等于 (LE)', value: 'LE' },
-  { label: '不等于 (NE)', value: 'NE' },
+  { label: '>  大于', value: 'GT' },
+  { label: '≥  大于等于', value: 'GE' },
+  { label: '=  等于', value: 'EQ' },
+  { label: '<  小于', value: 'LT' },
+  { label: '≤  小于等于', value: 'LE' },
+  { label: '≠  不等于', value: 'NE' },
 ]
 
-const eventOperatorOptions = [
-  { label: '大于 (GT)', value: 'GT' },
-  { label: '大于等于 (GE)', value: 'GE' },
-  { label: '等于 (EQ)', value: 'EQ' },
-  { label: '小于 (LT)', value: 'LT' },
-  { label: '小于等于 (LE)', value: 'LE' },
-  { label: '不等于 (NE)', value: 'NE' },
-]
+const eventOperatorOptions = propertyOperatorOptions
 
 // ==================== 工具函数 ====================
 
@@ -199,7 +210,6 @@ const deviceCascadeProps = {
   async lazyLoad(node, resolve) {
     const { level, value } = node
     if (level === 0) {
-      // 第一级：产品类型
       resolve((props.productTypeOptions || []).map(pt => ({
         id: pt.id,
         name: pt.name,
@@ -207,7 +217,6 @@ const deviceCascadeProps = {
       })))
     }
     else if (level === 1) {
-      // 第二级：根据产品类型加载产品
       try {
         const response = await productListApi({ productTypeId: value })
         const products = (response.data || []).map(p => ({
@@ -223,7 +232,6 @@ const deviceCascadeProps = {
       }
     }
     else if (level === 2) {
-      // 第三级：根据产品加载设备
       try {
         const { data } = await deviceListApi({ productId: value })
         const devices = (data || []).map(d => ({
@@ -243,7 +251,6 @@ const deviceCascadeProps = {
   },
 }
 
-// 获取设备级联选择器的当前值
 function getDeviceCascadeValue() {
   const cfg = config.value
   if (cfg.targetDeviceId) {
@@ -252,10 +259,8 @@ function getDeviceCascadeValue() {
   return []
 }
 
-// 处理设备级联选择变化
 function onDeviceCascadeChange(value) {
   if (!value || value.length < 3) {
-    // 清除选择
     const newConfig = { ...config.value }
     delete newConfig.targetProductTypeId
     delete newConfig.targetProductId
@@ -266,7 +271,6 @@ function onDeviceCascadeChange(value) {
     })
     return
   }
-  // 更新目标设备配置
   emit('update:node', {
     ...props.selectedNode,
     config: {
@@ -299,6 +303,8 @@ function onDeviceCascadeChange(value) {
             :model-value="config.identifiers"
             multiple
             filterable
+            collapse-tags
+            collapse-tags-tooltip
             placeholder="留空表示监听所有属性"
             :disabled="!ruleChain.productId"
             @update:model-value="updateConfig('identifiers', $event)"
@@ -310,7 +316,7 @@ function onDeviceCascadeChange(value) {
               :value="prop.identifier"
             />
           </el-select>
-          <div v-if="!ruleChain.productId" class="form-tip">
+          <div v-if="!ruleChain.productId" class="form-tip warn">
             请先在左侧选择产品
           </div>
           <div v-else class="form-tip">
@@ -326,6 +332,8 @@ function onDeviceCascadeChange(value) {
             :model-value="config.identifiers"
             multiple
             filterable
+            collapse-tags
+            collapse-tags-tooltip
             placeholder="留空表示监听所有事件"
             :disabled="!ruleChain.productId"
             @update:model-value="updateConfig('identifiers', $event)"
@@ -337,7 +345,7 @@ function onDeviceCascadeChange(value) {
               :value="event.identifier"
             />
           </el-select>
-          <div v-if="!ruleChain.productId" class="form-tip">
+          <div v-if="!ruleChain.productId" class="form-tip warn">
             请先在左侧选择产品
           </div>
           <div v-else class="form-tip">
@@ -358,8 +366,6 @@ function onDeviceCascadeChange(value) {
             <el-option label="设备下线" value="offline" />
             <el-option label="全部（上线和下线）" value="all" />
           </el-select>
-        </el-form-item>
-        <el-form-item label="说明">
           <div class="form-tip">
             监听规则链关联产品/设备的上线和下线事件
           </div>
@@ -370,14 +376,13 @@ function onDeviceCascadeChange(value) {
 
       <!-- 属性条件过滤节点 -->
       <template v-if="selectedNode.type === 'FILTER_PROPERTY'">
-        <!-- 上游节点信息 -->
         <el-form-item v-if="upstreamNode" label="上游节点">
           <div class="upstream-info">
             <el-tag size="small" :type="upstreamNode.type === 'INPUT_PROPERTY' ? 'success' : 'info'">
               {{ upstreamNode.name }}
             </el-tag>
             <span v-if="upstreamNode.config?.identifiers?.length" class="upstream-detail">
-              (已过滤 {{ upstreamNode.config.identifiers.length }} 个属性)
+              已过滤 {{ upstreamNode.config.identifiers.length }} 个属性
             </span>
           </div>
         </el-form-item>
@@ -395,9 +400,12 @@ function onDeviceCascadeChange(value) {
               :key="prop.identifier"
               :label="`${prop.name} (${prop.identifier})`"
               :value="prop.identifier"
-            />
+            >
+              <span>{{ prop.name }}</span>
+              <span class="opt-meta">{{ prop.identifier }}</span>
+            </el-option>
           </el-select>
-          <div v-if="!ruleChain.productId" class="form-tip">
+          <div v-if="!ruleChain.productId" class="form-tip warn">
             请先在左侧选择产品
           </div>
           <div v-else-if="upstreamNode?.config?.identifiers?.length" class="form-tip">
@@ -406,7 +414,7 @@ function onDeviceCascadeChange(value) {
         </el-form-item>
 
         <el-form-item label="操作符">
-          <el-select :model-value="config.operator" @update:model-value="updateConfig('operator', $event)">
+          <el-select :model-value="config.operator" placeholder="选择比较方式" @update:model-value="updateConfig('operator', $event)">
             <el-option
               v-for="op in propertyOperatorOptions"
               :key="op.value"
@@ -417,30 +425,42 @@ function onDeviceCascadeChange(value) {
         </el-form-item>
 
         <el-form-item label="阈值">
-          <el-input-number :model-value="config.value" style="width: 100%" @update:model-value="updateConfig('value', $event)" />
+          <el-input-number
+            :model-value="config.value"
+            :min="propertyMin ?? undefined"
+            :max="propertyMax ?? undefined"
+            :step="propertyStep"
+            :placeholder="selectedProperty?.unit ? `单位: ${selectedProperty.unit}` : '输入阈值'"
+            style="width: 100%"
+            @update:model-value="updateConfig('value', $event)"
+          />
+          <div v-if="selectedProperty && (propertyMin !== null || propertyMax !== null)" class="form-tip">
+            <span v-if="propertyMin !== null">最小 {{ propertyMin }}</span>
+            <span v-if="propertyMin !== null && propertyMax !== null"> · </span>
+            <span v-if="propertyMax !== null">最大 {{ propertyMax }}</span>
+            <span v-if="selectedProperty.unit"> · 单位 {{ selectedProperty.unit }}</span>
+          </div>
         </el-form-item>
 
-        <!-- 属性信息 -->
+        <!-- 属性详细信息 -->
         <el-form-item v-if="selectedProperty" label="属性信息">
           <div class="property-info">
-            <span>类型: {{ selectedProperty.dataType?.name }}</span>
-            <span v-if="selectedProperty.unit">单位: {{ selectedProperty.unit }}</span>
-            <span v-if="selectedProperty.min !== null">最小: {{ selectedProperty.min }}</span>
-            <span v-if="selectedProperty.max !== null">最大: {{ selectedProperty.max }}</span>
+            <span class="info-chip">{{ selectedProperty.dataType?.name }}</span>
+            <span v-if="selectedProperty.unit" class="info-chip">单位 {{ selectedProperty.unit }}</span>
+            <span v-if="selectedProperty.accessMode" class="info-chip">{{ selectedProperty.accessMode }}</span>
           </div>
         </el-form-item>
       </template>
 
       <!-- 事件类型过滤节点 -->
       <template v-if="selectedNode.type === 'FILTER_EVENT_TYPE'">
-        <!-- 上游节点信息 -->
         <el-form-item v-if="upstreamNode" label="上游节点">
           <div class="upstream-info">
             <el-tag size="small" type="success">
               {{ upstreamNode.name }}
             </el-tag>
             <span v-if="upstreamNode.config?.identifiers?.length" class="upstream-detail">
-              (已过滤 {{ upstreamNode.config.identifiers.length }} 个事件)
+              已过滤 {{ upstreamNode.config.identifiers.length }} 个事件
             </span>
           </div>
         </el-form-item>
@@ -461,7 +481,7 @@ function onDeviceCascadeChange(value) {
               :value="event.identifier"
             />
           </el-select>
-          <div v-if="!ruleChain.productId" class="form-tip">
+          <div v-if="!ruleChain.productId" class="form-tip warn">
             请先在左侧选择产品
           </div>
           <div v-else-if="upstreamNode?.config?.identifiers?.length" class="form-tip">
@@ -472,16 +492,14 @@ function onDeviceCascadeChange(value) {
           </div>
         </el-form-item>
 
-        <!-- 选中事件后，显示事件详情和参数过滤 -->
         <template v-if="selectedEvent">
           <el-form-item label="事件信息">
             <div class="property-info">
-              <span>类型: {{ selectedEvent.eventType }}</span>
-              <span v-if="selectedEvent.remark">描述: {{ selectedEvent.remark }}</span>
+              <span class="info-chip">{{ selectedEvent.eventType }}</span>
+              <span v-if="selectedEvent.remark" class="info-chip muted">{{ selectedEvent.remark }}</span>
             </div>
           </el-form-item>
 
-          <!-- 如果事件有输出参数，可以选择参数进行条件过滤 -->
           <el-form-item v-if="selectedEvent.outputParams?.length" label="过滤参数">
             <el-select
               :model-value="config.paramIdentifier"
@@ -502,10 +520,9 @@ function onDeviceCascadeChange(value) {
             </div>
           </el-form-item>
 
-          <!-- 如果选择了参数，显示操作符和阈值 -->
           <template v-if="config.paramIdentifier">
             <el-form-item label="操作符">
-              <el-select :model-value="config.operator" @update:model-value="updateConfig('operator', $event)">
+              <el-select :model-value="config.operator" placeholder="选择比较方式" @update:model-value="updateConfig('operator', $event)">
                 <el-option
                   v-for="op in eventOperatorOptions"
                   :key="op.value"
@@ -519,8 +536,8 @@ function onDeviceCascadeChange(value) {
             </el-form-item>
             <el-form-item v-if="selectedEventParam" label="参数信息">
               <div class="property-info">
-                <span>类型: {{ selectedEventParam.dataType?.name }}</span>
-                <span v-if="selectedEventParam.unit">单位: {{ selectedEventParam.unit }}</span>
+                <span class="info-chip">{{ selectedEventParam.dataType?.name }}</span>
+                <span v-if="selectedEventParam.unit" class="info-chip">单位 {{ selectedEventParam.unit }}</span>
               </div>
             </el-form-item>
           </template>
@@ -531,15 +548,26 @@ function onDeviceCascadeChange(value) {
       <template v-if="selectedNode.type === 'FILTER_SCRIPT'">
         <el-form-item label="过滤脚本">
           <el-input
+            ref="filterScriptRef"
             :model-value="config.script"
             type="textarea"
-            :rows="6"
-            placeholder="// 返回 true 放行，false 拦截&#10;// 可用变量: msg, device, properties&#10;return msg.temperature > 30;"
+            :rows="8"
+            placeholder="// 返回 true 走 True 分支，false 走 False 分支
+// 可用变量见下方
+return msg.temperature > 30;"
             @update:model-value="updateConfig('script', $event)"
           />
           <div class="form-tip">
-            JavaScript 表达式，返回 true 走 True 分支，false 走 False 分支
+            JavaScript 表达式，返回 true 走 <span class="branch-tag branch-true">True</span> 分支，false 走 <span class="branch-tag branch-false">False</span> 分支
           </div>
+          <VariableInserter
+            :target-ref="filterScriptRef"
+            :value="config.script"
+            :system-variables="systemVariables"
+            :property-variables="propertyVariables"
+            label="脚本可用变量"
+            @update="updateConfig('script', $event)"
+          />
         </el-form-item>
       </template>
 
@@ -555,45 +583,35 @@ function onDeviceCascadeChange(value) {
         </el-form-item>
         <el-form-item label="严重程度">
           <el-select :model-value="config.severity" @update:model-value="updateConfig('severity', $event)">
-            <el-option label="严重" value="CRITICAL" />
-            <el-option label="主要" value="MAJOR" />
-            <el-option label="次要" value="MINOR" />
-            <el-option label="警告" value="WARNING" />
+            <el-option value="CRITICAL">
+              <span class="severity-dot critical" />严重 (CRITICAL)
+            </el-option>
+            <el-option value="MAJOR">
+              <span class="severity-dot major" />主要 (MAJOR)
+            </el-option>
+            <el-option value="MINOR">
+              <span class="severity-dot minor" />次要 (MINOR)
+            </el-option>
+            <el-option value="WARNING">
+              <span class="severity-dot warning" />警告 (WARNING)
+            </el-option>
           </el-select>
         </el-form-item>
         <el-form-item label="告警消息">
           <el-input
+            ref="alarmMessageRef"
             :model-value="config.message"
             type="textarea"
             :rows="3"
             placeholder="设备 ${deviceName} 温度 ${temperature} 超过阈值"
             @update:model-value="updateConfig('message', $event)"
           />
-          <div class="variable-hint">
-            <span class="hint-label">可用变量:</span>
-            <el-tag
-              v-for="v in systemVariables"
-              :key="v.variable"
-              size="small"
-              class="variable-tag"
-              @click="insertVariable(v.variable, 'message')"
-            >
-              {{ v.variable }}
-            </el-tag>
-            <template v-if="propertyVariables.length">
-              <el-tag
-                v-for="v in propertyVariables.slice(0, 6)"
-                :key="v.variable"
-                size="small"
-                type="info"
-                class="variable-tag"
-                @click="insertVariable(v.variable, 'message')"
-              >
-                {{ v.variable }}
-              </el-tag>
-            </template>
-          </div>
-          @update:model-value="updateConfig('message', $event)"
+          <VariableInserter
+            :target-ref="alarmMessageRef"
+            :value="config.message"
+            :system-variables="systemVariables"
+            :property-variables="propertyVariables"
+            @update="updateConfig('message', $event)"
           />
         </el-form-item>
       </template>
@@ -637,36 +655,43 @@ function onDeviceCascadeChange(value) {
               :value="item.id"
             />
           </el-select>
-          <div v-if="messageReceiveOptions.length === 0" class="form-tip" style="color: var(--el-color-warning);">
+          <div v-if="messageReceiveOptions.length === 0" class="form-tip warn">
             暂无消息配置，请先在「消息接收」中添加配置
           </div>
         </el-form-item>
 
         <el-form-item label="消息标题">
           <el-input
+            ref="outputTitleRef"
             :model-value="config.title"
             placeholder="设备告警通知 - ${deviceName}"
             @update:model-value="updateConfig('title', $event)"
           />
-          <div class="variable-hint">
-            <span class="hint-label">点击插入:</span>
-            <el-tag v-for="v in systemVariables" :key="v.variable" size="small" class="variable-tag" @click="insertVariable(v.variable, 'title')">
-              {{ v.name }}
-            </el-tag>
-          </div>
+          <VariableInserter
+            :target-ref="outputTitleRef"
+            :value="config.title"
+            :system-variables="systemVariables"
+            :property-variables="propertyVariables"
+            @update="updateConfig('title', $event)"
+          />
         </el-form-item>
 
         <el-form-item label="消息内容">
           <el-input
+            ref="outputContentRef"
             :model-value="config.content"
             type="textarea"
             :rows="4"
             placeholder="设备 ${deviceName} 于 ${eventTime} 触发告警，当前值: ${value}"
             @update:model-value="updateConfig('content', $event)"
           />
-          <div class="form-tip">
-            支持变量: ${deviceName}, ${deviceKey}, ${eventTime}, ${属性标识符}
-          </div>
+          <VariableInserter
+            :target-ref="outputContentRef"
+            :value="config.content"
+            :system-variables="systemVariables"
+            :property-variables="propertyVariables"
+            @update="updateConfig('content', $event)"
+          />
         </el-form-item>
       </template>
 
@@ -686,13 +711,13 @@ function onDeviceCascadeChange(value) {
               :label="item.name"
               :value="item.id"
             >
-              <div style="display: flex; justify-content: space-between;">
+              <div class="opt-row">
                 <span>{{ item.name }}</span>
-                <span style="color: var(--iot-color-text-muted); font-size: 12px;">{{ item.httpUrl }}</span>
+                <span class="opt-meta">{{ item.httpUrl }}</span>
               </div>
             </el-option>
           </el-select>
-          <div v-if="pushConfigOptions.filter(p => p.type === 'HTTP').length === 0" class="form-tip" style="color: var(--el-color-warning);">
+          <div v-if="pushConfigOptions.filter(p => p.type === 'HTTP').length === 0" class="form-tip warn">
             暂无HTTP推送配置，请先在「推送配置」中添加
           </div>
           <div v-else class="form-tip">
@@ -702,15 +727,23 @@ function onDeviceCascadeChange(value) {
 
         <el-form-item label="自定义请求体">
           <el-input
+            ref="httpBodyRef"
             :model-value="config.customBody"
             type="textarea"
-            :rows="4"
-            placeholder="{&quot;device&quot;: &quot;${deviceName}&quot;, &quot;value&quot;: ${temperature}}"
+            :rows="5"
+            placeholder="{ &quot;device&quot;: &quot;${deviceName}&quot;, &quot;value&quot;: ${temperature} }"
             @update:model-value="updateConfig('customBody', $event)"
           />
           <div class="form-tip">
-            留空使用默认请求体。支持变量: ${deviceName}, ${deviceKey}, ${eventTime}, ${属性标识符}
+            留空使用默认请求体
           </div>
+          <VariableInserter
+            :target-ref="httpBodyRef"
+            :value="config.customBody"
+            :system-variables="systemVariables"
+            :property-variables="propertyVariables"
+            @update="updateConfig('customBody', $event)"
+          />
         </el-form-item>
       </template>
 
@@ -730,13 +763,13 @@ function onDeviceCascadeChange(value) {
               :label="item.name"
               :value="item.id"
             >
-              <div style="display: flex; justify-content: space-between;">
+              <div class="opt-row">
                 <span>{{ item.name }}</span>
-                <span style="color: var(--iot-color-text-muted); font-size: 12px;">{{ item.mqttTopic }}</span>
+                <span class="opt-meta">{{ item.mqttTopic }}</span>
               </div>
             </el-option>
           </el-select>
-          <div v-if="pushConfigOptions.filter(p => p.type === 'MQTT').length === 0" class="form-tip" style="color: var(--el-color-warning);">
+          <div v-if="pushConfigOptions.filter(p => p.type === 'MQTT').length === 0" class="form-tip warn">
             暂无MQTT推送配置，请先在「推送配置」中添加
           </div>
           <div v-else class="form-tip">
@@ -746,33 +779,39 @@ function onDeviceCascadeChange(value) {
 
         <el-form-item label="自定义Payload">
           <el-input
+            ref="mqttPayloadRef"
             :model-value="config.customPayload"
             type="textarea"
-            :rows="4"
-            placeholder="{&quot;device&quot;: &quot;${deviceName}&quot;, &quot;value&quot;: ${temperature}}"
+            :rows="5"
+            placeholder="{ &quot;device&quot;: &quot;${deviceName}&quot;, &quot;value&quot;: ${temperature} }"
             @update:model-value="updateConfig('customPayload', $event)"
           />
           <div class="form-tip">
-            留空使用默认Payload。支持变量: ${deviceName}, ${deviceKey}, ${eventTime}, ${属性标识符}
+            留空使用默认Payload
           </div>
+          <VariableInserter
+            :target-ref="mqttPayloadRef"
+            :value="config.customPayload"
+            :system-variables="systemVariables"
+            :property-variables="propertyVariables"
+            @update="updateConfig('customPayload', $event)"
+          />
         </el-form-item>
       </template>
 
       <!-- 设备指令节点 -->
       <template v-if="selectedNode.type === 'OUTPUT_COMMAND'">
-        <!-- 目标设备选择 -->
         <el-form-item label="目标设备">
           <el-radio-group :model-value="config.targetMode || 'self'" @update:model-value="updateConfig('targetMode', $event)">
-            <el-radio label="self">
+            <el-radio-button label="self">
               当前设备
-            </el-radio>
-            <el-radio label="other">
+            </el-radio-button>
+            <el-radio-button label="other">
               其他设备
-            </el-radio>
+            </el-radio-button>
           </el-radio-group>
         </el-form-item>
 
-        <!-- 其他设备选择 -->
         <template v-if="config.targetMode === 'other'">
           <el-form-item label="选择设备">
             <el-cascader
@@ -812,15 +851,23 @@ function onDeviceCascadeChange(value) {
 
         <el-form-item label="服务参数">
           <el-input
+            ref="cmdParamsRef"
             :model-value="config.params"
             type="textarea"
             :rows="4"
-            placeholder="{&quot;value&quot;: 25}"
+            placeholder="{ &quot;value&quot;: 25 }"
             @update:model-value="updateConfig('params', $event)"
           />
           <div class="form-tip">
-            JSON 格式的服务参数，支持变量: ${deviceName}, ${deviceKey}, ${eventTime}, ${属性标识符}
+            JSON 格式的服务参数
           </div>
+          <VariableInserter
+            :target-ref="cmdParamsRef"
+            :value="config.params"
+            :system-variables="systemVariables"
+            :property-variables="propertyVariables"
+            @update="updateConfig('params', $event)"
+          />
         </el-form-item>
       </template>
     </el-form>
@@ -836,6 +883,7 @@ function onDeviceCascadeChange(value) {
   display: flex;
   align-items: center;
   gap: 8px;
+  flex-wrap: wrap;
 }
 
 .upstream-detail {
@@ -846,34 +894,106 @@ function onDeviceCascadeChange(value) {
 .property-info {
   display: flex;
   flex-wrap: wrap;
-  gap: 12px;
-  font-size: 12px;
-  color: var(--iot-color-text-secondary);
+  gap: 6px;
+}
+
+.info-chip {
+  font-size: 11px;
+  padding: 2px 8px;
+  background: rgba(99, 102, 241, 0.1);
+  color: #4338ca;
+  border-radius: 10px;
+  line-height: 1.6;
+
+  &.muted {
+    background: rgba(0, 0, 0, 0.04);
+    color: var(--iot-color-text-secondary);
+  }
 }
 
 .form-tip {
   margin-top: 4px;
   font-size: 12px;
   color: var(--iot-color-text-muted);
+  line-height: 1.5;
+
+  &.warn {
+    color: var(--el-color-warning);
+  }
 }
 
-.variable-hint {
-  margin-top: 4px;
-  font-size: 12px;
+.opt-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+}
+
+.opt-meta {
   color: var(--iot-color-text-muted);
-}
-
-.variable-hint .hint-label {
-  margin-right: 6px;
-}
-
-.variable-hint .variable-tag {
-  margin: 2px 4px 2px 0;
-  cursor: pointer;
   font-size: 11px;
+  font-family: var(--iot-font-mono, ui-monospace, 'SF Mono', Menlo, monospace);
 }
 
-.variable-hint .variable-tag:hover {
-  opacity: 0.8;
+/* True/False 分支标签 */
+.branch-tag {
+  display: inline-block;
+  padding: 1px 6px;
+  border-radius: 3px;
+  font-size: 11px;
+  font-weight: 600;
+  margin: 0 2px;
+}
+
+.branch-true {
+  background: rgba(16, 185, 129, 0.15);
+  color: #047857;
+}
+
+.branch-false {
+  background: rgba(239, 68, 68, 0.15);
+  color: #b91c1c;
+}
+
+/* 严重程度小圆点 */
+.severity-dot {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  margin-right: 6px;
+  vertical-align: middle;
+}
+
+.severity-dot.critical {
+  background: #dc2626;
+  box-shadow: 0 0 6px rgba(220, 38, 38, 0.5);
+}
+.severity-dot.major {
+  background: #ea580c;
+}
+.severity-dot.minor {
+  background: #ca8a04;
+}
+.severity-dot.warning {
+  background: #2563eb;
+}
+
+:global(.dark) {
+  .info-chip {
+    background: rgba(99, 102, 241, 0.2);
+    color: #c7d2fe;
+    &.muted {
+      background: rgba(255, 255, 255, 0.06);
+    }
+  }
+  .branch-true {
+    background: rgba(16, 185, 129, 0.25);
+    color: #6ee7b7;
+  }
+  .branch-false {
+    background: rgba(239, 68, 68, 0.25);
+    color: #fca5a5;
+  }
 }
 </style>
