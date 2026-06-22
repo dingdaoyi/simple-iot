@@ -220,15 +220,25 @@ public class RuleChainServiceImpl extends ServiceImpl<RuleChainMapper, RuleChain
         List<Map<String, String>> result = new ArrayList<>();
         for (RuleChain.RuleConnection connection : config.getConnections()) {
             RuleContext.ExecutionTrace sourceTrace = traceMap.get(connection.getSource());
-            if (sourceTrace != null && Objects.equals(connection.getType(), sourceTrace.getConnectionType()) && traceMap.containsKey(connection.getTarget())) {
-                result.add(Map.of(
-                    "source", connection.getSource(),
-                    "target", connection.getTarget(),
-                    "type", connection.getType()
-                ));
+            if (sourceTrace != null && matchesDebugType(connection.getType(), sourceTrace.getConnectionType()) && traceMap.containsKey(connection.getTarget())) {
+                Map<String, String> edge = new LinkedHashMap<>();
+                edge.put("source", connection.getSource());
+                edge.put("target", connection.getTarget());
+                edge.put("type", connection.getType() != null ? connection.getType() : "Success");
+                result.add(edge);
             }
         }
         return result;
+    }
+
+    /**
+     * 判断连接类型是否匹配。null type 视为通用 Success 连接。
+     */
+    private static boolean matchesDebugType(String connType, String traceConnType) {
+        if (connType == null) {
+            return "Success".equals(traceConnType);
+        }
+        return connType.equals(traceConnType);
     }
 
     private RuleContext buildDebugContext(RuleChainDebugRequest request) {

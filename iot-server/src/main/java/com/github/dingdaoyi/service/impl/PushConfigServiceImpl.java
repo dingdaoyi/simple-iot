@@ -157,11 +157,12 @@ public class PushConfigServiceImpl extends ServiceImpl<PushConfigMapper, PushCon
         if (config == null) {
             return PushDeliveryResult.failure("推送配置不存在: " + id);
         }
-        if (!Boolean.TRUE.equals(config.getIsEnabled())) {
-            return PushDeliveryResult.failure("推送配置已禁用: " + config.getName());
-        }
+        // 测试推送仅用于联通性验证，不强制要求配置已启用。
         if (config.getType() != PushConfigType.HTTP) {
             return PushDeliveryResult.failure("当前仅支持 HTTP 推送配置测试");
+        }
+        if (config.getHttpUrl() == null || config.getHttpUrl().isBlank()) {
+            return PushDeliveryResult.failure("HTTP URL 未配置，无法发起测试推送");
         }
         Object payload = request != null && request.getPayload() != null ? request.getPayload() : defaultTestPayload();
         String eventType = request != null && request.getEventType() != null ? request.getEventType() : "push.test";

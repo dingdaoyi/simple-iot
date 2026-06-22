@@ -104,7 +104,7 @@ public class RuleChainEngine {
 
             List<Connection> connections = connectionMap.getOrDefault(node.getId(), Collections.emptyList());
             connections.stream()
-                .filter(c -> c.type().equals(result.connectionType()))
+                .filter(c -> matchesConnectionType(c.type(), result.connectionType()))
                 .forEach(c -> {
                     RuleChain.RuleNode nextNode = nodeMap.get(c.target());
                     if (nextNode != null) {
@@ -180,4 +180,14 @@ public class RuleChainEngine {
     }
 
     public record Connection(String type, String target) {}
+
+    /**
+     * 判断连接类型是否匹配。null type 视为通用连接（Success）。
+     */
+    private static boolean matchesConnectionType(String connType, String resultConnType) {
+        if (connType == null) {
+            return "Success".equals(resultConnType);
+        }
+        return connType.equals(resultConnType);
+    }
 }

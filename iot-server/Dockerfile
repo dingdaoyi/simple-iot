@@ -32,8 +32,9 @@ RUN apt-get update && apt-get install -y curl tzdata && \
 # 从构建阶段复制 jar 文件
 COPY --from=builder /build/iot-server/target/iot-server-*.jar app.jar
 
-# 创建非 root 用户
-RUN groupadd -r iot && useradd -r -g iot iot
+# 创建非 root 用户（-m 创建家目录，供 Truffle/GraalJS 等运行时缓存使用）
+RUN groupadd -r iot && useradd -r -m -g iot -d /home/iot iot && \
+    chown -R iot:iot /app /home/iot
 USER iot
 
 # 暴露端口
