@@ -649,6 +649,17 @@ export function pushConfigListApi(params) {
 }
 
 /**
+ * 测试推送配置
+ */
+export function pushConfigTestApi(id, data) {
+  return request({
+    url: `/push-config/${id}/test`,
+    method: 'post',
+    data,
+  })
+}
+
+/**
  * 调用设备服务
  * @param deviceKey 设备编号
  * @param identifier 服务标识符

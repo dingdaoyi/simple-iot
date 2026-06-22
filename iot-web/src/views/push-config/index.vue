@@ -1,7 +1,8 @@
 <script setup>
-import { Delete, Edit, RefreshRight } from '@element-plus/icons-vue'
-import { onMounted } from 'vue'
-import { pushConfigDeleteApi, pushConfigPageApi } from '@/api/index.js'
+import { Delete, Edit, Promotion, RefreshRight } from '@element-plus/icons-vue'
+import { ElMessage } from 'element-plus'
+import { onMounted, ref } from 'vue'
+import { pushConfigDeleteApi, pushConfigPageApi, pushConfigTestApi } from '@/api/index.js'
 import IotTable from '@/components/IotTable.vue'
 import { useTable } from '@/composables/useTable.js'
 import EditDia from '@/views/push-config/widget/editDia.vue'
@@ -53,7 +54,7 @@ const column = [
   {
     prop: 'cz',
     slot: 'cz',
-    width: 150,
+    width: 210,
     label: '操作',
     fixed: 'right',
   },
@@ -84,6 +85,63 @@ const {
 
 function closeEdite() {
   updatePage()
+}
+
+const testDialogVisible = ref(false)
+const testLoading = ref(false)
+const testTarget = ref(null)
+const testForm = ref({
+  eventType: 'push.test',
+  payload: '{\n  "temperature": 36.5,\n  "humidity": 60\n}',
+})
+const testResult = ref(null)
+
+function openTestDialog(row) {
+  testTarget.value = row
+  testResult.value = null
+  testForm.value = {
+    eventType: 'push.test',
+    payload: '{\n  "temperature": 36.5,\n  "humidity": 60\n}',
+  }
+  testDialogVisible.value = true
+}
+
+function parseTestPayload() {
+  const payload = testForm.value.payload
+  if (!payload || !payload.trim()) {
+    return {}
+  }
+  try {
+    return JSON.parse(payload)
+  }
+  catch {
+    return payload
+  }
+}
+
+async function runTestPush() {
+  if (!testTarget.value?.id) {
+    return
+  }
+  testLoading.value = true
+  testResult.value = null
+  try {
+    const res = await pushConfigTestApi(testTarget.value.id, {
+      eventType: testForm.value.eventType || 'push.test',
+      payload: parseTestPayload(),
+    })
+    const data = res?.data || res
+    testResult.value = data
+    if (data?.success) {
+      ElMessage.success('测试推送成功')
+    }
+    else {
+      ElMessage.warning(data?.message || '测试推送失败')
+    }
+  }
+  finally {
+    testLoading.value = false
+  }
 }
 
 onMounted(() => {
@@ -180,6 +238,9 @@ onMounted(() => {
           </el-tag>
         </template>
         <template #cz="{ row }">
+          <el-button type="primary" link :icon="Promotion" @click="openTestDialog(row)">
+            测试
+          </el-button>
           <el-button type="primary" link :icon="Edit" @click="onEdit(row)">
             编辑
           </el-button>
@@ -189,6 +250,53 @@ onMounted(() => {
         </template>
       </IotTable>
     </div>
+
+    <!-- 测试推送对话框 -->
+    <el-dialog v-model="testDialogVisible" title="测试推送配置" width="640px">
+      <el-form label-width="90px">
+        <el-form-item label="配置名称">
+          <el-input :model-value="testTarget?.name || '-'" disabled />
+        </el-form-item>
+        <el-form-item label="事件类型">
+          <el-input v-model="testForm.eventType" placeholder="push.test" />
+        </el-form-item>
+        <el-form-item label="测试负载">
+          <el-input
+            v-model="testForm.payload"
+            type="textarea"
+            :rows="8"
+            placeholder="请输入 JSON 或普通文本"
+          />
+        </el-form-item>
+        <el-alert
+          v-if="testTarget?.httpSignEnabled"
+          type="info"
+          show-icon
+          :closable="false"
+          title="该配置已启用 HMAC 签名，测试请求会自动携带 X-Simple-IoT-Timestamp / Signature / Event 请求头。"
+        />
+        <el-alert
+          v-if="testResult"
+          class="test-result"
+          :type="testResult.success ? 'success' : 'error'"
+          show-icon
+          :closable="false"
+          :title="testResult.message || (testResult.success ? '测试推送成功' : '测试推送失败')"
+        >
+          <template v-if="testResult.responseBody" #default>
+            <pre>{{ testResult.responseBody }}</pre>
+          </template>
+        </el-alert>
+      </el-form>
+      <template #footer>
+        <el-button @click="testDialogVisible = false">
+          关闭
+        </el-button>
+        <el-button type="primary" :loading="testLoading" @click="runTestPush">
+          发送测试
+        </el-button>
+      </template>
+    </el-dialog>
 
     <!-- 编辑对话框 -->
     <EditDia
@@ -314,6 +422,21 @@ onMounted(() => {
 
   .page-title {
     font-size: 20px !important;
+  }
+}
+
+.test-result {
+  margin-top: var(--space-md);
+
+  pre {
+    margin: 8px 0 0;
+    padding: 8px;
+    max-height: 160px;
+    overflow: auto;
+    background: rgba(15, 23, 42, 0.06);
+    border-radius: var(--radius-sm);
+    white-space: pre-wrap;
+    word-break: break-word;
   }
 }
 </style>

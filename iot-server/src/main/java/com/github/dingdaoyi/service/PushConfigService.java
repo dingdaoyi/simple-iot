@@ -1,11 +1,13 @@
 package com.github.dingdaoyi.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.github.dingdaoyi.controller.iot.dto.PushTestRequest;
 import com.github.dingdaoyi.core.base.PageResult;
 import com.github.dingdaoyi.entity.PushConfig;
 import com.github.dingdaoyi.model.query.PushConfigPageQuery;
 import com.github.dingdaoyi.model.vo.PushConfigDetailVo;
 import com.github.dingdaoyi.model.vo.PushConfigPageVo;
+import com.github.dingdaoyi.service.push.PushDeliveryResult;
 
 import java.util.List;
 import java.util.Optional;
@@ -30,4 +32,9 @@ public interface PushConfigService extends IService<PushConfig> {
      * 获取所有启用的配置
      */
     List<PushConfig> listEnabled();
+
+    /**
+     * 使用指定配置发送一次测试推送。
+     */
+    PushDeliveryResult testPush(Integer id, PushTestRequest request);
 }

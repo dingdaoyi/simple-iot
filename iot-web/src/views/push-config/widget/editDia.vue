@@ -96,6 +96,8 @@ function resetHttpFields() {
   form.value.httpUrl = ''
   form.value.httpMethod = 'POST'
   form.value.httpTimeout = 5000
+  form.value.httpSignEnabled = false
+  form.value.httpSignSecret = ''
   httpHeaders.value = []
 }
 
@@ -141,6 +143,8 @@ watch(() => props.datas, (val) => {
       httpMethod: 'POST',
       httpHeaders: [],
       httpTimeout: 5000,
+      httpSignEnabled: false,
+      httpSignSecret: '',
       // MQTT
       mqttBroker: '',
       mqttUsername: '',
@@ -258,6 +262,23 @@ watch(() => props.datas, (val) => {
           <div class="form-tip">
             单位：毫秒
           </div>
+        </el-form-item>
+
+        <el-form-item label="HMAC签名" prop="httpSignEnabled">
+          <el-switch v-model="form.httpSignEnabled" />
+          <div class="form-tip">
+            开启后推送会自动携带 X-Simple-IoT-Timestamp / Signature / Event 请求头
+          </div>
+        </el-form-item>
+
+        <el-form-item v-if="form.httpSignEnabled" label="签名密钥" prop="httpSignSecret">
+          <el-input
+            v-model="form.httpSignSecret"
+            type="password"
+            show-password
+            clearable
+            placeholder="请输入 Webhook 签名密钥"
+          />
         </el-form-item>
       </template>
 
