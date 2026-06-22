@@ -1,4 +1,5 @@
 <script setup>
+import { ElMessage } from 'element-plus'
 import { computed, ref, watch } from 'vue'
 import { pushConfigAddApi, pushConfigEditApi } from '@/api/index.js'
 import { useForm } from '@/composables/useForm.js'
@@ -23,10 +24,7 @@ const qosOpt = [
   { label: '2 - 恰好一次', value: 2 },
 ]
 
-const rules = ref({
-  name: [{ required: true, message: '配置名称不能为空', trigger: 'blur' }],
-  type: [{ required: true, message: '配置类型不能为空', trigger: 'change' }],
-})
+const blankToEmpty = value => `${value ?? ''}`.trim()
 
 const { form, onSubmit: handleSubmit, editRef, loading } = useForm({
   api: props.datas ? pushConfigEditApi : pushConfigAddApi,
@@ -39,22 +37,152 @@ const { form, onSubmit: handleSubmit, editRef, loading } = useForm({
 const isHttp = computed(() => form.value.type === 'HTTP')
 const isMqtt = computed(() => form.value.type === 'MQTT')
 
+function validateHttpUrl(_rule, value, callback) {
+  const url = blankToEmpty(value)
+  if (!isHttp.value) {
+    callback()
+    return
+  }
+  if (!url) {
+    callback(new Error('请求URL不能为空'))
+    return
+  }
+  if (!/^https?:\/\//i.test(url)) {
+    callback(new Error('请求URL必须以 http:// 或 https:// 开头'))
+    return
+  }
+  callback()
+}
+
+function validateMqttBroker(_rule, value, callback) {
+  const broker = blankToEmpty(value)
+  if (!isMqtt.value) {
+    callback()
+    return
+  }
+  if (!broker) {
+    callback(new Error('Broker地址不能为空'))
+    return
+  }
+  if (!/^(?:tcp|ssl|ws|wss):\/\//i.test(broker)) {
+    callback(new Error('Broker地址必须以 tcp://、ssl://、ws:// 或 wss:// 开头'))
+    return
+  }
+  callback()
+}
+
+function validateMqttTopic(_rule, value, callback) {
+  const topic = blankToEmpty(value)
+  if (!isMqtt.value) {
+    callback()
+    return
+  }
+  if (!topic) {
+    callback(new Error('目标Topic不能为空'))
+    return
+  }
+  if (topic.includes('#') || topic.includes('+')) {
+    callback(new Error('发布Topic不能包含通配符 # 或 +'))
+    return
+  }
+  callback()
+}
+
+const rules = ref({
+  name: [{ required: true, message: '配置名称不能为空', trigger: 'blur' }],
+  type: [{ required: true, message: '配置类型不能为空', trigger: 'change' }],
+  httpUrl: [{ validator: validateHttpUrl, trigger: 'blur' }],
+  httpMethod: [{ required: true, message: '请求方法不能为空', trigger: 'change' }],
+  mqttBroker: [{ validator: validateMqttBroker, trigger: 'blur' }],
+  mqttTopic: [{ validator: validateMqttTopic, trigger: 'blur' }],
+  mqttQos: [{ required: true, message: 'QoS等级不能为空', trigger: 'change' }],
+})
+
 // HTTP Headers 数组
 const httpHeaders = ref([])
 
 // MQTT Options 数组
 const mqttOptions = ref([])
 
-function onSubmit() {
-  // 转换数组为提交格式
-  const submitData = { ...form.value }
+function normalizeKeyValueList(list) {
+  const normalized = []
+  for (const item of list) {
+    const key = blankToEmpty(item.key)
+    const value = blankToEmpty(item.value)
+    if (!key && !value) {
+      continue
+    }
+    if (!key || !value) {
+      return null
+    }
+    normalized.push({ key, value })
+  }
+  return normalized
+}
+
+function normalizeFormBeforeSubmit() {
+  const submitData = {
+    ...form.value,
+    name: blankToEmpty(form.value.name),
+    description: blankToEmpty(form.value.description),
+  }
+
   if (isHttp.value) {
-    submitData.httpHeaders = httpHeaders.value.filter(h => h.key)
+    const headers = normalizeKeyValueList(httpHeaders.value)
+    if (!headers) {
+      ElMessage.warning('请求头的 Key 和 Value 需要同时填写')
+      return false
+    }
+    Object.assign(submitData, {
+      httpUrl: blankToEmpty(form.value.httpUrl),
+      httpMethod: form.value.httpMethod || 'POST',
+      httpHeaders: headers,
+      httpTimeout: form.value.httpTimeout || 5000,
+      mqttBroker: '',
+      mqttUsername: '',
+      mqttPassword: '',
+      mqttClientId: '',
+      mqttTopic: '',
+      mqttQos: 0,
+      mqttRetain: false,
+      mqttKeepAlive: 60,
+      mqttCleanSession: true,
+      mqttOptions: [],
+    })
   }
+
   if (isMqtt.value) {
-    submitData.mqttOptions = mqttOptions.value.filter(h => h.key)
+    const options = normalizeKeyValueList(mqttOptions.value)
+    if (!options) {
+      ElMessage.warning('MQTT扩展配置的 Key 和 Value 需要同时填写')
+      return false
+    }
+    Object.assign(submitData, {
+      mqttBroker: blankToEmpty(form.value.mqttBroker),
+      mqttUsername: blankToEmpty(form.value.mqttUsername),
+      mqttPassword: form.value.mqttPassword || '',
+      mqttClientId: blankToEmpty(form.value.mqttClientId),
+      mqttTopic: blankToEmpty(form.value.mqttTopic),
+      mqttQos: form.value.mqttQos ?? 0,
+      mqttRetain: !!form.value.mqttRetain,
+      mqttKeepAlive: form.value.mqttKeepAlive || 60,
+      mqttCleanSession: form.value.mqttCleanSession !== false,
+      mqttOptions: options,
+      httpUrl: '',
+      httpMethod: 'POST',
+      httpHeaders: [],
+      httpTimeout: 5000,
+    })
   }
+
   form.value = submitData
+  return true
+}
+
+function onSubmit() {
+  if (!normalizeFormBeforeSubmit()) {
+    return
+  }
   handleSubmit()
 }
 
