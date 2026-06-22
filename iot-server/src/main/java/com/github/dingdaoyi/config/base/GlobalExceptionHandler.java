@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.toolkit.StringPool;
 import com.github.dingdaoyi.core.base.BaseResult;
 import com.github.dingdaoyi.core.enums.ResultCode;
 import com.github.dingdaoyi.core.exception.BusinessException;
+import com.github.dingdaoyi.proto.model.ProtocolException;
 import jakarta.validation.ConstraintViolationException;
 import lombok.extern.slf4j.Slf4j;
 
@@ -60,6 +61,18 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(value = BusinessException.class)
     public BaseResult<Object> businessException(BusinessException e) {
         return BaseResult.fail(e.getCode(), e.getMessage());
+    }
+
+    /**
+     * 协议脚本/调试异常：用户脚本/输入问题，不属于系统故障。
+     * 返回 HTTP 200 + 业务失败码，前端可直接展示错误消息；日志降到 warn 避免触发系统告警。
+     */
+    @ResponseBody
+    @ExceptionHandler(value = ProtocolException.class)
+    public BaseResult<Object> protocolException(ProtocolException e) {
+        log.warn("协议脚本异常: device={}, type={}, msg={}",
+                e.getDeviceKey(), e.getType(), e.getMessage());
+        return BaseResult.fail(ResultCode.BAD_REQUEST.getCode(), e.getMessage());
     }
 
     /**

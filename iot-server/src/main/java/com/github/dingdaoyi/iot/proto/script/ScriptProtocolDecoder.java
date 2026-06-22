@@ -175,8 +175,8 @@ public class ScriptProtocolDecoder implements ProtocolDecoder {
         } catch (ProtocolException e) {
             throw e;
         } catch (PolyglotException e) {
-            log.error("脚本执行失败: {}, 错误: {}", protocolKey, e.getMessage(), e);
-            throw new ProtocolException(request.getDeviceKey(), ExceptionType.SYSTEM_ERROR, -1,
+            log.warn("脚本执行失败: {}, 错误: {}", protocolKey, e.getMessage());
+            throw new ProtocolException(request.getDeviceKey(), ExceptionType.INVALID_PARAM, -1,
                     "脚本执行失败: " + e.getMessage());
         } catch (Exception e) {
             log.error("脚本执行上下文构建失败: {}", protocolKey, e);
@@ -429,8 +429,8 @@ public class ScriptProtocolDecoder implements ProtocolDecoder {
         } catch (ProtocolException e) {
             throw e;
         } catch (PolyglotException e) {
-            log.error("脚本编码失败: {}, 错误: {}", protocolKey, e.getMessage(), e);
-            throw new ProtocolException("encode", ExceptionType.SYSTEM_ERROR, -1,
+            log.warn("脚本编码失败: {}, 错误: {}", protocolKey, e.getMessage());
+            throw new ProtocolException("encode", ExceptionType.INVALID_PARAM, -1,
                     "脚本编码失败: " + e.getMessage());
         } catch (Exception e) {
             log.error("脚本编码结果解析失败: {}", protocolKey, e);
