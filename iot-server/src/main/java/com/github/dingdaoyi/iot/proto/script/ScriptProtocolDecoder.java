@@ -1,13 +1,28 @@
 package com.github.dingdaoyi.iot.proto.script;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.dingdaoyi.iot.proto.impl.ScriptProtocolInitialize.ScriptType;
 import com.github.dingdaoyi.proto.inter.DeviceConnection;
-import com.github.dingdaoyi.proto.model.*;
 import com.github.dingdaoyi.proto.inter.ProtocolDecoder;
+import com.github.dingdaoyi.proto.model.DataTypeEnum;
+import com.github.dingdaoyi.proto.model.DecodeResult;
+import com.github.dingdaoyi.proto.model.DeviceData;
+import com.github.dingdaoyi.proto.model.DeviceEventData;
+import com.github.dingdaoyi.proto.model.DeviceRequest;
+import com.github.dingdaoyi.proto.model.DeviceServiceResData;
+import com.github.dingdaoyi.proto.model.EncoderMessage;
+import com.github.dingdaoyi.proto.model.EncoderResult;
+import com.github.dingdaoyi.proto.model.ExceptionType;
+import com.github.dingdaoyi.proto.model.ProtocolException;
+import com.github.dingdaoyi.proto.model.tsl.EventTypeEnum;
 import com.github.dingdaoyi.proto.model.tsl.TslModel;
 import lombok.extern.slf4j.Slf4j;
-import org.graalvm.polyglot.*;
+import org.graalvm.polyglot.Context;
+import org.graalvm.polyglot.PolyglotException;
+import org.graalvm.polyglot.Value;
 
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -24,6 +39,8 @@ import java.util.Map;
  */
 @Slf4j
 public class ScriptProtocolDecoder implements ProtocolDecoder {
+
+    private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
     private final String protocolKey;
     private final String protocolName;
@@ -66,22 +83,26 @@ public class ScriptProtocolDecoder implements ProtocolDecoder {
      */
     private void initJavaScriptEngine() {
         try {
-            // 创建 GraalVM Context
+            // 不开放 HostAccess，脚本协议只通过 JSON 结构与平台交互，降低脚本误访问宿主环境的风险。
             context = Context.newBuilder("js")
-                    .allowAllAccess(true)
+                    .allowAllAccess(false)
+                    .option("engine.WarnInterpreterOnly", "false")
                     .build();
 
-            // 创建 exports 对象
-            Value exports = context.eval("js", "({ decode: null, encode: null })");
+            // 支持 exports.decode/exports.encode 以及 module.exports = { decode, encode } 两种常见写法。
+            String wrappedScript = """
+                    (function() {
+                      const exports = {};
+                      const module = { exports };
+                    """ + scriptContent + """
 
-            // 执行脚本，将函数定义到 exports 对象中
-            // 包装脚本：用 (function(exports) { ... })(exports) 形式
-            String wrappedScript = "(function(exports) {\n" + scriptContent + "\n return exports;\n})(" + exports + ")";
+                      return module.exports || exports;
+                    })()
+                    """;
 
             Value result = context.eval("js", wrappedScript);
 
-            // 从返回的 exports 对象中获取函数
-            if (result.hasMembers()) {
+            if (result != null && result.hasMembers()) {
                 Value decodeFn = result.getMember("decode");
                 Value encodeFn = result.getMember("encode");
 
@@ -111,18 +132,8 @@ public class ScriptProtocolDecoder implements ProtocolDecoder {
      * 初始化 Groovy 引擎
      */
     private void initGroovyEngine() {
-        try {
-            context = Context.newBuilder("js")
-                    .allowAllAccess(true)
-                    .build();
-
-            // Groovy 需要使用 JSR-223 API，这里先用 JavaScript 兼容模式
-            log.warn("Groovy 引擎暂未完全实现，使用 JavaScript 兼容模式: {}", protocolKey);
-            initJavaScriptEngine();
-
-        } catch (Exception e) {
-            log.error("Groovy 引擎初始化失败: {}", protocolKey, e);
-        }
+        log.warn("Groovy 引擎暂未完全实现，使用 JavaScript 兼容模式: {}", protocolKey);
+        initJavaScriptEngine();
     }
 
     @Override
@@ -133,40 +144,44 @@ public class ScriptProtocolDecoder implements ProtocolDecoder {
     @Override
     public DecodeResult decode(DeviceRequest request, TslModel tslModel) throws ProtocolException {
         if (context == null) {
-            throw new ProtocolException(request.getDeviceKey(), ExceptionType.SYSTEM_ERROR,-1,
-                "脚本引擎未初始化: " + scriptType.getDisplayName());
+            throw new ProtocolException(request.getDeviceKey(), ExceptionType.SYSTEM_ERROR, -1,
+                    "脚本引擎未初始化: " + scriptType.getDisplayName());
+        }
+        if (decodeFunction == null || !decodeFunction.canExecute()) {
+            throw new ProtocolException(request.getDeviceKey(), ExceptionType.SYSTEM_ERROR, -1,
+                    "脚本协议未定义 decode(request, tslModel) 函数: " + protocolKey);
         }
 
         try {
-            // 构建输入参数
             Map<String, Object> inputData = new HashMap<>();
             inputData.put("deviceKey", request.getDeviceKey());
-            inputData.put("messageType", request.getMessageType().name());
-            inputData.put("data", request.getData() != null ? new String(request.getData()) : "");
+            inputData.put("productKey", request.getProductKey());
+            inputData.put("protoKey", request.getProtoKey());
+            inputData.put("messageType", request.getMessageType() == null ? null : request.getMessageType().name());
+            inputData.put("data", request.getData() != null ? new String(request.getData(), StandardCharsets.UTF_8) : "");
 
-            // 调用 decode 函数
-            Value result;
-            if (decodeFunction != null && decodeFunction.canExecute()) {
-                result = decodeFunction.execute(
-                        toValue(context, inputData),
-                        toValue(context, tslModel)
-                );
-            } else {
-                // 直接执行脚本
-                result = context.eval("js", scriptContent);
-            }
+            Value result = decodeFunction.execute(
+                    toJavaScriptValue(inputData),
+                    toJavaScriptValue(tslModel)
+            );
 
             if (result == null || result.isNull()) {
                 throw new ProtocolException(request.getDeviceKey(), ExceptionType.INVALID_PARAM, -1,
-                    "脚本未返回解析结果");
+                        "脚本未返回解析结果");
             }
 
             return parseScriptResult(result, request);
 
+        } catch (ProtocolException e) {
+            throw e;
         } catch (PolyglotException e) {
             log.error("脚本执行失败: {}, 错误: {}", protocolKey, e.getMessage(), e);
             throw new ProtocolException(request.getDeviceKey(), ExceptionType.SYSTEM_ERROR, -1,
-                "脚本执行失败: " + e.getMessage());
+                    "脚本执行失败: " + e.getMessage());
+        } catch (Exception e) {
+            log.error("脚本执行上下文构建失败: {}", protocolKey, e);
+            throw new ProtocolException(request.getDeviceKey(), ExceptionType.SYSTEM_ERROR, -1,
+                    "脚本执行上下文构建失败: " + e.getMessage());
         }
     }
 
@@ -177,90 +192,114 @@ public class ScriptProtocolDecoder implements ProtocolDecoder {
         DecodeResult decodeResult = new DecodeResult();
 
         try {
-            // 检查结果是否是对象
-            if (result.hasMembers()) {
-                // 提取 messageId
-                Value messageIdValue = result.getMember("messageId");
-                if (!messageIdValue.isNull()) {
-                    decodeResult.setMessageId(messageIdValue.asInt());
-                }
+            if (!result.hasMembers()) {
+                throw new IllegalArgumentException("decode 返回值必须是对象");
+            }
 
-                // 提取 rawData
-                Value rawDataValue = result.getMember("rawData");
-                if (!rawDataValue.isNull()) {
-                    decodeResult.setRowData(rawDataValue.asString());
-                }
+            Value messageIdValue = result.getMember("messageId");
+            if (hasValue(messageIdValue)) {
+                decodeResult.setMessageId(toInteger(messageIdValue));
+            }
 
-                // 提取 dataList
-                Value dataListValue = result.getMember("dataList");
-                if (!dataListValue.isNull() && dataListValue.hasArrayElements()) {
-                    long length = dataListValue.getArraySize();
-                    for (long i = 0; i < length; i++) {
-                        Value item = dataListValue.getArrayElement(i);
-                        if (item.hasMembers()) {
-                            String identifier = item.getMember("identifier").asString();
-                            Value valueValue = item.getMember("value");
-                            Object value = convertValue(valueValue);
+            Value rawDataValue = firstMember(result, "rawData", "rowData");
+            if (hasValue(rawDataValue)) {
+                decodeResult.setRowData(String.valueOf(convertValue(rawDataValue)));
+            }
 
-                            String typeStr = "STRING";
-                            Value typeValue = item.getMember("type");
-                            if (!typeValue.isNull()) {
-                                typeStr = typeValue.asString();
-                            }
-
-                            DataTypeEnum dataType = parseDataType(typeStr);
-                            decodeResult.getDataList().add(new DeviceData(identifier, dataType, value));
-                        }
+            Value dataListValue = result.getMember("dataList");
+            if (hasValue(dataListValue) && dataListValue.hasArrayElements()) {
+                long length = dataListValue.getArraySize();
+                for (long i = 0; i < length; i++) {
+                    Value item = dataListValue.getArrayElement(i);
+                    if (item != null && item.hasMembers()) {
+                        decodeResult.getDataList().add(parseDeviceData(item));
                     }
                 }
+            }
 
-                // 提取 eventData (如果有)
-                Value eventDataValue = result.getMember("eventData");
-                if (!eventDataValue.isNull()) {
-                    // 处理事件数据
-                    log.debug("检测到事件数据");
-                }
+            Value eventDataValue = result.getMember("eventData");
+            if (hasValue(eventDataValue) && eventDataValue.hasMembers()) {
+                decodeResult.setEventData(parseEventData(eventDataValue));
+            }
 
-                // 提取 serviceResData (如果有)
-                Value serviceResValue = result.getMember("serviceResData");
-                if (!serviceResValue.isNull()) {
-                    // 处理服务响应数据
-                    log.debug("检测到服务响应数据");
-                }
+            Value serviceResValue = result.getMember("serviceResData");
+            if (hasValue(serviceResValue) && serviceResValue.hasMembers()) {
+                decodeResult.setServiceResData(parseServiceResData(serviceResValue));
             }
 
         } catch (Exception e) {
             log.error("解析脚本结果失败: {}", protocolKey, e);
             throw new ProtocolException(request.getDeviceKey(), ExceptionType.INVALID_PARAM, -1,
-                "解析脚本结果失败: " + e.getMessage());
+                    "解析脚本结果失败: " + e.getMessage());
         }
 
         return decodeResult;
+    }
+
+    private DeviceData parseDeviceData(Value item) {
+        String identifier = asString(firstMember(item, "identifier", "id", "code"));
+        Value valueValue = item.getMember("value");
+        Object value = hasValue(valueValue) ? convertValue(valueValue) : null;
+        String typeStr = asString(firstMember(item, "type", "dataType"));
+        return new DeviceData(identifier, parseDataType(typeStr), value);
+    }
+
+    private DeviceEventData parseEventData(Value eventDataValue) {
+        String identifier = asString(firstMember(eventDataValue, "eventIdentifier", "identifier", "id", "code"));
+        EventTypeEnum eventType = parseEventType(firstMember(eventDataValue, "eventType", "type", "level"));
+        DeviceEventData eventData = new DeviceEventData(identifier, eventType);
+
+        Value paramsValue = firstMember(eventDataValue, "params", "dataList");
+        if (hasValue(paramsValue) && paramsValue.hasArrayElements()) {
+            long length = paramsValue.getArraySize();
+            for (long i = 0; i < length; i++) {
+                Value item = paramsValue.getArrayElement(i);
+                if (item != null && item.hasMembers()) {
+                    eventData.getParams().add(parseDeviceData(item));
+                }
+            }
+        }
+        return eventData;
+    }
+
+    private DeviceServiceResData parseServiceResData(Value serviceResValue) {
+        String identifier = asString(firstMember(serviceResValue, "serviceIdentifier", "identifier", "id", "code"));
+        DeviceServiceResData serviceResData = new DeviceServiceResData(identifier);
+
+        Value resultDataValue = firstMember(serviceResValue, "resultData", "results", "params", "dataList");
+        if (hasValue(resultDataValue) && resultDataValue.hasArrayElements()) {
+            long length = resultDataValue.getArraySize();
+            for (long i = 0; i < length; i++) {
+                Value item = resultDataValue.getArrayElement(i);
+                if (item != null && item.hasMembers()) {
+                    serviceResData.getResultData().add(parseDeviceData(item));
+                }
+            }
+        }
+        return serviceResData;
     }
 
     /**
      * 转换 Value 为 Java 对象
      */
     private Object convertValue(Value value) {
-        if (value.isNull()) {
+        if (!hasValue(value)) {
             return null;
         }
         if (value.isBoolean()) {
             return value.asBoolean();
         }
         if (value.isNumber()) {
-            // 尝试返回合适的数值类型
-            long longValue = value.asLong();
-            if (longValue == value.asDouble()) {
-                return longValue;
+            double doubleValue = value.asDouble();
+            if (Math.rint(doubleValue) == doubleValue && value.fitsInLong()) {
+                return value.asLong();
             }
-            return value.asDouble();
+            return doubleValue;
         }
         if (value.isString()) {
             return value.asString();
         }
         if (value.hasArrayElements()) {
-            // 处理数组
             long size = value.getArraySize();
             Object[] array = new Object[(int) size];
             for (int i = 0; i < size; i++) {
@@ -269,49 +308,77 @@ public class ScriptProtocolDecoder implements ProtocolDecoder {
             return array;
         }
         if (value.hasMembers()) {
-            // 处理对象
             Map<String, Object> map = new HashMap<>();
             for (String key : value.getMemberKeys()) {
                 map.put(key, convertValue(value.getMember(key)));
             }
             return map;
         }
-        return value.asString();
+        return value.toString();
     }
 
-    /**
-     * 将 Java 对象转换为 Value
-     */
-    private Value toValue(Context context, Object obj) {
-        if (obj == null) {
-            return context.asValue(null);
+    private Value toJavaScriptValue(Object value) throws JsonProcessingException {
+        if (value == null) {
+            return context.eval("js", "null");
         }
-        if (obj instanceof Value) {
-            return (Value) obj;
+        return context.eval("js", "JSON.parse(" + OBJECT_MAPPER.writeValueAsString(OBJECT_MAPPER.writeValueAsString(value)) + ")");
+    }
+
+    private boolean hasValue(Value value) {
+        return value != null && !value.isNull();
+    }
+
+    private Value firstMember(Value value, String... names) {
+        if (value == null || !value.hasMembers()) {
+            return null;
         }
-        if (obj instanceof String || obj instanceof Number || obj instanceof Boolean) {
-            return context.asValue(obj);
-        }
-        if (obj instanceof Map) {
-            @SuppressWarnings("unchecked")
-            Map<String, Object> map = (Map<String, Object>) obj;
-            Map<String, Object> result = new HashMap<>();
-            for (Map.Entry<String, Object> entry : map.entrySet()) {
-                result.put(entry.getKey(), convertToJava(entry.getValue()));
+        for (String name : names) {
+            Value member = value.getMember(name);
+            if (hasValue(member)) {
+                return member;
             }
-            return context.asValue(result);
         }
-        return context.asValue(obj);
+        return null;
     }
 
-    /**
-     * 转换为纯 Java 对象
-     */
-    private Object convertToJava(Object obj) {
-        if (obj == null || obj instanceof String || obj instanceof Number || obj instanceof Boolean) {
-            return obj;
+    private String asString(Value value) {
+        if (!hasValue(value)) {
+            return null;
         }
-        return obj;
+        Object converted = convertValue(value);
+        return converted == null ? null : String.valueOf(converted);
+    }
+
+    private Integer toInteger(Value value) {
+        if (!hasValue(value)) {
+            return null;
+        }
+        if (value.isNumber()) {
+            return value.asInt();
+        }
+        return Integer.parseInt(value.asString());
+    }
+
+    private EventTypeEnum parseEventType(Value eventTypeValue) {
+        if (!hasValue(eventTypeValue)) {
+            return EventTypeEnum.INFO;
+        }
+        if (eventTypeValue.isNumber()) {
+            return EventTypeEnum.of(eventTypeValue.asInt());
+        }
+        String value = eventTypeValue.asString();
+        if (value == null || value.isBlank()) {
+            return EventTypeEnum.INFO;
+        }
+        try {
+            return EventTypeEnum.valueOf(value.trim().toUpperCase());
+        } catch (IllegalArgumentException e) {
+            try {
+                return EventTypeEnum.of(Integer.parseInt(value));
+            } catch (NumberFormatException ignored) {
+                return EventTypeEnum.INFO;
+            }
+        }
     }
 
     /**
@@ -338,62 +405,83 @@ public class ScriptProtocolDecoder implements ProtocolDecoder {
     public EncoderResult encode(EncoderMessage message, TslModel tslModel) throws ProtocolException {
         if (context == null) {
             throw new ProtocolException("encode", ExceptionType.SYSTEM_ERROR, -1,
-                "脚本引擎未初始化: " + scriptType.getDisplayName());
+                    "脚本引擎未初始化: " + scriptType.getDisplayName());
+        }
+        if (encodeFunction == null || !encodeFunction.canExecute()) {
+            throw new ProtocolException("encode", ExceptionType.SYSTEM_ERROR, -1,
+                    "脚本协议未定义 encode(message, tslModel) 函数: " + protocolKey);
         }
 
         try {
-            // 构建输入参数
             Map<String, Object> inputData = new HashMap<>();
             inputData.put("identifier", message.getIdentifier());
+            inputData.put("deviceKey", message.getDeviceKey());
+            inputData.put("productKey", message.getProductKey());
             inputData.put("params", message.getParams());
 
-            // 调用 encode 函数
-            Value result;
-            if (encodeFunction != null && encodeFunction.canExecute()) {
-                result = encodeFunction.execute(
-                        toValue(context, inputData),
-                        toValue(context, tslModel)
-                );
-            } else {
-                // 直接执行脚本（需要脚本支持 encode 函数）
-                result = context.eval("js", scriptContent);
-            }
+            Value result = encodeFunction.execute(
+                    toJavaScriptValue(inputData),
+                    toJavaScriptValue(tslModel)
+            );
 
-            EncoderResult encoderResult = new EncoderResult();
+            return parseEncodeResult(result);
 
-            if (result != null && !result.isNull() && result.hasMembers()) {
-                // 提取 messageId
-                Value messageIdValue = result.getMember("messageId");
-                if (!messageIdValue.isNull()) {
-                    encoderResult.setMessageId(messageIdValue.asInt());
-                }
-
-                // 提取 message
-                Value messageValue = result.getMember("message");
-                if (!messageValue.isNull()) {
-                    if (messageValue.isString()) {
-                        encoderResult.setMessage(messageValue.asString().getBytes());
-                    }
-                }
-
-                // 提取 metadata
-                Value metadataValue = result.getMember("metadata");
-                if (!metadataValue.isNull() && metadataValue.hasMembers()) {
-                    Map<String, Object> metadata = new HashMap<>();
-                    for (String key : metadataValue.getMemberKeys()) {
-                        metadata.put(key, convertValue(metadataValue.getMember(key)));
-                    }
-                    encoderResult.setMetadata(metadata);
-                }
-            }
-
-            return encoderResult;
-
+        } catch (ProtocolException e) {
+            throw e;
         } catch (PolyglotException e) {
             log.error("脚本编码失败: {}, 错误: {}", protocolKey, e.getMessage(), e);
             throw new ProtocolException("encode", ExceptionType.SYSTEM_ERROR, -1,
-                "脚本编码失败: " + e.getMessage());
+                    "脚本编码失败: " + e.getMessage());
+        } catch (Exception e) {
+            log.error("脚本编码结果解析失败: {}", protocolKey, e);
+            throw new ProtocolException("encode", ExceptionType.INVALID_PARAM, -1,
+                    "脚本编码结果解析失败: " + e.getMessage());
         }
+    }
+
+    private EncoderResult parseEncodeResult(Value result) throws ProtocolException {
+        if (result == null || result.isNull() || !result.hasMembers()) {
+            throw new ProtocolException("encode", ExceptionType.INVALID_PARAM, -1, "encode 返回值必须是对象");
+        }
+
+        EncoderResult encoderResult = new EncoderResult();
+
+        Value messageIdValue = result.getMember("messageId");
+        if (hasValue(messageIdValue)) {
+            encoderResult.setMessageId(toInteger(messageIdValue));
+        }
+
+        Value needReplyValue = result.getMember("needReply");
+        if (hasValue(needReplyValue)) {
+            encoderResult.setNeedReply(needReplyValue.asBoolean());
+        }
+
+        Value messageValue = result.getMember("message");
+        if (hasValue(messageValue)) {
+            Object message = convertValue(messageValue);
+            if (message instanceof byte[] bytes) {
+                encoderResult.setMessage(bytes);
+            } else if (message instanceof Object[] array) {
+                byte[] bytes = new byte[array.length];
+                for (int i = 0; i < array.length; i++) {
+                    bytes[i] = ((Number) array[i]).byteValue();
+                }
+                encoderResult.setMessage(bytes);
+            } else {
+                encoderResult.setMessage(String.valueOf(message).getBytes(StandardCharsets.UTF_8));
+            }
+        }
+
+        Value metadataValue = result.getMember("metadata");
+        if (hasValue(metadataValue) && metadataValue.hasMembers()) {
+            Map<String, Object> metadata = new HashMap<>();
+            for (String key : metadataValue.getMemberKeys()) {
+                metadata.put(key, convertValue(metadataValue.getMember(key)));
+            }
+            encoderResult.setMetadata(metadata);
+        }
+
+        return encoderResult;
     }
 
     @Override

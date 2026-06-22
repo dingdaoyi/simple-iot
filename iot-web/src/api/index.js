@@ -323,6 +323,32 @@ export function protocolSetStatusApi(id, enable) {
 }
 
 /**
+ * 测试脚本协议解码
+ * @param data 协议草稿和测试报文
+ * @returns {Promise} API 响应
+ */
+export function protocolTestDecodeApi(data) {
+  return request({
+    url: '/protocol/test/decode',
+    method: 'post',
+    data,
+  })
+}
+
+/**
+ * 测试脚本协议编码
+ * @param data 协议草稿和测试命令
+ * @returns {Promise} API 响应
+ */
+export function protocolTestEncodeApi(data) {
+  return request({
+    url: '/protocol/test/encode',
+    method: 'post',
+    data,
+  })
+}
+
+/**
  * 图标列表
  * @param params
  * @returns {Promise} API 响应
