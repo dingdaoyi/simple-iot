@@ -187,6 +187,7 @@
                     <jvmArguments>
                         -Dio.netty.tryReflectionSetAccessible=true
                         --add-opens=java.base/java.nio=ALL-UNNAMED
+                        --sun-misc-unsafe-memory-access=allow
                     </jvmArguments>
                 </configuration>
             </plugin>

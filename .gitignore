@@ -87,3 +87,4 @@ infra/snapshot/
 
 # marketing 草稿（dev.to / HN 文章草稿，发布前留本地迭代）
 doc/marketing/
+iot-server/src/main/resources/application-local.yml
