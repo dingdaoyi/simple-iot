@@ -122,3 +122,11 @@ sample:
       prop-database: prop_data
       event-database: even_data
       database: sample
+
+management:
+  endpoint:
+    health:
+      show-details: always
+  health:
+    mail:
+      enabled: false

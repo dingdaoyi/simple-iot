@@ -80,6 +80,11 @@ services:
       S3_BUCKET_NAME: ${S3_BUCKET_NAME:-iot-bucket}
       S3_REGION: ${S3_REGION:-us-east-1}
       S3_ENDPOINT: ${S3_ENDPOINT:-http://rustfs:9000}
+      # 邮件配置
+      MAIL_HOST: ${MAIL_HOST:-smtp.163.com}
+      MAIL_PORT: ${MAIL_PORT:-25}
+      MAIL_USERNAME: ${MAIL_USERNAME:-}
+      MAIL_PASSWORD: ${MAIL_PASSWORD:-}
     ports:
       # 公网：仅 MQTT TCP，给 IoT 设备直连
       - "${MQTT_PORT:-1883}:1883"
