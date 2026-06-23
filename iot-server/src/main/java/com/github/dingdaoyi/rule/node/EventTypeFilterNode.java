@@ -30,7 +30,7 @@ public class EventTypeFilterNode implements RuleNodeExecutor {
         // 获取事件数据
         DeviceEventData eventData = context.getEventData().orElse(null);
         if (eventData == null) {
-            return NodeResult.of(false, "没有事件数据", null);
+            return NodeResult.of(false, null, "没有事件数据");
         }
 
         FilterEventTypeConfig cfg = (FilterEventTypeConfig) config;
@@ -42,7 +42,7 @@ public class EventTypeFilterNode implements RuleNodeExecutor {
 
         // 检查事件标识符是否匹配
         if (!identifier.equals(eventData.getIdentifier())) {
-            return NodeResult.of(false, "事件不匹配: " + eventData.getIdentifier(), null);
+            return NodeResult.of(false, null, "事件不匹配: " + eventData.getIdentifier());
         }
 
         // 如果配置了参数过滤
@@ -50,7 +50,7 @@ public class EventTypeFilterNode implements RuleNodeExecutor {
         if (paramIdentifier != null && !paramIdentifier.isEmpty()) {
             List<DeviceData> params = eventData.getParams();
             if (params == null || params.isEmpty()) {
-                return NodeResult.of(false, "事件参数为空", null);
+                return NodeResult.of(false, null, "事件参数为空");
             }
 
             // 查找指定参数
@@ -60,7 +60,7 @@ public class EventTypeFilterNode implements RuleNodeExecutor {
                 .orElse(null);
 
             if (paramData == null) {
-                return NodeResult.of(false, "事件参数不存在: " + paramIdentifier, null);
+                return NodeResult.of(false, null, "事件参数不存在: " + paramIdentifier);
             }
 
             Object paramValue = paramData.getValue();
@@ -70,7 +70,7 @@ public class EventTypeFilterNode implements RuleNodeExecutor {
             if (operator != null && thresholdStr != null) {
                 boolean paramMatch = compareValue(paramValue, operator, thresholdStr);
                 if (!paramMatch) {
-                    return NodeResult.of(false, "参数条件不满足: " + paramIdentifier + " " + operator + " " + thresholdStr, null);
+                    return NodeResult.of(false, null, "参数条件不满足: " + paramIdentifier + " " + operator + " " + thresholdStr);
                 }
             }
         }
