@@ -1,7 +1,7 @@
 <script setup>
 import { Close } from '@element-plus/icons-vue'
 import { ElMessage } from 'element-plus'
-import { computed, onMounted, ref } from 'vue'
+import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import {
   deviceListApi,
@@ -254,15 +254,33 @@ function getConnectionErrorMessage(sourceType, targetType) {
   return '此连接不被允许'
 }
 
-// 节点分类
+// 节点搜索关键词
+const nodeSearchKeyword = ref('')
+
+// 节点分类（支持搜索过滤）
 const nodeCategories = computed(() => {
   const categories = {}
+  const keyword = nodeSearchKeyword.value.toLowerCase().trim()
+
   nodeTypes.value.forEach((type) => {
+    // 搜索过滤：匹配名称或描述
+    if (keyword && !type.name.toLowerCase().includes(keyword) && !type.description.toLowerCase().includes(keyword)) {
+      return
+    }
+
     if (!categories[type.category]) {
       categories[type.category] = []
     }
     categories[type.category].push(type)
   })
+
+  // 移除空分类
+  Object.keys(categories).forEach((cat) => {
+    if (categories[cat].length === 0) {
+      delete categories[cat]
+    }
+  })
+
   return categories
 })
 
@@ -995,6 +1013,38 @@ async function handleSave() {
 function handleBack() {
   router.push('/rule-chain')
 }
+
+// 快捷键处理
+function handleKeydown(e) {
+  // 输入框内不触发快捷键
+  if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') {
+    // 但允许 Ctrl+S 在输入框内保存
+    if (e.key === 's' && (e.ctrlKey || e.metaKey)) {
+      e.preventDefault()
+      handleSave()
+    }
+    return
+  }
+
+  // Delete/Backspace: 删除选中节点
+  if ((e.key === 'Delete' || e.key === 'Backspace') && selectedNode.value) {
+    e.preventDefault()
+    deleteNode(selectedNode.value.id)
+  }
+
+  // Escape: 取消选中
+  if (e.key === 'Escape') {
+    selectedNode.value = null
+    closeNodeCreateMenu()
+  }
+
+  // Ctrl+S / Cmd+S: 保存
+  if (e.key === 's' && (e.ctrlKey || e.metaKey)) {
+    e.preventDefault()
+    handleSave()
+  }
+}
+
 onMounted(async () => {
   await loadNodeTypes()
   await loadProductTypes()
@@ -1003,6 +1053,14 @@ onMounted(async () => {
   if (route.params.id && route.params.id !== 'new') {
     await loadDetail()
   }
+
+  // 绑定快捷键
+  window.addEventListener('keydown', handleKeydown)
+})
+
+onBeforeUnmount(() => {
+  // 解绑快捷键
+  window.removeEventListener('keydown', handleKeydown)
 })
 </script>
 
@@ -1022,6 +1080,7 @@ onMounted(async () => {
         </el-button>
         <el-button type="primary" :loading="saving" @click="handleSave">
           保存
+          <span class="shortcut-hint">Ctrl+S</span>
         </el-button>
       </div>
     </div>
@@ -1094,6 +1153,16 @@ onMounted(async () => {
             </el-select>
           </el-form-item>
         </el-form>
+
+        <!-- 节点库搜索 -->
+        <div class="node-search">
+          <el-input
+            v-model="nodeSearchKeyword"
+            placeholder="搜索节点类型..."
+            clearable
+            prefix-icon="Search"
+          />
+        </div>
 
         <!-- 节点分类 -->
         <div v-for="(types, category) in nodeCategories" :key="category" class="node-category">
@@ -1445,6 +1514,13 @@ onMounted(async () => {
     align-items: center;
     gap: var(--space-md);
   }
+  
+  .shortcut-hint {
+    margin-left: var(--space-xs);
+    font-size: 11px;
+    opacity: 0.6;
+    font-weight: normal;
+  }
 
   .header-left {
     .title {
@@ -1471,16 +1547,32 @@ onMounted(async () => {
     padding-bottom: var(--space-sm);
     border-bottom: 1px solid var(--iot-color-border);
   }
-  .config-section {
-    margin-bottom: var(--space-lg);
-  }
-  .section-title,
+
   .category-title {
     font-size: 14px;
     font-weight: 500;
     color: var(--iot-color-text-secondary);
     margin-bottom: var(--space-sm);
   }
+
+  /* 节点搜索框 */
+  .node-search {
+    margin-bottom: var(--space-md);
+
+    :deep(.el-input__wrapper) {
+      box-shadow: 0 0 0 1px var(--iot-border-color) inset;
+      transition: box-shadow 0.2s;
+
+      &:hover {
+        box-shadow: 0 0 0 1px var(--iot-color-primary-light) inset;
+      }
+    }
+
+    :deep(.el-input__wrapper.is-focus) {
+      box-shadow: 0 0 0 1px var(--iot-color-primary) inset;
+    }
+  }
+
   .node-category {
     margin-bottom: var(--space-md);
   }
