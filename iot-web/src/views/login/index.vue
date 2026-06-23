@@ -1,10 +1,12 @@
 <script setup>
 import { getCurrentInstance, reactive, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
+import { useI18n } from 'vue-i18n'
 import { Index } from '@/api'
 import { useAccountStore, useThemeStore } from '@/store'
 import LoginBg from './weight/LoginBg'
 
+const { t } = useI18n()
 const { proxy: ctx } = getCurrentInstance() // 可以把ctx当成vue2中的this
 const store = useAccountStore()
 const themeStore = useThemeStore()
@@ -21,16 +23,10 @@ const form = ref({
 })
 const rules = {
   username: [
-    { required: true, message: '请输入用户名', trigger: 'blur' },
+    { required: true, message: t('login.username_placeholder'), trigger: 'blur' },
   ],
   password: [
-    { required: true, message: '请输入密码', trigger: 'blur' },
-    // {
-    //   min: 6,
-    //   max: 12,
-    //   message: '长度在 6 到 12 个字符',
-    //   trigger: 'blur'
-    // }
+    { required: true, message: t('login.password_placeholder'), trigger: 'blur' },
   ],
 }
 const loginForm = ref(null)
@@ -95,21 +91,21 @@ function showPass(e) {
         <div class="form-box flex-1 relative">
           <div class="account">
             <div class="text-center  text-28px mb-12px color-primary lh-40px">
-              简单的物联网平台
+              {{ t('login.title') }}
             </div>
             <el-form ref="loginForm" :model="form" :rules="rules" label-position="top">
-              <el-form-item label="账号" prop="username">
-                <el-input v-model="form.username" placeholder="请输入账号" />
+              <el-form-item :label="t('login.username')" prop="username">
+                <el-input v-model="form.username" :placeholder="t('login.username_placeholder')" />
               </el-form-item>
-              <el-form-item label="密码" prop="password">
+              <el-form-item :label="t('login.password')" prop="password">
                 <div class="w-full relative">
-                  <el-input v-model="form.password" :type="state.psdType" placeholder="请输入密码" />
+                  <el-input v-model="form.password" :type="state.psdType" :placeholder="t('login.password_placeholder')" />
                   <div v-if="state.psdType === 'password'" class="close" @click="showPass('text')" />
                   <div v-else class="open" @click="showPass('password')" />
                 </div>
               </el-form-item>
               <el-button class="w-full sub-btn" type="primary" :loading="state.loading" @click="onSubmit">
-                登录
+                {{ t('login.login') }}
               </el-button>
             </el-form>
           </div>

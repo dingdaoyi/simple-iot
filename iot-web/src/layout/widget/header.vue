@@ -4,6 +4,7 @@ import { useRouter } from 'vue-router'
 import { useSidebar } from '@/composables/useSidebar.js'
 import { useTheme } from '@/composables/useTheme.js'
 import { useAccountStore } from '@/store'
+import LocaleSwitcher from '@/components/LocaleSwitcher.vue'
 
 const router = useRouter()
 const store = useAccountStore()
@@ -82,6 +83,9 @@ function getThemeIcon() {
           </el-dropdown-menu>
         </template>
       </el-dropdown>
+
+      <!-- 语言切换 -->
+      <LocaleSwitcher />
 
       <!-- 用户菜单 -->
       <el-dropdown trigger="click">
