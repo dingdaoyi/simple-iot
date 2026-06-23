@@ -85,11 +85,18 @@ const debugForm = ref({
 const canvasRef = ref(null)
 const svgRef = ref(null)
 
+// 画布变换状态（缩放和平移）
+const canvasTransform = ref({
+  scale: 1,
+  translateX: 0,
+  translateY: 0,
+})
+
 // 拖拽状态
 const dragState = ref({
   isDragging: false,
   dragNode: null,
-  dragType: null, // 'new' | 'move' | 'connection'
+  dragType: null, // 'new' | 'move' | 'connection' | 'pan'
   startX: 0,
   startY: 0,
   offsetX: 0,
@@ -1045,6 +1052,67 @@ function handleKeydown(e) {
   }
 }
 
+// 画布缩放控制
+function handleZoom(delta) {
+  const newScale = Math.max(0.1, Math.min(3, canvasTransform.value.scale + delta))
+  canvasTransform.value.scale = newScale
+}
+
+function handleZoomIn() {
+  handleZoom(0.1)
+}
+
+function handleZoomOut() {
+  handleZoom(-0.1)
+}
+
+function handleResetView() {
+  canvasTransform.value = {
+    scale: 1,
+    translateX: 0,
+    translateY: 0,
+  }
+}
+
+// 画布滚轮缩放
+function handleCanvasWheel(e) {
+  if (e.ctrlKey || e.metaKey) {
+    e.preventDefault()
+    const delta = e.deltaY > 0 ? -0.05 : 0.05
+    handleZoom(delta)
+  }
+}
+
+// 画布空白区域拖拽平移
+function handleCanvasMouseDown(e) {
+  // 只有在空白区域（canvas-panel 本身）点击才触发平移
+  if (e.target.classList.contains('canvas-panel')) {
+    dragState.value = {
+      isDragging: true,
+      dragType: 'pan',
+      startX: e.clientX - canvasTransform.value.translateX,
+      startY: e.clientY - canvasTransform.value.translateY,
+      dragNode: null,
+      offsetX: 0,
+      offsetY: 0,
+    }
+  }
+}
+
+function handleCanvasMouseMove(e) {
+  if (dragState.value.isDragging && dragState.value.dragType === 'pan') {
+    canvasTransform.value.translateX = e.clientX - dragState.value.startX
+    canvasTransform.value.translateY = e.clientY - dragState.value.startY
+  }
+}
+
+function handleCanvasMouseUp() {
+  if (dragState.value.dragType === 'pan') {
+    dragState.value.isDragging = false
+    dragState.value.dragType = null
+  }
+}
+
 onMounted(async () => {
   await loadNodeTypes()
   await loadProductTypes()
@@ -1192,139 +1260,168 @@ onBeforeUnmount(() => {
         class="canvas-panel glass-card"
         @dragover="onCanvasDragOver"
         @drop="onCanvasDrop"
+        @wheel="handleCanvasWheel"
+        @mousedown="handleCanvasMouseDown"
+        @mousemove="handleCanvasMouseMove"
+        @mouseup="handleCanvasMouseUp"
+        @mouseleave="handleCanvasMouseUp"
       >
-        <!-- SVG连接线层 -->
-        <svg ref="svgRef" class="connections-svg">
-          <!-- 已有连接线 -->
-          <g v-for="line in connectionLines" :key="line.id" class="connection-group">
-            <!-- 透明宽点击区域 -->
-            <path
-              :d="generateBezierPath(line.source.x, line.source.y, line.target.x, line.target.y)"
-              class="connection-hitbox"
-              @click.stop="deleteConnection(line.sourceNode, line.targetNode, line.connectionType)"
-            />
-            <!-- 可见连接线 -->
-            <path
-              :d="generateBezierPath(line.source.x, line.source.y, line.target.x, line.target.y)"
-              class="connection-line"
-              :class="[
-                `connection-${(line.connectionType || 'Success').toLowerCase()}`,
-                { 'debug-executed': isDebugConnectionExecuted(line) },
-              ]"
-            />
-            <!-- 连接类型标签（色盲友好） -->
-            <rect
-              :x="(line.source.x + line.target.x) / 2 - 14"
-              :y="(line.source.y + line.target.y) / 2 - 10"
-              width="28"
-              height="20"
-              rx="4"
-              class="connection-label-bg"
-              :class="`connection-${(line.connectionType || 'Success').toLowerCase()}`"
-            />
-            <text
-              :x="(line.source.x + line.target.x) / 2"
-              :y="(line.source.y + line.target.y) / 2"
-              class="connection-label-text"
-            >{{ line.connectionType === 'True' ? 'T' : line.connectionType === 'False' ? 'F' : '→' }}</text>
-            <!-- 箭头 -->
-            <polygon
-              :points="`${line.target.x - 8},${line.target.y - 5} ${line.target.x},${line.target.y} ${line.target.x - 8},${line.target.y + 5}`"
-              class="connection-arrow"
-              :class="[
-                `connection-${(line.connectionType || 'Success').toLowerCase()}`,
-                { 'debug-executed': isDebugConnectionExecuted(line) },
-              ]"
-            />
-            <!-- 删除提示（hover时显示） -->
-            <circle
-              :cx="(line.source.x + line.target.x) / 2"
-              :cy="(line.source.y + line.target.y) / 2"
-              r="14"
-              class="delete-hint"
-              @click.stop="deleteConnection(line.sourceNode, line.targetNode, line.connectionType)"
-            />
-            <text
-              :x="(line.source.x + line.target.x) / 2"
-              :y="(line.source.y + line.target.y) / 2"
-              class="delete-text"
-              @click.stop="deleteConnection(line.sourceNode, line.targetNode, line.connectionType)"
-            >×</text>
-          </g>
-          <!-- 临时连接线(拖拽中) -->
-          <path
-            v-if="tempConnection"
-            :d="generateBezierPath(
-              tempConnection.sourceX,
-              tempConnection.sourceY,
-              tempConnection.targetX,
-              tempConnection.targetY,
-            )"
-            class="connection-line temp"
-            :class="`connection-${(connectionDrag.connectionType || 'Success').toLowerCase()}`"
-          />
-        </svg>
-
-        <div v-if="ruleChain.configuration.nodes.length === 0" class="empty-tip">
-          从左侧拖拽节点到画布,或点击节点添加
-        </div>
-
-        <!-- 节点 -->
+        <!-- 可缩放平移的内容层 -->
         <div
-          v-for="node in ruleChain.configuration.nodes"
-          :key="node.id"
-          class="canvas-node"
-          :class="[
-            `category-${getNodeCategory(node.type).toLowerCase()}`,
-            {
-              'selected': selectedNode?.id === node.id,
-              'is-input': isInputNode(node.type),
-              'is-filter': isFilterNode(node.type),
-              'debug-success': debugTraceMap[node.id]?.status === 'SUCCESS',
-              'debug-failed': ['FAILED', 'ERROR'].includes(debugTraceMap[node.id]?.status),
-            },
-          ]"
-          :style="{ 'left': `${node.x}px`, 'top': `${node.y}px`, '--node-color': node.color }"
-          @click="selectedNode = selectedNode?.id === node.id ? null : node"
-          @mousedown="startDragNode(node, $event)"
+          class="canvas-content"
+          :style="{
+            transform: `translate(${canvasTransform.translateX}px, ${canvasTransform.translateY}px) scale(${canvasTransform.scale})`,
+            transformOrigin: '0 0',
+          }"
         >
-          <!-- 输入端口 (INPUT类型节点不显示) -->
-          <div v-if="!isInputNode(node.type)" class="node-port input" @mousedown="startConnection(node, 'input', $event)">
-            <span class="port-dot" />
+          <!-- SVG连接线层 -->
+          <svg ref="svgRef" class="connections-svg">
+            <!-- 已有连接线 -->
+            <g v-for="line in connectionLines" :key="line.id" class="connection-group">
+              <!-- 透明宽点击区域 -->
+              <path
+                :d="generateBezierPath(line.source.x, line.source.y, line.target.x, line.target.y)"
+                class="connection-hitbox"
+                @click.stop="deleteConnection(line.sourceNode, line.targetNode, line.connectionType)"
+              />
+              <!-- 可见连接线 -->
+              <path
+                :d="generateBezierPath(line.source.x, line.source.y, line.target.x, line.target.y)"
+                class="connection-line"
+                :class="[
+                  `connection-${(line.connectionType || 'Success').toLowerCase()}`,
+                  { 'debug-executed': isDebugConnectionExecuted(line) },
+                ]"
+              />
+              <!-- 连接类型标签（色盲友好） -->
+              <rect
+                :x="(line.source.x + line.target.x) / 2 - 14"
+                :y="(line.source.y + line.target.y) / 2 - 10"
+                width="28"
+                height="20"
+                rx="4"
+                class="connection-label-bg"
+                :class="`connection-${(line.connectionType || 'Success').toLowerCase()}`"
+              />
+              <text
+                :x="(line.source.x + line.target.x) / 2"
+                :y="(line.source.y + line.target.y) / 2"
+                class="connection-label-text"
+              >{{ line.connectionType === 'True' ? 'T' : line.connectionType === 'False' ? 'F' : '→' }}</text>
+              <!-- 箭头 -->
+              <polygon
+                :points="`${line.target.x - 8},${line.target.y - 5} ${line.target.x},${line.target.y} ${line.target.x - 8},${line.target.y + 5}`"
+                class="connection-arrow"
+                :class="[
+                  `connection-${(line.connectionType || 'Success').toLowerCase()}`,
+                  { 'debug-executed': isDebugConnectionExecuted(line) },
+                ]"
+              />
+              <!-- 删除提示（hover时显示） -->
+              <circle
+                :cx="(line.source.x + line.target.x) / 2"
+                :cy="(line.source.y + line.target.y) / 2"
+                r="14"
+                class="delete-hint"
+                @click.stop="deleteConnection(line.sourceNode, line.targetNode, line.connectionType)"
+              />
+              <text
+                :x="(line.source.x + line.target.x) / 2"
+                :y="(line.source.y + line.target.y) / 2"
+                class="delete-text"
+                @click.stop="deleteConnection(line.sourceNode, line.targetNode, line.connectionType)"
+              >×</text>
+            </g>
+            <!-- 临时连接线(拖拽中) -->
+            <path
+              v-if="tempConnection"
+              :d="generateBezierPath(
+                tempConnection.sourceX,
+                tempConnection.sourceY,
+                tempConnection.targetX,
+                tempConnection.targetY,
+              )"
+              class="connection-line temp"
+              :class="`connection-${(connectionDrag.connectionType || 'Success').toLowerCase()}`"
+            />
+          </svg>
+
+          <div v-if="ruleChain.configuration.nodes.length === 0" class="empty-tip">
+            从左侧拖拽节点到画布,或点击节点添加
           </div>
 
-          <div class="node-header">
-            <span class="node-name-text">{{ node.name }}</span>
-            <el-button link type="danger" size="small" class="delete-btn" @click.stop="deleteNode(node.id)">
-              <el-icon :size="14">
-                <Close />
-              </el-icon>
+          <!-- 节点 -->
+          <div
+            v-for="node in ruleChain.configuration.nodes"
+            :key="node.id"
+            class="canvas-node"
+            :class="[
+              `category-${getNodeCategory(node.type).toLowerCase()}`,
+              {
+                'selected': selectedNode?.id === node.id,
+                'is-input': isInputNode(node.type),
+                'is-filter': isFilterNode(node.type),
+                'debug-success': debugTraceMap[node.id]?.status === 'SUCCESS',
+                'debug-failed': ['FAILED', 'ERROR'].includes(debugTraceMap[node.id]?.status),
+              },
+            ]"
+            :style="{ 'left': `${node.x}px`, 'top': `${node.y}px`, '--node-color': node.color }"
+            @click="selectedNode = selectedNode?.id === node.id ? null : node"
+            @mousedown="startDragNode(node, $event)"
+          >
+            <!-- 输入端口 (INPUT类型节点不显示) -->
+            <div v-if="!isInputNode(node.type)" class="node-port input" @mousedown="startConnection(node, 'input', $event)">
+              <span class="port-dot" />
+            </div>
+
+            <div class="node-header">
+              <span class="node-name-text">{{ node.name }}</span>
+              <el-button link type="danger" size="small" class="delete-btn" @click.stop="deleteNode(node.id)">
+                <el-icon :size="14">
+                  <Close />
+                </el-icon>
+              </el-button>
+            </div>
+            <div class="node-body">
+              <div class="node-type">
+                {{ node.type }}
+              </div>
+              <div v-if="debugTraceMap[node.id]" class="node-debug-badge">
+                #{{ debugTraceMap[node.id].index }} · {{ debugTraceMap[node.id].status }} · {{ debugTraceMap[node.id].connectionType }}
+              </div>
+            </div>
+
+            <!-- 输出端口 - 过滤节点有两个：True/False -->
+            <template v-if="isFilterNode(node.type)">
+              <div class="node-port output true" @mousedown="startConnection(node, 'True', $event)">
+                <span class="port-label">T</span>
+                <span class="port-dot" />
+              </div>
+              <div class="node-port output false" @mousedown="startConnection(node, 'False', $event)">
+                <span class="port-label">F</span>
+                <span class="port-dot" />
+              </div>
+            </template>
+            <!-- 普通输出端口（OUTPUT节点是终端，不显示输出端口） -->
+            <div v-else-if="getNodeCategory(node.type) !== 'OUTPUT'" class="node-port output" @mousedown="startConnection(node, 'Success', $event)">
+              <span class="port-dot" />
+            </div>
+          </div>
+        </div><!-- /.canvas-content -->
+
+        <!-- 缩放控制按钮 -->
+        <div class="zoom-controls">
+          <el-button-group>
+            <el-button size="small" @click="handleZoomIn">
+              <span style="font-size: 16px; font-weight: bold;">+</span>
             </el-button>
-          </div>
-          <div class="node-body">
-            <div class="node-type">
-              {{ node.type }}
-            </div>
-            <div v-if="debugTraceMap[node.id]" class="node-debug-badge">
-              #{{ debugTraceMap[node.id].index }} · {{ debugTraceMap[node.id].status }} · {{ debugTraceMap[node.id].connectionType }}
-            </div>
-          </div>
-
-          <!-- 输出端口 - 过滤节点有两个：True/False -->
-          <template v-if="isFilterNode(node.type)">
-            <div class="node-port output true" @mousedown="startConnection(node, 'True', $event)">
-              <span class="port-label">T</span>
-              <span class="port-dot" />
-            </div>
-            <div class="node-port output false" @mousedown="startConnection(node, 'False', $event)">
-              <span class="port-label">F</span>
-              <span class="port-dot" />
-            </div>
-          </template>
-          <!-- 普通输出端口（OUTPUT节点是终端，不显示输出端口） -->
-          <div v-else-if="getNodeCategory(node.type) !== 'OUTPUT'" class="node-port output" @mousedown="startConnection(node, 'Success', $event)">
-            <span class="port-dot" />
-          </div>
+            <el-button size="small" @click="handleResetView">
+              {{ Math.round(canvasTransform.scale * 100) }}%
+            </el-button>
+            <el-button size="small" @click="handleZoomOut">
+              <span style="font-size: 16px; font-weight: bold;">−</span>
+            </el-button>
+          </el-button-group>
         </div>
       </div>
 
@@ -1514,7 +1611,7 @@ onBeforeUnmount(() => {
     align-items: center;
     gap: var(--space-md);
   }
-  
+
   .shortcut-hint {
     margin-left: var(--space-xs);
     font-size: 11px;
@@ -1617,6 +1714,40 @@ onBeforeUnmount(() => {
   background-image: linear-gradient(rgba(0, 0, 0, 0.03) 1px, transparent 1px),
     linear-gradient(90deg, rgba(0, 0, 0, 0.03) 1px, transparent 1px);
   background-size: 20px 20px;
+  cursor: grab;
+
+  &:active {
+    cursor: grabbing;
+  }
+
+  .canvas-content {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+
+    > * {
+      pointer-events: auto;
+    }
+  }
+
+  .zoom-controls {
+    position: absolute;
+    bottom: var(--space-lg);
+    right: var(--space-lg);
+    z-index: 10;
+
+    .el-button-group {
+      box-shadow: var(--iot-shadow-md);
+    }
+
+    .el-button {
+      min-width: 40px;
+      font-weight: 500;
+    }
+  }
   .empty-tip {
     position: absolute;
     top: 50%;
