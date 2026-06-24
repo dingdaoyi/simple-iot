@@ -85,6 +85,8 @@ services:
       MAIL_PORT: ${MAIL_PORT:-25}
       MAIL_USERNAME: ${MAIL_USERNAME:-}
       MAIL_PASSWORD: ${MAIL_PASSWORD:-}
+      # Disable mail health check (so SMTP unreachable does not fail /actuator/health)
+      MANAGEMENT_HEALTH_MAIL_ENABLED: ${MANAGEMENT_HEALTH_MAIL_ENABLED:-false}
     ports:
       # 公网：仅 MQTT TCP，给 IoT 设备直连
       - "${MQTT_PORT:-1883}:1883"
