@@ -30,7 +30,7 @@ jobs:
         uses: docker/setup-buildx-action@v3
 
       - name: Build iot-web image (linux/amd64)
-        uses: docker/build-push-action@v5
+        uses: docker/build-push-action@v6
         with:
           context: ./iot-web
           file: ./iot-web/Dockerfile
@@ -50,26 +50,57 @@ jobs:
         env:
           SSH_KEY: ${{ secrets.DEPLOY_SSH_KEY }}
           SSH_HOST: ${{ secrets.DEPLOY_HOST }}
+          SSH_USER: ${{ secrets.DEPLOY_USER }}
         run: |
+          set -euo pipefail
+          : "${SSH_KEY:?DEPLOY_SSH_KEY is required}"
+          : "${SSH_HOST:?DEPLOY_HOST is required}"
+          : "${SSH_USER:?DEPLOY_USER is required}"
+
           mkdir -p ~/.ssh && chmod 700 ~/.ssh
           printf '%s\n' "$SSH_KEY" > ~/.ssh/deploy_key
           chmod 600 ~/.ssh/deploy_key
-          ssh-keyscan -t ed25519,rsa -H "$SSH_HOST" >> ~/.ssh/known_hosts 2>/dev/null
+
+          for i in $(seq 1 10); do
+            echo "ssh-keyscan attempt $i/10"
+            if ssh-keyscan -T 10 -t ed25519,rsa -H "$SSH_HOST" >> ~/.ssh/known_hosts 2>/tmp/ssh-keyscan.err; then
+              break
+            fi
+            cat /tmp/ssh-keyscan.err || true
+            if [ "$i" = "10" ]; then
+              echo "ssh-keyscan failed after 10 attempts"
+              exit 1
+            fi
+            sleep 3
+          done
+
           cat >> ~/.ssh/config <<EOF
           Host demo
             HostName $SSH_HOST
-            User ${{ secrets.DEPLOY_USER }}
+            User $SSH_USER
             Port 22
             IdentityFile ~/.ssh/deploy_key
             StrictHostKeyChecking accept-new
+            ConnectTimeout 10
+            ConnectionAttempts 5
             ServerAliveInterval 30
+            ServerAliveCountMax 3
           EOF
 
       - name: Ship image via rsync
         run: |
-          rsync -az --partial --info=progress2 \
-            -e "ssh -o StrictHostKeyChecking=accept-new" \
-            /tmp/iot-web.tar.gz demo:/tmp/iot-web.tar.gz
+          set -euo pipefail
+          for i in $(seq 1 5); do
+            echo "rsync attempt $i/5"
+            if rsync -az --partial --info=progress2 \
+              -e "ssh -o StrictHostKeyChecking=accept-new" \
+              /tmp/iot-web.tar.gz demo:/tmp/iot-web.tar.gz; then
+              exit 0
+            fi
+            sleep 5
+          done
+          echo "rsync failed after 5 attempts"
+          exit 1
 
       - name: Load image + sync repo + restart iot-web
         run: |
