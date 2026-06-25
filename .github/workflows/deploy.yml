@@ -7,6 +7,7 @@ on:
     paths:
       - 'iot-web/**'
       - 'docker-compose.yml'
+      - 'deploy.sh'
       - 'scripts/backup.sh'
       - '.github/workflows/deploy.yml'
   workflow_dispatch:
@@ -17,35 +18,12 @@ concurrency:
 
 jobs:
   deploy-web:
-    name: Build iot-web locally → ship to demo
+    name: Build iot-web on demo server
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 30
     if: github.repository == 'dingdaoyi/simple-iot'
 
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
-
-      - name: Build iot-web image (linux/amd64)
-        uses: docker/build-push-action@v6
-        with:
-          context: ./iot-web
-          file: ./iot-web/Dockerfile
-          platforms: linux/amd64
-          push: false
-          load: true
-          tags: simple-iot-iot-web:latest
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
-
-      - name: Save image as gzipped tarball
-        run: |
-          docker save simple-iot-iot-web:latest | gzip -1 > /tmp/iot-web.tar.gz
-          ls -lh /tmp/iot-web.tar.gz
-
       - name: Configure SSH
         env:
           SSH_KEY: ${{ secrets.DEPLOY_SSH_KEY }}
@@ -83,59 +61,118 @@ jobs:
             StrictHostKeyChecking accept-new
             ConnectTimeout 10
             ConnectionAttempts 5
-            ServerAliveInterval 30
-            ServerAliveCountMax 3
+            ServerAliveInterval 15
+            ServerAliveCountMax 4
           EOF
 
-      - name: Ship image via rsync
+      - name: Trigger remote iot-web deploy
+        env:
+          TARGET_SHA: ${{ github.sha }}
         run: |
           set -euo pipefail
-          for i in $(seq 1 5); do
-            echo "rsync attempt $i/5"
-            if rsync -az --partial --info=progress2 \
-              -e "ssh -o StrictHostKeyChecking=accept-new" \
-              /tmp/iot-web.tar.gz demo:/tmp/iot-web.tar.gz; then
-              exit 0
-            fi
-            sleep 5
-          done
-          echo "rsync failed after 5 attempts"
-          exit 1
+          REMOTE_LOG="/tmp/simple-iot-web-deploy-${TARGET_SHA}.log"
+          REMOTE_SCRIPT="/tmp/simple-iot-web-deploy-${TARGET_SHA}.sh"
+          REMOTE_STATUS="/tmp/simple-iot-web-deploy-${TARGET_SHA}.status"
 
-      - name: Load image + sync repo + restart iot-web
-        run: |
-          ssh demo bash <<'REMOTE'
-          set -e
+          cat > /tmp/remote-deploy.sh <<'REMOTE'
+          #!/usr/bin/env bash
+          set -euo pipefail
+          : "${TARGET_SHA:?TARGET_SHA is required}"
           cd /opt/simple-iot
 
-          echo "[1/4] git pull (via gh-proxy)"
+          echo "[1/5] fetch target commit ${TARGET_SHA}"
           git fetch origin main
-          git merge --ff-only origin/main
+          git checkout main
+          git reset --hard "${TARGET_SHA}"
           git log --oneline -1
 
-          echo "[2/4] docker load new iot-web image"
-          sudo docker load < /tmp/iot-web.tar.gz | tail -3
-          rm -f /tmp/iot-web.tar.gz
+          echo "[2/5] build iot-web on demo server"
+          sudo docker compose build iot-web
 
-          echo "[3/4] recreate iot-web container only"
+          echo "[3/5] recreate iot-web container only"
           sudo docker compose up -d --no-deps --force-recreate iot-web
 
-          echo "[4/4] wait healthy + smoke test"
-          for i in $(seq 1 20); do
+          echo "[4/5] wait healthy"
+          for i in $(seq 1 30); do
             status=$(sudo docker inspect iot-web --format '{{.State.Health.Status}}' 2>/dev/null || echo "starting")
             echo "  attempt $i: $status"
             [ "$status" = "healthy" ] && break
             sleep 3
           done
+          final_status=$(sudo docker inspect iot-web --format '{{.State.Health.Status}}' 2>/dev/null || echo "unknown")
+          [ "$final_status" = "healthy" ] || { echo "iot-web not healthy: $final_status"; exit 1; }
+
+          echo "[5/5] local smoke test"
           curl -fsS -o /dev/null -w 'HTTP %{http_code} in %{time_total}s\n' http://localhost/
           REMOTE
 
-      - name: Verify from public internet
+          for i in $(seq 1 10); do
+            echo "upload remote deploy script attempt $i/10"
+            if scp /tmp/remote-deploy.sh demo:"$REMOTE_SCRIPT"; then
+              break
+            fi
+            if [ "$i" = "10" ]; then
+              echo "failed to upload remote deploy script"
+              exit 1
+            fi
+            sleep 5
+          done
+
+          for i in $(seq 1 10); do
+            echo "start remote deploy attempt $i/10"
+            if ssh demo "chmod +x $REMOTE_SCRIPT && rm -f $REMOTE_STATUS $REMOTE_LOG && nohup bash -c 'TARGET_SHA=$TARGET_SHA $REMOTE_SCRIPT > $REMOTE_LOG 2>&1; echo \$? > $REMOTE_STATUS' </dev/null >/dev/null 2>&1 &"; then
+              exit 0
+            fi
+            sleep 5
+          done
+
+          echo "failed to start remote deploy"
+          exit 1
+
+      - name: Poll remote deploy
+        env:
+          TARGET_SHA: ${{ github.sha }}
         run: |
-          # 等容器完全 ready
+          set -euo pipefail
+          REMOTE_LOG="/tmp/simple-iot-web-deploy-${TARGET_SHA}.log"
+          REMOTE_STATUS="/tmp/simple-iot-web-deploy-${TARGET_SHA}.status"
+
+          for i in $(seq 1 90); do
+            echo "--- poll $i/90 ---"
+            set +e
+            output=$(ssh demo "tail -80 '$REMOTE_LOG' 2>/dev/null; if [ -f '$REMOTE_STATUS' ]; then echo __STATUS__\$(cat '$REMOTE_STATUS'); fi" 2>&1)
+            rc=$?
+            set -e
+            echo "$output"
+
+            if [ "$rc" -ne 0 ]; then
+              echo "ssh poll failed; retrying"
+              sleep 10
+              continue
+            fi
+
+            status=$(printf '%s\n' "$output" | awk -F__STATUS__ '/__STATUS__/ {print $2}' | tail -1)
+            if [ -n "$status" ]; then
+              if [ "$status" = "0" ]; then
+                echo "remote deploy succeeded"
+                exit 0
+              fi
+              echo "remote deploy failed with status $status"
+              exit "$status"
+            fi
+            sleep 10
+          done
+
+          echo "timed out waiting for remote deploy"
+          exit 1
+
+      - name: Verify from public internet
+        env:
+          DEPLOY_HOST: ${{ secrets.DEPLOY_HOST }}
+        run: |
+          set -euo pipefail
           sleep 5
-          # 拿 dist 里 index.js 的 hash，确认上线版本
-          HASH=$(curl -fsS http://${{ secrets.DEPLOY_HOST }}/ | grep -oE 'index-[A-Za-z0-9_-]+\.js' | head -1)
+          HASH=$(curl -fsS "http://${DEPLOY_HOST}/" | grep -oE 'index-[A-Za-z0-9_-]+\.js' | head -1)
           echo "deployed asset: $HASH"
           [ -n "$HASH" ] || { echo "FAIL: no asset hash in HTML"; exit 1; }
 
