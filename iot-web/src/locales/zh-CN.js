@@ -224,6 +224,7 @@ export default {
   },
 
   device: {
+    device: '设备',
     device_key: '设备标识',
     device_name: '设备名称',
     product_name: '产品名称',

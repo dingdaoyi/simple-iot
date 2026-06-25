@@ -223,6 +223,7 @@ export default {
   },
 
   device: {
+    device: 'Device',
     device_key: 'Device Key',
     device_name: 'Device Name',
     product_name: 'Product Name',
