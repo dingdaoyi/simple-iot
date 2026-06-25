@@ -4,11 +4,11 @@ import { useI18n } from 'vue-i18n'
 import { productTypeAddApi, productTypeEditeApi } from '@/api'
 import { useForm } from '@/composables/useForm.js'
 
-const { t } = useI18n()
-
 const props = defineProps(['datas', 'parentId', 'modelValue'])
 
 const emits = defineEmits(['update', 'update:modelValue'])
+
+const { t } = useI18n()
 
 const rules = ref({
   name: [{ required: true, message: t('product_type.producttype_dialog'), trigger: 'blur' }],

@@ -6,14 +6,14 @@ import ElementPlus from 'element-plus'
 import { createApp } from 'vue'
 import Echarts from 'vue-echarts'
 import App from './App.vue'
+// 引入i18n
+import i18n, { elementPlusLocales, getLocale } from './locales'
+
 // 引入路由
 import router from './router'
 
 // 引入store
 import { setupStore } from './store'
-
-// 引入i18n
-import i18n, { elementPlusLocales, getLocale } from './locales'
 
 // 引入中文语言包
 import 'dayjs/locale/zh-cn'
@@ -35,7 +35,7 @@ async function setupApp() {
   // 使用 i18n 动态语言
   const currentLocale = getLocale()
   app.use(ElementPlus, { locale: elementPlusLocales[currentLocale] })
-  
+
   app.use(i18n)
   setupStore(app)
   app.use(router)

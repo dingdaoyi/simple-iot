@@ -1,8 +1,8 @@
 <script setup>
-import { useI18n } from 'vue-i18n'
 import { Connection, RefreshRight } from '@element-plus/icons-vue'
 import { ElMessage, ElMessageBox, ElTag } from 'element-plus'
 import { h, onMounted } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { protocolDeleteApi, protocolListApi, protocolSetStatusApi } from '@/api/index.js'
 import IotTable from '@/components/IotTable.vue'
 import PageHeader from '@/components/PageHeader.vue'
@@ -148,7 +148,8 @@ async function toggleStatus(row) {
 
 onMounted(() => {
   updatePage()
-})</script>
+})
+</script>
 
 <template>
   <div class="protocol-page">

@@ -1,7 +1,7 @@
 <script setup>
-import { useI18n } from 'vue-i18n'
 import { Delete, Edit, RefreshRight } from '@element-plus/icons-vue'
 import { onMounted } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { messageReceiveDeleteApi, messageReceivePageApi } from '@/api/index.js'
 import IotTable from '@/components/IotTable.vue'
 import { useTable } from '@/composables/useTable.js'
@@ -78,7 +78,8 @@ function closeEdite() {
 
 onMounted(() => {
   updatePage()
-})</script>
+})
+</script>
 
 <template>
   <div class="message-receive-page">

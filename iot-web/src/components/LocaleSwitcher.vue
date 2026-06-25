@@ -1,27 +1,8 @@
-<template>
-  <el-dropdown trigger="click" @command="handleCommand">
-    <span class="locale-switcher">
-      <el-icon><Grid /></el-icon>
-      <span class="locale-text">{{ currentLocaleLabel }}</span>
-    </span>
-    <template #dropdown>
-      <el-dropdown-menu>
-        <el-dropdown-item command="zh-CN" :disabled="currentLocale === 'zh-CN'">
-          {{ t('locale.zh_cn') }}
-        </el-dropdown-item>
-        <el-dropdown-item command="en-US" :disabled="currentLocale === 'en-US'">
-          English
-        </el-dropdown-item>
-      </el-dropdown-menu>
-    </template>
-  </el-dropdown>
-</template>
-
 <script setup>
+import { ElMessage } from 'element-plus'
 import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { setLocale } from '@/locales'
-import { ElMessage } from 'element-plus'
 
 const { t, locale } = useI18n()
 
@@ -43,6 +24,25 @@ function handleCommand(command) {
   }, 500)
 }
 </script>
+
+<template>
+  <el-dropdown trigger="click" @command="handleCommand">
+    <span class="locale-switcher">
+      <el-icon><Grid /></el-icon>
+      <span class="locale-text">{{ currentLocaleLabel }}</span>
+    </span>
+    <template #dropdown>
+      <el-dropdown-menu>
+        <el-dropdown-item command="zh-CN" :disabled="currentLocale === 'zh-CN'">
+          {{ t('locale.zh_cn') }}
+        </el-dropdown-item>
+        <el-dropdown-item command="en-US" :disabled="currentLocale === 'en-US'">
+          English
+        </el-dropdown-item>
+      </el-dropdown-menu>
+    </template>
+  </el-dropdown>
+</template>
 
 <style scoped>
 .locale-switcher {

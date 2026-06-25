@@ -1,8 +1,8 @@
 <script setup>
-import { useI18n } from 'vue-i18n'
 import { Delete, Edit, Promotion, RefreshRight } from '@element-plus/icons-vue'
 import { ElMessage } from 'element-plus'
 import { onMounted, ref } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { pushConfigDeleteApi, pushConfigPageApi, pushConfigTestApi } from '@/api/index.js'
 import IotTable from '@/components/IotTable.vue'
 import { useTable } from '@/composables/useTable.js'
@@ -148,7 +148,8 @@ async function runTestPush() {
 
 onMounted(() => {
   updatePage()
-})</script>
+})
+</script>
 
 <template>
   <div class="push-config-page">

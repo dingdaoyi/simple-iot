@@ -1,14 +1,13 @@
 <script setup>
-import { useI18n } from 'vue-i18n'
 import { Delete, Edit, RefreshRight } from '@element-plus/icons-vue'
+import { useI18n } from 'vue-i18n'
 import { propertyDeleteApi, propertyListApi } from '@/api/index.js'
 import IotTable from '@/components/IotTable.vue'
 import { useTable } from '@/composables/useTable.js'
 import PropertyEdite from '@/views/tslModel/widget/propertyEdite.vue'
 
-const { t } = useI18n()
 const props = defineProps(['typeId', 'productId', 'showEdite'])
-
+const { t } = useI18n()
 const column = [
 
   {
@@ -64,7 +63,8 @@ const {
     productTypeId: props.typeId,
     productId: props.productId,
   },
-})</script>
+})
+</script>
 
 <template>
   <div class="wh-full">

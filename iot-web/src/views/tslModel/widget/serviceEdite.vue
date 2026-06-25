@@ -1,15 +1,13 @@
 <script lang="jsx" setup>
-import { useI18n } from 'vue-i18n'
 import { ElMessage } from 'element-plus'
 import { ref } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { serviceAddApi, serviceEditeApi } from '@/api'
 import { useForm } from '@/composables/useForm.js'
 
-const { t } = useI18n()
 const props = defineProps(['datas', 'typeId', 'properties', 'productId', 'modelValue'])
-
 const emits = defineEmits(['update', 'update:modelValue'])
-
+const { t } = useI18n()
 const serviceTypeOpt = [
   {
     label: t('tsl.service'),
@@ -95,7 +93,8 @@ function changeServiceType(value) {
 if (props.datas) {
   form.value = { ...form.value, ...props.datas }
   currentType.value = props.datas.serviceType
-}</script>
+}
+</script>
 
 <template>
   <el-dialog

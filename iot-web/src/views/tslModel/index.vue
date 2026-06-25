@@ -1,6 +1,6 @@
 <script setup>
-import { useI18n } from 'vue-i18n'
 import { ref } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { useRoute } from 'vue-router'
 import { productDetailApi, productTypeDetailApi } from '@/api/index.js'
 import Breadcrumb from '@/components/Breadcrumb.vue'
@@ -57,7 +57,8 @@ function loadDetails() {
       })
   }
 }
-loadDetails()</script>
+loadDetails()
+</script>
 
 <template>
   <div class="tsl-page">

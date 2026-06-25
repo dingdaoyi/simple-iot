@@ -1,14 +1,13 @@
 <script setup>
-import { useI18n } from 'vue-i18n'
 import { ElMessage } from 'element-plus'
 import { computed, ref, watch } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { pushConfigAddApi, pushConfigEditApi } from '@/api/index.js'
 import { useForm } from '@/composables/useForm.js'
 
-const { t } = useI18n()
 const props = defineProps(['datas', 'modelValue', 'title'])
 const emits = defineEmits(['update', 'update:modelValue'])
-
+const { t } = useI18n()
 const typeOpt = [
   { label: t('push_config.http'), value: 'HTTP' },
   { label: t('push_config.dialog_mqtt'), value: 'MQTT' },
@@ -290,7 +289,8 @@ watch(() => props.datas, (val) => {
     httpHeaders.value = []
     mqttOptions.value = []
   }
-}, { immediate: true })</script>
+}, { immediate: true })
+</script>
 
 <template>
   <el-dialog

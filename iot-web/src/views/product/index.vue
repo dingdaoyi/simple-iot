@@ -1,5 +1,4 @@
 <script setup>
-import { useI18n } from 'vue-i18n'
 import {
   Box,
   Delete,
@@ -13,6 +12,7 @@ import {
   Setting,
 } from '@element-plus/icons-vue'
 import { computed, onMounted, ref } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { useRouter } from 'vue-router'
 import { productDeleteApi, productPageApi, productTypeListApi } from '@/api/index.js'
 import IotTable from '@/components/IotTable.vue'
@@ -141,7 +141,8 @@ onMounted(() => {
   }).catch((err) => {
     console.error(t('product.failed_fetch_product_types'), err)
   })
-})</script>
+})
+</script>
 
 <template>
   <div class="product-page">

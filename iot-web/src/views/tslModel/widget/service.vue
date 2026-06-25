@@ -1,8 +1,8 @@
 <script lang="jsx" setup>
-import { useI18n } from 'vue-i18n'
 import { Delete, Edit, RefreshRight } from '@element-plus/icons-vue'
 import { ElButton, ElMessage, ElMessageBox } from 'element-plus'
 import { h, ref } from 'vue'
+import { useI18n } from 'vue-i18n'
 import {
   customServiceListApi,
   propertyListApi,
@@ -14,9 +14,8 @@ import { useTable } from '@/composables/useTable.js'
 import ParamShow from '@/views/tslModel/widget/paramShow.vue' // Import icon display
 import ServiceEdite from '@/views/tslModel/widget/serviceEdite.vue'
 
-const { t } = useI18n()
 const props = defineProps(['typeId', 'productId', 'showEdite'])
-
+const { t } = useI18n()
 const propertiesDct = ref([])
 const dialogVisibleParams = ref(false)
 const showDetailRow = ref()
@@ -127,7 +126,8 @@ function loadPropertiesDict() {
       propertiesDct.value = data
     })
 }
-loadPropertiesDict()</script>
+loadPropertiesDict()
+</script>
 
 <template>
   <div class="wh-full">

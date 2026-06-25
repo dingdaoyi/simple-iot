@@ -2,7 +2,6 @@
 import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 
-const { t } = useI18n()
 /**
  * 模板变量插入器
  * - 系统变量 / 属性变量分组展示
@@ -48,9 +47,8 @@ const props = defineProps({
     default: '',
   },
 })
-
 const emit = defineEmits(['update'])
-
+const { t } = useI18n()
 const hasSystem = computed(() => props.systemVariables.length > 0)
 const hasProperty = computed(() => props.propertyVariables.length > 0)
 const displayLabel = computed(() => props.label || t('ruleChain.available_variables'))
@@ -85,7 +83,8 @@ function insertAt(variable) {
     const pos = start + variable.length
     el.setSelectionRange(pos, pos)
   })
-}</script>
+}
+</script>
 
 <template>
   <div v-if="hasSystem || hasProperty" class="variable-inserter">

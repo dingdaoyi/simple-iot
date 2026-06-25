@@ -1,7 +1,7 @@
 <script setup>
 import { computed } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
+import { useRoute, useRouter } from 'vue-router'
 import { useSidebar } from '@/composables/useSidebar.js'
 
 const route = useRoute()
@@ -17,7 +17,8 @@ const menuTree = computed(() => {
 
 function menuLabel(item) {
   const key = item?.meta?.i18nKey
-  if (key && te(key)) return t(key)
+  if (key && te(key))
+    return t(key)
   return item?.meta?.title || item?.name || ''
 }
 

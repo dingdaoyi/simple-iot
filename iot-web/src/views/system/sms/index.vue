@@ -1,7 +1,7 @@
 <script setup>
-import { useI18n } from 'vue-i18n'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { computed, nextTick, reactive, ref } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { getSmsSupplier, getSmsTemplateType } from '@/api/dict'
 import { addSmsConfig, addSmsTemplate, deleteSmsConfig, deleteSmsTemplate, getSmsConfigList, getSmsTemplateList, sendSms, sendSmsWithTemplate, setDefaultConfig, updateConfigStatus, updateSmsConfig, updateSmsTemplate } from '@/api/sms'
 
@@ -307,7 +307,8 @@ async function sendSmsMessage() {
 // 初始化
 getList()
 getSuppliers()
-getTemplateTypes()</script>
+getTemplateTypes()
+</script>
 
 <template>
   <div class="app-container">

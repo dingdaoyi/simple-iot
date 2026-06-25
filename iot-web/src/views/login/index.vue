@@ -1,7 +1,7 @@
 <script setup>
 import { getCurrentInstance, reactive, ref } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
+import { useRoute, useRouter } from 'vue-router'
 import { Index } from '@/api'
 import { useAccountStore, useThemeStore } from '@/store'
 import LoginBg from './weight/LoginBg'

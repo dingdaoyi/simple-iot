@@ -1,7 +1,7 @@
 <script setup>
-import { useI18n } from 'vue-i18n'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { nextTick, reactive, ref } from 'vue'
+import { useI18n } from 'vue-i18n'
 import {
   addEmailConfig,
   deleteEmailConfig,
@@ -194,7 +194,8 @@ async function sendTestEmailMessage() {
 }
 
 // 初始化
-getList()</script>
+getList()
+</script>
 
 <template>
   <div class="email-page">

@@ -1,7 +1,7 @@
 <script setup>
 import { ArrowLeft, ArrowRight } from '@element-plus/icons-vue'
-import { useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
+import { useRouter } from 'vue-router'
 
 defineProps({
   breadcrumbs: {
@@ -20,7 +20,8 @@ const { t, te } = useI18n()
 const separatorIcon = ArrowRight
 
 function breadcrumbLabel(item) {
-  if (item?.i18nKey && te(item.i18nKey)) return t(item.i18nKey)
+  if (item?.i18nKey && te(item.i18nKey))
+    return t(item.i18nKey)
   return item?.label || ''
 }
 

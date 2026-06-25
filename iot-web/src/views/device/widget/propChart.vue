@@ -1,7 +1,7 @@
 <script lang="jsx" setup>
 import { nextTick, ref } from 'vue'
-import { useI18n } from 'vue-i18n'
 import VCharts from 'vue-echarts'
+import { useI18n } from 'vue-i18n'
 import { deviceDataMetric } from '@/api/index.js'
 import { DateUtils } from '@/utils/date_utils.js'
 import 'echarts/lib/chart/line'

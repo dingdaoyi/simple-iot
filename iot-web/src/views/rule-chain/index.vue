@@ -1,8 +1,8 @@
 <script setup>
-import { useI18n } from 'vue-i18n'
 import { Delete, Edit, Operation, Plus, RefreshRight } from '@element-plus/icons-vue'
 import { ElMessage } from 'element-plus'
 import { onMounted } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { useRouter } from 'vue-router'
 import {
   ruleChainDeleteApi,
@@ -123,7 +123,8 @@ async function onToggle(row) {
 
 onMounted(() => {
   updatePage()
-})</script>
+})
+</script>
 
 <template>
   <div class="rule-chain-page">

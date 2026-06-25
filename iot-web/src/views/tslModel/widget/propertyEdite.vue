@@ -1,16 +1,14 @@
 <script lang="jsx" setup>
-import { useI18n } from 'vue-i18n'
 import { ElMessage } from 'element-plus'
 import { ref } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { customPropertyAddApi, dictListApi, standardPropertyAddApi, standardPropertyEditApi } from '@/api'
 import IconInput from '@/components/IconInput.vue'
 import { useForm } from '@/composables/useForm.js'
 
-const { t } = useI18n()
 const props = defineProps(['datas', 'typeId', 'productId', 'modelValue', 'title'])
-
 const emits = defineEmits(['update', 'update:modelValue'])
-
+const { t } = useI18n()
 const rules = ref({
   name: [{ required: true, message: t('tsl.property_name_required'), trigger: 'blur' }],
   identifier: [{ required: true, message: t('tsl.identifier_required'), trigger: 'blur' }],
@@ -134,7 +132,8 @@ dictListApi('analog_quantity')
 
 function changeUnit(value) {
   form.value.unitName = unitListOpt.value.find(item => item.value === value)?.label || ''
-}</script>
+}
+</script>
 
 <template>
   <el-dialog

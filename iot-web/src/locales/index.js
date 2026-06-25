@@ -1,10 +1,10 @@
-import { createI18n } from 'vue-i18n'
-import zhCN from './zh-CN'
-import enUS from './en-US'
-
+import enElementPlus from 'element-plus/es/locale/lang/en'
 // Element Plus 语言包
 import zhCnElementPlus from 'element-plus/es/locale/lang/zh-cn'
-import enElementPlus from 'element-plus/es/locale/lang/en'
+import { createI18n } from 'vue-i18n'
+
+import enUS from './en-US'
+import zhCN from './zh-CN'
 
 // 获取浏览器语言
 function getBrowserLocale() {

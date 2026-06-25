@@ -1,10 +1,9 @@
 <script lang="jsx" setup>
-import { useI18n } from 'vue-i18n'
 import { ref } from 'vue'
+import { useI18n } from 'vue-i18n'
 
-const { t } = useI18n()
 const props = defineProps(['datas', 'properties'])
-
+const { t } = useI18n()
 const inputParam = ref([])
 const outPutParam = ref([])
 function findItem(id) {
@@ -12,7 +11,8 @@ function findItem(id) {
     .find(item => item.id === id)
 }
 inputParam.value = props.datas?.inputParamIds?.map(id => findItem(id)) || []
-outPutParam.value = props.datas?.outputParamIds?.map(id => findItem(id)) || []</script>
+outPutParam.value = props.datas?.outputParamIds?.map(id => findItem(id)) || []
+</script>
 
 <template>
   <el-dialog

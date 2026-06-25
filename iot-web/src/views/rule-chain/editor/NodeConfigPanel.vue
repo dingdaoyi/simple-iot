@@ -1,11 +1,10 @@
 <script setup>
-import { useI18n } from 'vue-i18n'
-const { t } = useI18n()
 /**
  * 规则链节点配置面板
  * 统一管理所有节点类型的配置界面
  */
 import { computed, ref, watch } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { deviceListApi, productListApi, ruleChainTemplateVariablesApi } from '@/api/index.js'
 import VariableInserter from './VariableInserter.vue'
 
@@ -53,6 +52,8 @@ const props = defineProps({
 })
 
 const emit = defineEmits(['update:node'])
+
+const { t } = useI18n()
 
 // 本地节点配置
 const config = computed(() => props.selectedNode?.config || {})
@@ -282,7 +283,8 @@ function onDeviceCascadeChange(value) {
       targetDeviceId: value[2],
     },
   })
-}</script>
+}
+</script>
 
 <template>
   <div v-if="selectedNode" class="node-config-panel">

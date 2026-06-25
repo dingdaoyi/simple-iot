@@ -1,10 +1,10 @@
 <script lang="jsx" setup>
-import { useI18n } from 'vue-i18n'
 import { ref } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { productDetailApi, productTypeDetailApi } from '@/api/index.js'
 
-const { t } = useI18n()
 const props = defineProps(['typeId', 'productId'])
+const { t } = useI18n()
 const product = ref({})
 const productType = ref({})
 if (props.productId) {
@@ -19,7 +19,8 @@ else {
     .then(({ data }) => {
       productType.value = data
     })
-}</script>
+}
+</script>
 
 <template>
   <div class="wh-full flex flex-col gap-20px p-20px">

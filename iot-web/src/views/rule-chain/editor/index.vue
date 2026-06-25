@@ -1,8 +1,8 @@
 <script setup>
-import { useI18n } from 'vue-i18n'
 import { Close } from '@element-plus/icons-vue'
 import { ElMessage } from 'element-plus'
 import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { useRoute, useRouter } from 'vue-router'
 import {
   deviceListApi,
@@ -1131,7 +1131,8 @@ onMounted(async () => {
 onBeforeUnmount(() => {
   // 解绑快捷键
   window.removeEventListener('keydown', handleKeydown)
-})</script>
+})
+</script>
 
 <template>
   <div class="rule-chain-editor">

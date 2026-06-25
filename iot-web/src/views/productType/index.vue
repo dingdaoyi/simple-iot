@@ -1,7 +1,7 @@
 <script setup>
-import { useI18n } from 'vue-i18n'
 import { Delete, Edit, Plus, RefreshRight, Setting } from '@element-plus/icons-vue'
 import { nextTick, ref } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { useRouter } from 'vue-router'
 import { productTypeDelApi, productTypeListApi } from '@/api/index.js'
 import IotTable from '@/components/IotTable.vue'
@@ -85,7 +85,8 @@ function onAddChild(row) {
 
 function tslConfig(row) {
   router.push(`/tslModel?typeId=${row.id}`)
-}</script>
+}
+</script>
 
 <template>
   <div class="product-type-page">

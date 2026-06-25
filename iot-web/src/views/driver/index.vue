@@ -1,8 +1,8 @@
 <script setup>
-import { useI18n } from 'vue-i18n'
 import { Lightning } from '@element-plus/icons-vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { onMounted, ref, watch } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { getConnectionTypeEnum, getDriverTypeEnum } from '@/api/dict'
 import { addDriver, deleteDriver, getDriverList, updateDriver } from '@/api/driver'
 
@@ -122,7 +122,8 @@ watch(dialogVisible, (visible) => {
     form.value = {}
     formRef.value?.clearValidate()
   }
-})</script>
+})
+</script>
 
 <template>
   <div class="page-container">

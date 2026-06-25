@@ -1,16 +1,15 @@
 <script lang="jsx" setup>
-import { useI18n } from 'vue-i18n'
 import { Plus } from '@element-plus/icons-vue'
 import { ElMessage } from 'element-plus'
 import { computed, ref, watch } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { iconAddApi, iconEditeApi } from '@/api'
 import { useForm } from '@/composables/useForm.js'
 import service from '@/utils/request.js'
 
-const { t } = useI18n()
 const props = defineProps(['datas', 'modelValue'])
 const emits = defineEmits(['update', 'update:modelValue'])
-
+const { t } = useI18n()
 const rules = ref({
   name: [{ required: true, message: t('system.system_icon_dialog'), trigger: 'blur' }],
 })
@@ -152,7 +151,8 @@ watch(() => props.modelValue, (newVal) => {
     fileList.value = []
     uploading.value = false
   }
-})</script>
+})
+</script>
 
 <template>
   <el-dialog

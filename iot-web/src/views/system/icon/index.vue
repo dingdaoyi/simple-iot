@@ -1,7 +1,7 @@
 <script setup>
-import { useI18n } from 'vue-i18n'
 import { Delete, Edit, Loading, RefreshRight } from '@element-plus/icons-vue'
 import { onMounted } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { iconDeleteApi, iconListApi } from '@/api/index.js'
 import { useTable } from '@/composables/useTable.js'
 import EditDia from '@/views/system/icon/widget/editDia.vue'
@@ -33,7 +33,8 @@ function closeEdite() {
 
 onMounted(() => {
   updatePage()
-})</script>
+})
+</script>
 
 <template>
   <div class="icon-page">

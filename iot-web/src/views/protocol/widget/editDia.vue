@@ -1,16 +1,14 @@
 <script lang="jsx" setup>
-import { useI18n } from 'vue-i18n'
 import { ElMessage } from 'element-plus'
 import { computed, ref, watch } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { protocolAddApi, protocolEditApi, protocolTestDecodeApi, protocolTestEncodeApi } from '@/api'
 import { useForm } from '@/composables/useForm.js'
 import CodeEditor from './CodeEditor.vue'
 
-const { t } = useI18n()
 const props = defineProps(['datas', 'modelValue'])
-
 const emits = defineEmits(['update', 'update:modelValue'])
-
+const { t } = useI18n()
 const protocolTypeOpt = [
   { label: 'JAVA', value: 1 },
   { label: t('protocol.system_default'), value: 2 },
@@ -194,7 +192,8 @@ watch(() => form.value.scriptLang, () => {
   if (isScriptType.value && !props.datas?.id) {
     loadScriptTemplate()
   }
-})</script>
+})
+</script>
 
 <template>
   <el-dialog

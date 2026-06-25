@@ -231,7 +231,8 @@ onMounted(() => {
   loadRecentDevices()
   loadAlerts()
   loadAlertStats()
-})</script>
+})
+</script>
 
 <template>
   <div class="dashboard-page">

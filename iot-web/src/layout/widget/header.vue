@@ -1,12 +1,12 @@
 <script setup>
-import { computed } from 'vue'
 import { ArrowDown, Check, Expand, Fold, Lightning, Monitor, Moon, Sunny, SwitchButton, User } from '@element-plus/icons-vue'
-import { useRouter } from 'vue-router'
+import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
+import { useRouter } from 'vue-router'
+import LocaleSwitcher from '@/components/LocaleSwitcher.vue'
 import { useSidebar } from '@/composables/useSidebar.js'
 import { useTheme } from '@/composables/useTheme.js'
 import { useAccountStore } from '@/store'
-import LocaleSwitcher from '@/components/LocaleSwitcher.vue'
 
 const router = useRouter()
 const store = useAccountStore()

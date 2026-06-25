@@ -1,8 +1,8 @@
 <script setup>
-import { useI18n } from 'vue-i18n'
 import { Bell, Check, Close, RefreshRight, View } from '@element-plus/icons-vue'
 import { ElMessage } from 'element-plus'
 import { computed, onMounted, ref } from 'vue'
+import { useI18n } from 'vue-i18n'
 import {
   alarmAcknowledgeApi,
   alarmClearApi,
@@ -279,7 +279,8 @@ const detailSections = computed(() => {
 onMounted(() => {
   updatePage()
   loadStatistics()
-})</script>
+})
+</script>
 
 <template>
   <div class="alarm-page">

@@ -1,14 +1,12 @@
 <script lang="jsx" setup>
-import { useI18n } from 'vue-i18n'
 import { ref, watch } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { messageReceiveAddApi, messageReceiveEditApi } from '@/api'
 import { useForm } from '@/composables/useForm.js'
 
-const { t } = useI18n()
 const props = defineProps(['datas', 'modelValue'])
-
 const emits = defineEmits(['update', 'update:modelValue'])
-
+const { t } = useI18n()
 const notifyTypeOpt = [
   {
     label: t('system.email'),
@@ -48,7 +46,8 @@ watch(() => props.datas, (val) => {
   if (val) {
     form.value = { ...val }
   }
-}, { immediate: true })</script>
+}, { immediate: true })
+</script>
 
 <template>
   <el-dialog

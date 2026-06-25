@@ -1,14 +1,13 @@
 <script setup>
-import { useI18n } from 'vue-i18n'
 import { Document, Loading, WarningFilled } from '@element-plus/icons-vue'
 import { ElMessage } from 'element-plus'
 import { onMounted, ref } from 'vue'
+import { useI18n } from 'vue-i18n'
 import JsonViewer from 'vue-json-viewer'
 import { loadTslData } from '@/api/index.js'
 
-const { t } = useI18n()
 const props = defineProps(['productId'])
-
+const { t } = useI18n()
 const jsonData = ref(null)
 const loading = ref(true)
 const error = ref(null)
@@ -37,7 +36,8 @@ onMounted(async () => {
   finally {
     loading.value = false
   }
-})</script>
+})
+</script>
 
 <template>
   <div class="tsl-container">
