@@ -1,5 +1,6 @@
 <script setup>
 import { computed, onMounted, ref, watch } from 'vue'
+import { useI18n } from 'vue-i18n'
 
 const props = defineProps({
   // 新风格：数据数组
@@ -71,6 +72,7 @@ const props = defineProps({
 })
 
 const emit = defineEmits(['pageChange', 'sizeChange', 'selectionChange'])
+const { t } = useI18n()
 
 const innerPage = ref(props.currentPage)
 const innerSize = ref(props.pageSize)
@@ -270,7 +272,7 @@ defineExpose({
       v-if="!tableLoading && tableData.length === 0"
       class="iot-table-empty"
       :image-size="72"
-      description="暂无数据"
+      :description="t('common.no_data')"
     />
   </div>
 </template>

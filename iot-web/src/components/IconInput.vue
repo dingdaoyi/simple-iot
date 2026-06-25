@@ -1,5 +1,6 @@
 <script setup>
 import { onMounted, ref } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { iconListApi } from '@/api/index.js'
 import DefaultIcon from '@/components/DefaultIcon.vue'
 
@@ -11,6 +12,7 @@ const props = defineProps({
 })
 
 const emit = defineEmits(['update:value'])
+const { t } = useI18n()
 
 const list = ref([])
 const actIcon = ref(null)
@@ -63,7 +65,7 @@ function onImageLoad() {
           <DefaultIcon v-else name="default" :size="24" class="icon-fallback" />
           <span class="icon-name">{{ actIcon.name }}</span>
         </div>
-        <span v-else class="placeholder">请选择图标</span>
+        <span v-else class="placeholder">{{ t('icon.select_icon') }}</span>
         <el-icon class="el-icon--right">
           <arrow-down />
         </el-icon>

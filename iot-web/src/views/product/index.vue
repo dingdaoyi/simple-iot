@@ -1,4 +1,5 @@
 <script setup>
+import { useI18n } from 'vue-i18n'
 import {
   Box,
   Delete,
@@ -18,6 +19,7 @@ import IotTable from '@/components/IotTable.vue'
 import { useTable } from '@/composables/useTable.js'
 import EditDia from '@/views/product/widget/editDia.vue'
 
+const { t } = useI18n()
 const router = useRouter()
 const parentId = ref(-1)
 const productTypeList = ref([])
@@ -42,7 +44,7 @@ const {
 } = useTable({
   deleteApi: productDeleteApi,
   fetchApi: productPageApi,
-  diaName: '产品',
+  diaName: t('auto.product_index_a015434e'),
   defParams: {},
 })
 
@@ -56,7 +58,7 @@ function closeEdite() {
 function onAddChild(row) {
   parentId.value = row.id
   dialogVisible.value = true
-  diaTitle.value = '添加子产品'
+  diaTitle.value = t('auto.product_index_5ff09388')
 }
 
 function tslConfig(row) {
@@ -66,7 +68,7 @@ function tslConfig(row) {
 // 获取产品类型名称
 function getProductTypeName(typeId) {
   const type = productTypeList.value.find(t => t.id === typeId)
-  return type?.name || '未知类型'
+  return type?.name || t('auto.product_index_485d34dc')
 }
 
 // 跳转到设备列表
@@ -101,34 +103,34 @@ const column = [
   },
   {
     prop: 'icon',
-    label: '图标',
+    label: t('auto.product_index_5ef69f62'),
     width: 80,
     slot: 'icon',
   },
   {
     prop: 'productTypeName',
-    label: '产品类型',
+    label: t('auto.product_index_2db97cae'),
     width: 150,
   },
   {
     prop: 'model',
-    label: '型号',
+    label: t('auto.product_index_ac4190df'),
     width: 150,
   },
   {
     prop: 'manufacturer',
-    label: '厂家',
+    label: t('auto.product_index_8284e8da'),
     width: 150,
   },
   {
     prop: 'remark',
-    label: '备注信息',
+    label: t('auto.product_index_b57447a7'),
   },
   {
     prop: 'cz',
     slot: 'cz',
     width: 280,
-    label: '操作',
+    label: t('auto.product_index_2b6bc0f2'),
   },
 ]
 
@@ -137,10 +139,9 @@ onMounted(() => {
   productTypeListApi().then(({ data }) => {
     productTypeList.value = data
   }).catch((err) => {
-    console.error('获取产品类型失败:', err)
+    console.error(t('auto.product_index_59c02f94'), err)
   })
-})
-</script>
+})</script>
 
 <template>
   <div class="product-page">
@@ -151,10 +152,10 @@ onMounted(() => {
           <el-icon class="title-icon" :size="28">
             <Box />
           </el-icon>
-          产品管理
+          {{ t('auto.product_index_fc38494c') }}
         </h1>
         <p class="page-subtitle">
-          管理物联网设备产品信息与配置
+          {{ t('auto.product_index_2ba1a498') }}
         </p>
       </div>
     </div>
@@ -165,7 +166,7 @@ onMounted(() => {
         <div class="search-fields">
           <el-select
             v-model="params.productTypeId"
-            placeholder="选择产品类型"
+            :placeholder="t('auto.product_index_b82ec15f')"
             filterable
             clearable
             class="search-select"
@@ -180,7 +181,7 @@ onMounted(() => {
           <el-input
             v-model="params.model"
             clearable
-            placeholder="输入产品型号"
+            :placeholder="t('auto.product_index_7cab8429')"
             :prefix-icon="Search"
             class="search-input"
             @keyup.enter="onSearch"
@@ -188,7 +189,7 @@ onMounted(() => {
           <el-input
             v-model="params.manufacturer"
             clearable
-            placeholder="输入厂家名称"
+            :placeholder="t('auto.product_index_19034848')"
             class="search-input"
             @keyup.enter="onSearch"
           />
@@ -196,14 +197,14 @@ onMounted(() => {
         <div class="search-actions">
           <el-button type="primary" @click="onSearch">
             <el-icon><Search /></el-icon>
-            搜索
+            {{ t('auto.product_index_e5f71fc3') }}
           </el-button>
           <el-button :icon="RefreshRight" @click="onReset">
-            重置
+            {{ t('auto.product_index_4b9c3271') }}
           </el-button>
           <el-button type="primary" @click="onAdd">
             <el-icon><Plus /></el-icon>
-            添加产品
+            {{ t('auto.product_index_03f6134c') }}
           </el-button>
         </div>
       </div>
@@ -239,11 +240,11 @@ onMounted(() => {
         <!-- 详细信息 -->
         <div class="card-details">
           <div class="detail-row">
-            <span class="detail-label">厂家</span>
-            <span class="detail-value">{{ product.manufacturer || '未设置' }}</span>
+            <span class="detail-label">{{ t('auto.product_index_8284e8da') }}</span>
+            <span class="detail-value">{{ product.manufacturer || t('auto.product_index_fe2d26a2') }}</span>
           </div>
           <div v-if="product.remark" class="detail-row">
-            <span class="detail-label">备注</span>
+            <span class="detail-label">{{ t('auto.product_index_2432b575') }}</span>
             <span class="detail-value">{{ product.remark }}</span>
           </div>
         </div>
@@ -252,26 +253,26 @@ onMounted(() => {
         <div class="card-actions">
           <el-button type="primary" size="small" @click="goToDevices(product)">
             <el-icon><Monitor /></el-icon>
-            查看设备
+            {{ t('auto.product_index_6d0a0414') }}
           </el-button>
           <el-dropdown trigger="click" @command="(cmd) => handleCommand(cmd, product)">
             <el-button size="small">
               <el-icon><Setting /></el-icon>
-              更多
+              {{ t('auto.product_index_0ec9eaf9') }}
             </el-button>
             <template #dropdown>
               <el-dropdown-menu>
                 <el-dropdown-item command="config">
-                  <el-icon><Setting /></el-icon>功能配置
+                  <el-icon><Setting /></el-icon>{{ t('auto.product_index_c2f1f925') }}
                 </el-dropdown-item>
                 <el-dropdown-item command="edit">
-                  <el-icon><Edit /></el-icon>编辑
+                  <el-icon><Edit /></el-icon>{{ t('auto.product_index_95b351c8') }}
                 </el-dropdown-item>
                 <el-dropdown-item command="delete" divided>
                   <el-icon color="#f56c6c">
                     <Delete />
                   </el-icon>
-                  <span style="color: #f56c6c">删除</span>
+                  <span style="color: #f56c6c">{{ t('auto.product_index_2f4aaddd') }}</span>
                 </el-dropdown-item>
               </el-dropdown-menu>
             </template>
@@ -284,10 +285,10 @@ onMounted(() => {
         <el-icon :size="64" color="var(--iot-color-text-muted)">
           <Box />
         </el-icon>
-        <p>暂无产品数据</p>
+        <p>{{ t('auto.product_index_empty_data') }}</p>
         <el-button type="primary" @click="onAdd">
           <el-icon><Plus /></el-icon>
-          添加第一个产品
+          {{ t('auto.product_index_add_first') }}
         </el-button>
       </div>
     </div>
@@ -307,19 +308,19 @@ onMounted(() => {
         <template #expand="{ row }">
           <div class="expand-content">
             <div class="expand-item">
-              <span class="expand-label">产品 ID</span>
+              <span class="expand-label">{{ t('auto.product_index_2125533e') }}</span>
               <span class="expand-value">{{ row.id }}</span>
             </div>
             <div class="expand-item">
-              <span class="expand-label">类型 ID</span>
+              <span class="expand-label">{{ t('auto.product_index_116afd6d') }}</span>
               <span class="expand-value">{{ row.productTypeId }}</span>
             </div>
             <div class="expand-item">
-              <span class="expand-label">父级 ID</span>
+              <span class="expand-label">{{ t('auto.product_index_2e540d11') }}</span>
               <span class="expand-value">{{ row.parentId }}</span>
             </div>
             <div class="expand-item">
-              <span class="expand-label">创建时间</span>
+              <span class="expand-label">{{ t('auto.product_index_eca37cb0') }}</span>
               <span class="expand-value">{{ row.createTime || '-' }}</span>
             </div>
           </div>
@@ -336,16 +337,16 @@ onMounted(() => {
 
         <template #cz="{ row }">
           <el-button type="primary" link :icon="Setting" @click="tslConfig(row)">
-            功能配置
+            {{ t('auto.product_index_c2f1f925') }}
           </el-button>
           <el-button type="primary" link :icon="Edit" @click="onEdit(row)">
-            编辑
+            {{ t('auto.product_index_95b351c8') }}
           </el-button>
           <el-button v-if="row.parentId === -1" type="primary" link :icon="Plus" @click="onAddChild(row)">
-            添加子级
+            {{ t('auto.product_index_c38907a1') }}
           </el-button>
           <el-button type="danger" link :icon="Delete" @click="onDelete(row)">
-            删除
+            {{ t('auto.product_index_2f4aaddd') }}
           </el-button>
         </template>
       </IotTable>
@@ -359,14 +360,14 @@ onMounted(() => {
           @click="viewMode = 'card'"
         >
           <el-icon><Grid /></el-icon>
-          卡片
+          {{ t('auto.product_index_card_view') }}
         </el-button>
         <el-button
           :type="viewMode === 'table' ? 'primary' : 'default'"
           @click="viewMode = 'table'"
         >
           <el-icon><List /></el-icon>
-          列表
+          {{ t('auto.product_index_list_view') }}
         </el-button>
       </el-button-group>
     </div>

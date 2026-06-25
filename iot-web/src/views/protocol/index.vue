@@ -1,4 +1,5 @@
 <script setup>
+import { useI18n } from 'vue-i18n'
 import { Connection, RefreshRight } from '@element-plus/icons-vue'
 import { ElMessage, ElMessageBox, ElTag } from 'element-plus'
 import { h, onMounted } from 'vue'
@@ -8,6 +9,7 @@ import PageHeader from '@/components/PageHeader.vue'
 import { useTable } from '@/composables/useTable.js'
 import EditDia from '@/views/protocol/widget/editDia.vue'
 
+const { t } = useI18n()
 const protocolTypeOpt = [
   {
     label: 'JAVA',
@@ -15,7 +17,7 @@ const protocolTypeOpt = [
     color: 'warning',
   },
   {
-    label: '系统默认',
+    label: t('auto.protocol_index_a52f5c20'),
     value: 2,
     color: 'info',
   },
@@ -36,21 +38,21 @@ const scriptLangOpt = {
 const column = [
   {
     prop: 'name',
-    label: '协议名称',
+    label: t('auto.protocol_index_6924dc1d'),
     width: 180,
     fixed: 'left',
   },
   {
     prop: 'status',
-    label: '状态',
+    label: t('auto.protocol_index_3fea7ca7'),
     width: 100,
     render({ row }) {
-      return h(ElTag, { type: row.status === 1 ? 'success' : 'info' }, () => row.status === 1 ? '已启用' : '已禁用')
+      return h(ElTag, { type: row.status === 1 ? 'success' : 'info' }, () => row.status === 1 ? t('auto.protocol_index_53ace430') : t('auto.protocol_index_1c1ed981'))
     },
   },
   {
     prop: 'protoType',
-    label: '协议类型',
+    label: t('auto.protocol_index_e825ec78'),
     width: 120,
     render({ row }) {
       const opt = protocolTypeOpt.find(item => item.value === row.protoType)
@@ -59,12 +61,12 @@ const column = [
   },
   {
     prop: 'protoKey',
-    label: '协议 Key',
+    label: t('auto.protocol_index_b58edac0'),
     width: 160,
   },
   {
     prop: 'scriptLang',
-    label: '脚本语言',
+    label: t('auto.protocol_index_aae5ff1f'),
     width: 120,
     render({ row }) {
       if (row.protoType !== 3)
@@ -75,7 +77,7 @@ const column = [
   },
   {
     prop: 'mark',
-    label: '备注说明',
+    label: t('auto.protocol_index_8a4cf07c'),
     minWidth: 150,
     showOverflowTooltip: true,
   },
@@ -84,7 +86,7 @@ const column = [
     slot: 'cz',
     width: 200,
     fixed: 'right',
-    label: '操作',
+    label: t('auto.protocol_index_2b6bc0f2'),
   },
 ]
 
@@ -106,7 +108,7 @@ const {
 } = useTable({
   deleteApi: protocolDeleteApi,
   fetchApi: protocolListApi,
-  diaName: '协议',
+  diaName: t('auto.protocol_index_faa1ad5e'),
   defParams: {},
 })
 
@@ -121,40 +123,39 @@ function onEdit(row) {
 
 async function toggleStatus(row) {
   const newStatus = row.status !== 1
-  const action = newStatus ? '启用' : '禁用'
+  const action = newStatus ? t('auto.protocol_index_7854b52a') : t('auto.protocol_index_710ad08b')
 
   try {
     await ElMessageBox.confirm(
-      `确认要${action}协议 "${row.name}" 吗？${newStatus ? '启用后协议将被加载到内存中。' : '禁用后协议将从内存中卸载。'}`,
-      '操作确认',
+      t('auto.protocol_confirm_status', { action, name: row.name, tip: newStatus ? t('auto.protocol_enable_tip') : t('auto.protocol_disable_tip') }),
+      t('auto.protocol_index_ce828a79'),
       {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
+        confirmButtonText: t('auto.protocol_index_38cf16f2'),
+        cancelButtonText: t('auto.protocol_index_625fb26b'),
         type: 'warning',
       },
     )
     await protocolSetStatusApi(row.id, newStatus)
     row.status = newStatus ? 1 : 2
-    ElMessage.success(`协议已${action}`)
+    ElMessage.success(t('auto.protocol_status_success', { action }))
   }
   catch (error) {
     if (error !== 'cancel') {
-      ElMessage.error(`操作失败: ${error.message || '未知错误'}`)
+      ElMessage.error(t('auto.operation_failed_with_msg', { message: error.message || t('auto.unknown_error') }))
     }
   }
 }
 
 onMounted(() => {
   updatePage()
-})
-</script>
+})</script>
 
 <template>
   <div class="protocol-page">
     <!-- 页面标题 -->
     <PageHeader
-      title="协议管理"
-      subtitle="管理设备通信协议，支持 Java、JavaScript 等多种协议类型"
+      :title="t('auto.protocol_index_6f8e6b0c')"
+      :subtitle="t('auto.protocol_index_631f6ded')"
       :icon="Connection"
     />
 
@@ -162,10 +163,10 @@ onMounted(() => {
     <div class="search-bar glass-card">
       <el-form :inline="false" class="search-form">
         <div class="form-row">
-          <el-form-item label="协议类型">
+          <el-form-item :label="t('auto.protocol_index_e825ec78')">
             <el-select
               v-model="params.protoType"
-              placeholder="选择协议类型"
+              :placeholder="t('auto.protocol_index_728cbe38')"
               filterable
               clearable
               style="width: 150px"
@@ -179,10 +180,10 @@ onMounted(() => {
             </el-select>
           </el-form-item>
 
-          <el-form-item label="脚本语言">
+          <el-form-item :label="t('auto.protocol_index_aae5ff1f')">
             <el-select
               v-model="params.scriptLang"
-              placeholder="选择脚本语言"
+              :placeholder="t('auto.protocol_index_2b21eccb')"
               filterable
               clearable
               style="width: 150px"
@@ -196,21 +197,21 @@ onMounted(() => {
             </el-select>
           </el-form-item>
 
-          <el-form-item label="协议名称">
+          <el-form-item :label="t('auto.protocol_index_6924dc1d')">
             <el-input
               v-model="params.name"
               clearable
-              placeholder="输入协议名称"
+              :placeholder="t('auto.protocol_index_f79bd6a2')"
               style="width: 200px"
               @keyup.enter="onSearch"
             />
           </el-form-item>
 
-          <el-form-item label="协议 Key">
+          <el-form-item :label="t('auto.protocol_index_b58edac0')">
             <el-input
               v-model="params.protoKey"
               clearable
-              placeholder="输入协议 Key"
+              :placeholder="t('auto.protocol_index_98182d06')"
               style="width: 180px"
               @keyup.enter="onSearch"
             />
@@ -220,14 +221,14 @@ onMounted(() => {
         <div class="form-actions">
           <el-button type="primary" @click="onSearch">
             <span class="btn-icon">⌕</span>
-            搜索
+            {{ t('auto.protocol_index_e5f71fc3') }}
           </el-button>
           <el-button :icon="RefreshRight" @click="onReset">
-            重置
+            {{ t('auto.protocol_index_4b9c3271') }}
           </el-button>
           <el-button type="primary" @click="onAdd">
             <span class="btn-icon">+</span>
-            添加协议
+            {{ t('auto.protocol_index_c601ea4f') }}
           </el-button>
         </div>
       </el-form>
@@ -251,10 +252,10 @@ onMounted(() => {
             link
             @click="toggleStatus(row)"
           >
-            {{ row.status === 1 ? '禁用' : '启用' }}
+            {{ row.status === 1 ? t('auto.protocol_index_710ad08b') : t('auto.protocol_index_7854b52a') }}
           </el-button>
           <el-button type="primary" link @click="onEdit(row)">
-            编辑
+            {{ t('auto.protocol_index_95b351c8') }}
           </el-button>
           <el-button
             v-if="row.protoType !== 2"
@@ -262,7 +263,7 @@ onMounted(() => {
             link
             @click="onDelete(row)"
           >
-            删除
+            {{ t('auto.protocol_index_2f4aaddd') }}
           </el-button>
         </template>
       </IotTable>

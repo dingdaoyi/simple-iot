@@ -46,6 +46,7 @@ export default [
         component: home,
         meta: {
           title: '首页',
+          i18nKey: 'menu.home',
           icon: House,
         },
       },
@@ -54,6 +55,7 @@ export default [
         name: 'productType',
         meta: {
           title: '产品管理',
+          i18nKey: 'menu.productManagement',
           icon: Box,
         },
         children: [
@@ -63,6 +65,7 @@ export default [
             component: productType,
             meta: {
               title: '产品类型',
+              i18nKey: 'menu.productType',
               icon: Box,
             },
           },
@@ -72,6 +75,7 @@ export default [
             component: driver,
             meta: {
               title: '驱动管理',
+              i18nKey: 'menu.driver',
               icon: Tools,
             },
           },
@@ -81,6 +85,7 @@ export default [
             component: protocol,
             meta: {
               title: '协议管理',
+              i18nKey: 'menu.protocol',
               icon: Connection,
             },
           },
@@ -90,6 +95,7 @@ export default [
             component: product,
             meta: {
               title: '产品管理',
+              i18nKey: 'menu.product',
               icon: TrendCharts,
             },
           },
@@ -99,6 +105,7 @@ export default [
             component: device,
             meta: {
               title: '设备管理',
+              i18nKey: 'menu.device',
               icon: Document,
             },
           },
@@ -109,6 +116,7 @@ export default [
             meta: {
               hidden: true,
               title: '物模型配置',
+              i18nKey: 'menu.tslModel',
               icon: Setting,
             },
           },
@@ -119,6 +127,7 @@ export default [
             meta: {
               hidden: true,
               title: '设备详情',
+              i18nKey: 'menu.deviceDetails',
               icon: Document,
             },
           },
@@ -128,6 +137,7 @@ export default [
             component: ruleChain,
             meta: {
               title: '规则引擎',
+              i18nKey: 'menu.ruleChain',
               icon: Operation,
             },
           },
@@ -138,6 +148,7 @@ export default [
             meta: {
               hidden: true,
               title: '规则引擎编辑器',
+              i18nKey: 'menu.ruleChainEditor',
               icon: Operation,
             },
           },
@@ -148,6 +159,7 @@ export default [
             meta: {
               hidden: true,
               title: '编辑规则引擎',
+              i18nKey: 'menu.ruleChainEdit',
               icon: Operation,
             },
           },
@@ -157,6 +169,7 @@ export default [
             component: alarm,
             meta: {
               title: '告警管理',
+              i18nKey: 'menu.alarm',
               icon: Warning,
             },
           },
@@ -167,6 +180,7 @@ export default [
         name: 'system',
         meta: {
           title: '系统管理',
+          i18nKey: 'menu.system',
           icon: Setting,
         },
         children: [
@@ -176,6 +190,7 @@ export default [
             component: icon,
             meta: {
               title: '图标管理',
+              i18nKey: 'menu.iconManagement',
               icon: Picture,
             },
           },
@@ -185,6 +200,7 @@ export default [
             component: sms,
             meta: {
               title: '短信配置',
+              i18nKey: 'menu.sms',
               icon: ChatDotRound,
             },
           },
@@ -194,6 +210,7 @@ export default [
             component: email,
             meta: {
               title: '邮箱配置',
+              i18nKey: 'menu.email',
               icon: Message,
             },
           },
@@ -203,6 +220,7 @@ export default [
             component: messageReceive,
             meta: {
               title: '消息通知',
+              i18nKey: 'menu.message',
               icon: Bell,
             },
           },
@@ -212,6 +230,7 @@ export default [
             component: pushConfig,
             meta: {
               title: '推送配置',
+              i18nKey: 'menu.pushConfig',
               icon: Promotion,
             },
           },

@@ -1,4 +1,8 @@
 <script setup>
+import { computed } from 'vue'
+import { useI18n } from 'vue-i18n'
+
+const { t } = useI18n()
 /**
  * 模板变量插入器
  * - 系统变量 / 属性变量分组展示
@@ -14,8 +18,6 @@
  *     @update="updateConfig('message', $event)"
  *   />
  */
-import { computed } from 'vue'
-
 const props = defineProps({
   // 输入框/textarea 的 ref（用于读 selectionStart/End）
   targetRef: {
@@ -43,7 +45,7 @@ const props = defineProps({
   // 自定义标题
   label: {
     type: String,
-    default: '可用变量',
+    default: '',
   },
 })
 
@@ -51,6 +53,7 @@ const emit = defineEmits(['update'])
 
 const hasSystem = computed(() => props.systemVariables.length > 0)
 const hasProperty = computed(() => props.propertyVariables.length > 0)
+const displayLabel = computed(() => props.label || t('auto.rule_chain_editor_variableinserter_ebf8e213'))
 
 // 获取真正的 input/textarea DOM
 function getInputEl() {
@@ -82,8 +85,7 @@ function insertAt(variable) {
     const pos = start + variable.length
     el.setSelectionRange(pos, pos)
   })
-}
-</script>
+}</script>
 
 <template>
   <div v-if="hasSystem || hasProperty" class="variable-inserter">
@@ -91,12 +93,12 @@ function insertAt(variable) {
       <el-icon :size="12" class="vi-icon">
         <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" /></svg>
       </el-icon>
-      <span>{{ label }}</span>
-      <span class="vi-hint">点击插入到光标位置</span>
+      <span>{{ displayLabel }}</span>
+      <span class="vi-hint">{{ t('auto.rule_chain_editor_variableinserter_ee5b2387') }}</span>
     </div>
 
     <div v-if="hasSystem" class="vi-group">
-      <span class="vi-group-title sys">系统</span>
+      <span class="vi-group-title sys">{{ t('auto.rule_chain_editor_variableinserter_8a8b895f') }}</span>
       <el-tooltip
         v-for="v in systemVariables"
         :key="v.variable"
@@ -116,7 +118,7 @@ function insertAt(variable) {
     </div>
 
     <div v-if="hasProperty" class="vi-group">
-      <span class="vi-group-title prop">属性</span>
+      <span class="vi-group-title prop">{{ t('auto.rule_chain_editor_variableinserter_24d67862') }}</span>
       <el-tooltip
         v-for="v in propertyVariables.slice(0, maxProperties)"
         :key="v.variable"

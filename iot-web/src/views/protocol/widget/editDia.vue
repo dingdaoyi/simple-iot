@@ -1,17 +1,19 @@
 <script lang="jsx" setup>
+import { useI18n } from 'vue-i18n'
 import { ElMessage } from 'element-plus'
 import { computed, ref, watch } from 'vue'
 import { protocolAddApi, protocolEditApi, protocolTestDecodeApi, protocolTestEncodeApi } from '@/api'
 import { useForm } from '@/composables/useForm.js'
 import CodeEditor from './CodeEditor.vue'
 
+const { t } = useI18n()
 const props = defineProps(['datas', 'modelValue'])
 
 const emits = defineEmits(['update', 'update:modelValue'])
 
 const protocolTypeOpt = [
   { label: 'JAVA', value: 1 },
-  { label: '系统默认', value: 2 },
+  { label: t('auto.protocol_editdia_a52f5c20'), value: 2 },
   { label: 'JAVASCRIPT', value: 3 },
 ]
 
@@ -25,7 +27,7 @@ const scriptLangOpt = [
 // API 文档内容
 const apiDocs = {
   request: {
-    title: 'request - 设备上报数据',
+    title: t('auto.protocol_editdia_ca9c2a90'),
     content: `decode 函数输入参数
 
 {
@@ -43,7 +45,7 @@ const apiDocs = {
 }`,
   },
   tslModel: {
-    title: 'tslModel - 物模型',
+    title: t('auto.protocol_editdia_665ceea8'),
     content: `产品的物模型定义
 
 属性：
@@ -61,7 +63,7 @@ const property = tslModel.propertyByIdentifier("temperature");
 console.log(property.dataType);`,
   },
   message: {
-    title: 'message - 下发命令',
+    title: t('auto.protocol_editdia_62bca6f2'),
     content: `encode 函数输入参数
 
 {
@@ -78,7 +80,7 @@ console.log(property.dataType);`,
 }`,
   },
   decodeResult: {
-    title: 'decode 返回值',
+    title: t('auto.protocol_editdia_5bfaed9f'),
     content: `decode 函数返回值
 
 {
@@ -108,7 +110,7 @@ DataItem 结构：
 }`,
   },
   encodeResult: {
-    title: 'encode 返回值',
+    title: t('auto.protocol_editdia_6549cf1b'),
     content: `encode 函数返回值
 
 {
@@ -131,8 +133,8 @@ DataItem 结构：
 }
 
 const rules = ref({
-  name: [{ required: true, message: '协议名称不能为空', trigger: 'blur' }],
-  protoKey: [{ required: true, message: '协议 Key 不能为空', trigger: 'blur' }],
+  name: [{ required: true, message: t('auto.protocol_editdia_1d3f6638'), trigger: 'blur' }],
+  protoKey: [{ required: true, message: t('auto.protocol_editdia_3e515e9c'), trigger: 'blur' }],
 })
 
 const { form, onSubmit: handleSubmit, editRef, loading } = useForm({
@@ -159,7 +161,7 @@ const testForm = ref({
 }`,
 })
 
-const testDialogTitle = computed(() => testMode.value === 'decode' ? '测试解码' : '测试编码')
+const testDialogTitle = computed(() => testMode.value === 'decode' ? t('auto.protocol_widget_editdia_5647a3dd') : t('auto.protocol_widget_editdia_55f78076'))
 const formattedTestResult = computed(() => testResult.value ? JSON.stringify(testResult.value, null, 2) : '')
 
 // 默认脚本模板
@@ -320,11 +322,11 @@ function onCancel() {
 
 function openTestDialog(mode) {
   if (!isScriptType.value) {
-    ElMessage.warning('仅脚本协议支持在线调试')
+    ElMessage.warning(t('auto.protocol_editdia_2b1f95fc'))
     return
   }
   if (!form.value.scriptContent) {
-    ElMessage.warning('请先填写脚本内容')
+    ElMessage.warning(t('auto.protocol_editdia_6e5557bd'))
     return
   }
   testMode.value = mode
@@ -338,7 +340,7 @@ function buildProtocolDraft() {
     protoType: 3,
     scriptLang: form.value.scriptLang || 'javascript',
     protoKey: form.value.protoKey || 'debug-script',
-    name: form.value.name || '脚本调试协议',
+    name: form.value.name || t('auto.protocol_widget_editdia_dbded722'),
   }
 }
 
@@ -355,7 +357,7 @@ async function runProtocolTest() {
         data: testForm.value.data,
       })
       testResult.value = data
-      ElMessage.success('解码测试成功')
+      ElMessage.success(t('auto.protocol_editdia_ce06b95e'))
       return
     }
 
@@ -371,16 +373,16 @@ async function runProtocolTest() {
       params,
     })
     testResult.value = data
-    ElMessage.success('编码测试成功')
+    ElMessage.success(t('auto.protocol_editdia_14bac008'))
   }
   catch (error) {
     testResult.value = {
       success: false,
-      message: error?.msg || error?.message || '测试失败',
+      message: error?.msg || error?.message || t('auto.protocol_widget_editdia_102c5dc2'),
       detail: error,
     }
     if (error instanceof SyntaxError) {
-      ElMessage.error('编码参数不是合法 JSON')
+      ElMessage.error(t('auto.protocol_editdia_5974fe0f'))
     }
   }
   finally {
@@ -411,13 +413,12 @@ watch(() => form.value.scriptLang, () => {
   if (isScriptType.value && !props.datas?.id) {
     loadScriptTemplate()
   }
-})
-</script>
+})</script>
 
 <template>
   <el-dialog
     :model-value="modelValue"
-    :title="datas?.id ? '编辑协议' : '新增协议'"
+    :title="t('auto.protocol_editdia_3838bb8c')"
     width="900px"
     @update:model-value="$emit('update:modelValue', $event)"
   >
@@ -429,15 +430,15 @@ watch(() => form.value.scriptLang, () => {
     >
       <el-row :gutter="20">
         <el-col :span="12">
-          <el-form-item label="协议名称" prop="name">
-            <el-input v-model="form.name" clearable placeholder="请输入协议名称" />
+          <el-form-item :label="t('auto.protocol_editdia_6924dc1d')" prop="name">
+            <el-input v-model="form.name" clearable :placeholder="t('auto.protocol_editdia_b2f485f2')" />
           </el-form-item>
         </el-col>
         <el-col :span="12">
-          <el-form-item label="协议类型" prop="protoType">
+          <el-form-item :label="t('auto.protocol_editdia_e825ec78')" prop="protoType">
             <el-select
               v-model="form.protoType"
-              placeholder="请选择协议类型"
+              :placeholder="t('auto.protocol_editdia_27a1e7f4')"
               style="width: 100%"
               filterable
               :disabled="!!datas?.id"
@@ -455,11 +456,11 @@ watch(() => form.value.scriptLang, () => {
 
       <el-row :gutter="20">
         <el-col :span="12">
-          <el-form-item label="协议 Key" prop="protoKey">
+          <el-form-item :label="t('auto.protocol_editdia_b58edac0')" prop="protoKey">
             <el-input
               v-model="form.protoKey"
               clearable
-              placeholder="请输入协议唯一标识"
+              :placeholder="t('auto.protocol_editdia_0d3692c5')"
               :disabled="!!datas?.id"
             />
           </el-form-item>
@@ -468,48 +469,48 @@ watch(() => form.value.scriptLang, () => {
           <!-- JAVA 协议 - 处理类 -->
           <el-form-item
             v-if="form.protoType === 1"
-            label="处理类"
+            :label="t('auto.protocol_editdia_288951b7')"
             prop="handlerClass"
           >
             <el-input
               v-model="form.handlerClass"
               clearable
-              placeholder="例如: com.example.ProtocolDecoder"
+              :placeholder="t('auto.protocol_editdia_bd66f50b')"
             />
           </el-form-item>
           <!-- 系统默认协议 - 处理入口 (只读) -->
           <el-form-item
             v-if="form.protoType === 2"
-            label="处理入口"
+            :label="t('auto.protocol_editdia_42ddaa45')"
             prop="handlerClass"
           >
             <el-input
               :model-value="form.handlerClass"
               readonly
-              placeholder="系统默认协议处理类"
+              :placeholder="t('auto.protocol_editdia_f32d0911')"
             />
           </el-form-item>
           <!-- JAVA 协议 - JAR 包路径 -->
           <el-form-item
             v-if="form.protoType === 1"
-            label="JAR 包路径"
+            :label="t('auto.protocol_editdia_6650ce7a')"
             prop="url"
           >
             <el-input
               v-model="form.url"
               clearable
-              placeholder="JAR 包文件路径"
+              :placeholder="t('auto.protocol_editdia_c578c307')"
             />
           </el-form-item>
           <!-- 脚本协议 - 脚本语言选择 -->
           <el-form-item
             v-if="form.protoType === 3"
-            label="脚本语言"
+            :label="t('auto.protocol_editdia_aae5ff1f')"
             prop="scriptLang"
           >
             <el-select
               v-model="form.scriptLang"
-              placeholder="选择脚本语言"
+              :placeholder="t('auto.protocol_editdia_2b21eccb')"
               style="width: 100%"
             >
               <el-option
@@ -524,19 +525,19 @@ watch(() => form.value.scriptLang, () => {
       </el-row>
 
       <!-- 脚本编辑器 -->
-      <el-form-item v-if="isScriptType" label="脚本内容" prop="scriptContent">
+      <el-form-item v-if="isScriptType" :label="t('auto.protocol_editdia_7be2dcb0')" prop="scriptContent">
         <div class="script-editor-wrapper">
           <div class="editor-toolbar">
             <div class="toolbar-left">
               <el-button size="small" @click="loadScriptTemplate">
-                📄 重置模板
+                {{ t('auto.protocol_editdia_f6265c7f') }}
               </el-button>
               <!-- API 文档提示 -->
               <el-button size="small" type="success" plain @click="openTestDialog('decode')">
-                测试解码
+                {{ t('auto.protocol_editdia_77529ee3') }}
               </el-button>
               <el-button size="small" type="warning" plain @click="openTestDialog('encode')">
-                测试编码
+                {{ t('auto.protocol_editdia_b5460015') }}
               </el-button>
               <el-popover
                 placement="bottom"
@@ -545,7 +546,7 @@ watch(() => form.value.scriptLang, () => {
               >
                 <template #reference>
                   <el-button size="small" type="primary" plain>
-                    📖 API 文档
+                    {{ t('auto.protocol_editdia_c2cc9d28') }}
                   </el-button>
                 </template>
                 <el-tabs type="border-card" class="api-tabs">
@@ -568,22 +569,22 @@ watch(() => form.value.scriptLang, () => {
         </div>
       </el-form-item>
 
-      <el-form-item label="备注说明" prop="mark">
+      <el-form-item :label="t('auto.protocol_widget_editdia_941d5acf')" prop="mark">
         <el-input
           v-model="form.mark"
           type="textarea"
           :rows="3"
           clearable
-          placeholder="请输入协议描述、使用说明等信息"
+          :placeholder="t('auto.protocol_widget_editdia_de95db5f')"
         />
       </el-form-item>
     </el-form>
     <template #footer>
       <el-button @click="onCancel">
-        取消
+        {{ t('auto.protocol_editdia_625fb26b') }}
       </el-button>
       <el-button type="primary" :loading="loading" @click="onSubmit">
-        确定
+        {{ t('auto.protocol_editdia_38cf16f2') }}
       </el-button>
     </template>
   </el-dialog>
@@ -596,45 +597,45 @@ watch(() => form.value.scriptLang, () => {
     <el-form label-width="110px" :model="testForm">
       <el-row :gutter="16">
         <el-col :span="12">
-          <el-form-item label="设备Key">
+          <el-form-item :label="t('auto.protocol_widget_editdia_3f04bb6a')">
             <el-input v-model="testForm.deviceKey" clearable />
           </el-form-item>
         </el-col>
         <el-col :span="12">
-          <el-form-item label="产品Key">
+          <el-form-item :label="t('auto.protocol_widget_editdia_db1d3115')">
             <el-input v-model="testForm.productKey" clearable />
           </el-form-item>
         </el-col>
       </el-row>
 
       <template v-if="testMode === 'decode'">
-        <el-form-item label="消息类型">
+        <el-form-item :label="t('auto.protocol_editdia_6d00710a')">
           <el-select v-model="testForm.messageType" style="width: 100%">
-            <el-option label="属性上报 PROPERTY" value="PROPERTY" />
-            <el-option label="事件上报 EVENT" value="EVENT" />
-            <el-option label="服务响应 SERVICE_RES" value="SERVICE_RES" />
+            <el-option :label="t('auto.protocol_editdia_0da89e2c')" value="PROPERTY" />
+            <el-option :label="t('auto.protocol_editdia_e7c8879e')" value="EVENT" />
+            <el-option :label="t('auto.protocol_editdia_bfdf53e4')" value="SERVICE_RES" />
           </el-select>
         </el-form-item>
-        <el-form-item label="原始报文">
+        <el-form-item :label="t('auto.protocol_editdia_f3aeedcd')">
           <el-input
             v-model="testForm.data"
             type="textarea"
             :rows="5"
-            placeholder="请输入设备原始报文，例如 JSON 字符串"
+            :placeholder="t('auto.protocol_editdia_581ef620')"
           />
         </el-form-item>
       </template>
 
       <template v-else>
-        <el-form-item label="功能标识符">
-          <el-input v-model="testForm.identifier" clearable placeholder="例如 setPower" />
+        <el-form-item :label="t('auto.protocol_editdia_50a76051')">
+          <el-input v-model="testForm.identifier" clearable :placeholder="t('auto.protocol_editdia_d81ee48e')" />
         </el-form-item>
-        <el-form-item label="下行参数">
+        <el-form-item :label="t('auto.protocol_editdia_59a8b62c')">
           <el-input
             v-model="testForm.paramsText"
             type="textarea"
             :rows="6"
-            placeholder="请输入 JSON 对象"
+            :placeholder="t('auto.protocol_editdia_072796bb')"
           />
         </el-form-item>
       </template>
@@ -642,17 +643,17 @@ watch(() => form.value.scriptLang, () => {
 
     <div v-if="testResult" class="test-result">
       <div class="test-result-title">
-        执行结果
+        {{ t('auto.protocol_widget_editdia_d16a4d51') }}
       </div>
       <pre>{{ formattedTestResult }}</pre>
     </div>
 
     <template #footer>
       <el-button @click="testDialogVisible = false">
-        关闭
+        {{ t('auto.protocol_editdia_b15d9127') }}
       </el-button>
       <el-button type="primary" :loading="testLoading" @click="runProtocolTest">
-        运行测试
+        {{ t('auto.protocol_editdia_9c484867') }}
       </el-button>
     </template>
   </el-dialog>

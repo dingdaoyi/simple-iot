@@ -1,4 +1,5 @@
 <script setup>
+import { useI18n } from 'vue-i18n'
 import { Delete, Edit, Plus, RefreshRight, Setting } from '@element-plus/icons-vue'
 import { nextTick, ref } from 'vue'
 import { useRouter } from 'vue-router'
@@ -7,6 +8,7 @@ import IotTable from '@/components/IotTable.vue'
 import { useTable } from '@/composables/useTable.js'
 import EditDia from '@/views/productType/widget/editDia.vue'
 
+const { t } = useI18n()
 const router = useRouter()
 const parentId = ref(-1)
 const iotTableRef = ref()
@@ -19,25 +21,25 @@ const column = [
   },
   {
     prop: 'name',
-    label: '品类名称',
+    label: t('auto.producttype_index_11382905'),
   },
   {
     prop: 'status',
-    label: '状态',
+    label: t('auto.producttype_index_3fea7ca7'),
     width: 100,
     formatter(row) {
-      return row.status ? '启用' : '禁用'
+      return row.status ? t('auto.producttype_index_7854b52a') : t('auto.producttype_index_710ad08b')
     },
   },
   {
     prop: 'mark',
-    label: '备注信息',
+    label: t('auto.producttype_index_b57447a7'),
   },
   {
     prop: 'cz',
     slot: 'cz',
     width: 280,
-    label: '操作',
+    label: t('auto.producttype_index_2b6bc0f2'),
   },
 ]
 
@@ -52,7 +54,7 @@ const {
 } = useTable({
   deleteApi: productTypeDelApi,
   fetchApi: productTypeListApi,
-  diaName: '产品类型',
+  diaName: t('auto.producttype_index_2db97cae'),
   defParams: {
     withChild: true,
   },
@@ -83,8 +85,7 @@ function onAddChild(row) {
 
 function tslConfig(row) {
   router.push(`/tslModel?typeId=${row.id}`)
-}
-</script>
+}</script>
 
 <template>
   <div class="product-type-page">
@@ -93,10 +94,10 @@ function tslConfig(row) {
       <div class="header-content">
         <h1 class="page-title">
           <span class="title-icon">◈</span>
-          产品类型管理
+          {{ t('auto.producttype_index_a4d2e3eb') }}
         </h1>
         <p class="page-subtitle">
-          管理产品分类与层级结构
+          {{ t('auto.producttype_index_bc20ea4a') }}
         </p>
       </div>
     </div>
@@ -105,11 +106,11 @@ function tslConfig(row) {
     <div class="search-bar glass-card">
       <div class="search-row">
         <div class="search-input">
-          <label class="input-label">搜索类型</label>
+          <label class="input-label">{{ t('auto.producttype_index_1cb81449') }}</label>
           <el-input
             v-model="params.name"
             clearable
-            placeholder="输入产品类型名称搜索..."
+            :placeholder="t('auto.producttype_index_688d8509')"
             prefix-icon="Search"
             @keyup.enter="onSearch"
           />
@@ -117,14 +118,14 @@ function tslConfig(row) {
         <div class="search-actions">
           <el-button type="primary" @click="onSearch">
             <span class="btn-icon">⌕</span>
-            搜索
+            {{ t('auto.producttype_index_e5f71fc3') }}
           </el-button>
           <el-button :icon="RefreshRight" @click="onReset">
-            重置
+            {{ t('auto.producttype_index_4b9c3271') }}
           </el-button>
           <el-button type="primary" @click="onAdd">
             <span class="btn-icon">+</span>
-            添加类型
+            {{ t('auto.producttype_index_13c0562f') }}
           </el-button>
         </div>
       </div>
@@ -143,19 +144,19 @@ function tslConfig(row) {
         <template #expand="{ row }">
           <div class="expand-content">
             <div class="expand-item">
-              <span class="expand-label">类型 ID</span>
+              <span class="expand-label">{{ t('auto.producttype_index_116afd6d') }}</span>
               <span class="expand-value">{{ row.id }}</span>
             </div>
             <div class="expand-item">
-              <span class="expand-label">类型代码</span>
+              <span class="expand-label">{{ t('auto.producttype_index_8867216a') }}</span>
               <span class="expand-value">{{ row.partTypeCode || '-' }}</span>
             </div>
             <div class="expand-item">
-              <span class="expand-label">父级 ID</span>
+              <span class="expand-label">{{ t('auto.producttype_index_2e540d11') }}</span>
               <span class="expand-value">{{ row.parentId }}</span>
             </div>
             <div class="expand-item">
-              <span class="expand-label">子级数量</span>
+              <span class="expand-label">{{ t('auto.producttype_index_d332d16b') }}</span>
               <span class="expand-value">{{ row.children?.length || 0 }}</span>
             </div>
           </div>
@@ -163,16 +164,16 @@ function tslConfig(row) {
 
         <template #cz="{ row }">
           <el-button type="primary" link :icon="Setting" @click="tslConfig(row)">
-            功能配置
+            {{ t('auto.producttype_index_c2f1f925') }}
           </el-button>
           <el-button type="primary" link :icon="Edit" @click="onEdit(row)">
-            编辑
+            {{ t('auto.producttype_index_95b351c8') }}
           </el-button>
           <el-button v-if="row.parentId === -1" type="primary" link :icon="Plus" @click="onAddChild(row)">
-            添加子级
+            {{ t('auto.producttype_index_c38907a1') }}
           </el-button>
           <el-button type="danger" link :icon="Delete" @click="onDelete(row)">
-            删除
+            {{ t('auto.producttype_index_2f4aaddd') }}
           </el-button>
         </template>
       </IotTable>

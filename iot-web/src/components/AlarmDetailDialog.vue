@@ -1,6 +1,7 @@
 <script setup>
 import { Check, Close } from '@element-plus/icons-vue'
 import { computed } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { alarmAcknowledgeApi, alarmClearApi } from '@/api/index.js'
 
 const props = defineProps({
@@ -15,14 +16,15 @@ const props = defineProps({
 })
 
 const emits = defineEmits(['update:modelValue', 'refresh'])
+const { t, locale } = useI18n()
 
 // 获取严重程度标签
 function getSeverityTag(severity) {
   const map = {
-    CRITICAL: { type: 'danger', text: '严重' },
-    MAJOR: { type: 'warning', text: '主要' },
-    MINOR: { type: 'info', text: '次要' },
-    WARNING: { type: '', text: '警告' },
+    CRITICAL: { type: 'danger', text: t('alarm.severity_critical') },
+    MAJOR: { type: 'warning', text: t('alarm.severity_major') },
+    MINOR: { type: 'info', text: t('alarm.severity_minor') },
+    WARNING: { type: '', text: t('common.warning') },
   }
   return map[severity] || { type: '', text: severity }
 }
@@ -30,9 +32,9 @@ function getSeverityTag(severity) {
 // 获取状态标签
 function getStatusTag(status) {
   const map = {
-    ACTIVE: { type: 'danger', text: '活动' },
-    CLEARED: { type: 'success', text: '已清除' },
-    ACKNOWLEDGED: { type: 'warning', text: '已确认' },
+    ACTIVE: { type: 'danger', text: t('alarm.status_active') },
+    CLEARED: { type: 'success', text: t('alarm.status_cleared') },
+    ACKNOWLEDGED: { type: 'warning', text: t('alarm.status_acknowledged') },
   }
   return map[status] || { type: '', text: status }
 }
@@ -44,7 +46,7 @@ function formatTime(timeStr) {
   const date = new Date(timeStr)
   if (Number.isNaN(date.getTime()))
     return timeStr
-  return date.toLocaleString('zh-CN', {
+  return date.toLocaleString(locale.value, {
     year: 'numeric',
     month: '2-digit',
     day: '2-digit',
@@ -64,41 +66,41 @@ const detailSections = computed(() => {
 
   // 基本信息
   sections.push({
-    title: '基本信息',
+    title: t('alarm.basic_info'),
     items: [
-      { label: '告警名称', value: alarm.alarmName },
-      { label: '告警类型', value: alarm.alarmType },
-      { label: '严重程度', value: getSeverityTag(alarm.severity).text, tag: true, tagType: getSeverityTag(alarm.severity).type },
-      { label: '状态', value: getStatusTag(alarm.status).text, tag: true, tagType: getStatusTag(alarm.status).type },
+      { label: t('alarm.alarm_name'), value: alarm.alarmName },
+      { label: t('alarm.alarm_type'), value: alarm.alarmType },
+      { label: t('alarm.severity'), value: getSeverityTag(alarm.severity).text, tag: true, tagType: getSeverityTag(alarm.severity).type },
+      { label: t('common.status'), value: getStatusTag(alarm.status).text, tag: true, tagType: getStatusTag(alarm.status).type },
     ],
   })
 
   // 设备信息
   sections.push({
-    title: '设备信息',
+    title: t('alarm.device_info'),
     items: [
-      { label: '设备名称', value: alarm.deviceName },
-      { label: '设备Key', value: alarm.deviceKey },
+      { label: t('device.device_name'), value: alarm.deviceName },
+      { label: t('device.device_key'), value: alarm.deviceKey },
     ],
   })
 
   // 时间信息
   sections.push({
-    title: '时间信息',
+    title: t('alarm.time_info'),
     items: [
-      { label: '开始时间', value: formatTime(alarm.startTs) },
-      { label: '结束时间', value: formatTime(alarm.endTs) },
-      { label: '清除时间', value: formatTime(alarm.clearTs) },
-      { label: '清除人', value: alarm.clearBy || '-' },
+      { label: t('alarm.start_time'), value: formatTime(alarm.startTs) },
+      { label: t('alarm.end_time'), value: formatTime(alarm.endTs) },
+      { label: t('alarm.clear_time'), value: formatTime(alarm.clearTs) },
+      { label: t('alarm.clear_by'), value: alarm.clearBy || '-' },
     ],
   })
 
   // 告警消息
   const messageContent = alarm.message && alarm.message.trim() ? alarm.message : '-'
   sections.push({
-    title: '告警消息',
+    title: t('alarm.alarm_message'),
     items: [
-      { label: '消息内容', value: messageContent, full: true },
+      { label: t('alarm.message_content'), value: messageContent, full: true },
     ],
   })
 
@@ -109,7 +111,7 @@ const detailSections = computed(() => {
       value: typeof value === 'object' ? JSON.stringify(value, null, 2) : String(value),
     }))
     sections.push({
-      title: '触发数据',
+      title: t('alarm.trigger_data'),
       items: detailItems,
     })
   }
@@ -131,7 +133,7 @@ async function handleAcknowledge() {
     emits('refresh')
   }
   catch (e) {
-    console.error('确认失败', e)
+    console.error(t('auto.component_alarmdetaildialog_c92aaa37'), e)
   }
 }
 
@@ -145,7 +147,7 @@ async function handleClear() {
     emits('refresh')
   }
   catch (e) {
-    console.error('清除失败', e)
+    console.error(t('auto.component_alarmdetaildialog_cd6849ea'), e)
   }
 }
 </script>
@@ -153,7 +155,7 @@ async function handleClear() {
 <template>
   <el-dialog
     :model-value="modelValue"
-    title="告警详情"
+    :title="t('alarm.alarm_detail')"
     width="640px"
     class="alarm-detail-dialog"
     @update:model-value="$emit('update:modelValue', $event)"
@@ -194,7 +196,7 @@ async function handleClear() {
             @click="handleAcknowledge"
           >
             <el-icon><Check /></el-icon>
-            确认告警
+            {{ t('alarm.acknowledge_alarm') }}
           </el-button>
           <el-button
             v-if="alarm?.status !== 'CLEARED'"
@@ -202,11 +204,11 @@ async function handleClear() {
             @click="handleClear"
           >
             <el-icon><Close /></el-icon>
-            清除告警
+            {{ t('alarm.clear_alarm') }}
           </el-button>
         </div>
         <el-button @click="handleClose">
-          关闭
+          {{ t('common.close') }}
         </el-button>
       </div>
     </template>

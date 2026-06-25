@@ -1,4 +1,5 @@
 <script setup>
+import { useI18n } from 'vue-i18n'
 import { Delete, Edit, Operation, Plus, RefreshRight } from '@element-plus/icons-vue'
 import { ElMessage } from 'element-plus'
 import { onMounted } from 'vue'
@@ -11,29 +12,30 @@ import {
 import IotTable from '@/components/IotTable.vue'
 import { useTable } from '@/composables/useTable.js'
 
+const { t } = useI18n()
 const router = useRouter()
 
 const sourceTypeOpt = [
-  { label: '产品', value: 'PRODUCT' },
-  { label: '设备分组', value: 'DEVICE_GROUP' },
-  { label: '特定设备', value: 'DEVICE' },
+  { label: t('auto.rule_chain_index_a015434e'), value: 'PRODUCT' },
+  { label: t('auto.rule_chain_index_e3900200'), value: 'DEVICE_GROUP' },
+  { label: t('auto.rule_chain_index_c52cabf2'), value: 'DEVICE' },
 ]
 
 const column = [
   {
     prop: 'name',
-    label: '规则名称',
+    label: t('auto.rule_chain_index_87080256'),
     minWidth: 150,
   },
   {
     prop: 'description',
-    label: '描述',
+    label: t('auto.rule_chain_index_3bdd08ad'),
     minWidth: 200,
     showOverflowTooltip: true,
   },
   {
     prop: 'sourceType',
-    label: '数据源类型',
+    label: t('auto.rule_chain_index_6de026f2'),
     width: 120,
     formatter(row) {
       return sourceTypeOpt.find(item => item.value === row.sourceType)?.label ?? row.sourceType ?? '-'
@@ -41,40 +43,40 @@ const column = [
   },
   {
     prop: 'sourceName',
-    label: '数据源',
+    label: t('auto.rule_chain_index_c11322c9'),
     minWidth: 150,
   },
   {
     prop: 'nodeCount',
-    label: '节点数',
+    label: t('auto.rule_chain_index_93cb163f'),
     width: 80,
     align: 'center',
   },
   {
     prop: 'isRoot',
-    label: '根规则',
+    label: t('auto.rule_chain_index_7995876b'),
     width: 90,
     align: 'center',
     formatter(row) {
-      return row.isRoot ? '是' : '否'
+      return row.isRoot ? t('auto.rule_chain_index_0a60ac8f') : t('auto.rule_chain_index_c9744f45')
     },
   },
   {
     prop: 'isEnabled',
-    label: '状态',
+    label: t('auto.rule_chain_index_3fea7ca7'),
     width: 100,
     slot: 'status',
   },
   {
     prop: 'updatedTime',
-    label: '更新时间',
+    label: t('auto.rule_chain_index_a001a226'),
     width: 160,
   },
   {
     prop: 'cz',
     slot: 'cz',
     width: 220,
-    label: '操作',
+    label: t('auto.rule_chain_index_2b6bc0f2'),
     fixed: 'right',
   },
 ]
@@ -93,7 +95,7 @@ const {
 } = useTable({
   deleteApi: ruleChainDeleteApi,
   fetchApi: ruleChainPageApi,
-  diaName: '规则',
+  diaName: t('auto.rule_chain_index_b0fae043'),
   defParams: {},
 })
 
@@ -112,7 +114,7 @@ async function onToggle(row) {
   try {
     await ruleChainToggleApi(row.id, !row.isEnabled)
     row.isEnabled = !row.isEnabled
-    ElMessage.success(row.isEnabled ? '已启用' : '已禁用')
+    ElMessage.success(row.isEnabled ? t('auto.rule_chain_index_53ace430') : t('auto.rule_chain_index_1c1ed981'))
   }
   catch (e) {
     console.error(e)
@@ -121,8 +123,7 @@ async function onToggle(row) {
 
 onMounted(() => {
   updatePage()
-})
-</script>
+})</script>
 
 <template>
   <div class="rule-chain-page">
@@ -133,10 +134,10 @@ onMounted(() => {
           <el-icon :size="24" class="title-icon">
             <Operation />
           </el-icon>
-          规则引擎
+          {{ t('auto.rule_chain_index_31c02e22') }}
         </h1>
         <p class="page-subtitle">
-          可视化配置设备数据处理规则
+          {{ t('auto.rule_chain_index_4687f166') }}
         </p>
       </div>
     </div>
@@ -145,14 +146,14 @@ onMounted(() => {
     <div class="search-bar glass-card">
       <el-form :inline="false" class="search-form">
         <div class="form-row">
-          <el-form-item label="规则名称">
-            <el-input v-model="params.name" clearable placeholder="请输入规则名称" @keyup.enter="onSearch" />
+          <el-form-item :label="t('auto.rule_chain_index_87080256')">
+            <el-input v-model="params.name" clearable :placeholder="t('auto.rule_chain_index_40f3f17d')" @keyup.enter="onSearch" />
           </el-form-item>
 
-          <el-form-item label="数据源类型">
+          <el-form-item :label="t('auto.rule_chain_index_6de026f2')">
             <el-select
               v-model="params.sourceType"
-              placeholder="请选择"
+              :placeholder="t('auto.rule_chain_index_708c9d6d')"
               filterable
               clearable
             >
@@ -165,10 +166,10 @@ onMounted(() => {
             </el-select>
           </el-form-item>
 
-          <el-form-item label="状态">
-            <el-select v-model="params.isEnabled" placeholder="请选择" clearable>
-              <el-option label="启用" :value="true" />
-              <el-option label="禁用" :value="false" />
+          <el-form-item :label="t('auto.rule_chain_index_3fea7ca7')">
+            <el-select v-model="params.isEnabled" :placeholder="t('auto.rule_chain_index_708c9d6d')" clearable>
+              <el-option :label="t('auto.rule_chain_index_7854b52a')" :value="true" />
+              <el-option :label="t('auto.rule_chain_index_710ad08b')" :value="false" />
             </el-select>
           </el-form-item>
         </div>
@@ -176,14 +177,14 @@ onMounted(() => {
         <div class="form-actions">
           <el-button type="primary" @click="onSearch">
             <span class="btn-icon">⌕</span>
-            搜索
+            {{ t('auto.rule_chain_index_e5f71fc3') }}
           </el-button>
           <el-button :icon="RefreshRight" @click="onReset">
-            重置
+            {{ t('auto.rule_chain_index_4b9c3271') }}
           </el-button>
           <el-button type="primary" @click="onAdd">
             <el-icon><Plus /></el-icon>
-            新建规则
+            {{ t('auto.rule_chain_index_f10ed468') }}
           </el-button>
         </div>
       </el-form>
@@ -210,11 +211,11 @@ onMounted(() => {
         <template #cz="{ row }">
           <el-button type="primary" link @click="onEdit(row)">
             <el-icon><Edit /></el-icon>
-            编辑
+            {{ t('auto.rule_chain_index_95b351c8') }}
           </el-button>
           <el-button type="danger" link @click="onDelete(row)">
             <el-icon><Delete /></el-icon>
-            删除
+            {{ t('auto.rule_chain_index_2f4aaddd') }}
           </el-button>
         </template>
       </IotTable>

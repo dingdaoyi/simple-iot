@@ -1,9 +1,11 @@
 <script setup>
 import { ref } from 'vue'
+import { useI18n } from 'vue-i18n'
 import Property from '@/views/tslModel/widget/property.vue'
 import Service from '@/views/tslModel/widget/service.vue'
 
 defineProps(['typeId', 'productId'])
+const { t } = useI18n()
 const radioGroup = ref('property')
 </script>
 
@@ -11,15 +13,15 @@ const radioGroup = ref('property')
   <div class="flex flex-col gap-20px">
     <el-radio-group v-model="radioGroup">
       <el-radio-button value="property">
-        属性列表
+        {{ t('tsl.property_list') }}
       </el-radio-button>
       <el-radio-button value="service">
-        服务列表
+        {{ t('tsl.service_list') }}
       </el-radio-button>
     </el-radio-group>
     <div class="flex flex-col">
       <div class="pb-10px">
-        标准物模型
+        {{ t('tsl.standard_model') }}
       </div>
       <Property v-if="radioGroup === 'property'" :key="radioGroup + typeId" :show-edite="!productId" :type-id="typeId" />
       <Service v-if="radioGroup === 'service'" :key="radioGroup + typeId" :show-edite="!productId" :type-id="typeId" />
@@ -27,7 +29,7 @@ const radioGroup = ref('property')
 
     <div v-if="productId" class="flex flex-col">
       <div class="pb-10px">
-        自定义物模型
+        {{ t('tsl.custom_model') }}
       </div>
       <Property
         v-if="radioGroup === 'property'" :key="radioGroup + typeId + productId"

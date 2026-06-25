@@ -1,23 +1,25 @@
 <script setup>
+import { useI18n } from 'vue-i18n'
 import { Lightning } from '@element-plus/icons-vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { onMounted, ref, watch } from 'vue'
 import { getConnectionTypeEnum, getDriverTypeEnum } from '@/api/dict'
 import { addDriver, deleteDriver, getDriverList, updateDriver } from '@/api/driver'
 
+const { t } = useI18n()
 const driverList = ref([])
 const dialogVisible = ref(false)
 const dialogTitle = ref('')
 const form = ref({})
 const formRules = ref({
   name: [
-    { required: true, message: '请输入驱动名称', trigger: 'blur' },
+    { required: true, message: t('auto.driver_index_19355234'), trigger: 'blur' },
   ],
   type: [
-    { required: true, message: '请选择驱动类型', trigger: 'change' },
+    { required: true, message: t('auto.driver_index_5b734c4d'), trigger: 'change' },
   ],
   connectionType: [
-    { required: true, message: '请选择连接类型', trigger: 'change' },
+    { required: true, message: t('auto.driver_index_3854d851'), trigger: 'change' },
   ],
 })
 const driverTypeOptions = ref([])
@@ -28,18 +30,18 @@ function fetchList() {
   getDriverList().then((res) => {
     driverList.value = res.data
   }).catch(() => {
-    ElMessage.error('获取驱动列表失败')
+    ElMessage.error(t('auto.driver_index_d132a3f0'))
   })
 }
 
 function handleAdd() {
-  dialogTitle.value = '新增驱动'
+  dialogTitle.value = t('auto.driver_index_58d6a32e')
   form.value = { status: 1, connectionType: 'DEFAULT', port: null }
   dialogVisible.value = true
 }
 
 function handleEdit(row) {
-  dialogTitle.value = '编辑驱动'
+  dialogTitle.value = t('auto.driver_index_c64a1c74')
   form.value = { ...row, port: row.port || null }
   dialogVisible.value = true
 }
@@ -51,48 +53,48 @@ function handleSave() {
 
     // 验证端口号
     if (form.value.port && (form.value.port < 1 || form.value.port > 65535)) {
-      ElMessage.error('端口号必须在1-65535之间')
+      ElMessage.error(t('auto.driver_index_040f01f9'))
       return
     }
 
     // 验证TCP/UDP驱动必须配置端口
     if ((form.value.type === 'TCP' || form.value.type === 'UDP') && !form.value.port) {
-      ElMessage.error('TCP/UDP驱动必须配置端口')
+      ElMessage.error(t('auto.driver_index_1017fe6e'))
       return
     }
 
     if (form.value.driverId) {
       updateDriver(form.value).then(() => {
-        ElMessage.success('修改成功')
+        ElMessage.success(t('auto.driver_index_69be6717'))
         dialogVisible.value = false
         form.value = {}
         fetchList()
       }).catch(() => {
-        ElMessage.error('修改失败')
+        ElMessage.error(t('auto.driver_index_5badb3ba'))
       })
     }
     else {
       addDriver(form.value).then(() => {
-        ElMessage.success('新增成功')
+        ElMessage.success(t('auto.driver_index_a5bfd70d'))
         dialogVisible.value = false
         form.value = {}
         fetchList()
       }).catch(() => {
-        ElMessage.error('新增失败')
+        ElMessage.error(t('auto.driver_index_bac372f6'))
       })
     }
   })
 }
 
 function handleDelete(row) {
-  ElMessageBox.confirm('确定要删除该驱动吗？', '提示', {
+  ElMessageBox.confirm(t('auto.driver_index_c8979982'), t('auto.driver_index_02d9819d'), {
     type: 'warning',
   }).then(() => {
     deleteDriver(row.driverId).then(() => {
-      ElMessage.success('删除成功')
+      ElMessage.success(t('auto.driver_index_0007d170'))
       fetchList()
     }).catch(() => {
-      ElMessage.error('删除失败')
+      ElMessage.error(t('auto.driver_index_acf0664a'))
     })
   })
 }
@@ -120,8 +122,7 @@ watch(dialogVisible, (visible) => {
     form.value = {}
     formRef.value?.clearValidate()
   }
-})
-</script>
+})</script>
 
 <template>
   <div class="page-container">
@@ -132,10 +133,10 @@ watch(dialogVisible, (visible) => {
           <el-icon :size="24" class="title-icon">
             <Lightning />
           </el-icon>
-          驱动管理
+          {{ t('auto.driver_index_a7f61b5e') }}
         </h1>
         <p class="page-subtitle">
-          管理与配置设备通信驱动
+          {{ t('auto.driver_index_9ffc10bc') }}
         </p>
       </div>
     </div>
@@ -144,7 +145,7 @@ watch(dialogVisible, (visible) => {
     <div class="action-bar">
       <el-button type="primary" @click="handleAdd">
         <span class="btn-icon">+</span>
-        新增驱动
+        {{ t('auto.driver_index_58d6a32e') }}
       </el-button>
     </div>
 
@@ -152,35 +153,35 @@ watch(dialogVisible, (visible) => {
     <div class="table-wrapper glass-card">
       <el-table :data="driverList" style="width: 100%">
         <el-table-column prop="driverId" label="ID" width="80" />
-        <el-table-column prop="name" label="驱动名称" />
-        <el-table-column prop="type" label="类型">
+        <el-table-column prop="name" :label="t('auto.driver_index_6a0c8d88')" />
+        <el-table-column prop="type" :label="t('auto.driver_index_226b0912')">
           <template #default="{ row }">
             <el-tag :type="row.type === 'TCP' ? 'primary' : row.type === 'UDP' ? 'success' : 'warning'">
               {{ row.type }}
             </el-tag>
           </template>
         </el-table-column>
-        <el-table-column prop="connectionType" label="连接类型" />
-        <el-table-column prop="port" label="端口" width="100">
+        <el-table-column prop="connectionType" :label="t('auto.driver_index_d9e99fc2')" />
+        <el-table-column prop="port" :label="t('auto.driver_index_c76cfefe')" width="100">
           <template #default="{ row }">
             {{ row.port || '-' }}
           </template>
         </el-table-column>
-        <el-table-column prop="description" label="描述" />
-        <el-table-column prop="status" label="状态" width="100">
+        <el-table-column prop="description" :label="t('auto.driver_index_3bdd08ad')" />
+        <el-table-column prop="status" :label="t('auto.driver_index_3fea7ca7')" width="100">
           <template #default="{ row }">
             <el-tag :type="row.status === 1 ? 'success' : 'info'">
-              {{ row.status === 1 ? '启用' : '禁用' }}
+              {{ row.status === 1 ? t('auto.driver_index_7854b52a') : t('auto.driver_index_710ad08b') }}
             </el-tag>
           </template>
         </el-table-column>
-        <el-table-column label="操作" width="200">
+        <el-table-column :label="t('auto.driver_index_2b6bc0f2')" width="200">
           <template #default="{ row }">
             <el-button size="small" link type="primary" @click="handleEdit(row)">
-              编辑
+              {{ t('auto.driver_index_95b351c8') }}
             </el-button>
             <el-button size="small" link type="danger" @click="handleDelete(row)">
-              删除
+              {{ t('auto.driver_index_2f4aaddd') }}
             </el-button>
           </template>
         </el-table-column>
@@ -190,47 +191,47 @@ watch(dialogVisible, (visible) => {
     <!-- 编辑对话框 -->
     <el-dialog v-model="dialogVisible" :title="dialogTitle" width="600px">
       <el-form ref="formRef" :model="form" :rules="formRules" label-width="100px">
-        <el-form-item label="驱动名称" prop="name">
-          <el-input v-model="form.name" placeholder="请输入驱动名称" />
+        <el-form-item :label="t('auto.driver_index_6a0c8d88')" prop="name">
+          <el-input v-model="form.name" :placeholder="t('auto.driver_index_19355234')" />
         </el-form-item>
-        <el-form-item label="驱动类型" prop="type">
-          <el-select v-model="form.type" placeholder="请选择驱动类型" style="width: 100%">
+        <el-form-item :label="t('auto.driver_index_f985a467')" prop="type">
+          <el-select v-model="form.type" :placeholder="t('auto.driver_index_5b734c4d')" style="width: 100%">
             <el-option v-for="item in driverTypeOptions" :key="item.code" :label="item.desc" :value="item.code" />
           </el-select>
         </el-form-item>
-        <el-form-item label="连接类型" prop="connectionType">
-          <el-select v-model="form.connectionType" placeholder="请选择连接类型" style="width: 100%">
+        <el-form-item :label="t('auto.driver_index_d9e99fc2')" prop="connectionType">
+          <el-select v-model="form.connectionType" :placeholder="t('auto.driver_index_3854d851')" style="width: 100%">
             <el-option v-for="item in connectionTypeOptions" :key="item.code" :label="item.desc" :value="item.code" />
           </el-select>
         </el-form-item>
-        <el-form-item v-if="form.type === 'TCP' || form.type === 'UDP'" label="端口" prop="port">
-          <el-input-number v-model="form.port" :min="1" :max="65535" placeholder="请输入端口号" style="width: 100%" />
+        <el-form-item v-if="form.type === 'TCP' || form.type === 'UDP'" :label="t('auto.driver_index_c76cfefe')" prop="port">
+          <el-input-number v-model="form.port" :min="1" :max="65535" :placeholder="t('auto.driver_index_8d0fa2ee')" style="width: 100%" />
           <div class="form-tip">
-            TCP/UDP驱动需要配置监听端口（1-65535）
+            {{ t('auto.driver_tcp_udp_port_tip') }}
           </div>
         </el-form-item>
-        <el-form-item label="描述">
-          <el-input v-model="form.description" type="textarea" :rows="3" placeholder="请输入驱动描述" />
+        <el-form-item :label="t('auto.driver_index_3bdd08ad')">
+          <el-input v-model="form.description" type="textarea" :rows="3" :placeholder="t('auto.driver_index_a83eff2e')" />
         </el-form-item>
-        <el-form-item v-if="form.connectionType === 'CUSTOM'" label="JAR路径">
-          <el-input v-model="form.jarPath" placeholder="请输入JAR文件路径" />
+        <el-form-item v-if="form.connectionType === 'CUSTOM'" :label="t('auto.driver_index_60fa7788')">
+          <el-input v-model="form.jarPath" :placeholder="t('auto.driver_index_e57a3204')" />
         </el-form-item>
-        <el-form-item label="状态">
+        <el-form-item :label="t('auto.driver_index_3fea7ca7')">
           <el-switch
             v-model="form.status"
             :active-value="1"
             :inactive-value="0"
-            active-text="启用"
-            inactive-text="禁用"
+            :active-text="t('auto.driver_index_7854b52a')"
+            :inactive-text="t('auto.driver_index_710ad08b')"
           />
         </el-form-item>
       </el-form>
       <template #footer>
         <el-button @click="dialogVisible = false">
-          取消
+          {{ t('auto.driver_index_625fb26b') }}
         </el-button>
         <el-button type="primary" @click="handleSave">
-          保存
+          {{ t('auto.driver_index_be5fbbe3') }}
         </el-button>
       </template>
     </el-dialog>

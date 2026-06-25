@@ -1,4 +1,5 @@
 <script setup>
+import { useI18n } from 'vue-i18n'
 import { Bell, Check, Close, RefreshRight, View } from '@element-plus/icons-vue'
 import { ElMessage } from 'element-plus'
 import { computed, onMounted, ref } from 'vue'
@@ -12,6 +13,7 @@ import IotTable from '@/components/IotTable.vue'
 import PageHeader from '@/components/PageHeader.vue'
 import { useTable } from '@/composables/useTable.js'
 
+const { t } = useI18n()
 // 统计数据
 const statistics = ref({
   activeCount: 0,
@@ -29,43 +31,43 @@ const statusOpt = ref([])
 const column = [
   {
     prop: 'severity',
-    label: '严重程度',
+    label: t('auto.alarm_index_08fe5024'),
     width: 100,
     align: 'center',
     slot: 'severity',
   },
   {
     prop: 'alarmName',
-    label: '告警名称',
+    label: t('auto.alarm_index_b4450f15'),
     minWidth: 180,
   },
   {
     prop: 'alarmType',
-    label: '告警类型',
+    label: t('auto.alarm_index_c62e34c5'),
     width: 120,
   },
   {
     prop: 'deviceName',
-    label: '设备',
+    label: t('auto.alarm_index_f55f1736'),
     width: 140,
   },
   {
     prop: 'message',
-    label: '告警消息',
+    label: t('auto.alarm_index_ed1cfa58'),
     minWidth: 200,
     slot: 'message',
     showOverflowTooltip: true,
   },
   {
     prop: 'status',
-    label: '状态',
+    label: t('auto.alarm_index_3fea7ca7'),
     width: 90,
     align: 'center',
     slot: 'status',
   },
   {
     prop: 'startTs',
-    label: '开始时间',
+    label: t('auto.alarm_index_592c5958'),
     width: 160,
     slot: 'startTs',
   },
@@ -73,7 +75,7 @@ const column = [
     prop: 'cz',
     slot: 'cz',
     width: 180,
-    label: '操作',
+    label: t('auto.alarm_index_2b6bc0f2'),
   },
 ]
 
@@ -102,7 +104,7 @@ async function loadStatistics() {
     statusOpt.value = data.statusOptions || []
   }
   catch (e) {
-    console.error('加载统计失败', e)
+    console.error(t('auto.alarm_index_8522b582'), e)
   }
 }
 
@@ -115,15 +117,15 @@ async function refreshAlarmView() {
 async function handleAcknowledge(row) {
   try {
     await alarmAcknowledgeApi(row.id)
-    ElMessage.success('告警已确认')
+    ElMessage.success(t('auto.alarm_index_082079d7'))
     if (currentAlarm.value?.id === row.id) {
       currentAlarm.value = { ...currentAlarm.value, status: 'ACKNOWLEDGED' }
     }
     await refreshAlarmView()
   }
   catch (e) {
-    console.error('确认失败', e)
-    ElMessage.error('确认失败')
+    console.error(t('auto.alarm_index_c92aaa37'), e)
+    ElMessage.error(t('auto.alarm_index_c92aaa37'))
   }
 }
 
@@ -131,7 +133,7 @@ async function handleAcknowledge(row) {
 async function handleClear(row) {
   try {
     await alarmClearApi(row.id)
-    ElMessage.success('告警已清除')
+    ElMessage.success(t('auto.alarm_index_3ebbc5f7'))
     if (currentAlarm.value?.id === row.id) {
       currentAlarm.value = { ...currentAlarm.value, status: 'CLEARED' }
       detailVisible.value = false
@@ -139,8 +141,8 @@ async function handleClear(row) {
     await refreshAlarmView()
   }
   catch (e) {
-    console.error('清除失败', e)
-    ElMessage.error('清除失败')
+    console.error(t('auto.alarm_index_cd6849ea'), e)
+    ElMessage.error(t('auto.alarm_index_cd6849ea'))
   }
 }
 
@@ -167,10 +169,10 @@ function handleDetail(row) {
 // 获取严重程度标签
 function getSeverityTag(severity) {
   const map = {
-    CRITICAL: { type: 'danger', text: '严重', color: '#dc2626' },
-    MAJOR: { type: 'warning', text: '主要', color: '#ea580c' },
-    MINOR: { type: 'info', text: '次要', color: '#f59e0b' },
-    WARNING: { type: '', text: '警告', color: '#3b82f6' },
+    CRITICAL: { type: 'danger', text: t('auto.alarm_index_e2e27a87'), color: '#dc2626' },
+    MAJOR: { type: 'warning', text: t('auto.alarm_index_00dc03d7'), color: '#ea580c' },
+    MINOR: { type: 'info', text: t('auto.alarm_index_bde77082'), color: '#f59e0b' },
+    WARNING: { type: '', text: t('auto.alarm_index_900c70fa'), color: '#3b82f6' },
   }
   return map[severity] || { type: '', text: severity, color: '#6b7280' }
 }
@@ -178,9 +180,9 @@ function getSeverityTag(severity) {
 // 获取状态标签
 function getStatusTag(status) {
   const map = {
-    ACTIVE: { type: 'danger', text: '活动' },
-    CLEARED: { type: 'success', text: '已清除' },
-    ACKNOWLEDGED: { type: 'warning', text: '已确认' },
+    ACTIVE: { type: 'danger', text: t('auto.alarm_index_36c6f572') },
+    CLEARED: { type: 'success', text: t('auto.alarm_index_59462c81') },
+    ACKNOWLEDGED: { type: 'warning', text: t('auto.alarm_index_4113e726') },
   }
   return map[status] || { type: '', text: status }
 }
@@ -221,41 +223,41 @@ const detailSections = computed(() => {
 
   // 基本信息
   sections.push({
-    title: '基本信息',
+    title: t('auto.alarm_index_9e5ffa06'),
     items: [
-      { label: '告警名称', value: alarm.alarmName },
-      { label: '告警类型', value: alarm.alarmType },
-      { label: '严重程度', value: getSeverityTag(alarm.severity).text, tag: true, tagType: getSeverityTag(alarm.severity).type },
-      { label: '状态', value: getStatusTag(alarm.status).text, tag: true, tagType: getStatusTag(alarm.status).type },
+      { label: t('auto.alarm_index_b4450f15'), value: alarm.alarmName },
+      { label: t('auto.alarm_index_c62e34c5'), value: alarm.alarmType },
+      { label: t('auto.alarm_index_08fe5024'), value: getSeverityTag(alarm.severity).text, tag: true, tagType: getSeverityTag(alarm.severity).type },
+      { label: t('auto.alarm_index_3fea7ca7'), value: getStatusTag(alarm.status).text, tag: true, tagType: getStatusTag(alarm.status).type },
     ],
   })
 
   // 设备信息
   sections.push({
-    title: '设备信息',
+    title: t('auto.alarm_index_b967fdef'),
     items: [
-      { label: '设备名称', value: alarm.deviceName },
-      { label: '设备Key', value: alarm.deviceKey },
+      { label: t('auto.alarm_index_9f694f60'), value: alarm.deviceName },
+      { label: t('auto.alarm_index_89be6dad'), value: alarm.deviceKey },
     ],
   })
 
   // 时间信息
   sections.push({
-    title: '时间信息',
+    title: t('auto.alarm_index_a209df54'),
     items: [
-      { label: '开始时间', value: formatTime(alarm.startTs) },
-      { label: '结束时间', value: formatTime(alarm.endTs) },
-      { label: '清除时间', value: formatTime(alarm.clearTs) },
-      { label: '清除人', value: alarm.clearBy || '-' },
+      { label: t('auto.alarm_index_592c5958'), value: formatTime(alarm.startTs) },
+      { label: t('auto.alarm_index_f782779e'), value: formatTime(alarm.endTs) },
+      { label: t('auto.alarm_index_6441d8ca'), value: formatTime(alarm.clearTs) },
+      { label: t('auto.alarm_index_e1d7b74b'), value: alarm.clearBy || '-' },
     ],
   })
 
   // 告警消息
   const messageContent = alarm.message && alarm.message.trim() ? alarm.message : '-'
   sections.push({
-    title: '告警消息',
+    title: t('auto.alarm_index_ed1cfa58'),
     items: [
-      { label: '消息内容', value: messageContent, full: true },
+      { label: t('auto.alarm_index_b87b7756'), value: messageContent, full: true },
     ],
   })
 
@@ -266,7 +268,7 @@ const detailSections = computed(() => {
       value: typeof value === 'object' ? JSON.stringify(value, null, 2) : String(value),
     }))
     sections.push({
-      title: '触发数据',
+      title: t('auto.alarm_index_f1b82d02'),
       items: detailItems,
     })
   }
@@ -277,15 +279,14 @@ const detailSections = computed(() => {
 onMounted(() => {
   updatePage()
   loadStatistics()
-})
-</script>
+})</script>
 
 <template>
   <div class="alarm-page">
     <!-- 页面标题 -->
     <PageHeader
-      title="告警管理"
-      subtitle="设备告警监控与处理"
+      :title="t('auto.alarm_index_12dae261')"
+      :subtitle="t('auto.alarm_index_cc629988')"
       :icon="Bell"
     >
       <template #actions>
@@ -295,27 +296,27 @@ onMounted(() => {
               {{ statistics.activeCount }}
             </div>
             <div class="stat-label">
-              活动告警
+              {{ t('auto.alarm_index_b150b553') }}
             </div>
           </div>
         </div>
       </template>
     </PageHeader>
 
-    <!-- 搜索栏 -->
+    <!-- {{ t('common.search') }}栏 -->
     <div class="search-bar glass-card">
       <el-form :inline="false" class="search-form">
         <div class="form-row">
-          <el-form-item label="设备Key">
-            <el-input v-model="params.deviceKey" clearable placeholder="请输入设备Key" @keyup.enter="onSearch" />
+          <el-form-item :label="t('auto.alarm_index_89be6dad')">
+            <el-input v-model="params.deviceKey" clearable :placeholder="t('auto.alarm_index_437e02fb')" @keyup.enter="onSearch" />
           </el-form-item>
 
-          <el-form-item label="告警类型">
-            <el-input v-model="params.alarmType" clearable placeholder="请输入告警类型" @keyup.enter="onSearch" />
+          <el-form-item :label="t('auto.alarm_index_c62e34c5')">
+            <el-input v-model="params.alarmType" clearable :placeholder="t('auto.alarm_index_c0e0f331')" @keyup.enter="onSearch" />
           </el-form-item>
 
-          <el-form-item label="严重程度">
-            <el-select v-model="params.severity" clearable placeholder="全部">
+          <el-form-item :label="t('auto.alarm_index_08fe5024')">
+            <el-select v-model="params.severity" clearable :placeholder="t('auto.alarm_index_a8b0c204')">
               <el-option
                 v-for="item in severityOpt"
                 :key="item.value"
@@ -325,8 +326,8 @@ onMounted(() => {
             </el-select>
           </el-form-item>
 
-          <el-form-item label="状态">
-            <el-select v-model="params.status" clearable placeholder="全部">
+          <el-form-item :label="t('auto.alarm_index_3fea7ca7')">
+            <el-select v-model="params.status" clearable :placeholder="t('auto.alarm_index_a8b0c204')">
               <el-option
                 v-for="item in statusOpt"
                 :key="item.value"
@@ -340,10 +341,10 @@ onMounted(() => {
         <div class="form-actions">
           <el-button type="primary" @click="onSearch">
             <span class="btn-icon">⌕</span>
-            搜索
+            {{ t('common.search') }}
           </el-button>
           <el-button :icon="RefreshRight" @click="onReset">
-            重置
+            {{ t('common.reset') }}
           </el-button>
         </div>
       </el-form>
@@ -382,7 +383,7 @@ onMounted(() => {
         <template #cz="{ row }">
           <el-button type="primary" link @click="handleDetail(row)">
             <el-icon><View /></el-icon>
-            详情
+            {{ t('auto.alarm_index_f26225bd') }}
           </el-button>
           <el-button
             v-if="row.status === 'ACTIVE'"
@@ -391,7 +392,7 @@ onMounted(() => {
             @click="handleAcknowledge(row)"
           >
             <el-icon><Check /></el-icon>
-            确认
+            {{ t('auto.alarm_index_e83a256e') }}
           </el-button>
           <el-button
             v-if="row.status !== 'CLEARED'"
@@ -400,7 +401,7 @@ onMounted(() => {
             @click="handleClear(row)"
           >
             <el-icon><Close /></el-icon>
-            清除
+            {{ t('auto.alarm_index_4403fca0') }}
           </el-button>
         </template>
       </IotTable>
@@ -409,7 +410,7 @@ onMounted(() => {
     <!-- 告警详情弹窗 -->
     <el-dialog
       v-model="detailVisible"
-      title="告警详情"
+      :title="t('auto.alarm_index_67837fb1')"
       width="640px"
       class="alarm-detail-dialog"
     >
@@ -448,7 +449,7 @@ onMounted(() => {
             @click="handleAcknowledgeInDetail"
           >
             <el-icon><Check /></el-icon>
-            确认告警
+            {{ t('auto.alarm_index_a7c8e9c3') }}
           </el-button>
           <el-button
             v-if="currentAlarm?.status !== 'CLEARED'"
@@ -456,10 +457,10 @@ onMounted(() => {
             @click="handleClearInDetail"
           >
             <el-icon><Close /></el-icon>
-            清除告警
+            {{ t('auto.alarm_index_b38faf05') }}
           </el-button>
           <el-button @click="detailVisible = false">
-            关闭
+            {{ t('auto.alarm_index_b15d9127') }}
           </el-button>
         </div>
       </template>

@@ -1,15 +1,17 @@
 <script setup>
+import { useI18n } from 'vue-i18n'
 import { ElMessage } from 'element-plus'
 import { computed, ref, watch } from 'vue'
 import { pushConfigAddApi, pushConfigEditApi } from '@/api/index.js'
 import { useForm } from '@/composables/useForm.js'
 
+const { t } = useI18n()
 const props = defineProps(['datas', 'modelValue', 'title'])
 const emits = defineEmits(['update', 'update:modelValue'])
 
 const typeOpt = [
-  { label: 'HTTP回调', value: 'HTTP' },
-  { label: 'MQTT转发', value: 'MQTT' },
+  { label: t('auto.push_config_editdia_f83e315e'), value: 'HTTP' },
+  { label: t('auto.push_config_editdia_18bd3062'), value: 'MQTT' },
 ]
 
 const methodOpt = [
@@ -19,9 +21,9 @@ const methodOpt = [
 ]
 
 const qosOpt = [
-  { label: '0 - 最多一次', value: 0 },
-  { label: '1 - 至少一次', value: 1 },
-  { label: '2 - 恰好一次', value: 2 },
+  { label: t('auto.push_config_editdia_c9f610e2'), value: 0 },
+  { label: t('auto.push_config_editdia_4415944c'), value: 1 },
+  { label: t('auto.push_config_editdia_7275bdac'), value: 2 },
 ]
 
 const blankToEmpty = value => `${value ?? ''}`.trim()
@@ -44,11 +46,11 @@ function validateHttpUrl(_rule, value, callback) {
     return
   }
   if (!url) {
-    callback(new Error('请求URL不能为空'))
+    callback(new Error(t('auto.push_config_widget_editdia_97e482eb')))
     return
   }
   if (!/^https?:\/\//i.test(url)) {
-    callback(new Error('请求URL必须以 http:// 或 https:// 开头'))
+    callback(new Error(t('auto.push_config_widget_editdia_adf864c2')))
     return
   }
   callback()
@@ -61,11 +63,11 @@ function validateMqttBroker(_rule, value, callback) {
     return
   }
   if (!broker) {
-    callback(new Error('Broker地址不能为空'))
+    callback(new Error(t('auto.push_config_widget_editdia_b0d6f162')))
     return
   }
   if (!/^(?:tcp|ssl|ws|wss):\/\//i.test(broker)) {
-    callback(new Error('Broker地址必须以 tcp://、ssl://、ws:// 或 wss:// 开头'))
+    callback(new Error(t('auto.push_config_widget_editdia_2b1664c9')))
     return
   }
   callback()
@@ -78,24 +80,24 @@ function validateMqttTopic(_rule, value, callback) {
     return
   }
   if (!topic) {
-    callback(new Error('目标Topic不能为空'))
+    callback(new Error(t('auto.push_config_widget_editdia_adb2781e')))
     return
   }
   if (topic.includes('#') || topic.includes('+')) {
-    callback(new Error('发布Topic不能包含通配符 # 或 +'))
+    callback(new Error(t('auto.push_config_widget_editdia_91531ae7')))
     return
   }
   callback()
 }
 
 const rules = ref({
-  name: [{ required: true, message: '配置名称不能为空', trigger: 'blur' }],
-  type: [{ required: true, message: '配置类型不能为空', trigger: 'change' }],
+  name: [{ required: true, message: t('auto.push_config_editdia_bfd057f2'), trigger: 'blur' }],
+  type: [{ required: true, message: t('auto.push_config_editdia_2ca68f45'), trigger: 'change' }],
   httpUrl: [{ validator: validateHttpUrl, trigger: 'blur' }],
-  httpMethod: [{ required: true, message: '请求方法不能为空', trigger: 'change' }],
+  httpMethod: [{ required: true, message: t('auto.push_config_editdia_8b069eb0'), trigger: 'change' }],
   mqttBroker: [{ validator: validateMqttBroker, trigger: 'blur' }],
   mqttTopic: [{ validator: validateMqttTopic, trigger: 'blur' }],
-  mqttQos: [{ required: true, message: 'QoS等级不能为空', trigger: 'change' }],
+  mqttQos: [{ required: true, message: t('auto.push_config_editdia_8ce583ba'), trigger: 'change' }],
 })
 
 // HTTP Headers 数组
@@ -130,7 +132,7 @@ function normalizeFormBeforeSubmit() {
   if (isHttp.value) {
     const headers = normalizeKeyValueList(httpHeaders.value)
     if (!headers) {
-      ElMessage.warning('请求头的 Key 和 Value 需要同时填写')
+      ElMessage.warning(t('auto.push_config_editdia_90b78fd7'))
       return false
     }
     Object.assign(submitData, {
@@ -154,7 +156,7 @@ function normalizeFormBeforeSubmit() {
   if (isMqtt.value) {
     const options = normalizeKeyValueList(mqttOptions.value)
     if (!options) {
-      ElMessage.warning('MQTT扩展配置的 Key 和 Value 需要同时填写')
+      ElMessage.warning(t('auto.push_config_editdia_f1825b7d'))
       return false
     }
     Object.assign(submitData, {
@@ -288,13 +290,12 @@ watch(() => props.datas, (val) => {
     httpHeaders.value = []
     mqttOptions.value = []
   }
-}, { immediate: true })
-</script>
+}, { immediate: true })</script>
 
 <template>
   <el-dialog
     :model-value="modelValue"
-    :title="datas?.id ? '编辑推送配置' : '新增推送配置'"
+    :title="t('auto.push_config_editdia_6912a8b1')"
     width="700px"
     @update:model-value="$emit('update:modelValue', $event)"
   >
@@ -305,14 +306,14 @@ watch(() => props.datas, (val) => {
       label-width="100px"
     >
       <!-- 基础信息 -->
-      <el-form-item label="配置名称" prop="name">
-        <el-input v-model="form.name" clearable placeholder="请输入配置名称" />
+      <el-form-item :label="t('auto.push_config_editdia_4fcad1c9')" prop="name">
+        <el-input v-model="form.name" clearable :placeholder="t('auto.push_config_editdia_b984df04')" />
       </el-form-item>
 
-      <el-form-item label="配置类型" prop="type">
+      <el-form-item :label="t('auto.push_config_editdia_6d95c8c1')" prop="type">
         <el-select
           v-model="form.type"
-          placeholder="请选择配置类型"
+          :placeholder="t('auto.push_config_editdia_6a777f85')"
           style="width: 100%"
           :disabled="!!datas?.id"
           @change="onTypeChange"
@@ -326,26 +327,26 @@ watch(() => props.datas, (val) => {
         </el-select>
       </el-form-item>
 
-      <el-form-item label="描述" prop="description">
+      <el-form-item :label="t('auto.push_config_editdia_3bdd08ad')" prop="description">
         <el-input
           v-model="form.description"
           type="textarea"
           :rows="2"
-          placeholder="请输入描述"
+          :placeholder="t('auto.push_config_editdia_11956a43')"
         />
       </el-form-item>
 
-      <el-form-item label="是否启用" prop="isEnabled">
+      <el-form-item :label="t('auto.push_config_editdia_53c3dd59')" prop="isEnabled">
         <el-switch v-model="form.isEnabled" />
       </el-form-item>
 
       <el-divider content-position="left">
-        {{ isHttp ? 'HTTP 配置' : 'MQTT 配置' }}
+        {{ isHttp ? t('auto.push_config_widget_editdia_a69984b2') : t('auto.push_config_widget_editdia_a5601dd4') }}
       </el-divider>
 
       <!-- HTTP 配置 -->
       <template v-if="isHttp">
-        <el-form-item label="请求URL" prop="httpUrl">
+        <el-form-item :label="t('auto.push_config_editdia_a09a257e')" prop="httpUrl">
           <el-input
             v-model="form.httpUrl"
             clearable
@@ -353,7 +354,7 @@ watch(() => props.datas, (val) => {
           />
         </el-form-item>
 
-        <el-form-item label="请求方法" prop="httpMethod">
+        <el-form-item :label="t('auto.push_config_editdia_ec49329b')" prop="httpMethod">
           <el-select v-model="form.httpMethod" style="width: 100%">
             <el-option
               v-for="item in methodOpt"
@@ -364,22 +365,22 @@ watch(() => props.datas, (val) => {
           </el-select>
         </el-form-item>
 
-        <el-form-item label="请求头" prop="httpHeaders">
+        <el-form-item :label="t('auto.push_config_editdia_be47bd27')" prop="httpHeaders">
           <div class="kv-list">
             <div v-for="(header, index) in httpHeaders" :key="index" class="kv-item">
               <el-input v-model="header.key" placeholder="Key" style="width: 150px" />
               <el-input v-model="header.value" placeholder="Value" style="flex: 1" />
               <el-button type="danger" link @click="removeHeader(index)">
-                删除
+                {{ t('auto.push_config_editdia_2f4aaddd') }}
               </el-button>
             </div>
             <el-button type="primary" link @click="addHeader">
-              + 添加请求头
+              {{ t('auto.push_config_editdia_802d1c71') }}
             </el-button>
           </div>
         </el-form-item>
 
-        <el-form-item label="超时时间" prop="httpTimeout">
+        <el-form-item :label="t('auto.push_config_editdia_56071a4f')" prop="httpTimeout">
           <el-input-number
             v-model="form.httpTimeout"
             :min="1000"
@@ -388,31 +389,31 @@ watch(() => props.datas, (val) => {
             style="width: 100%"
           />
           <div class="form-tip">
-            单位：毫秒
+            {{ t('auto.push_config_editdia_fbcfb5a6') }}
           </div>
         </el-form-item>
 
-        <el-form-item label="HMAC签名" prop="httpSignEnabled">
+        <el-form-item :label="t('auto.push_config_editdia_1e95f79b')" prop="httpSignEnabled">
           <el-switch v-model="form.httpSignEnabled" />
           <div class="form-tip">
-            开启后推送会自动携带 X-Simple-IoT-Timestamp / Signature / Event 请求头
+            {{ t('auto.push_config_signature_tip') }}
           </div>
         </el-form-item>
 
-        <el-form-item v-if="form.httpSignEnabled" label="签名密钥" prop="httpSignSecret">
+        <el-form-item v-if="form.httpSignEnabled" :label="t('auto.push_config_editdia_95040dbe')" prop="httpSignSecret">
           <el-input
             v-model="form.httpSignSecret"
             type="password"
             show-password
             clearable
-            placeholder="请输入 Webhook 签名密钥"
+            :placeholder="t('auto.push_config_editdia_cf548065')"
           />
         </el-form-item>
       </template>
 
       <!-- MQTT 配置 -->
       <template v-if="isMqtt">
-        <el-form-item label="Broker地址" prop="mqttBroker">
+        <el-form-item :label="t('auto.push_config_editdia_5603e263')" prop="mqttBroker">
           <el-input
             v-model="form.mqttBroker"
             clearable
@@ -420,35 +421,35 @@ watch(() => props.datas, (val) => {
           />
         </el-form-item>
 
-        <el-form-item label="用户名" prop="mqttUsername">
-          <el-input v-model="form.mqttUsername" clearable placeholder="MQTT用户名" />
+        <el-form-item :label="t('auto.push_config_editdia_819767ad')" prop="mqttUsername">
+          <el-input v-model="form.mqttUsername" clearable :placeholder="t('auto.push_config_editdia_5256a1d3')" />
         </el-form-item>
 
-        <el-form-item label="密码" prop="mqttPassword">
+        <el-form-item :label="t('auto.push_config_editdia_a8105204')" prop="mqttPassword">
           <el-input
             v-model="form.mqttPassword"
             type="password"
             show-password
-            placeholder="MQTT密码"
+            :placeholder="t('auto.push_config_editdia_7906c52e')"
           />
         </el-form-item>
 
-        <el-form-item label="客户端ID" prop="mqttClientId">
-          <el-input v-model="form.mqttClientId" clearable placeholder="留空自动生成" />
+        <el-form-item :label="t('auto.push_config_editdia_99593f76')" prop="mqttClientId">
+          <el-input v-model="form.mqttClientId" clearable :placeholder="t('auto.push_config_editdia_2461b947')" />
         </el-form-item>
 
-        <el-form-item label="目标Topic" prop="mqttTopic">
+        <el-form-item :label="t('auto.push_config_editdia_ab03c5d5')" prop="mqttTopic">
           <el-input
             v-model="form.mqttTopic"
             clearable
             placeholder="device/{deviceKey}/forward"
           />
           <div class="form-tip">
-            支持变量: {deviceKey}, {productId}, {deviceName}
+            {{ t('auto.push_config_variables_tip') }}
           </div>
         </el-form-item>
 
-        <el-form-item label="QoS等级" prop="mqttQos">
+        <el-form-item :label="t('auto.push_config_editdia_410d2d45')" prop="mqttQos">
           <el-select v-model="form.mqttQos" style="width: 100%">
             <el-option
               v-for="item in qosOpt"
@@ -459,11 +460,11 @@ watch(() => props.datas, (val) => {
           </el-select>
         </el-form-item>
 
-        <el-form-item label="保留消息" prop="mqttRetain">
+        <el-form-item :label="t('auto.push_config_editdia_480ed2cd')" prop="mqttRetain">
           <el-switch v-model="form.mqttRetain" />
         </el-form-item>
 
-        <el-form-item label="心跳间隔" prop="mqttKeepAlive">
+        <el-form-item :label="t('auto.push_config_editdia_9901e9b6')" prop="mqttKeepAlive">
           <el-input-number
             v-model="form.mqttKeepAlive"
             :min="10"
@@ -471,25 +472,25 @@ watch(() => props.datas, (val) => {
             style="width: 100%"
           />
           <div class="form-tip">
-            单位：秒
+            {{ t('auto.push_config_editdia_8b864080') }}
           </div>
         </el-form-item>
 
-        <el-form-item label="清除会话" prop="mqttCleanSession">
+        <el-form-item :label="t('auto.push_config_editdia_8efb748a')" prop="mqttCleanSession">
           <el-switch v-model="form.mqttCleanSession" />
         </el-form-item>
 
-        <el-form-item label="扩展配置" prop="mqttOptions">
+        <el-form-item :label="t('auto.push_config_editdia_e4e625f8')" prop="mqttOptions">
           <div class="kv-list">
             <div v-for="(opt, index) in mqttOptions" :key="index" class="kv-item">
-              <el-input v-model="opt.key" placeholder="Key (如: autoReconnect)" style="width: 180px" />
+              <el-input v-model="opt.key" :placeholder="t('auto.push_config_editdia_68f8d241')" style="width: 180px" />
               <el-input v-model="opt.value" placeholder="Value" style="flex: 1" />
               <el-button type="danger" link @click="removeMqttOption(index)">
-                删除
+                {{ t('auto.push_config_editdia_2f4aaddd') }}
               </el-button>
             </div>
             <el-button type="primary" link @click="addMqttOption">
-              + 添加配置项
+              {{ t('auto.push_config_editdia_de627ae4') }}
             </el-button>
           </div>
         </el-form-item>
@@ -498,10 +499,10 @@ watch(() => props.datas, (val) => {
 
     <template #footer>
       <el-button @click="onCancel">
-        取消
+        {{ t('auto.push_config_editdia_625fb26b') }}
       </el-button>
       <el-button type="primary" :loading="loading" @click="onSubmit">
-        确定
+        {{ t('auto.push_config_editdia_38cf16f2') }}
       </el-button>
     </template>
   </el-dialog>

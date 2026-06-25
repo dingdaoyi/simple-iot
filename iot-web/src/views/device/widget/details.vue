@@ -2,6 +2,7 @@
 import { CopyDocument, Hide, Key, Link, View } from '@element-plus/icons-vue'
 import { ElMessage } from 'element-plus'
 import { computed, ref } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { useRoute } from 'vue-router'
 import { deviceDataLast, deviceDetailApi } from '@/api/index.js'
 import Breadcrumb from '@/components/Breadcrumb.vue'
@@ -12,7 +13,8 @@ import LabelItem from '@/views/device/widget/LabelItem.vue'
 import PropChart from '@/views/device/widget/propChart.vue'
 import PropMetric from '@/views/device/widget/PropMetric.vue'
 
-const activeName = ref('设备控制')
+const { t } = useI18n()
+const activeName = ref('control')
 const route = useRoute()
 const id = route.query.id
 const deviceDetail = ref({})
@@ -21,10 +23,10 @@ const devicePropData = ref(null)
 const tslPropOpt = ref(null)
 const secretVisible = ref(false)
 
-const breadcrumbs = [
-  { label: '设备管理', path: '/device' },
-  { label: '设备详情' },
-]
+const breadcrumbs = computed(() => [
+  { label: t('menu.device'), path: '/device' },
+  { label: t('device.device_detail') },
+])
 
 const currentHost = computed(() => window.location.hostname || 'localhost')
 const mqttTcpEndpoint = computed(() => `mqtt://${currentHost.value}:1883`)
@@ -41,16 +43,16 @@ const productKey = computed(() => deviceDetail.value.product?.productKey || '-')
 const mqttTopics = computed(() => {
   if (!deviceDetail.value.product?.productKey) {
     return [
-      { label: '属性上报', value: 'sampleiot/pro/{productKey}' },
-      { label: '事件上报', value: 'sampleiot/ev/{productKey}' },
-      { label: '服务回复', value: 'sampleiot/cam_res/{productKey}' },
+      { label: t('device.property_report'), value: 'sampleiot/pro/{productKey}' },
+      { label: t('device.event_report'), value: 'sampleiot/ev/{productKey}' },
+      { label: t('device.service_reply'), value: 'sampleiot/cam_res/{productKey}' },
     ]
   }
 
   return [
-    { label: '属性上报', value: `sampleiot/pro/${deviceDetail.value.product.productKey}` },
-    { label: '事件上报', value: `sampleiot/ev/${deviceDetail.value.product.productKey}` },
-    { label: '服务回复', value: `sampleiot/cam_res/${deviceDetail.value.product.productKey}` },
+    { label: t('device.property_report'), value: `sampleiot/pro/${deviceDetail.value.product.productKey}` },
+    { label: t('device.event_report'), value: `sampleiot/ev/${deviceDetail.value.product.productKey}` },
+    { label: t('device.service_reply'), value: `sampleiot/cam_res/${deviceDetail.value.product.productKey}` },
   ]
 })
 
@@ -83,13 +85,13 @@ function toggleSecretVisible() {
 
 async function copyValue(value, label) {
   if (!value || value === '-') {
-    ElMessage.warning(`${label}暂无可复制内容`)
+    ElMessage.warning(t('device.no_copy_content', { label }))
     return
   }
 
   try {
     await navigator.clipboard.writeText(value)
-    ElMessage.success(`${label}已复制`)
+    ElMessage.success(t('device.copy_label_success', { label }))
   }
   catch {
     const textarea = document.createElement('textarea')
@@ -101,7 +103,7 @@ async function copyValue(value, label) {
     textarea.select()
     document.execCommand('copy')
     document.body.removeChild(textarea)
-    ElMessage.success(`${label}已复制`)
+    ElMessage.success(t('device.copy_label_success', { label }))
   }
 }
 
@@ -118,18 +120,20 @@ loadData()
     <!-- 设备基本信息 -->
     <div class="bg-white rounded-lg p-6 shadow-sm">
       <h2 class="text-lg font-semibold text-gray-800 mb-4">
-        设备信息
+        {{ t('device.device_info') }}
       </h2>
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        <LabelItem label="产品类型" :value="deviceDetail?.productType?.name" />
-        <LabelItem label="产品厂家" :value="deviceDetail?.product?.manufacturer" />
-        <LabelItem label="产品型号" :value="deviceDetail?.product?.model" />
+        <LabelItem :label="t('product.product_type')" :value="deviceDetail?.productType?.name" />
+        <LabelItem :label="t('device.product_manufacturer')" :value="deviceDetail?.product?.manufacturer" />
+        <LabelItem :label="t('device.product_model')" :value="deviceDetail?.product?.model" />
         <LabelItem label="ProductKey" :value="productKey" />
-        <LabelItem label="设备编号" :value="deviceDetail.deviceKey" />
-        <LabelItem label="设备名称" :value="deviceDetail.deviceName" />
+        <LabelItem :label="t('device.device_key')" :value="deviceDetail.deviceKey" />
+        <LabelItem :label="t('device.device_name')" :value="deviceDetail.deviceName" />
         <div class="flex items-center gap-3">
-          <span class="text-gray-600 font-medium">在线状态</span>
-          <component :is="onlineOpts.find(item => item.value === deviceDetail.online)?.render()" />
+          <span class="text-gray-600 font-medium">{{ t('device.online_status') }}</span>
+          <span :style="{ color: onlineOpts.find(item => item.value === deviceDetail.online)?.color }">
+            {{ deviceDetail.online ? t('device.online') : t('device.offline') }}
+          </span>
         </div>
       </div>
     </div>
@@ -139,10 +143,10 @@ loadData()
       <div class="access-header">
         <div>
           <h2 class="text-lg font-semibold text-gray-800">
-            设备接入指引
+            {{ t('device.access_guide') }}
           </h2>
           <p class="text-sm text-gray-500 mt-1">
-            按下面参数配置 MQTT 客户端即可完成设备认证、属性上报和事件上报。
+            {{ t('device.access_guide_desc') }}
           </p>
         </div>
         <el-tag type="success" effect="light">
@@ -154,18 +158,18 @@ loadData()
         <div class="access-card">
           <div class="access-title">
             <el-icon><Link /></el-icon>
-            Broker 地址
+            {{ t('device.broker_address') }}
           </div>
           <div class="copy-row">
             <code>{{ mqttTcpEndpoint }}</code>
-            <el-button link type="primary" :icon="CopyDocument" @click="copyValue(mqttTcpEndpoint, 'MQTT TCP 地址')">
-              复制
+            <el-button link type="primary" :icon="CopyDocument" @click="copyValue(mqttTcpEndpoint, t('device.mqtt_tcp_address'))">
+              {{ t('common.copy') }}
             </el-button>
           </div>
           <div class="copy-row">
             <code>{{ mqttWsEndpoint }}</code>
-            <el-button link type="primary" :icon="CopyDocument" @click="copyValue(mqttWsEndpoint, 'MQTT WebSocket 地址')">
-              复制
+            <el-button link type="primary" :icon="CopyDocument" @click="copyValue(mqttWsEndpoint, t('device.mqtt_websocket_address'))">
+              {{ t('common.copy') }}
             </el-button>
           </div>
         </div>
@@ -173,30 +177,30 @@ loadData()
         <div class="access-card">
           <div class="access-title">
             <el-icon><Key /></el-icon>
-            认证参数
+            {{ t('device.auth_params') }}
           </div>
           <div class="copy-row">
             <span>Client ID</span>
             <code>{{ mqttClientId }}</code>
             <el-button link type="primary" :icon="CopyDocument" @click="copyValue(mqttClientId, 'Client ID')">
-              复制
+              {{ t('common.copy') }}
             </el-button>
           </div>
           <div class="copy-row">
             <span>Username</span>
             <code>{{ mqttUsername }}</code>
             <el-button link type="primary" :icon="CopyDocument" @click="copyValue(mqttUsername, 'Username')">
-              复制
+              {{ t('common.copy') }}
             </el-button>
           </div>
           <div class="copy-row">
             <span>Password</span>
             <code>{{ mqttPasswordText }}</code>
             <el-button link :icon="secretVisible ? Hide : View" @click="toggleSecretVisible">
-              {{ secretVisible ? '隐藏' : '显示' }}
+              {{ secretVisible ? t('common.hide') : t('common.show') }}
             </el-button>
-            <el-button link type="primary" :icon="CopyDocument" @click="copyValue(mqttPassword, '设备密钥')">
-              复制
+            <el-button link type="primary" :icon="CopyDocument" @click="copyValue(mqttPassword, t('device.device_secret'))">
+              {{ t('common.copy') }}
             </el-button>
           </div>
         </div>
@@ -204,14 +208,14 @@ loadData()
 
       <div class="topic-section">
         <div class="topic-title">
-          Topic 模板
+          {{ t('device.topic_template') }}
         </div>
         <div class="topic-list">
           <div v-for="topic in mqttTopics" :key="topic.label" class="copy-row topic-row">
             <span>{{ topic.label }}</span>
             <code>{{ topic.value }}</code>
             <el-button link type="primary" :icon="CopyDocument" @click="copyValue(topic.value, topic.label)">
-              复制
+              {{ t('common.copy') }}
             </el-button>
           </div>
         </div>
@@ -221,23 +225,23 @@ loadData()
     <!-- 设备属性指标 -->
     <div v-if="devicePropData" class="bg-white rounded-lg p-6 shadow-sm">
       <h2 class="text-lg font-semibold text-gray-800 mb-4">
-        实时数据
+        {{ t('device.realtime_data') }}
       </h2>
       <div v-if="devicePropData.length > 0" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-4">
         <div v-for="item in devicePropData" :key="item.key" class="cursor-pointer hover:bg-gray-50 p-3 rounded-lg transition-colors" @click="showPro(item.key)">
           <PropMetric :value="item.value" :tsl-prop="dictTsl(item.key)" />
         </div>
       </div>
-      <el-empty v-else description="暂无实时数据，按接入指引上报属性后会显示在这里" />
+      <el-empty v-else :description="t('device.no_realtime_data')" />
     </div>
 
     <!-- 设备操作区域 -->
     <div class="bg-white rounded-lg shadow-sm flex-1">
       <el-tabs v-model="activeName" class="h-full">
-        <el-tab-pane label="设备事件" name="设备事件">
+        <el-tab-pane :label="t('device.device_event')" name="events">
           <DeviceEvent v-if="deviceDetail.deviceKey" :device-detail="deviceDetail" />
         </el-tab-pane>
-        <el-tab-pane label="设备控制" name="设备控制">
+        <el-tab-pane :label="t('device.device_control')" name="control">
           <DeviceService v-if="deviceDetail.deviceKey" :device-detail="deviceDetail" />
         </el-tab-pane>
       </el-tabs>

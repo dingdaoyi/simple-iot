@@ -1,10 +1,12 @@
 <script setup>
+import { useI18n } from 'vue-i18n'
 import { Document, Loading, WarningFilled } from '@element-plus/icons-vue'
 import { ElMessage } from 'element-plus'
 import { onMounted, ref } from 'vue'
 import JsonViewer from 'vue-json-viewer'
 import { loadTslData } from '@/api/index.js'
 
+const { t } = useI18n()
 const props = defineProps(['productId'])
 
 const jsonData = ref(null)
@@ -15,10 +17,10 @@ const error = ref(null)
 async function copyJson() {
   try {
     await navigator.clipboard.writeText(JSON.stringify(jsonData.value, null, 2))
-    ElMessage.success('已复制到剪贴板')
+    ElMessage.success(t('auto.tslmodel_tslexpoert_4fb42e6e'))
   }
   catch {
-    ElMessage.error('复制失败')
+    ElMessage.error(t('auto.tslmodel_tslexpoert_5154ae17'))
   }
 }
 
@@ -29,22 +31,21 @@ onMounted(async () => {
     jsonData.value = data
   }
   catch (e) {
-    error.value = e.message || '加载失败'
+    error.value = e.message || t('auto.tslmodel_widget_tslexpoert_866b795e')
     console.error('Failed to load TSL data:', e)
   }
   finally {
     loading.value = false
   }
-})
-</script>
+})</script>
 
 <template>
   <div class="tsl-container">
     <!-- 工具栏 -->
     <div class="toolbar">
-      <span class="title">物模型定义 (TSL)</span>
+      <span class="title">{{ t('auto.tslmodel_tslexpoert_e7da4f3a') }}</span>
       <el-button type="primary" size="small" @click="copyJson">
-        复制 JSON
+        {{ t('auto.tslmodel_tslexpoert_ffe38355') }}
       </el-button>
     </div>
 
@@ -53,7 +54,7 @@ onMounted(async () => {
       <el-icon class="is-loading" :size="32">
         <Loading />
       </el-icon>
-      <span>加载中...</span>
+      <span>{{ t('auto.tslmodel_tslexpoert_26b5bd49') }}</span>
     </div>
 
     <!-- 错误状态 -->
@@ -80,7 +81,7 @@ onMounted(async () => {
       <el-icon :size="32" color="var(--iot-color-text-muted)">
         <Document />
       </el-icon>
-      <span>暂无物模型数据</span>
+      <span>{{ t('auto.tslmodel_tslexpoert_29dab078') }}</span>
     </div>
   </div>
 </template>

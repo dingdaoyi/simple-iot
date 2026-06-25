@@ -1,9 +1,11 @@
 <script setup>
+import { useI18n } from 'vue-i18n'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { nextTick, reactive, ref } from 'vue'
 import { getSmsSupplier, getSmsTemplateType } from '@/api/dict'
 import { addSmsConfig, addSmsTemplate, deleteSmsConfig, deleteSmsTemplate, getSmsConfigList, getSmsTemplateList, sendSms, sendSmsWithTemplate, setDefaultConfig, updateConfigStatus, updateSmsConfig, updateSmsTemplate } from '@/api/sms'
 
+const { t } = useI18n()
 const activeTab = ref('config')
 const listLoading = ref(true)
 const list = ref([])
@@ -48,35 +50,35 @@ const templateTemp = reactive({
 const dialogFormVisible = ref(false)
 const templateDialogVisible = ref(false)
 const templateFormVisible = ref(false)
-const templateFormTitle = ref('添加模板')
+const templateFormTitle = ref(t('auto.system_sms_index_6fef15ad'))
 const currentConfigId = ref(null)
 const dialogStatus = ref('')
 
 const textMap = {
-  update: '编辑',
-  create: '创建',
+  update: t('auto.system_sms_index_95b351c8'),
+  create: t('auto.system_sms_index_d9ac9228'),
 }
 
 const rules = {
-  name: [{ required: true, message: '配置名称必填', trigger: 'blur' }],
-  supplier: [{ required: true, message: '供应商必选', trigger: 'change' }],
-  accessKey: [{ required: true, message: '访问密钥必填', trigger: 'blur' }],
-  secretKey: [{ required: true, message: '密钥必填', trigger: 'blur' }],
+  name: [{ required: true, message: t('auto.system_sms_index_5785b4eb'), trigger: 'blur' }],
+  supplier: [{ required: true, message: t('auto.system_sms_index_711d0fed'), trigger: 'change' }],
+  accessKey: [{ required: true, message: t('auto.system_sms_index_8ba0ccb6'), trigger: 'blur' }],
+  secretKey: [{ required: true, message: t('auto.system_sms_index_468c7d30'), trigger: 'blur' }],
 }
 
 const sendRules = {
   phone: [
-    { required: true, message: '手机号必填', trigger: 'blur' },
-    { pattern: /^1[3-9]\d{9}$/, message: '手机号格式不正确', trigger: 'blur' },
+    { required: true, message: t('auto.system_sms_index_a026b8f6'), trigger: 'blur' },
+    { pattern: /^1[3-9]\d{9}$/, message: t('auto.system_sms_index_19c896fe'), trigger: 'blur' },
   ],
-  message: [{ required: true, message: '短信内容必填', trigger: 'blur' }],
-  templateType: [{ required: true, message: '模板类型必选', trigger: 'change' }],
+  message: [{ required: true, message: t('auto.system_sms_index_234a13b6'), trigger: 'blur' }],
+  templateType: [{ required: true, message: t('auto.system_sms_index_41252c43'), trigger: 'change' }],
 }
 
 const templateRules = {
-  templateType: [{ required: true, message: '模板类型必选', trigger: 'change' }],
-  templateName: [{ required: true, message: '模板名称必填', trigger: 'blur' }],
-  templateId: [{ required: true, message: '模板ID必填', trigger: 'blur' }],
+  templateType: [{ required: true, message: t('auto.system_sms_index_41252c43'), trigger: 'change' }],
+  templateName: [{ required: true, message: t('auto.system_sms_index_ea85b58c'), trigger: 'blur' }],
+  templateId: [{ required: true, message: t('auto.system_sms_index_81830041'), trigger: 'blur' }],
 }
 
 const dataForm = ref()
@@ -160,7 +162,7 @@ async function createData() {
   if (valid) {
     await addSmsConfig(temp)
     dialogFormVisible.value = false
-    ElMessage.success('创建成功')
+    ElMessage.success(t('auto.system_sms_index_04a691b3'))
     getList()
   }
 }
@@ -182,31 +184,31 @@ async function updateData() {
   if (valid) {
     await updateSmsConfig(temp)
     dialogFormVisible.value = false
-    ElMessage.success('更新成功')
+    ElMessage.success(t('auto.system_sms_index_55aa6366'))
     getList()
   }
 }
 
 async function handleDelete(row) {
-  await ElMessageBox.confirm('此操作将永久删除该配置, 是否继续?', '提示', {
-    confirmButtonText: '确定',
-    cancelButtonText: '取消',
+  await ElMessageBox.confirm(t('auto.system_sms_index_76e8c282'), t('auto.system_sms_index_02d9819d'), {
+    confirmButtonText: t('auto.system_sms_index_38cf16f2'),
+    cancelButtonText: t('auto.system_sms_index_625fb26b'),
     type: 'warning',
   })
   await deleteSmsConfig(row.id)
-  ElMessage.success('删除成功')
+  ElMessage.success(t('auto.system_sms_index_0007d170'))
   getList()
 }
 
 async function handleSetDefault(row) {
   await setDefaultConfig(row.id)
-  ElMessage.success('设置默认配置成功')
+  ElMessage.success(t('auto.system_sms_index_6355477c'))
   getList()
 }
 
 async function handleStatusChange(row) {
   await updateConfigStatus(row.id, row.status)
-  ElMessage.success('状态更新成功')
+  ElMessage.success(t('auto.system_sms_index_ece8fdff'))
 }
 
 function handleTemplate(row) {
@@ -229,13 +231,13 @@ function handleAddTemplate() {
     templateName: '',
     templateContent: '',
   })
-  templateFormTitle.value = '添加模板'
+  templateFormTitle.value = t('auto.system_sms_index_6fef15ad')
   templateFormVisible.value = true
 }
 
 function handleEditTemplate(row) {
   Object.assign(templateTemp, row)
-  templateFormTitle.value = '编辑模板'
+  templateFormTitle.value = t('auto.system_sms_index_c6aa3504')
   templateFormVisible.value = true
 }
 
@@ -252,19 +254,19 @@ async function saveTemplate() {
     const action = templateTemp.id ? updateSmsTemplate : addSmsTemplate
     await action(templateTemp)
     templateFormVisible.value = false
-    ElMessage.success('保存成功')
+    ElMessage.success(t('auto.system_sms_index_3b108349'))
     getTemplateList()
   }
 }
 
 async function handleDeleteTemplate(row) {
-  await ElMessageBox.confirm('此操作将永久删除该模板, 是否继续?', '提示', {
-    confirmButtonText: '确定',
-    cancelButtonText: '取消',
+  await ElMessageBox.confirm(t('auto.system_sms_index_a32098b4'), t('auto.system_sms_index_02d9819d'), {
+    confirmButtonText: t('auto.system_sms_index_38cf16f2'),
+    cancelButtonText: t('auto.system_sms_index_625fb26b'),
     type: 'warning',
   })
   await deleteSmsTemplate(row.id)
-  ElMessage.success('删除成功')
+  ElMessage.success(t('auto.system_sms_index_0007d170'))
   getTemplateList()
 }
 
@@ -286,7 +288,7 @@ async function sendSmsMessage() {
           templateParams = JSON.parse(sendTemp.templateParamsStr)
         }
         catch {
-          ElMessage.error('模板参数格式错误')
+          ElMessage.error(t('auto.system_sms_index_a73c4dde'))
           return
         }
       }
@@ -298,33 +300,32 @@ async function sendSmsMessage() {
       }
       await sendSmsWithTemplate(data)
     }
-    ElMessage.success('短信发送成功')
+    ElMessage.success(t('auto.system_sms_index_b3136072'))
   }
 }
 
 // 初始化
 getList()
 getSuppliers()
-getTemplateTypes()
-</script>
+getTemplateTypes()</script>
 
 <template>
   <div class="app-container">
     <el-tabs v-model="activeTab" type="card">
-      <el-tab-pane label="短信配置" name="config">
+      <el-tab-pane :label="t('auto.system_sms_index_2e23452d')" name="config">
         <div class="filter-container">
           <el-input
             v-model="listQuery.name"
-            placeholder="配置名称"
+            :placeholder="t('auto.system_sms_index_4fcad1c9')"
             style="width: 200px;"
             class="filter-item"
             @keyup.enter="handleFilter"
           />
           <el-button class="filter-item" type="primary" @click="handleFilter">
-            搜索
+            {{ t('auto.system_sms_index_e5f71fc3') }}
           </el-button>
           <el-button class="filter-item" style="margin-left: 10px;" type="primary" @click="handleCreate">
-            添加
+            {{ t('auto.system_sms_index_b58c7549') }}
           </el-button>
         </div>
 
@@ -341,25 +342,25 @@ getTemplateTypes()
               {{ scope.row.id }}
             </template>
           </el-table-column>
-          <el-table-column label="配置名称">
+          <el-table-column :label="t('auto.system_sms_index_4fcad1c9')">
             <template #default="scope">
               {{ scope.row.name }}
               <el-tag v-if="scope.row.isDefault" type="success" size="small">
-                默认
+                {{ t('auto.system_sms_index_18c63459') }}
               </el-tag>
             </template>
           </el-table-column>
-          <el-table-column label="供应商" width="110" align="center">
+          <el-table-column :label="t('auto.system_sms_index_bab268d5')" width="110" align="center">
             <template #default="scope">
               <span>{{ getSupplierName(scope.row.supplier) }}</span>
             </template>
           </el-table-column>
-          <el-table-column label="签名" width="110" align="center">
+          <el-table-column :label="t('auto.system_sms_index_be2525eb')" width="110" align="center">
             <template #default="scope">
               {{ scope.row.signName }}
             </template>
           </el-table-column>
-          <el-table-column label="状态" width="110" align="center">
+          <el-table-column :label="t('auto.system_sms_index_3fea7ca7')" width="110" align="center">
             <template #default="scope">
               <el-switch
                 v-model="scope.row.status"
@@ -369,26 +370,26 @@ getTemplateTypes()
               />
             </template>
           </el-table-column>
-          <el-table-column label="操作" align="center" width="280" class-name="small-padding fixed-width">
+          <el-table-column :label="t('auto.system_sms_index_2b6bc0f2')" align="center" width="280" class-name="small-padding fixed-width">
             <template #default="scope">
               <el-button type="primary" size="small" @click="handleUpdate(scope.row)">
-                编辑
+                {{ t('auto.system_sms_index_95b351c8') }}
               </el-button>
               <el-button type="info" size="small" @click="handleTemplate(scope.row)">
-                模板
+                {{ t('auto.system_sms_index_59cf15fe') }}
               </el-button>
               <el-button v-if="!scope.row.isDefault" type="success" size="small" @click="handleSetDefault(scope.row)">
-                设为默认
+                {{ t('auto.system_sms_index_1af3ec21') }}
               </el-button>
               <el-button v-if="!scope.row.isDefault" size="small" type="danger" @click="handleDelete(scope.row)">
-                删除
+                {{ t('auto.system_sms_index_2f4aaddd') }}
               </el-button>
             </template>
           </el-table-column>
         </el-table>
       </el-tab-pane>
 
-      <el-tab-pane label="发送短信" name="send">
+      <el-tab-pane :label="t('auto.system_sms_index_2d728886')" name="send">
         <el-form
           ref="sendForm"
           :rules="sendRules"
@@ -397,24 +398,24 @@ getTemplateTypes()
           label-width="100px"
           style="width: 500px;"
         >
-          <el-form-item label="手机号" prop="phone">
+          <el-form-item :label="t('auto.system_sms_index_8098e2b4')" prop="phone">
             <el-input v-model="sendTemp.phone" />
           </el-form-item>
-          <el-form-item label="发送方式" prop="sendType">
+          <el-form-item :label="t('auto.system_sms_index_6aa351f5')" prop="sendType">
             <el-radio-group v-model="sendTemp.sendType">
               <el-radio value="text">
-                文本消息
+                {{ t('auto.system_sms_text_message') }}
               </el-radio>
               <el-radio value="template">
-                模板消息
+                {{ t('auto.system_sms_template_message') }}
               </el-radio>
             </el-radio-group>
           </el-form-item>
-          <el-form-item v-if="sendTemp.sendType === 'text'" label="短信内容" prop="message">
+          <el-form-item v-if="sendTemp.sendType === 'text'" :label="t('auto.system_sms_index_4e963cc0')" prop="message">
             <el-input v-model="sendTemp.message" type="textarea" :rows="3" />
           </el-form-item>
-          <el-form-item v-if="sendTemp.sendType === 'template'" label="模板类型" prop="templateType">
-            <el-select v-model="sendTemp.templateType" placeholder="请选择模板类型">
+          <el-form-item v-if="sendTemp.sendType === 'template'" :label="t('auto.system_sms_index_bfd70885')" prop="templateType">
+            <el-select v-model="sendTemp.templateType" :placeholder="t('auto.system_sms_index_2c57063c')">
               <el-option
                 v-for="item in templateTypes"
                 :key="item.code"
@@ -423,11 +424,11 @@ getTemplateTypes()
               />
             </el-select>
           </el-form-item>
-          <el-form-item v-if="sendTemp.sendType === 'template'" label="模板参数">
+          <el-form-item v-if="sendTemp.sendType === 'template'" :label="t('auto.system_sms_index_6fc05af5')">
             <el-input v-model="sendTemp.templateParamsStr" type="textarea" :rows="2" placeholder="{&quot;code&quot;:&quot;123456&quot;}" />
           </el-form-item>
-          <el-form-item label="配置">
-            <el-select v-model="sendTemp.configId" placeholder="使用默认配置" clearable>
+          <el-form-item :label="t('auto.system_sms_index_224e2ccd')">
+            <el-select v-model="sendTemp.configId" :placeholder="t('auto.system_sms_index_3248aac7')" clearable>
               <el-option
                 v-for="item in list"
                 :key="item.id"
@@ -438,7 +439,7 @@ getTemplateTypes()
           </el-form-item>
           <el-form-item>
             <el-button type="primary" @click="sendSmsMessage">
-              发送短信
+              {{ t('auto.system_sms_send_sms') }}
             </el-button>
           </el-form-item>
         </el-form>
@@ -454,11 +455,11 @@ getTemplateTypes()
         label-position="left"
         label-width="100px"
       >
-        <el-form-item label="配置名称" prop="name">
+        <el-form-item :label="t('auto.system_sms_index_4fcad1c9')" prop="name">
           <el-input v-model="temp.name" />
         </el-form-item>
-        <el-form-item label="供应商" prop="supplier">
-          <el-select v-model="temp.supplier" placeholder="请选择供应商" @change="handleSupplierChange">
+        <el-form-item :label="t('auto.system_sms_index_bab268d5')" prop="supplier">
+          <el-select v-model="temp.supplier" :placeholder="t('auto.system_sms_index_4ceb3942')" @change="handleSupplierChange">
             <el-option
               v-for="item in suppliers"
               :key="item.code"
@@ -467,67 +468,67 @@ getTemplateTypes()
             />
           </el-select>
         </el-form-item>
-        <el-form-item label="访问密钥" prop="accessKey">
+        <el-form-item :label="t('auto.system_sms_index_ec3720b6')" prop="accessKey">
           <el-input v-model="temp.accessKey" />
         </el-form-item>
-        <el-form-item label="密钥" prop="secretKey">
+        <el-form-item :label="t('auto.system_sms_index_cdb81cf6')" prop="secretKey">
           <el-input v-model="temp.secretKey" type="password" />
         </el-form-item>
-        <el-form-item label="短信签名" prop="signName">
+        <el-form-item :label="t('auto.system_sms_index_f32c04f9')" prop="signName">
           <el-input v-model="temp.signName" />
         </el-form-item>
-        <el-form-item v-if="temp.supplier === 'tencent'" label="区域" prop="region">
-          <el-input v-model="temp.region" placeholder="如: ap-beijing" />
+        <el-form-item v-if="temp.supplier === 'tencent'" :label="t('auto.system_sms_index_d3ce40d8')" prop="region">
+          <el-input v-model="temp.region" :placeholder="t('auto.system_sms_index_1223875e')" />
         </el-form-item>
-        <el-form-item v-if="temp.supplier === 'huawei'" label="接入点" prop="endpoint">
-          <el-input v-model="temp.endpoint" placeholder="如: https://smsapi.cn-north-4.myhuaweicloud.com:443" />
+        <el-form-item v-if="temp.supplier === 'huawei'" :label="t('auto.system_sms_index_95e6190e')" prop="endpoint">
+          <el-input v-model="temp.endpoint" :placeholder="t('auto.system_sms_index_3c61b6ac')" />
         </el-form-item>
-        <el-form-item v-if="temp.supplier === 'alibaba'" label="应用ID">
+        <el-form-item v-if="temp.supplier === 'alibaba'" :label="t('auto.system_sms_index_3751f65f')">
           <el-input v-model="temp.configJson.appId" />
         </el-form-item>
       </el-form>
       <template #footer>
         <div class="dialog-footer">
           <el-button @click="dialogFormVisible = false">
-            取消
+            {{ t('auto.system_sms_index_625fb26b') }}
           </el-button>
           <el-button type="primary" @click="dialogStatus === 'create' ? createData() : updateData()">
-            确认
+            {{ t('auto.system_sms_index_e83a256e') }}
           </el-button>
         </div>
       </template>
     </el-dialog>
 
     <!-- 模板管理对话框 -->
-    <el-dialog v-model="templateDialogVisible" title="模板管理" width="800px">
+    <el-dialog v-model="templateDialogVisible" :title="t('auto.system_sms_index_f19bc873')" width="800px">
       <div style="margin-bottom: 20px;">
         <el-button type="primary" @click="handleAddTemplate">
-          添加模板
+          {{ t('auto.system_sms_add_template') }}
         </el-button>
       </div>
       <el-table :data="templateList" border>
-        <el-table-column label="模板类型" width="120">
+        <el-table-column :label="t('auto.system_sms_index_bfd70885')" width="120">
           <template #default="scope">
             {{ getTemplateTypeName(scope.row.templateType) }}
           </template>
         </el-table-column>
-        <el-table-column label="模板名称" prop="templateName" />
-        <el-table-column label="模板ID" prop="templateId" />
-        <el-table-column label="模板内容" prop="templateContent" />
-        <el-table-column label="状态" width="80">
+        <el-table-column :label="t('auto.system_sms_index_a5d1c511')" prop="templateName" />
+        <el-table-column :label="t('auto.system_sms_index_5cb25268')" prop="templateId" />
+        <el-table-column :label="t('auto.system_sms_index_03ae7940')" prop="templateContent" />
+        <el-table-column :label="t('auto.system_sms_index_3fea7ca7')" width="80">
           <template #default="scope">
             <el-tag :type="scope.row.status === 1 ? 'success' : 'danger'">
-              {{ scope.row.status === 1 ? '启用' : '禁用' }}
+              {{ scope.row.status === 1 ? t('auto.system_sms_index_7854b52a') : t('auto.system_sms_index_710ad08b') }}
             </el-tag>
           </template>
         </el-table-column>
-        <el-table-column label="操作" width="150">
+        <el-table-column :label="t('auto.system_sms_index_2b6bc0f2')" width="150">
           <template #default="scope">
             <el-button size="small" @click="handleEditTemplate(scope.row)">
-              编辑
+              {{ t('auto.system_sms_index_95b351c8') }}
             </el-button>
             <el-button size="small" type="danger" @click="handleDeleteTemplate(scope.row)">
-              删除
+              {{ t('auto.system_sms_index_2f4aaddd') }}
             </el-button>
           </template>
         </el-table-column>
@@ -543,8 +544,8 @@ getTemplateTypes()
         label-position="left"
         label-width="100px"
       >
-        <el-form-item label="模板类型" prop="templateType">
-          <el-select v-model="templateTemp.templateType" placeholder="请选择模板类型" @change="handleTemplateTypeChange">
+        <el-form-item :label="t('auto.system_sms_index_bfd70885')" prop="templateType">
+          <el-select v-model="templateTemp.templateType" :placeholder="t('auto.system_sms_index_2c57063c')" @change="handleTemplateTypeChange">
             <el-option
               v-for="item in templateTypes"
               :key="item.code"
@@ -553,23 +554,23 @@ getTemplateTypes()
             />
           </el-select>
         </el-form-item>
-        <el-form-item label="模板名称" prop="templateName">
+        <el-form-item :label="t('auto.system_sms_index_a5d1c511')" prop="templateName">
           <el-input v-model="templateTemp.templateName" />
         </el-form-item>
-        <el-form-item label="模板ID" prop="templateId">
+        <el-form-item :label="t('auto.system_sms_index_5cb25268')" prop="templateId">
           <el-input v-model="templateTemp.templateId" />
         </el-form-item>
-        <el-form-item label="模板内容" prop="templateContent">
+        <el-form-item :label="t('auto.system_sms_index_03ae7940')" prop="templateContent">
           <el-input v-model="templateTemp.templateContent" type="textarea" :rows="3" />
         </el-form-item>
       </el-form>
       <template #footer>
         <div class="dialog-footer">
           <el-button @click="templateFormVisible = false">
-            取消
+            {{ t('auto.system_sms_index_625fb26b') }}
           </el-button>
           <el-button type="primary" @click="saveTemplate">
-            确认
+            {{ t('auto.system_sms_index_e83a256e') }}
           </el-button>
         </div>
       </template>

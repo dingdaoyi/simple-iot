@@ -1,6 +1,7 @@
 <script setup>
 import { ArrowLeft, ArrowRight } from '@element-plus/icons-vue'
 import { useRouter } from 'vue-router'
+import { useI18n } from 'vue-i18n'
 
 defineProps({
   breadcrumbs: {
@@ -15,7 +16,13 @@ defineProps({
 })
 
 const router = useRouter()
+const { t, te } = useI18n()
 const separatorIcon = ArrowRight
+
+function breadcrumbLabel(item) {
+  if (item?.i18nKey && te(item.i18nKey)) return t(item.i18nKey)
+  return item?.label || ''
+}
 
 function handleBack() {
   router.back()
@@ -32,7 +39,7 @@ function handleBack() {
         :to="item.path ? { path: item.path } : undefined"
         class="font-medium"
       >
-        {{ item.label }}
+        {{ breadcrumbLabel(item) }}
       </el-breadcrumb-item>
     </el-breadcrumb>
 
@@ -41,7 +48,7 @@ function handleBack() {
       <el-icon :size="14" class="mr-1">
         <ArrowLeft />
       </el-icon>
-      返回
+      {{ t('common.back') }}
     </el-button>
   </div>
 </template>

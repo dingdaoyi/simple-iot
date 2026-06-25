@@ -1,17 +1,19 @@
 <script lang="jsx" setup>
+import { useI18n } from 'vue-i18n'
 import { Plus } from '@element-plus/icons-vue'
 import { ElMessage } from 'element-plus'
 import { ref, watch } from 'vue'
 import { productAddApi, productEditeApi, uploadMoreApi } from '@/api'
 import { useForm } from '@/composables/useForm.js'
 
+const { t } = useI18n()
 const props = defineProps(['datas', 'productTypeList', 'modelValue'])
 
 const emits = defineEmits(['update', 'update:modelValue'])
 
 const rules = ref({
-  productTypeId: [{ required: true, message: '产品类型不能为空', trigger: 'change' }],
-  model: [{ required: true, message: '产品型号不能为空', trigger: 'blur' }],
+  productTypeId: [{ required: true, message: t('auto.product_editdia_72d6f12d'), trigger: 'change' }],
+  model: [{ required: true, message: t('auto.product_editdia_c9eafffd'), trigger: 'blur' }],
 })
 
 const { form, onSubmit: handleSubmit, editRef, loading, onClose } = useForm({
@@ -38,11 +40,11 @@ async function handleUpload(options) {
   const isLt2M = file.size / 1024 / 1024 < 2
 
   if (!isImage) {
-    ElMessage.error('只能上传图片文件!')
+    ElMessage.error(t('auto.product_editdia_2c148e94'))
     return
   }
   if (!isLt2M) {
-    ElMessage.error('图片大小不能超过 2MB!')
+    ElMessage.error(t('auto.product_editdia_6bffbe61'))
     return
   }
 
@@ -55,14 +57,14 @@ async function handleUpload(options) {
     const url = res.data?.url || (Array.isArray(res.data) ? res.data[0] : null)
     if (url) {
       form.value.icon = url
-      ElMessage.success('上传成功')
+      ElMessage.success(t('auto.product_editdia_a7699ba7'))
     }
     else {
-      ElMessage.error('上传失败：未返回文件地址')
+      ElMessage.error(t('auto.product_editdia_fed95497'))
     }
   }
   catch {
-    ElMessage.error('上传失败')
+    ElMessage.error(t('auto.product_editdia_54e5de42'))
   }
   finally {
     uploadLoading.value = false
@@ -78,13 +80,12 @@ watch(() => props.datas, (val) => {
   if (val) {
     form.value = { ...val }
   }
-}, { immediate: true })
-</script>
+}, { immediate: true })</script>
 
 <template>
   <el-dialog
     :model-value="modelValue"
-    :title="datas?.id ? '编辑' : '新增'"
+    :title="t('auto.product_editdia_5d8b3184')"
     width="600px"
     @update:model-value="$emit('update:modelValue', $event)"
     @close="onClose"
@@ -96,12 +97,12 @@ watch(() => props.datas, (val) => {
       label-width="100px"
     >
       <el-form-item
-        label="产品类型"
+        :label="t('auto.product_editdia_2db97cae')"
         prop="productTypeId"
       >
         <el-select
           v-model="form.productTypeId"
-          placeholder="请选择产品类型"
+          :placeholder="t('auto.product_editdia_f7b25260')"
           style="width: 100%"
           filterable
           clearable
@@ -116,7 +117,7 @@ watch(() => props.datas, (val) => {
       </el-form-item>
 
       <el-form-item
-        label="产品图标"
+        :label="t('auto.product_editdia_9b105d43')"
         prop="icon"
       >
         <div class="icon-upload-wrapper">
@@ -130,7 +131,7 @@ watch(() => props.datas, (val) => {
             />
             <div class="preview-actions">
               <el-button type="danger" size="small" @click="removeIcon">
-                删除
+                {{ t('auto.product_editdia_2f4aaddd') }}
               </el-button>
             </div>
           </div>
@@ -150,46 +151,46 @@ watch(() => props.datas, (val) => {
               <el-icon v-else class="is-loading">
                 <Loading />
               </el-icon>
-              <span class="upload-text">{{ uploadLoading ? '上传中...' : '上传图标' }}</span>
+              <span class="upload-text">{{ uploadLoading ? t('auto.product_widget_editdia_92cd554e') : t('auto.product_widget_editdia_d825ba2b') }}</span>
             </div>
           </el-upload>
 
           <div class="upload-tip">
-            建议尺寸: 128x128px，支持 PNG、JPG、SVG，不超过 2MB
+            {{ t('auto.product_editdia_9ac019e8') }}
           </div>
         </div>
       </el-form-item>
 
       <el-form-item
-        label="型号"
+        :label="t('auto.product_editdia_ac4190df')"
         prop="model"
       >
         <el-input
           v-model="form.model"
           clearable
-          placeholder="请输入产品型号"
+          :placeholder="t('auto.product_editdia_15e5cd62')"
         />
       </el-form-item>
 
       <el-form-item
-        label="厂家"
+        :label="t('auto.product_editdia_8284e8da')"
         prop="manufacturer"
       >
         <el-input
           v-model="form.manufacturer"
           clearable
-          placeholder="请输入设备厂家"
+          :placeholder="t('auto.product_editdia_982324e8')"
         />
       </el-form-item>
 
       <el-form-item
-        label="备注"
+        :label="t('auto.product_editdia_2432b575')"
         prop="remark"
       >
         <el-input
           v-model="form.remark"
           clearable
-          placeholder="请输入备注信息"
+          :placeholder="t('auto.product_editdia_245475e1')"
           type="textarea"
           :rows="2"
         />
@@ -198,10 +199,10 @@ watch(() => props.datas, (val) => {
 
     <template #footer>
       <el-button @click="onClose">
-        取消
+        {{ t('auto.product_editdia_625fb26b') }}
       </el-button>
       <el-button type="primary" :loading="loading" @click="onSubmit">
-        确定
+        {{ t('auto.product_editdia_38cf16f2') }}
       </el-button>
     </template>
   </el-dialog>

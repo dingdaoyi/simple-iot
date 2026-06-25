@@ -1,20 +1,22 @@
 <script lang="jsx" setup>
+import { useI18n } from 'vue-i18n'
 import { ElMessage } from 'element-plus'
 import { ref } from 'vue'
 import { serviceAddApi, serviceEditeApi } from '@/api'
 import { useForm } from '@/composables/useForm.js'
 
+const { t } = useI18n()
 const props = defineProps(['datas', 'typeId', 'properties', 'productId', 'modelValue'])
 
 const emits = defineEmits(['update', 'update:modelValue'])
 
 const serviceTypeOpt = [
   {
-    label: '服务',
+    label: t('auto.tslmodel_serviceedite_47d68cd0'),
     value: 1,
   },
   {
-    label: '事件',
+    label: t('auto.tslmodel_serviceedite_10b2761d'),
     value: 2,
   },
 ]
@@ -35,10 +37,10 @@ const eventTypeOpt = [
 const currentType = ref(2)
 
 const rules = ref({
-  name: [{ required: true, message: '属性名称不能为空', trigger: 'blur' }],
-  identifier: [{ required: true, message: '标识符不能为空', trigger: 'blur' }],
-  serviceType: [{ required: true, message: '服务类型不能为空', trigger: 'change' }],
-  required: [{ required: true, message: '是否必选不能为空', trigger: 'change' }],
+  name: [{ required: true, message: t('auto.tslmodel_serviceedite_9dd30989'), trigger: 'blur' }],
+  identifier: [{ required: true, message: t('auto.tslmodel_serviceedite_ac228e59'), trigger: 'blur' }],
+  serviceType: [{ required: true, message: t('auto.tslmodel_serviceedite_c31fa69e'), trigger: 'change' }],
+  required: [{ required: true, message: t('auto.tslmodel_serviceedite_0b83c7c6'), trigger: 'change' }],
 })
 
 const { form, editRef, loading, onClose } = useForm({
@@ -74,12 +76,12 @@ async function onSubmit() {
   try {
     const func = props.datas ? serviceEditeApi : serviceAddApi
     await func(form.value)
-    ElMessage.success('操作成功')
+    ElMessage.success(t('auto.tslmodel_serviceedite_33130f5c'))
     emits('update')
     emits('update:modelValue', false)
   }
   catch {
-    ElMessage.error('操作失败')
+    ElMessage.error(t('auto.tslmodel_serviceedite_5fa802be'))
   }
   finally {
     loading.value = false
@@ -93,13 +95,12 @@ function changeServiceType(value) {
 if (props.datas) {
   form.value = { ...form.value, ...props.datas }
   currentType.value = props.datas.serviceType
-}
-</script>
+}</script>
 
 <template>
   <el-dialog
     :model-value="modelValue"
-    :title="datas?.id ? '编辑服务' : '新增服务'"
+    :title="t('auto.tslmodel_serviceedite_edc3dbb0')"
     width="600px"
     @update:model-value="$emit('update:modelValue', $event)"
     @close="onClose"
@@ -111,32 +112,32 @@ if (props.datas) {
       :label-width="100"
     >
       <el-form-item
-        label="服务名称"
+        :label="t('auto.tslmodel_serviceedite_8f3747c0')"
         prop="name"
       >
         <el-input
           v-model="form.name"
           clearable
-          placeholder="请输入服务名称"
+          :placeholder="t('auto.tslmodel_serviceedite_d314caa1')"
         />
       </el-form-item>
       <el-form-item
-        label="标识符"
+        :label="t('auto.tslmodel_serviceedite_f3c00c7e')"
         prop="identifier"
       >
         <el-input
           v-model="form.identifier"
           clearable
-          placeholder="请输入标识符"
+          :placeholder="t('auto.tslmodel_serviceedite_59a3f583')"
         />
       </el-form-item>
       <el-form-item
-        label="服务类型"
+        :label="t('auto.tslmodel_serviceedite_924f67de')"
         prop="serviceType"
       >
         <el-select
           v-model="form.serviceType"
-          placeholder="请选择"
+          :placeholder="t('auto.tslmodel_serviceedite_708c9d6d')"
           style="width: 100%"
           @change="changeServiceType"
         >
@@ -149,51 +150,51 @@ if (props.datas) {
         </el-select>
       </el-form-item>
       <el-form-item
-        label="是否必选"
+        :label="t('auto.tslmodel_serviceedite_d10a7280')"
         prop="required"
       >
         <el-radio-group v-model="form.required">
           <el-radio :value="true">
-            必选
+            {{ t('auto.tslmodel_serviceedite_417973c1') }}
           </el-radio>
           <el-radio :value="false">
-            可选
+            {{ t('auto.tslmodel_serviceedite_c20cba89') }}
           </el-radio>
         </el-radio-group>
       </el-form-item>
       <el-form-item
-        label="备注"
+        :label="t('auto.tslmodel_serviceedite_2432b575')"
         prop="remark"
       >
         <el-input
           v-model="form.remark"
           clearable
-          placeholder="请输入备注信息"
+          :placeholder="t('auto.tslmodel_serviceedite_245475e1')"
         />
       </el-form-item>
       <el-form-item
         v-if="currentType === 1"
-        label="服务时效"
+        :label="t('auto.tslmodel_serviceedite_36e07d42')"
         prop="async"
       >
         <el-radio-group v-model="form.async">
           <el-radio :value="true">
-            异步
+            {{ t('auto.tslmodel_serviceedite_8b5a247d') }}
           </el-radio>
           <el-radio :value="false">
-            同步
+            {{ t('auto.tslmodel_serviceedite_6a620e3c') }}
           </el-radio>
         </el-radio-group>
       </el-form-item>
 
       <el-form-item
         v-if="currentType === 1"
-        label="输入参数"
+        :label="t('auto.tslmodel_serviceedite_6e21a018')"
         prop="inputParamIds"
       >
         <el-select
           v-model="form.inputParamIds"
-          placeholder="属性选择"
+          :placeholder="t('auto.tslmodel_serviceedite_2c539e00')"
           style="width: 100%"
           clearable
           multiple
@@ -207,12 +208,12 @@ if (props.datas) {
         </el-select>
       </el-form-item>
       <el-form-item
-        label="输出参数"
+        :label="t('auto.tslmodel_serviceedite_283598a6')"
         prop="outputParamIds"
       >
         <el-select
           v-model="form.outputParamIds"
-          placeholder="参数选择"
+          :placeholder="t('auto.tslmodel_serviceedite_894e9552')"
           style="width: 100%"
           clearable
           multiple
@@ -227,12 +228,12 @@ if (props.datas) {
       </el-form-item>
       <el-form-item
         v-if="currentType === 2"
-        label="事件类型"
+        :label="t('auto.tslmodel_serviceedite_f974c846')"
         prop="eventType"
       >
         <el-select
           v-model="form.eventType"
-          placeholder="事件类型选择"
+          :placeholder="t('auto.tslmodel_serviceedite_d3b3c4e5')"
           style="width: 100%"
           clearable
         >
@@ -247,10 +248,10 @@ if (props.datas) {
     </el-form>
     <template #footer>
       <el-button class="glass-btn glass-btn-secondary" @click="onClose">
-        取消
+        {{ t('auto.tslmodel_serviceedite_625fb26b') }}
       </el-button>
       <el-button type="primary" :loading="loading" class="glass-btn glass-btn-primary" @click="onSubmit">
-        {{ datas?.id ? '保存' : '新增' }}
+        {{ datas?.id ? t('auto.tslmodel_widget_serviceedite_be5fbbe3') : t('auto.tslmodel_widget_serviceedite_66ab5e9f') }}
       </el-button>
     </template>
   </el-dialog>

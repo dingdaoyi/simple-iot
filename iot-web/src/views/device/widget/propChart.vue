@@ -1,5 +1,6 @@
 <script lang="jsx" setup>
 import { nextTick, ref } from 'vue'
+import { useI18n } from 'vue-i18n'
 import VCharts from 'vue-echarts'
 import { deviceDataMetric } from '@/api/index.js'
 import { DateUtils } from '@/utils/date_utils.js'
@@ -7,6 +8,7 @@ import 'echarts/lib/chart/line'
 import 'echarts/lib/component/polar'
 
 const props = defineProps(['deviceKey', 'tslPropOpt'])
+const { t } = useI18n()
 const params = ref({
   identifier: props.tslPropOpt.identifier,
   deviceKey: props.deviceKey,
@@ -26,7 +28,7 @@ const options = ref({
   },
   xAxis: [{
     type: 'category',
-    name: '日期',
+    name: t('device.date'),
     axisTick: {
       alignWithLabel: true,
     },
@@ -42,7 +44,7 @@ const options = ref({
   }],
   yAxis: [{
     type: 'value',
-    name: '指标',
+    name: t('device.metric'),
     nameTextStyle: {
       color: '#76889F',
     },
@@ -66,7 +68,7 @@ const options = ref({
     },
   }],
   series: [{
-    name: '同比',
+    name: t('device.trend'),
     type: 'line',
     smooth: true,
     showSymbol: false,
@@ -103,7 +105,7 @@ loadChartDate()
 
 <template>
   <el-dialog
-    title="参数列表"
+    :title="t('device.param_list')"
     width="1200px"
   >
     <div class="flex flex-col gap-20px">
@@ -115,14 +117,14 @@ loadChartDate()
           <el-date-picker
             v-model="dateRange"
             type="datetimerange"
-            range-separator="至"
-            start-placeholder="开始时间"
-            end-placeholder="结束时间"
+            :range-separator="t('common.to')"
+            :start-placeholder="t('device.start_time')"
+            :end-placeholder="t('device.end_time')"
             class="mr-12px"
             @change="handleDateChange"
           />
           <el-button type="info" @click="loadChartDate">
-            搜索
+            {{ t('common.search') }}
           </el-button>
         </div>
       </div>

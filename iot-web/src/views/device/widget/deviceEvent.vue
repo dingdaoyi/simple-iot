@@ -1,6 +1,7 @@
 <script setup>
 import { RefreshRight } from '@element-plus/icons-vue'
 import { computed, ref } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { deviceEventLogsApi } from '@/api/index.js'
 import IotTable from '@/components/IotTable.vue'
 import { useTable } from '@/composables/useTable.js'
@@ -13,16 +14,17 @@ const props = defineProps({
   },
 })
 
+const { t } = useI18n()
 const tlsEventOpt = computed(() => props.deviceDetail.tslModel?.events || [])
 
-const column = [
+const column = computed(() => [
   {
     prop: 'eventType',
-    label: '事件类型',
+    label: t('device.event_type'),
   },
   {
     prop: 'identifier',
-    label: '事件名称',
+    label: t('device.event_name'),
     formatter(row) {
       return tlsEventOpt.value
         .find(item => item.identifier === row.identifier)
@@ -32,20 +34,20 @@ const column = [
   {
     prop: 'rowValue',
     width: 420,
-    label: '原始数据',
+    label: t('device.raw_data'),
   },
   {
     prop: 'time',
-    label: '事件时间',
+    label: t('device.event_time'),
   },
   {
     prop: 'params',
-    label: '事件参数',
+    label: t('device.event_params'),
     formatter(row) {
       return JSON.stringify(row.params)
     },
   },
-]
+])
 
 const {
   params,
@@ -80,10 +82,10 @@ function resetFilters() {
     <!-- 搜索区域 -->
     <div class="search-area glass-card">
       <div class="search-item">
-        <span class="search-label">事件类型:</span>
+        <span class="search-label">{{ t('device.event_type') }}:</span>
         <el-select
           v-model="params.identifier"
-          placeholder="请选择事件类型"
+          :placeholder="t('common.placeholder_select', { field: t('device.event_type') })"
           class="search-select"
           filterable
           clearable
@@ -98,23 +100,23 @@ function resetFilters() {
       </div>
 
       <div class="search-item">
-        <span class="search-label">时间范围:</span>
+        <span class="search-label">{{ t('device.time_range') }}:</span>
         <el-date-picker
           v-model="dateRange"
           type="datetimerange"
-          range-separator="至"
-          start-placeholder="开始时间"
-          end-placeholder="结束时间"
+          :range-separator="t('common.to')"
+          :start-placeholder="t('device.start_time')"
+          :end-placeholder="t('device.end_time')"
           class="search-date"
           @change="handleDateChange"
         />
       </div>
 
       <el-button type="primary" @click="onSearch">
-        搜索
+        {{ t('common.search') }}
       </el-button>
       <el-button :icon="RefreshRight" @click="resetFilters">
-        重置
+        {{ t('common.reset') }}
       </el-button>
     </div>
 

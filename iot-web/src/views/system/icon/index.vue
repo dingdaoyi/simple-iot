@@ -1,10 +1,12 @@
 <script setup>
+import { useI18n } from 'vue-i18n'
 import { Delete, Edit, Loading, RefreshRight } from '@element-plus/icons-vue'
 import { onMounted } from 'vue'
 import { iconDeleteApi, iconListApi } from '@/api/index.js'
 import { useTable } from '@/composables/useTable.js'
 import EditDia from '@/views/system/icon/widget/editDia.vue'
 
+const { t } = useI18n()
 const {
   params,
   dialogVisible,
@@ -21,7 +23,7 @@ const {
 } = useTable({
   deleteApi: iconDeleteApi,
   fetchApi: iconListApi,
-  diaName: '图标',
+  diaName: t('auto.system_icon_index_5ef69f62'),
   defParams: {},
 })
 
@@ -31,8 +33,7 @@ function closeEdite() {
 
 onMounted(() => {
   updatePage()
-})
-</script>
+})</script>
 
 <template>
   <div class="icon-page">
@@ -41,10 +42,10 @@ onMounted(() => {
       <div class="header-content">
         <h1 class="page-title">
           <span class="title-icon">◈</span>
-          图标管理
+          {{ t('auto.system_icon_index_d9a54f80') }}
         </h1>
         <p class="page-subtitle">
-          管理设备图标与视觉资源
+          {{ t('auto.system_icon_index_4a93bbe6') }}
         </p>
       </div>
     </div>
@@ -53,11 +54,11 @@ onMounted(() => {
     <div class="search-bar glass-card">
       <div class="search-row">
         <div class="search-input">
-          <label class="input-label">图标名称</label>
+          <label class="input-label">{{ t('auto.system_icon_index_013e1c8d') }}</label>
           <el-input
             v-model="params.name"
             clearable
-            placeholder="输入图标名称搜索..."
+            :placeholder="t('auto.system_icon_index_77bbe5d1')"
             prefix-icon="Search"
             @keyup.enter="onSearch"
           />
@@ -65,14 +66,14 @@ onMounted(() => {
         <div class="search-actions">
           <el-button type="primary" @click="onSearch">
             <span class="btn-icon">⌕</span>
-            搜索
+            {{ t('auto.system_icon_index_e5f71fc3') }}
           </el-button>
           <el-button :icon="RefreshRight" @click="onReset">
-            重置
+            {{ t('auto.system_icon_index_4b9c3271') }}
           </el-button>
           <el-button type="primary" @click="onAdd">
             <span class="btn-icon">+</span>
-            添加图标
+            {{ t('auto.system_icon_index_035692d6') }}
           </el-button>
         </div>
       </div>
@@ -87,10 +88,10 @@ onMounted(() => {
             📁
           </div>
           <p class="empty-text">
-            暂无图标数据
+            {{ t('auto.system_icon_index_f9827d1c') }}
           </p>
           <el-button type="primary" @click="onAdd">
-            添加第一个图标
+            {{ t('auto.system_icon_index_5810e91b') }}
           </el-button>
         </div>
 
@@ -113,7 +114,7 @@ onMounted(() => {
                 <template #error>
                   <div class="icon-error">
                     <span class="error-icon">⚠️</span>
-                    <span class="error-text">加载失败</span>
+                    <span class="error-text">{{ t('auto.system_icon_index_866b795e') }}</span>
                   </div>
                 </template>
                 <template #placeholder>
@@ -140,11 +141,11 @@ onMounted(() => {
             <div class="icon-actions">
               <el-button type="primary" link @click="onEdit(item)">
                 <el-icon><Edit /></el-icon>
-                编辑
+                {{ t('common.edit') }}
               </el-button>
               <el-button type="danger" link @click="onDelete(item)">
                 <el-icon><Delete /></el-icon>
-                删除
+                {{ t('common.delete') }}
               </el-button>
             </div>
           </div>

@@ -1,29 +1,31 @@
 <script lang="jsx" setup>
+import { useI18n } from 'vue-i18n'
 import { ref, watch } from 'vue'
 import { messageReceiveAddApi, messageReceiveEditApi } from '@/api'
 import { useForm } from '@/composables/useForm.js'
 
+const { t } = useI18n()
 const props = defineProps(['datas', 'modelValue'])
 
 const emits = defineEmits(['update', 'update:modelValue'])
 
 const notifyTypeOpt = [
   {
-    label: '邮件',
+    label: t('auto.system_messagereceive_editdia_e9e8054f'),
     value: 1,
   },
   {
-    label: '短信',
+    label: t('auto.system_messagereceive_editdia_485c3abb'),
     value: 2,
   },
   {
-    label: '电话',
+    label: t('auto.system_messagereceive_editdia_5a93d3f7'),
     value: 3,
   },
 ]
 
 const rules = ref({
-  name: [{ required: true, message: '名称不能为空', trigger: 'blur' }],
+  name: [{ required: true, message: t('auto.system_messagereceive_editdia_df09fff7'), trigger: 'blur' }],
 })
 
 const { form, onSubmit: handleSubmit, editRef, loading } = useForm({
@@ -46,13 +48,12 @@ watch(() => props.datas, (val) => {
   if (val) {
     form.value = { ...val }
   }
-}, { immediate: true })
-</script>
+}, { immediate: true })</script>
 
 <template>
   <el-dialog
     :model-value="modelValue"
-    :title="datas?.id ? '编辑' : '新增'"
+    :title="t('auto.system_messagereceive_editdia_5d8b3184')"
     width="500px"
     @update:model-value="$emit('update:modelValue', $event)"
   >
@@ -63,22 +64,22 @@ watch(() => props.datas, (val) => {
       label-width="100px"
     >
       <el-form-item
-        label="接收名称"
+        :label="t('auto.system_messagereceive_editdia_26bba1d9')"
         prop="name"
       >
         <el-input
           v-model="form.name"
           clearable
-          placeholder="请输接收名称"
+          :placeholder="t('auto.system_messagereceive_editdia_030ecec0')"
         />
       </el-form-item>
       <el-form-item
-        label="消息类型"
+        :label="t('auto.system_messagereceive_editdia_6d00710a')"
         prop="notifyType"
       >
         <el-select
           v-model="form.notifyType"
-          placeholder="请选择"
+          :placeholder="t('auto.system_messagereceive_editdia_708c9d6d')"
           style="width: 100%"
         >
           <el-option
@@ -90,32 +91,32 @@ watch(() => props.datas, (val) => {
         </el-select>
       </el-form-item>
       <el-form-item
-        label="接收者"
+        :label="t('auto.system_messagereceive_editdia_88340ead')"
         prop="receiver"
       >
         <el-input
           v-model="form.receiver"
           clearable
-          placeholder="请输电话或邮箱"
+          :placeholder="t('auto.system_messagereceive_editdia_bd664852')"
         />
       </el-form-item>
       <el-form-item
-        label="备注"
+        :label="t('auto.system_messagereceive_editdia_2432b575')"
         prop="remark"
       >
         <el-input
           v-model="form.remark"
           clearable
-          placeholder="输入备注信息"
+          :placeholder="t('auto.system_messagereceive_editdia_e54550e0')"
         />
       </el-form-item>
     </el-form>
     <template #footer>
       <el-button @click="onCancel">
-        取消
+        {{ t('auto.system_messagereceive_editdia_625fb26b') }}
       </el-button>
       <el-button type="primary" :loading="loading" @click="onSubmit">
-        确定
+        {{ t('auto.system_messagereceive_editdia_38cf16f2') }}
       </el-button>
     </template>
   </el-dialog>

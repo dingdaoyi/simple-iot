@@ -1,4 +1,5 @@
 <script setup>
+import { useI18n } from 'vue-i18n'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { nextTick, reactive, ref } from 'vue'
 import {
@@ -11,6 +12,7 @@ import {
   updateEmailConfigStatus,
 } from '@/api/email'
 
+const { t } = useI18n()
 const listLoading = ref(true)
 const list = ref([])
 
@@ -41,25 +43,25 @@ const testDialogVisible = ref(false)
 const dialogStatus = ref('')
 
 const textMap = {
-  update: '编辑',
-  create: '创建',
+  update: t('auto.system_email_index_95b351c8'),
+  create: t('auto.system_email_index_d9ac9228'),
 }
 
 const rules = {
-  name: [{ required: true, message: '配置名称必填', trigger: 'blur' }],
-  host: [{ required: true, message: 'SMTP服务器地址必填', trigger: 'blur' }],
-  port: [{ required: true, message: 'SMTP端口必填', trigger: 'blur' }],
+  name: [{ required: true, message: t('auto.system_email_index_5785b4eb'), trigger: 'blur' }],
+  host: [{ required: true, message: t('auto.system_email_index_47983c2c'), trigger: 'blur' }],
+  port: [{ required: true, message: t('auto.system_email_index_56de7cae'), trigger: 'blur' }],
   username: [
-    { required: true, message: '发件人邮箱必填', trigger: 'blur' },
-    { type: 'email', message: '邮箱格式不正确', trigger: 'blur' },
+    { required: true, message: t('auto.system_email_index_d478aa6a'), trigger: 'blur' },
+    { type: 'email', message: t('auto.system_email_index_75262e18'), trigger: 'blur' },
   ],
-  password: [{ required: true, message: '邮箱密码必填', trigger: 'blur' }],
+  password: [{ required: true, message: t('auto.system_email_index_7e615242'), trigger: 'blur' }],
 }
 
 const testRules = {
   to: [
-    { required: true, message: '收件人邮箱必填', trigger: 'blur' },
-    { type: 'email', message: '邮箱格式不正确', trigger: 'blur' },
+    { required: true, message: t('auto.system_email_index_05423760'), trigger: 'blur' },
+    { type: 'email', message: t('auto.system_email_index_75262e18'), trigger: 'blur' },
   ],
 }
 
@@ -113,7 +115,7 @@ async function createData() {
   if (valid) {
     await addEmailConfig(temp)
     dialogFormVisible.value = false
-    ElMessage.success('创建成功')
+    ElMessage.success(t('auto.system_email_index_04a691b3'))
     getList()
   }
 }
@@ -139,35 +141,35 @@ async function updateData() {
     }
     await updateEmailConfig(data)
     dialogFormVisible.value = false
-    ElMessage.success('更新成功')
+    ElMessage.success(t('auto.system_email_index_55aa6366'))
     getList()
   }
 }
 
 async function handleDelete(row) {
   if (row.isDefault) {
-    ElMessage.warning('默认配置不能删除')
+    ElMessage.warning(t('auto.system_email_index_9c99996d'))
     return
   }
-  await ElMessageBox.confirm('此操作将永久删除该配置, 是否继续?', '提示', {
-    confirmButtonText: '确定',
-    cancelButtonText: '取消',
+  await ElMessageBox.confirm(t('auto.system_email_index_76e8c282'), t('auto.system_email_index_02d9819d'), {
+    confirmButtonText: t('auto.system_email_index_38cf16f2'),
+    cancelButtonText: t('auto.system_email_index_625fb26b'),
     type: 'warning',
   })
   await deleteEmailConfig(row.id)
-  ElMessage.success('删除成功')
+  ElMessage.success(t('auto.system_email_index_0007d170'))
   getList()
 }
 
 async function handleSetDefault(row) {
   await setDefaultEmailConfig(row.id)
-  ElMessage.success('设置默认配置成功')
+  ElMessage.success(t('auto.system_email_index_6355477c'))
   getList()
 }
 
 async function handleStatusChange(row) {
   await updateEmailConfigStatus(row.id, row.status)
-  ElMessage.success('状态更新成功')
+  ElMessage.success(t('auto.system_email_index_ece8fdff'))
 }
 
 function handleTestEmail(row) {
@@ -186,14 +188,13 @@ async function sendTestEmailMessage() {
       to: testEmailTemp.to,
       configId: testEmailTemp.configId,
     })
-    ElMessage.success('测试邮件发送成功')
+    ElMessage.success(t('auto.system_email_index_d0e31e7f'))
     testDialogVisible.value = false
   }
 }
 
 // 初始化
-getList()
-</script>
+getList()</script>
 
 <template>
   <div class="email-page">
@@ -202,10 +203,10 @@ getList()
       <div class="header-content">
         <h1 class="page-title">
           <span class="title-icon">✉</span>
-          邮箱配置
+          {{ t('auto.system_email_index_b3f77544') }}
         </h1>
         <p class="page-subtitle">
-          配置SMTP邮箱服务，用于系统邮件通知
+          {{ t('auto.system_email_index_7edb3920') }}
         </p>
       </div>
     </div>
@@ -215,20 +216,20 @@ getList()
       <div class="filter-row">
         <el-input
           v-model="listQuery.name"
-          placeholder="配置名称"
+          :placeholder="t('auto.system_email_index_4fcad1c9')"
           style="width: 200px;"
           clearable
           @keyup.enter="handleFilter"
         />
-        <el-select v-model="listQuery.status" placeholder="状态" style="width: 120px;" clearable>
-          <el-option label="启用" :value="1" />
-          <el-option label="禁用" :value="2" />
+        <el-select v-model="listQuery.status" :placeholder="t('auto.system_email_index_3fea7ca7')" style="width: 120px;" clearable>
+          <el-option :label="t('auto.system_email_index_7854b52a')" :value="1" />
+          <el-option :label="t('auto.system_email_index_710ad08b')" :value="2" />
         </el-select>
         <el-button type="primary" @click="handleFilter">
-          搜索
+          {{ t('auto.system_email_index_e5f71fc3') }}
         </el-button>
         <el-button type="primary" @click="handleCreate">
-          添加配置
+          {{ t('auto.system_email_index_11e5e642') }}
         </el-button>
       </div>
 
@@ -245,25 +246,25 @@ getList()
             {{ scope.row.id }}
           </template>
         </el-table-column>
-        <el-table-column label="配置名称">
+        <el-table-column :label="t('auto.system_email_index_4fcad1c9')">
           <template #default="scope">
             {{ scope.row.name }}
             <el-tag v-if="scope.row.isDefault" type="success" size="small">
-              默认
+              {{ t('auto.system_email_index_18c63459') }}
             </el-tag>
           </template>
         </el-table-column>
-        <el-table-column label="SMTP服务器" prop="host" />
-        <el-table-column label="端口" width="80" align="center" prop="port" />
-        <el-table-column label="发件人邮箱" prop="username" />
+        <el-table-column :label="t('auto.system_email_index_4723b1de')" prop="host" />
+        <el-table-column :label="t('auto.system_email_index_c76cfefe')" width="80" align="center" prop="port" />
+        <el-table-column :label="t('auto.system_email_index_b9d830c2')" prop="username" />
         <el-table-column label="SSL" width="80" align="center">
           <template #default="scope">
             <el-tag :type="scope.row.sslEnabled ? 'success' : 'info'" size="small">
-              {{ scope.row.sslEnabled ? '开启' : '关闭' }}
+              {{ scope.row.sslEnabled ? t('auto.system_email_index_cc42dd31') : t('auto.system_email_index_b15d9127') }}
             </el-tag>
           </template>
         </el-table-column>
-        <el-table-column label="状态" width="100" align="center">
+        <el-table-column :label="t('auto.system_email_index_3fea7ca7')" width="100" align="center">
           <template #default="scope">
             <el-switch
               v-model="scope.row.status"
@@ -273,19 +274,19 @@ getList()
             />
           </template>
         </el-table-column>
-        <el-table-column label="操作" align="center" width="280">
+        <el-table-column :label="t('auto.system_email_index_2b6bc0f2')" align="center" width="280">
           <template #default="scope">
             <el-button type="primary" link size="small" @click="handleUpdate(scope.row)">
-              编辑
+              {{ t('auto.system_email_index_95b351c8') }}
             </el-button>
             <el-button type="info" link size="small" @click="handleTestEmail(scope.row)">
-              测试
+              {{ t('auto.system_email_index_db06c78d') }}
             </el-button>
             <el-button v-if="!scope.row.isDefault" type="success" link size="small" @click="handleSetDefault(scope.row)">
-              设为默认
+              {{ t('auto.system_email_index_1af3ec21') }}
             </el-button>
             <el-button v-if="!scope.row.isDefault" type="danger" link size="small" @click="handleDelete(scope.row)">
-              删除
+              {{ t('auto.system_email_index_2f4aaddd') }}
             </el-button>
           </template>
         </el-table-column>
@@ -301,42 +302,42 @@ getList()
         label-position="left"
         label-width="120px"
       >
-        <el-form-item label="配置名称" prop="name">
-          <el-input v-model="temp.name" placeholder="如: 企业邮箱" />
+        <el-form-item :label="t('auto.system_email_index_4fcad1c9')" prop="name">
+          <el-input v-model="temp.name" :placeholder="t('auto.system_email_index_88f76a9c')" />
         </el-form-item>
-        <el-form-item label="SMTP服务器" prop="host">
-          <el-input v-model="temp.host" placeholder="如: smtp.qq.com" />
+        <el-form-item :label="t('auto.system_email_index_4723b1de')" prop="host">
+          <el-input v-model="temp.host" :placeholder="t('auto.system_email_index_8a005771')" />
         </el-form-item>
-        <el-form-item label="SMTP端口" prop="port">
+        <el-form-item :label="t('auto.system_email_index_3ff4f51f')" prop="port">
           <el-input-number v-model="temp.port" :min="1" :max="65535" />
         </el-form-item>
-        <el-form-item label="发件人邮箱" prop="username">
-          <el-input v-model="temp.username" placeholder="发件人邮箱地址" />
+        <el-form-item :label="t('auto.system_email_index_b9d830c2')" prop="username">
+          <el-input v-model="temp.username" :placeholder="t('auto.system_email_index_e0fbe870')" />
         </el-form-item>
-        <el-form-item label="邮箱密码" prop="password">
-          <el-input v-model="temp.password" type="password" placeholder="邮箱密码或授权码" />
+        <el-form-item :label="t('auto.system_email_index_9e4d59f0')" prop="password">
+          <el-input v-model="temp.password" type="password" :placeholder="t('auto.system_email_index_4eeaf5b3')" />
           <div class="form-tip">
-            QQ邮箱、163邮箱等需要使用授权码而非登录密码
+            {{ t('auto.system_email_auth_code_tip') }}
           </div>
         </el-form-item>
-        <el-form-item label="启用SSL">
+        <el-form-item :label="t('auto.system_email_index_cd2495b1')">
           <el-switch v-model="temp.sslEnabled" />
         </el-form-item>
       </el-form>
       <template #footer>
         <div class="dialog-footer">
           <el-button @click="dialogFormVisible = false">
-            取消
+            {{ t('auto.system_email_index_625fb26b') }}
           </el-button>
           <el-button type="primary" @click="dialogStatus === 'create' ? createData() : updateData()">
-            确认
+            {{ t('auto.system_email_index_e83a256e') }}
           </el-button>
         </div>
       </template>
     </el-dialog>
 
     <!-- 测试邮件对话框 -->
-    <el-dialog v-model="testDialogVisible" title="发送测试邮件" width="500px">
+    <el-dialog v-model="testDialogVisible" :title="t('auto.system_email_index_65803afc')" width="500px">
       <el-form
         ref="testForm"
         :rules="testRules"
@@ -344,17 +345,17 @@ getList()
         label-position="left"
         label-width="100px"
       >
-        <el-form-item label="收件人邮箱" prop="to">
-          <el-input v-model="testEmailTemp.to" placeholder="测试收件人邮箱地址" />
+        <el-form-item :label="t('auto.system_email_index_78dd8a0c')" prop="to">
+          <el-input v-model="testEmailTemp.to" :placeholder="t('auto.system_email_index_c46fb766')" />
         </el-form-item>
       </el-form>
       <template #footer>
         <div class="dialog-footer">
           <el-button @click="testDialogVisible = false">
-            取消
+            {{ t('auto.system_email_index_625fb26b') }}
           </el-button>
           <el-button type="primary" @click="sendTestEmailMessage">
-            发送
+            {{ t('auto.system_email_index_1535fcfa') }}
           </el-button>
         </div>
       </template>

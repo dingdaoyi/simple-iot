@@ -1,19 +1,21 @@
 <script lang="jsx" setup>
+import { useI18n } from 'vue-i18n'
 import { ElMessage } from 'element-plus'
 import { ref } from 'vue'
 import { customPropertyAddApi, dictListApi, standardPropertyAddApi, standardPropertyEditApi } from '@/api'
 import IconInput from '@/components/IconInput.vue'
 import { useForm } from '@/composables/useForm.js'
 
+const { t } = useI18n()
 const props = defineProps(['datas', 'typeId', 'productId', 'modelValue', 'title'])
 
 const emits = defineEmits(['update', 'update:modelValue'])
 
 const rules = ref({
-  name: [{ required: true, message: '属性名称不能为空', trigger: 'blur' }],
-  identifier: [{ required: true, message: '标识符不能为空', trigger: 'blur' }],
-  accessMode: [{ required: true, message: '读写类型不能为空', trigger: 'change' }],
-  dataType: [{ required: true, message: '数据类型不能为空', trigger: 'change' }],
+  name: [{ required: true, message: t('auto.tslmodel_propertyedite_9dd30989'), trigger: 'blur' }],
+  identifier: [{ required: true, message: t('auto.tslmodel_propertyedite_ac228e59'), trigger: 'blur' }],
+  accessMode: [{ required: true, message: t('auto.tslmodel_propertyedite_3bef9972'), trigger: 'change' }],
+  dataType: [{ required: true, message: t('auto.tslmodel_propertyedite_3c1e1d42'), trigger: 'change' }],
 })
 const form = ref({
   productTypeId: props.typeId,
@@ -53,12 +55,12 @@ async function onSubmit() {
         ? customPropertyAddApi
         : standardPropertyAddApi
     await func(form.value)
-    ElMessage.success('操作成功')
+    ElMessage.success(t('auto.tslmodel_propertyedite_33130f5c'))
     emits('update')
     emits('update:modelValue', false)
   }
   catch {
-    ElMessage.error('操作失败')
+    ElMessage.error(t('auto.tslmodel_propertyedite_5fa802be'))
   }
   finally {
     loading.value = false
@@ -67,32 +69,32 @@ async function onSubmit() {
 
 const dataTypeOpt = [
   {
-    label: 'INT:整型',
+    label: t('auto.tslmodel_propertyedite_96739004'),
     value: 1,
     type: 'number',
   },
   {
-    label: 'float浮点型',
+    label: t('auto.tslmodel_propertyedite_c8331dfe'),
     value: 2,
     type: 'number',
   },
   {
-    label: 'double浮点型',
+    label: t('auto.tslmodel_propertyedite_819dbdab'),
     value: 3,
     type: 'number',
   },
   {
-    label: '枚举型',
+    label: t('auto.tslmodel_propertyedite_30f39f2a'),
     value: 4,
     type: 'enum',
   },
   {
-    label: '字符串',
+    label: t('auto.tslmodel_propertyedite_cc4dd1da'),
     value: 5,
     type: 'text',
   },
   {
-    label: '布尔',
+    label: t('auto.tslmodel_propertyedite_97b0b649'),
     value: 6,
     type: 'bool',
   },
@@ -132,13 +134,12 @@ dictListApi('analog_quantity')
 
 function changeUnit(value) {
   form.value.unitName = unitListOpt.value.find(item => item.value === value)?.label || ''
-}
-</script>
+}</script>
 
 <template>
   <el-dialog
     :model-value="modelValue"
-    :title="datas?.id ? '编辑属性' : '新增属性'"
+    :title="t('auto.tslmodel_propertyedite_8f914e5f')"
     width="600px"
     @update:model-value="$emit('update:modelValue', $event)"
     @close="onClose"
@@ -150,32 +151,32 @@ function changeUnit(value) {
       :label-width="100"
     >
       <el-form-item
-        label="属性名称"
+        :label="t('auto.tslmodel_propertyedite_45fc3131')"
         prop="name"
       >
         <el-input
           v-model="form.name"
           clearable
-          placeholder="请输入属性名称"
+          :placeholder="t('auto.tslmodel_propertyedite_e2dfb9f0')"
         />
       </el-form-item>
       <el-form-item
-        label="标识符"
+        :label="t('auto.tslmodel_propertyedite_f3c00c7e')"
         prop="identifier"
       >
         <el-input
           v-model="form.identifier"
           clearable
-          placeholder="请输入标识符"
+          :placeholder="t('auto.tslmodel_propertyedite_59a3f583')"
         />
       </el-form-item>
       <el-form-item
-        label="数据类型"
+        :label="t('auto.tslmodel_propertyedite_185f7bf6')"
         prop="dataType"
       >
         <el-select
           v-model="form.dataType"
-          placeholder="请选择"
+          :placeholder="t('auto.tslmodel_propertyedite_708c9d6d')"
           style="width: 100%"
           @change="changeDataType"
         >
@@ -188,62 +189,62 @@ function changeUnit(value) {
         </el-select>
       </el-form-item>
       <el-form-item
-        label="访问权限"
+        :label="t('auto.tslmodel_propertyedite_1fc8d87b')"
         prop="accessMode"
       >
         <el-radio-group v-model="form.accessMode">
           <el-radio value="r">
-            只读
+            {{ t('auto.tslmodel_propertyedite_85541bd9') }}
           </el-radio>
           <el-radio value="rw">
-            读写
+            {{ t('auto.tslmodel_propertyedite_2300ad28') }}
           </el-radio>
         </el-radio-group>
       </el-form-item>
       <el-form-item
         v-if="currentType === 'number'"
-        label="步进"
+        :label="t('auto.tslmodel_propertyedite_39dc34b5')"
         prop="step"
       >
         <el-input-number
           v-model="form.step"
           :min="1"
           style="width: 100%"
-          placeholder="请输入步进参数"
+          :placeholder="t('auto.tslmodel_propertyedite_1dd21048')"
         />
       </el-form-item>
       <el-form-item
         v-if="currentType === 'number'"
-        label="最大值"
+        :label="t('auto.tslmodel_propertyedite_5da89314')"
         prop="max"
       >
         <el-input-number
           v-model="form.max"
           :step="form.step"
           style="width: 100%"
-          placeholder="请输入最大值"
+          :placeholder="t('auto.tslmodel_propertyedite_b17723ed')"
         />
       </el-form-item>
       <el-form-item
         v-if="currentType === 'number'"
-        label="最小值"
+        :label="t('auto.tslmodel_propertyedite_c322edb8')"
         prop="min"
       >
         <el-input-number
           v-model="form.min"
           :step="form.step"
           style="width: 100%"
-          placeholder="请输入最小值"
+          :placeholder="t('auto.tslmodel_propertyedite_3ca1dad5')"
         />
       </el-form-item>
       <el-form-item
         v-if="currentType === 'number'"
-        label="单位"
+        :label="t('auto.tslmodel_propertyedite_f2996845')"
         prop="unit"
       >
         <el-select
           v-model="form.unit"
-          placeholder="请选择"
+          :placeholder="t('auto.tslmodel_propertyedite_708c9d6d')"
           style="width: 100%"
           @change="changeUnit"
         >
@@ -255,7 +256,7 @@ function changeUnit(value) {
           />
         </el-select>
       </el-form-item>
-      <el-form-item v-if="currentType === 'enum'" label="枚举值" prop="enums">
+      <el-form-item v-if="currentType === 'enum'" :label="t('auto.tslmodel_propertyedite_a645bf4d')" prop="enums">
         <div class="enum-inputs">
           <div
             v-for="(item, index) in form.enums"
@@ -264,12 +265,12 @@ function changeUnit(value) {
           >
             <el-input-number
               v-model="item.key"
-              placeholder="键名"
+              :placeholder="t('auto.tslmodel_propertyedite_36bf4729')"
               style="width: 40%"
             />
             <el-input
               v-model="item.value"
-              placeholder="值"
+              :placeholder="t('auto.tslmodel_propertyedite_fe7509e0')"
               style="width: 40%"
             />
             <el-button
@@ -277,68 +278,68 @@ function changeUnit(value) {
               class="enum-delete-btn"
               @click="removeEnumValue(index)"
             >
-              删除
+              {{ t('auto.tslmodel_propertyedite_2f4aaddd') }}
             </el-button>
           </div>
           <el-button class="enum-add-btn" @click="addEnumValue">
-            + 添加枚举值
+            {{ t('auto.tslmodel_propertyedite_c8598cc1') }}
           </el-button>
         </div>
       </el-form-item>
       <el-form-item
         v-if="currentType === 'text'"
-        label="字符串长度"
+        :label="t('auto.tslmodel_propertyedite_a2d2b978')"
         prop="length"
       >
         <el-input-number
           v-model="form.length"
           :min="1"
           style="width: 100%"
-          placeholder="请输入字符串长度"
+          :placeholder="t('auto.tslmodel_propertyedite_7bb2b9ad')"
         />
       </el-form-item>
       <el-form-item
         v-if="currentType === 'bool'"
-        label="false值"
+        :label="t('auto.tslmodel_propertyedite_b6020546')"
         prop="bool0"
       >
         <el-input
           v-model="form.bool0"
           clearable
-          placeholder="请输入false代表信息"
+          :placeholder="t('auto.tslmodel_propertyedite_62b0229d')"
         />
       </el-form-item>
       <el-form-item
         v-if="currentType === 'bool'"
-        label="true值"
+        :label="t('auto.tslmodel_propertyedite_5e68d75b')"
         prop="bool1"
       >
         <el-input
           v-model="form.bool1"
           clearable
-          placeholder="请输入true代表信息"
+          :placeholder="t('auto.tslmodel_propertyedite_32a0ad8e')"
         />
       </el-form-item>
       <el-form-item
-        label="备注"
+        :label="t('auto.tslmodel_propertyedite_2432b575')"
         prop="remark"
       >
         <el-input
           v-model="form.remark"
           clearable
-          placeholder="请输入备注信息"
+          :placeholder="t('auto.tslmodel_propertyedite_245475e1')"
         />
       </el-form-item>
-      <el-form-item label="图标" prop="iconId">
+      <el-form-item :label="t('auto.tslmodel_propertyedite_5ef69f62')" prop="iconId">
         <IconInput v-model:value="form.iconId" />
       </el-form-item>
     </el-form>
     <template #footer>
       <el-button class="glass-btn glass-btn-secondary" @click="onClose">
-        取消
+        {{ t('auto.tslmodel_propertyedite_625fb26b') }}
       </el-button>
       <el-button type="primary" :loading="loading" class="glass-btn glass-btn-primary" @click="onSubmit">
-        {{ datas?.id ? '保存' : '新增' }}
+        {{ datas?.id ? t('auto.tslmodel_widget_propertyedite_be5fbbe3') : t('auto.tslmodel_widget_propertyedite_66ab5e9f') }}
       </el-button>
     </template>
   </el-dialog>

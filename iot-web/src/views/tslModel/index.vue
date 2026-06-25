@@ -1,4 +1,5 @@
 <script setup>
+import { useI18n } from 'vue-i18n'
 import { ref } from 'vue'
 import { useRoute } from 'vue-router'
 import { productDetailApi, productTypeDetailApi } from '@/api/index.js'
@@ -7,19 +8,20 @@ import ProductInfo from '@/views/tslModel/widget/productInfo.vue'
 import ServiceConfig from '@/views/tslModel/widget/serviceConfig.vue'
 import tslexpoert from '@/views/tslModel/widget/tslexpoert.vue'
 
+const { t } = useI18n()
 const activeName = ref('service')
 const route = useRoute()
 const breadcrumbs = ref(
   [
     {
-      label: '产品类型',
+      label: t('auto.tslmodel_index_2db97cae'),
       path: '/productType',
     },
     {
-      label: '物模型',
+      label: t('auto.tslmodel_index_1ff43b4a'),
     },
     {
-      label: '物模型',
+      label: t('auto.tslmodel_index_1ff43b4a'),
     },
   ],
 )
@@ -42,7 +44,7 @@ function loadDetails() {
             label: data.model,
           },
           {
-            label: '物模型',
+            label: t('auto.tslmodel_index_1ff43b4a'),
           },
         ]
       })
@@ -55,8 +57,7 @@ function loadDetails() {
       })
   }
 }
-loadDetails()
-</script>
+loadDetails()</script>
 
 <template>
   <div class="tsl-page">
@@ -66,10 +67,10 @@ loadDetails()
         v-model="activeName"
         class="tsl-tabs"
       >
-        <el-tab-pane label="基础信息" name="first">
+        <el-tab-pane :label="t('auto.tslmodel_index_6ea1fe6b')" name="first">
           <ProductInfo :type-id="productTypeId" :product-id="productId" />
         </el-tab-pane>
-        <el-tab-pane label="服务定义" name="service">
+        <el-tab-pane :label="t('auto.tslmodel_index_256aa787')" name="service">
           <ServiceConfig :type-id="productTypeId" :product-id="productId" />
         </el-tab-pane>
         <el-tab-pane v-if="productId" label="TSL" name="tsl">

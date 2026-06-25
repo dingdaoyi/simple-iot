@@ -1,6 +1,8 @@
 <script setup>
+import { computed } from 'vue'
 import { ArrowDown, Check, Expand, Fold, Lightning, Monitor, Moon, Sunny, SwitchButton, User } from '@element-plus/icons-vue'
 import { useRouter } from 'vue-router'
+import { useI18n } from 'vue-i18n'
 import { useSidebar } from '@/composables/useSidebar.js'
 import { useTheme } from '@/composables/useTheme.js'
 import { useAccountStore } from '@/store'
@@ -8,7 +10,8 @@ import LocaleSwitcher from '@/components/LocaleSwitcher.vue'
 
 const router = useRouter()
 const store = useAccountStore()
-const userName = '管理员'
+const { t } = useI18n()
+const userName = computed(() => t('header.profile'))
 const { theme, setTheme, resolvedTheme } = useTheme()
 const { isCollapsed, toggle } = useSidebar()
 
@@ -18,14 +21,14 @@ function outLogin() {
 }
 
 // 主题选项
-const themeOptions = [
-  { value: 'auto', label: '跟随系统', icon: Monitor },
-  { value: 'light', label: '亮色模式', icon: Sunny },
-  { value: 'dark', label: '暗色模式', icon: Moon },
-]
+const themeOptions = computed(() => [
+  { value: 'auto', label: t('header.theme_auto'), icon: Monitor },
+  { value: 'light', label: t('header.theme_light'), icon: Sunny },
+  { value: 'dark', label: t('header.theme_dark'), icon: Moon },
+])
 
 function getThemeLabel() {
-  return themeOptions.find(t => t.value === theme.value)?.label || '跟随系统'
+  return themeOptions.value.find(o => o.value === theme.value)?.label || t('header.theme_auto')
 }
 
 function getThemeIcon() {
@@ -49,7 +52,7 @@ function getThemeIcon() {
         <el-icon :size="24" class="logo-icon">
           <Lightning />
         </el-icon>
-        <span class="logo-text">简单 IoT</span>
+        <span class="logo-text">{{ t('login.title') }}</span>
       </div>
     </div>
     <div class="header-right">
@@ -106,7 +109,7 @@ function getThemeIcon() {
               <el-icon>
                 <SwitchButton />
               </el-icon>
-              退出登录
+              {{ t('header.logout') }}
             </el-dropdown-item>
           </el-dropdown-menu>
         </template>

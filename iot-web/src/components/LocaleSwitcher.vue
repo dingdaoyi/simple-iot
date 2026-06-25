@@ -7,7 +7,7 @@
     <template #dropdown>
       <el-dropdown-menu>
         <el-dropdown-item command="zh-CN" :disabled="currentLocale === 'zh-CN'">
-          简体中文
+          {{ t('locale.zh_cn') }}
         </el-dropdown-item>
         <el-dropdown-item command="en-US" :disabled="currentLocale === 'en-US'">
           English
@@ -23,18 +23,18 @@ import { useI18n } from 'vue-i18n'
 import { setLocale } from '@/locales'
 import { ElMessage } from 'element-plus'
 
-const { locale } = useI18n()
+const { t, locale } = useI18n()
 
 const currentLocale = computed(() => locale.value)
 
 const currentLocaleLabel = computed(() => {
-  return currentLocale.value === 'zh-CN' ? '简体中文' : 'English'
+  return currentLocale.value === 'zh-CN' ? t('locale.zh_cn') : t('locale.en_us')
 })
 
 function handleCommand(command) {
   setLocale(command)
   ElMessage.success({
-    message: command === 'zh-CN' ? '切换到简体中文' : 'Switched to English',
+    message: command === 'zh-CN' ? t('locale.switched_zh') : t('locale.switched_en'),
     duration: 1500,
   })
   // 刷新页面以应用新语言（Element Plus 需要重新初始化）

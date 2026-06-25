@@ -1,6 +1,7 @@
 <script setup>
 import { ElMessage } from 'element-plus'
 import { computed, ref } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { callDeviceServiceApi } from '@/api/index.js'
 
 const props = defineProps({
@@ -9,6 +10,8 @@ const props = defineProps({
     required: true,
   },
 })
+
+const { t } = useI18n()
 
 // 获取设备的服务列表
 const serviceList = computed(() => {
@@ -77,7 +80,9 @@ function getValidationRules(param) {
   const rules = []
 
   if (param.required) {
-    const message = param.dataType === 'bool' ? `请选择${param.name}` : `请输入${param.name}`
+    const message = param.dataType === 'bool'
+      ? t('common.placeholder_select', { field: param.name })
+      : t('common.placeholder_input', { field: param.name })
     rules.push({
       required: true,
       message,
@@ -92,7 +97,10 @@ function getValidationRules(param) {
         type: 'number',
         min: param.min,
         max: param.max,
-        message: `值应在${param.min ?? '无限制'}到${param.max ?? '无限制'}之间`,
+        message: t('validate.value_range', {
+          min: param.min ?? t('device.unlimited'),
+          max: param.max ?? t('device.unlimited'),
+        }),
         trigger: 'blur',
       })
     }
@@ -103,7 +111,7 @@ function getValidationRules(param) {
     if (param.maxLength) {
       rules.push({
         max: param.maxLength,
-        message: `长度不能超过${param.maxLength}个字符`,
+        message: t('validate.max_length', { max: param.maxLength }),
         trigger: 'blur',
       })
     }
@@ -130,7 +138,7 @@ async function callDeviceService() {
     )
 
     if (result.success) {
-      ElMessage.success('服务调用成功')
+      ElMessage.success(t('device.service_call_success'))
       callResult.value = result.data
       showResult.value = true
 
@@ -142,7 +150,7 @@ async function callDeviceService() {
       }
     }
     else {
-      ElMessage.error(result.msg || '服务调用失败')
+      ElMessage.error(result.msg || t('device.service_call_failed'))
     }
   }
   finally {
@@ -177,7 +185,7 @@ function renderFormItem(param) {
   <div class="service-container">
     <!-- 服务列表 -->
     <div v-if="serviceList.length === 0" class="empty-state glass-card">
-      <el-empty description="暂无可用服务" />
+      <el-empty :description="t('device.no_available_service')" />
     </div>
 
     <div v-else class="service-grid">
@@ -193,7 +201,7 @@ function renderFormItem(param) {
               {{ service.name }}
             </h3>
             <el-tag type="primary" size="small" effect="dark" class="service-tag">
-              服务
+              {{ t('device.service') }}
             </el-tag>
           </div>
 
@@ -202,10 +210,10 @@ function renderFormItem(param) {
               {{ service.identifier }}
             </code>
             <el-tag v-if="service.async" type="warning" size="small" effect="light">
-              异步
+              {{ t('device.async') }}
             </el-tag>
             <el-tag v-if="service.required" type="danger" size="small" effect="light">
-              必选
+              {{ t('device.required') }}
             </el-tag>
           </div>
 
@@ -224,7 +232,7 @@ function renderFormItem(param) {
               <div class="param-header">
                 <div class="param-header-left">
                   <div class="param-dot" />
-                  <span class="param-label">输入</span>
+                  <span class="param-label">{{ t('device.input') }}</span>
                 </div>
                 <span class="param-count">{{ service.inputParams?.length || 0 }}</span>
               </div>
@@ -239,11 +247,11 @@ function renderFormItem(param) {
                     {{ param.name }}
                   </div>
                   <div v-if="service.inputParams.length > 2" class="param-more">
-                    +{{ service.inputParams.length - 2 }} 更多
+                    {{ t('device.more_count', { count: service.inputParams.length - 2 }) }}
                   </div>
                 </div>
                 <div v-else class="param-empty">
-                  无输入参数
+                  {{ t('device.no_input_params') }}
                 </div>
               </div>
             </div>
@@ -253,7 +261,7 @@ function renderFormItem(param) {
               <div class="param-header">
                 <div class="param-header-left">
                   <div class="param-dot" />
-                  <span class="param-label">输出</span>
+                  <span class="param-label">{{ t('device.output') }}</span>
                 </div>
                 <span class="param-count">{{ service.outputParams?.length || 0 }}</span>
               </div>
@@ -268,11 +276,11 @@ function renderFormItem(param) {
                     {{ param.name }}
                   </div>
                   <div v-if="service.outputParams.length > 2" class="param-more">
-                    +{{ service.outputParams.length - 2 }} 更多
+                    {{ t('device.more_count', { count: service.outputParams.length - 2 }) }}
                   </div>
                 </div>
                 <div v-else class="param-empty">
-                  无输出参数
+                  {{ t('device.no_output_params') }}
                 </div>
               </div>
             </div>
@@ -284,7 +292,7 @@ function renderFormItem(param) {
               type="primary"
               @click="showServiceDialog(service)"
             >
-              调用服务
+              {{ t('device.invoke_service') }}
             </el-button>
           </div>
         </div>
@@ -294,24 +302,24 @@ function renderFormItem(param) {
     <!-- 服务调用对话框 -->
     <el-dialog
       v-model="serviceDialogVisible"
-      :title="`调用服务: ${activeService?.name}`"
+      :title="t('device.invoke_service_title', { name: activeService?.name || '' })"
       width="600px"
       :close-on-click-modal="false"
     >
       <div v-if="activeService">
         <div class="dialog-info">
           <div class="info-row">
-            <strong>服务标识:</strong>
+            <strong>{{ t('device.service_identifier') }}:</strong>
             <code class="info-code">{{ activeService.identifier }}</code>
             <el-tag v-if="activeService.async" type="warning" size="small">
-              异步
+              {{ t('device.async') }}
             </el-tag>
             <el-tag v-if="activeService.required" type="danger" size="small">
-              必选
+              {{ t('device.required') }}
             </el-tag>
           </div>
           <p v-if="activeService.remark" class="info-desc">
-            <strong>服务描述:</strong> {{ activeService.remark }}
+            <strong>{{ t('device.service_description') }}:</strong> {{ activeService.remark }}
           </p>
         </div>
 
@@ -322,7 +330,7 @@ function renderFormItem(param) {
         >
           <div v-if="!activeService.inputParams || activeService.inputParams.length === 0">
             <el-alert
-              title="此服务无需输入参数"
+              :title="t('device.no_input_required')"
               type="info"
               :closable="false"
               show-icon
@@ -340,15 +348,15 @@ function renderFormItem(param) {
             <el-switch
               v-if="renderFormItem(param) === 'switch'"
               v-model="serviceForm[param.identifier]"
-              :active-text="param.trueText || '开'"
-              :inactive-text="param.falseText || '关'"
+              :active-text="param.trueText || t('device.on')"
+              :inactive-text="param.falseText || t('device.off')"
             />
 
             <!-- 枚举类型 -->
             <el-select
               v-else-if="renderFormItem(param) === 'enum'"
               v-model="serviceForm[param.identifier]"
-              :placeholder="`请选择${param.name}`"
+              :placeholder="t('common.placeholder_select', { field: param.name })"
               style="width: 100%"
               clearable
             >
@@ -368,7 +376,7 @@ function renderFormItem(param) {
               :max="param.max"
               :step="param.step || 1"
               :precision="param.dataType === 'int' ? 0 : 2"
-              :placeholder="`请输入${param.name}`"
+              :placeholder="t('common.placeholder_input', { field: param.name })"
               style="width: 100%"
             />
 
@@ -377,7 +385,7 @@ function renderFormItem(param) {
               v-else-if="renderFormItem(param) === 'date'"
               v-model="serviceForm[param.identifier]"
               type="datetime"
-              :placeholder="`请选择${param.name}`"
+              :placeholder="t('common.placeholder_select', { field: param.name })"
               style="width: 100%"
             />
 
@@ -388,7 +396,7 @@ function renderFormItem(param) {
               type="textarea"
               :rows="3"
               :maxlength="param.maxLength"
-              :placeholder="`请输入${param.name}`"
+              :placeholder="t('common.placeholder_input', { field: param.name })"
               show-word-limit
             />
 
@@ -397,7 +405,7 @@ function renderFormItem(param) {
               v-else
               v-model="serviceForm[param.identifier]"
               :maxlength="param.maxLength"
-              :placeholder="`请输入${param.name}`"
+              :placeholder="t('common.placeholder_input', { field: param.name })"
               clearable
             />
 
@@ -410,14 +418,14 @@ function renderFormItem(param) {
         <!-- 调用结果显示 -->
         <div v-if="showResult" class="result-section">
           <el-divider content-position="left">
-            调用结果
+            {{ t('device.invoke_result') }}
           </el-divider>
           <div v-if="callResult" class="result-content">
             <pre>{{ JSON.stringify(callResult, null, 2) }}</pre>
           </div>
           <div v-else class="result-empty">
             <el-tag type="success">
-              服务调用成功，无返回数据
+              {{ t('device.service_success_no_data') }}
             </el-tag>
           </div>
         </div>
@@ -426,17 +434,17 @@ function renderFormItem(param) {
       <template #footer>
         <div class="dialog-footer">
           <el-button @click="serviceDialogVisible = false">
-            取消
+            {{ t('common.cancel') }}
           </el-button>
           <el-button @click="resetForm">
-            重置
+            {{ t('common.reset') }}
           </el-button>
           <el-button
             type="primary"
             :loading="loading"
             @click="callDeviceService"
           >
-            调用服务
+            {{ t('device.invoke_service') }}
           </el-button>
         </div>
       </template>

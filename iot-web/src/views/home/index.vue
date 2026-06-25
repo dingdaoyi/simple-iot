@@ -13,12 +13,14 @@ import {
   Setting,
 } from '@element-plus/icons-vue'
 import { computed, onMounted, ref } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { useRouter } from 'vue-router'
 import { getDashboardStatistics } from '@/api/dashboard'
 import { alarmPageApi, alarmStatisticsApi, devicePageApi } from '@/api/index.js'
 import AlarmDetailDialog from '@/components/AlarmDetailDialog.vue'
 
 const router = useRouter()
+const { t, locale } = useI18n()
 
 const stats = ref({
   total: 0,
@@ -56,15 +58,15 @@ const onlineRate = computed(() => {
 const overviewCards = computed(() => [
   {
     key: 'total',
-    label: '设备总数',
+    label: t('home.device_total'),
     value: stats.value.total,
     icon: Monitor,
     color: 'primary',
-    trend: stats.value.todayAdd > 0 ? `+${stats.value.todayAdd} 今日` : null,
+    trend: stats.value.todayAdd > 0 ? t('home.today_count', { count: stats.value.todayAdd }) : null,
   },
   {
     key: 'online',
-    label: '在线设备',
+    label: t('home.online_device'),
     value: stats.value.online,
     icon: CircleCheck,
     color: 'success',
@@ -72,7 +74,7 @@ const overviewCards = computed(() => [
   },
   {
     key: 'offline',
-    label: '离线设备',
+    label: t('home.offline_device'),
     value: stats.value.offline,
     icon: CircleClose,
     color: 'danger',
@@ -80,7 +82,7 @@ const overviewCards = computed(() => [
   },
   {
     key: 'todayAdd',
-    label: '今日新增',
+    label: t('home.today_add'),
     value: stats.value.todayAdd,
     icon: Plus,
     color: 'accent',
@@ -89,14 +91,14 @@ const overviewCards = computed(() => [
 ])
 
 // 快捷入口
-const quickLinks = [
-  { name: '设备管理', icon: Monitor, path: '/device', color: 'var(--iot-color-primary)' },
-  { name: '产品管理', icon: Box, path: '/product', color: 'var(--iot-color-secondary)' },
-  { name: '协议管理', icon: Connection, path: '/protocol', color: 'var(--iot-color-success)' },
-  { name: '规则引擎', icon: Lightning, path: '/rule-chain', color: 'var(--iot-color-warning)' },
-  { name: '告警管理', icon: Bell, path: '/alarm', color: 'var(--iot-color-danger)' },
-  { name: '系统设置', icon: Setting, path: '/icon', color: 'var(--iot-color-accent)' },
-]
+const quickLinks = computed(() => [
+  { name: t('menu.device'), icon: Monitor, path: '/device', color: 'var(--iot-color-primary)' },
+  { name: t('menu.product'), icon: Box, path: '/product', color: 'var(--iot-color-secondary)' },
+  { name: t('menu.protocol'), icon: Connection, path: '/protocol', color: 'var(--iot-color-success)' },
+  { name: t('menu.ruleChain'), icon: Lightning, path: '/rule-chain', color: 'var(--iot-color-warning)' },
+  { name: t('menu.alarm'), icon: Bell, path: '/alarm', color: 'var(--iot-color-danger)' },
+  { name: t('common.settings'), icon: Setting, path: '/icon', color: 'var(--iot-color-accent)' },
+])
 
 // 跳转页面
 function navigateTo(path) {
@@ -111,7 +113,7 @@ async function loadRecentDevices() {
     recentDevices.value = res.data?.records || res.data || []
   }
   catch (e) {
-    console.error('加载设备失败:', e)
+    console.error(t('auto.home_index_f6dd70fd'), e)
   }
   finally {
     devicesLoading.value = false
@@ -130,14 +132,14 @@ async function loadAlerts() {
     const records = res.data?.records || res.data || []
     alerts.value = records.map(alarm => ({
       ...alarm,
-      device: alarm.deviceName || alarm.deviceKey || '未知设备',
-      message: alarm.message || alarm.alarmName || '告警',
+      device: alarm.deviceName || alarm.deviceKey || t('device.unknown_device'),
+      message: alarm.message || alarm.alarmName || t('alarm.alarm'),
       level: getAlarmLevel(alarm.severity),
       time: formatRelativeTime(alarm.startTs),
     }))
   }
   catch (e) {
-    console.error('加载告警失败:', e)
+    console.error(t('auto.home_index_0fe1b899'), e)
   }
   finally {
     alertsLoading.value = false
@@ -152,7 +154,7 @@ async function loadAlertStats() {
     alertStats.value.activeCount = data.activeCount || 0
   }
   catch (e) {
-    console.error('加载告警统计失败:', e)
+    console.error(t('auto.home_index_e9876fd4'), e)
   }
 }
 
@@ -182,15 +184,15 @@ function formatRelativeTime(timeStr) {
   const days = Math.floor(diff / 86400000)
 
   if (minutes < 1)
-    return '刚刚'
+    return t('home.just_now')
   if (minutes < 60)
-    return `${minutes}分钟前`
+    return t('home.minutes_ago', { count: minutes })
   if (hours < 24)
-    return `${hours}小时前`
+    return t('home.hours_ago', { count: hours })
   if (days < 7)
-    return `${days}天前`
+    return t('home.days_ago', { count: days })
 
-  return date.toLocaleDateString('zh-CN', {
+  return date.toLocaleDateString(locale.value, {
     month: '2-digit',
     day: '2-digit',
     hour: '2-digit',
@@ -217,7 +219,7 @@ function getDeviceStatusType(online) {
 
 // 获取设备状态文字
 function getDeviceStatusText(online) {
-  return online ? '在线' : '离线'
+  return online ? t('device.online') : t('device.offline')
 }
 
 onMounted(() => {
@@ -229,8 +231,7 @@ onMounted(() => {
   loadRecentDevices()
   loadAlerts()
   loadAlertStats()
-})
-</script>
+})</script>
 
 <template>
   <div class="dashboard-page">
@@ -271,7 +272,7 @@ onMounted(() => {
             <el-icon :size="20">
               <Cpu />
             </el-icon>
-            <h3>系统资源</h3>
+            <h3>{{ t('home.system_resources') }}</h3>
           </div>
           <div class="resource-list">
             <div class="resource-item">
@@ -288,7 +289,7 @@ onMounted(() => {
             </div>
             <div class="resource-item">
               <div class="resource-info">
-                <span class="resource-label">内存</span>
+                <span class="resource-label">{{ t('home.memory') }}</span>
                 <span class="resource-value">{{ stats.memoryUsage }}%</span>
               </div>
               <el-progress
@@ -300,7 +301,7 @@ onMounted(() => {
             </div>
             <div class="resource-item">
               <div class="resource-info">
-                <span class="resource-label">磁盘</span>
+                <span class="resource-label">{{ t('home.disk') }}</span>
                 <span class="resource-value">{{ stats.diskUsage }}%</span>
               </div>
               <el-progress
@@ -319,7 +320,7 @@ onMounted(() => {
             <el-icon :size="20">
               <Grid />
             </el-icon>
-            <h3>快捷入口</h3>
+            <h3>{{ t('home.quick_actions') }}</h3>
           </div>
           <div class="links-grid">
             <div
@@ -346,9 +347,9 @@ onMounted(() => {
             <el-icon :size="20">
               <Monitor />
             </el-icon>
-            <h3>最近设备</h3>
+            <h3>{{ t('home.recent_devices') }}</h3>
             <el-button type="primary" link size="small" class="view-all" @click="navigateTo('/device')">
-              查看全部
+              {{ t('home.view_all') }}
             </el-button>
           </div>
           <div v-loading="devicesLoading" class="devices-list">
@@ -367,7 +368,7 @@ onMounted(() => {
               </el-tag>
             </div>
             <div v-if="!devicesLoading && recentDevices.length === 0" class="empty-tip">
-              暂无设备数据
+              {{ t('home.no_device_data') }}
             </div>
           </div>
         </div>
@@ -378,10 +379,10 @@ onMounted(() => {
             <el-icon :size="20" class="alert-bell">
               <Bell />
             </el-icon>
-            <h3>告警动态</h3>
+            <h3>{{ t('home.alarm_activity') }}</h3>
             <el-badge :value="alertStats.activeCount" class="alert-badge" :hidden="alertStats.activeCount === 0" />
             <el-button type="primary" link size="small" class="view-all" @click="navigateTo('/alarm')">
-              查看全部
+              {{ t('home.view_all') }}
             </el-button>
           </div>
           <div v-loading="alertsLoading" class="alerts-list">
@@ -404,7 +405,7 @@ onMounted(() => {
               </div>
             </div>
             <div v-if="!alertsLoading && alerts.length === 0" class="empty-tip">
-              暂无活动告警
+              {{ t('home.no_active_alarm') }}
             </div>
           </div>
         </div>

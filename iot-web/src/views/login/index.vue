@@ -42,7 +42,7 @@ function onSubmit() {
         const { code, data } = rs
         if (code === 200) {
           ctx.$message.success({
-            message: '登录成功',
+            message: t('auto.login_index_71fa3bd0'),
             duration: 1000,
           })
 

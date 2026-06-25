@@ -1,6 +1,7 @@
 <script setup>
 import { Cpu, Delete, Edit, Monitor, RefreshRight } from '@element-plus/icons-vue'
-import { onMounted, ref } from 'vue'
+import { computed, h, onMounted, ref } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { useRouter } from 'vue-router'
 import { deviceDeleteApi, devicePageApi, manufacturerListApi, productListApi, productTypeListApi } from '@/api/index.js'
 import IotTable from '@/components/IotTable.vue'
@@ -10,58 +11,63 @@ import { activateOpts, onlineOpts } from '@/utils/base.jsx'
 import EditDia from '@/views/device/widget/editDia.vue'
 
 const router = useRouter()
+const { t } = useI18n()
 const parentId = ref(-1)
 const productTypeList = ref([])
 const manufacturerListOpt = ref([])
 const productListOpt = ref([])
 
-const column = [
+const column = computed(() => [
   {
     prop: 'productTypeName',
-    label: '产品类型',
+    label: t('product.product_type'),
   },
   {
     prop: 'productModel',
-    label: '型号',
+    label: t('device.product_model'),
   },
   {
     prop: 'manufacturer',
-    label: '厂家',
+    label: t('device.manufacturer'),
   },
   {
     prop: 'deviceName',
-    label: '设备名称',
+    label: t('device.device_name'),
   },
   {
     prop: 'deviceKey',
-    label: '设备编号',
+    label: t('device.device_key'),
     width: 180,
   },
   {
     prop: 'online',
-    label: '在线状态',
+    label: t('device.online_status'),
     width: 120,
     render({ row }) {
       const data = onlineOpts.find(o => o.value === row.online)
-      return data?.render() || '-'
+      if (!data)
+        return '-'
+      return h('div', { style: { color: data.color } }, row.online ? t('device.online') : t('device.offline'))
     },
   },
   {
     prop: 'activeStatus',
-    label: '激活状态',
+    label: t('device.active_status'),
     width: 120,
     render({ row }) {
       const data = activateOpts.find(o => o.value === row.activeStatus)
-      return data?.render() || '-'
+      if (!data)
+        return '-'
+      return h('div', { style: { color: data.color } }, row.activeStatus ? t('device.activated') : t('device.not_activated'))
     },
   },
   {
     prop: 'cz',
     slot: 'cz',
     width: 220,
-    label: '操作',
+    label: t('common.operation'),
   },
-]
+])
 
 const {
   params,
@@ -82,7 +88,7 @@ const {
 } = useTable({
   deleteApi: deviceDeleteApi,
   fetchApi: devicePageApi,
-  diaName: '设备',
+  diaName: t('device.device'),
   defParams: {
     parentId: parentId.value,
   },
@@ -149,8 +155,8 @@ onMounted(() => {
   <div class="device-page">
     <!-- 页面标题 -->
     <PageHeader
-      title="设备管理"
-      subtitle="管理物联网设备连接与状态监控"
+      :title="t('menu.device')"
+      :subtitle="t('device.page_subtitle')"
       :icon="Cpu"
     />
 
@@ -158,10 +164,10 @@ onMounted(() => {
     <div class="search-bar glass-card">
       <el-form :inline="false" class="search-form">
         <div class="form-row">
-          <el-form-item label="产品类型">
+          <el-form-item :label="t('product.product_type')">
             <el-select
               v-model="params.productTypeId"
-              placeholder="选择产品类型"
+              :placeholder="t('common.placeholder_select', { field: t('product.product_type') })"
               filterable
               clearable
               @change="changeProductType"
@@ -175,10 +181,10 @@ onMounted(() => {
             </el-select>
           </el-form-item>
 
-          <el-form-item label="厂家">
+          <el-form-item :label="t('device.manufacturer')">
             <el-select
               v-model="params.manufacturer"
-              placeholder="选择厂家"
+              :placeholder="t('common.placeholder_select', { field: t('device.manufacturer') })"
               filterable
               clearable
               @change="changeManufacturer"
@@ -192,10 +198,10 @@ onMounted(() => {
             </el-select>
           </el-form-item>
 
-          <el-form-item label="型号">
+          <el-form-item :label="t('device.product_model')">
             <el-select
               v-model="params.productId"
-              placeholder="选择型号"
+              :placeholder="t('common.placeholder_select', { field: t('device.product_model') })"
               filterable
               clearable
             >
@@ -208,22 +214,22 @@ onMounted(() => {
             </el-select>
           </el-form-item>
 
-          <el-form-item label="设备编号">
-            <el-input v-model="params.deviceKey" clearable placeholder="输入设备编号" @keyup.enter="onSearch" />
+          <el-form-item :label="t('device.device_key')">
+            <el-input v-model="params.deviceKey" clearable :placeholder="t('common.placeholder_input', { field: t('device.device_key') })" @keyup.enter="onSearch" />
           </el-form-item>
         </div>
 
         <div class="form-actions">
           <el-button type="primary" @click="onSearch">
             <span class="btn-icon">⌕</span>
-            搜索
+            {{ t('common.search') }}
           </el-button>
           <el-button :icon="RefreshRight" @click="resetFilters">
-            重置
+            {{ t('common.reset') }}
           </el-button>
           <el-button type="primary" @click="onAdd">
             <span class="btn-icon">+</span>
-            添加设备
+            {{ t('device.add_device') }}
           </el-button>
         </div>
       </el-form>
@@ -243,13 +249,13 @@ onMounted(() => {
       >
         <template #cz="{ row }">
           <el-button type="primary" link :icon="Monitor" @click="showDetails(row)">
-            设备详情
+            {{ t('device.device_detail') }}
           </el-button>
           <el-button type="primary" link :icon="Edit" @click="onEdit(row)">
-            编辑
+            {{ t('common.edit') }}
           </el-button>
           <el-button type="danger" link :icon="Delete" @click="onDelete(row)">
-            删除
+            {{ t('common.delete') }}
           </el-button>
         </template>
       </IotTable>

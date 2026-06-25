@@ -1,20 +1,22 @@
 <script lang="jsx" setup>
 import { ref, watch } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { deviceAddApi, deviceEditeApi, manufacturerListApi, productListApi } from '@/api'
 import { useForm } from '@/composables/useForm.js'
 
 const props = defineProps(['datas', 'productTypeList', 'modelValue'])
 
 const emits = defineEmits(['update', 'update:modelValue'])
+const { t } = useI18n()
 
 const manufacturerListOpt = ref([])
 const productListOpt = ref([])
 
 const rules = ref({
-  productTypeId: [{ required: true, message: '产品类型不能为空', trigger: 'change' }],
-  manufacturer: [{ required: true, message: '厂家不能为空', trigger: 'change' }],
-  productId: [{ required: true, message: '产品型号不能为空', trigger: 'change' }],
-  deviceKey: [{ required: true, message: '设备编号不能为空', trigger: 'blur' }],
+  productTypeId: [{ required: true, message: t('validate.required_field', { field: t('product.product_type') }), trigger: 'change' }],
+  manufacturer: [{ required: true, message: t('validate.required_field', { field: t('device.manufacturer') }), trigger: 'change' }],
+  productId: [{ required: true, message: t('validate.required_field', { field: t('device.product_model') }), trigger: 'change' }],
+  deviceKey: [{ required: true, message: t('validate.required_field', { field: t('device.device_key') }), trigger: 'blur' }],
 })
 
 const { form, onSubmit: handleSubmit, editRef, loading } = useForm({
@@ -71,7 +73,7 @@ watch(() => props.datas, (val) => {
 <template>
   <el-dialog
     :model-value="modelValue"
-    :title="datas?.id ? '编辑' : '新增'"
+    :title="datas?.id ? t('common.edit') : t('common.add')"
     width="600px"
     @update:model-value="$emit('update:modelValue', $event)"
   >
@@ -82,12 +84,12 @@ watch(() => props.datas, (val) => {
       label-width="100px"
     >
       <el-form-item
-        label="产品类型"
+        :label="t('product.product_type')"
         prop="productTypeId"
       >
         <el-select
           v-model="form.productTypeId"
-          placeholder="请选择产品类型"
+          :placeholder="t('common.placeholder_select', { field: t('product.product_type') })"
           style="width: 100%"
           filterable
           clearable
@@ -102,12 +104,12 @@ watch(() => props.datas, (val) => {
         </el-select>
       </el-form-item>
       <el-form-item
-        label="厂家"
+        :label="t('device.manufacturer')"
         prop="manufacturer"
       >
         <el-select
           v-model="form.manufacturer"
-          placeholder="请选择厂家"
+          :placeholder="t('common.placeholder_select', { field: t('device.manufacturer') })"
           style="width: 100%"
           filterable
           clearable
@@ -122,12 +124,12 @@ watch(() => props.datas, (val) => {
         </el-select>
       </el-form-item>
       <el-form-item
-        label="型号"
+        :label="t('device.product_model')"
         prop="productId"
       >
         <el-select
           v-model="form.productId"
-          placeholder="请选择型号"
+          :placeholder="t('common.placeholder_select', { field: t('device.product_model') })"
           style="width: 100%"
           filterable
           clearable
@@ -142,32 +144,32 @@ watch(() => props.datas, (val) => {
         </el-select>
       </el-form-item>
       <el-form-item
-        label="设备编号"
+        :label="t('device.device_key')"
         prop="deviceKey"
       >
         <el-input
           v-model="form.deviceKey"
           clearable
-          placeholder="请输入设备编号"
+          :placeholder="t('common.placeholder_input', { field: t('device.device_key') })"
         />
       </el-form-item>
       <el-form-item
-        label="设备名称"
+        :label="t('device.device_name')"
         prop="deviceName"
       >
         <el-input
           v-model="form.deviceName"
           clearable
-          placeholder="请输入设备名称"
+          :placeholder="t('common.placeholder_input', { field: t('device.device_name') })"
         />
       </el-form-item>
     </el-form>
     <template #footer>
       <el-button @click="onCancel">
-        取消
+        {{ t('common.cancel') }}
       </el-button>
       <el-button type="primary" :loading="loading" @click="onSubmit">
-        确定
+        {{ t('common.confirm') }}
       </el-button>
     </template>
   </el-dialog>

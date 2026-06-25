@@ -1,4 +1,5 @@
 <script lang="jsx" setup>
+import { useI18n } from 'vue-i18n'
 import { Delete, Edit, RefreshRight } from '@element-plus/icons-vue'
 import { ElButton, ElMessage, ElMessageBox } from 'element-plus'
 import { h, ref } from 'vue'
@@ -13,6 +14,7 @@ import { useTable } from '@/composables/useTable.js'
 import ParamShow from '@/views/tslModel/widget/paramShow.vue' // 引入图标
 import ServiceEdite from '@/views/tslModel/widget/serviceEdite.vue'
 
+const { t } = useI18n()
 const props = defineProps(['typeId', 'productId', 'showEdite'])
 
 const propertiesDct = ref([])
@@ -33,18 +35,18 @@ function refreshTable() {
 // 自定义删除方法
 async function handleDelete(row) {
   try {
-    await ElMessageBox.confirm('确定要删除服务吗?', '提示', {
-      confirmButtonText: '确定',
-      cancelButtonText: '取消',
+    await ElMessageBox.confirm(t('auto.tslmodel_widget_service_8c4a16b0'), t('auto.tslmodel_widget_service_02d9819d'), {
+      confirmButtonText: t('auto.tslmodel_service_38cf16f2'),
+      cancelButtonText: t('auto.tslmodel_service_625fb26b'),
       type: 'warning',
     })
     await serviceDeleteApi(row.id)
-    ElMessage.success('删除成功')
+    ElMessage.success(t('auto.tslmodel_service_0007d170'))
     refreshTable()
   }
   catch (error) {
     if (error !== 'cancel') {
-      console.error('删除失败:', error)
+      console.error(t('auto.tslmodel_widget_service_b42909e2'), error)
     }
   }
 }
@@ -52,26 +54,26 @@ async function handleDelete(row) {
 const column = [
   {
     prop: 'id',
-    label: '服务ID',
+    label: t('auto.tslmodel_service_b7ec1d09'),
   },
   {
     prop: 'name',
-    label: '服务名称',
+    label: t('auto.tslmodel_service_8f3747c0'),
   },
   {
     prop: 'identifier',
-    label: '服务标识',
+    label: t('auto.tslmodel_service_fda8afde'),
   },
 
   {
     prop: 'serviceType',
-    label: '服务类型',
+    label: t('auto.tslmodel_service_924f67de'),
     formatter(row) {
-      return row.serviceType === 1 ? '服务' : '事件'
+      return row.serviceType === 1 ? t('auto.tslmodel_widget_service_47d68cd0') : t('auto.tslmodel_widget_service_10b2761d')
     },
   },
   {
-    label: '参数列表',
+    label: t('auto.tslmodel_service_cba87444'),
     render({ row }) {
       return h(
         ElButton,
@@ -80,22 +82,22 @@ const column = [
           link: true,
           onClick: () => handleShowParams(row),
         },
-        () => '查看参数',
+        () => t('auto.tslmodel_widget_service_6fa6500b'),
       )
     },
   },
   {
     prop: 'required',
-    label: '是否必选',
+    label: t('auto.tslmodel_service_d10a7280'),
     formatter(row) {
-      return row.required === true ? '必选' : '可选'
+      return row.required === true ? t('auto.tslmodel_widget_service_417973c1') : t('auto.tslmodel_widget_service_c20cba89')
     },
   },
   {
     prop: 'cz',
     slot: 'cz',
     width: 220,
-    label: '操作',
+    label: t('auto.tslmodel_service_2b6bc0f2'),
   },
 ]
 const {
@@ -108,7 +110,7 @@ const {
   diaTitle,
   currentItem,
 } = useTable({
-  diaName: '服务',
+  diaName: t('auto.tslmodel_widget_service_47d68cd0'),
   defParams: {
     productTypeId: props.typeId,
     productId: props.productId,
@@ -125,23 +127,22 @@ function loadPropertiesDict() {
       propertiesDct.value = data
     })
 }
-loadPropertiesDict()
-</script>
+loadPropertiesDict()</script>
 
 <template>
   <div class="wh-full">
     <div class="flex flex-row mb-12px">
       <div class="w-240px mr-12px">
-        <el-input v-model="params.search" clearable placeholder="请输入服务名称或标识符搜索" @keyup.enter="onSearch" />
+        <el-input v-model="params.search" clearable :placeholder="t('auto.tslmodel_service_c6d56424')" @keyup.enter="onSearch" />
       </div>
       <ElButton type="primary" @click="onSearch">
-        搜索
+        {{ t('auto.tslmodel_service_e5f71fc3') }}
       </ElButton>
       <ElButton :icon="RefreshRight" @click="onReset">
-        重置
+        {{ t('auto.tslmodel_service_4b9c3271') }}
       </ElButton>
       <ElButton v-if="showEdite" type="primary" @click="onAdd">
-        添加
+        {{ t('auto.tslmodel_service_b58c7549') }}
       </ElButton>
     </div>
     <IotTable
@@ -154,10 +155,10 @@ loadPropertiesDict()
     >
       <template #cz="{ row }">
         <ElButton v-if="showEdite" type="primary" link :icon="Edit" @click="onEdit(row)">
-          编辑定义
+          {{ t('auto.tslmodel_service_09296297') }}
         </ElButton>
         <ElButton v-if="showEdite" type="danger" link :icon="Delete" @click="handleDelete(row)">
-          删除
+          {{ t('auto.tslmodel_service_2f4aaddd') }}
         </ElButton>
       </template>
     </IotTable>

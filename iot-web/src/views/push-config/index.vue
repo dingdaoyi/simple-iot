@@ -1,4 +1,5 @@
 <script setup>
+import { useI18n } from 'vue-i18n'
 import { Delete, Edit, Promotion, RefreshRight } from '@element-plus/icons-vue'
 import { ElMessage } from 'element-plus'
 import { onMounted, ref } from 'vue'
@@ -7,20 +8,21 @@ import IotTable from '@/components/IotTable.vue'
 import { useTable } from '@/composables/useTable.js'
 import EditDia from '@/views/push-config/widget/editDia.vue'
 
+const { t } = useI18n()
 const typeOpt = [
-  { label: 'HTTP回调', value: 'HTTP' },
-  { label: 'MQTT转发', value: 'MQTT' },
+  { label: t('auto.push_config_index_f83e315e'), value: 'HTTP' },
+  { label: t('auto.push_config_index_18bd3062'), value: 'MQTT' },
 ]
 
 const column = [
   {
     prop: 'name',
-    label: '配置名称',
+    label: t('auto.push_config_index_4fcad1c9'),
     minWidth: 150,
   },
   {
     prop: 'type',
-    label: '配置类型',
+    label: t('auto.push_config_index_6d95c8c1'),
     width: 120,
     render({ row }) {
       return typeOpt.find(item => item.value === row.type)?.label || '-'
@@ -28,7 +30,7 @@ const column = [
   },
   {
     prop: 'description',
-    label: '描述',
+    label: t('auto.push_config_index_3bdd08ad'),
     minWidth: 180,
     showOverflowTooltip: true,
   },
@@ -42,20 +44,20 @@ const column = [
   },
   {
     prop: 'isEnabled',
-    label: '状态',
+    label: t('auto.push_config_index_3fea7ca7'),
     width: 100,
     slot: 'status',
   },
   {
     prop: 'createTime',
-    label: '创建时间',
+    label: t('auto.push_config_index_eca37cb0'),
     width: 160,
   },
   {
     prop: 'cz',
     slot: 'cz',
     width: 210,
-    label: '操作',
+    label: t('auto.push_config_index_2b6bc0f2'),
     fixed: 'right',
   },
 ]
@@ -79,7 +81,7 @@ const {
 } = useTable({
   deleteApi: pushConfigDeleteApi,
   fetchApi: pushConfigPageApi,
-  diaName: '推送配置',
+  diaName: t('auto.push_config_index_1bab3e3f'),
   defParams: {},
 })
 
@@ -133,10 +135,10 @@ async function runTestPush() {
     const data = res?.data || res
     testResult.value = data
     if (data?.success) {
-      ElMessage.success('测试推送成功')
+      ElMessage.success(t('auto.push_config_index_bd89aeb0'))
     }
     else {
-      ElMessage.warning(data?.message || '测试推送失败')
+      ElMessage.warning(data?.message || t('auto.push_config_index_1b213b21'))
     }
   }
   finally {
@@ -146,8 +148,7 @@ async function runTestPush() {
 
 onMounted(() => {
   updatePage()
-})
-</script>
+})</script>
 
 <template>
   <div class="push-config-page">
@@ -156,10 +157,10 @@ onMounted(() => {
       <div class="header-content">
         <h1 class="page-title">
           <span class="title-icon">📡</span>
-          推送配置
+          {{ t('auto.push_config_index_1bab3e3f') }}
         </h1>
         <p class="page-subtitle">
-          配置 HTTP 回调和 MQTT 转发，供规则链使用
+          {{ t('auto.push_config_index_ab561d89') }}
         </p>
       </div>
     </div>
@@ -168,20 +169,20 @@ onMounted(() => {
     <div class="search-bar glass-card">
       <div class="search-row">
         <div class="search-field">
-          <label class="field-label">配置名称</label>
+          <label class="field-label">{{ t('auto.push_config_index_4fcad1c9') }}</label>
           <el-input
             v-model="params.name"
-            placeholder="请输入配置名称"
+            :placeholder="t('auto.push_config_index_b984df04')"
             clearable
             style="width: 200px"
             @keyup.enter="onSearch"
           />
         </div>
         <div class="search-field">
-          <label class="field-label">配置类型</label>
+          <label class="field-label">{{ t('auto.push_config_index_6d95c8c1') }}</label>
           <el-select
             v-model="params.type"
-            placeholder="请选择类型"
+            :placeholder="t('auto.push_config_index_95f11c56')"
             filterable
             clearable
             style="width: 140px"
@@ -195,26 +196,26 @@ onMounted(() => {
           </el-select>
         </div>
         <div class="search-field">
-          <label class="field-label">状态</label>
+          <label class="field-label">{{ t('auto.push_config_index_3fea7ca7') }}</label>
           <el-select
             v-model="params.isEnabled"
-            placeholder="请选择"
+            :placeholder="t('auto.push_config_index_708c9d6d')"
             clearable
             style="width: 120px"
           >
-            <el-option label="启用" :value="true" />
-            <el-option label="禁用" :value="false" />
+            <el-option :label="t('auto.push_config_index_7854b52a')" :value="true" />
+            <el-option :label="t('auto.push_config_index_710ad08b')" :value="false" />
           </el-select>
         </div>
         <div class="search-actions">
           <el-button type="primary" @click="onSearch">
-            搜索
+            {{ t('auto.push_config_index_e5f71fc3') }}
           </el-button>
           <el-button :icon="RefreshRight" @click="onReset">
-            重置
+            {{ t('auto.push_config_index_4b9c3271') }}
           </el-button>
           <el-button type="primary" @click="onAdd">
-            添加配置
+            {{ t('auto.push_config_index_11e5e642') }}
           </el-button>
         </div>
       </div>
@@ -234,38 +235,38 @@ onMounted(() => {
       >
         <template #status="{ row }">
           <el-tag :type="row.isEnabled ? 'success' : 'info'" size="small">
-            {{ row.isEnabled ? '启用' : '禁用' }}
+            {{ row.isEnabled ? t('auto.push_config_index_7854b52a') : t('auto.push_config_index_710ad08b') }}
           </el-tag>
         </template>
         <template #cz="{ row }">
           <el-button type="primary" link :icon="Promotion" @click="openTestDialog(row)">
-            测试
+            {{ t('auto.push_config_index_db06c78d') }}
           </el-button>
           <el-button type="primary" link :icon="Edit" @click="onEdit(row)">
-            编辑
+            {{ t('auto.push_config_index_95b351c8') }}
           </el-button>
           <el-button type="danger" link :icon="Delete" @click="onDelete(row)">
-            删除
+            {{ t('auto.push_config_index_2f4aaddd') }}
           </el-button>
         </template>
       </IotTable>
     </div>
 
     <!-- 测试推送对话框 -->
-    <el-dialog v-model="testDialogVisible" title="测试推送配置" width="640px">
+    <el-dialog v-model="testDialogVisible" :title="t('auto.push_config_index_f9761bc9')" width="640px">
       <el-form label-width="90px">
-        <el-form-item label="配置名称">
+        <el-form-item :label="t('auto.push_config_index_4fcad1c9')">
           <el-input :model-value="testTarget?.name || '-'" disabled />
         </el-form-item>
-        <el-form-item label="事件类型">
+        <el-form-item :label="t('auto.push_config_index_f974c846')">
           <el-input v-model="testForm.eventType" placeholder="push.test" />
         </el-form-item>
-        <el-form-item label="测试负载">
+        <el-form-item :label="t('auto.push_config_index_aa56ca1c')">
           <el-input
             v-model="testForm.payload"
             type="textarea"
             :rows="8"
-            placeholder="请输入 JSON 或普通文本"
+            :placeholder="t('auto.push_config_index_d8a06149')"
           />
         </el-form-item>
         <el-alert
@@ -273,7 +274,7 @@ onMounted(() => {
           type="info"
           show-icon
           :closable="false"
-          title="该配置已启用 HMAC 签名，测试请求会自动携带 X-Simple-IoT-Timestamp / Signature / Event 请求头。"
+          :title="t('auto.push_config_index_299b4b6a')"
         />
         <el-alert
           v-if="testResult"
@@ -281,7 +282,7 @@ onMounted(() => {
           :type="testResult.success ? 'success' : 'error'"
           show-icon
           :closable="false"
-          :title="testResult.message || (testResult.success ? '测试推送成功' : '测试推送失败')"
+          ::title="t('auto.push_config_index_832722d2')"
         >
           <template v-if="testResult.responseBody" #default>
             <pre>{{ testResult.responseBody }}</pre>
@@ -290,10 +291,10 @@ onMounted(() => {
       </el-form>
       <template #footer>
         <el-button @click="testDialogVisible = false">
-          关闭
+          {{ t('auto.push_config_index_b15d9127') }}
         </el-button>
         <el-button type="primary" :loading="testLoading" @click="runTestPush">
-          发送测试
+          {{ t('auto.push_config_index_99b3a7ac') }}
         </el-button>
       </template>
     </el-dialog>

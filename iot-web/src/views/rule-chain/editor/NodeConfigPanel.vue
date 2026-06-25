@@ -1,4 +1,6 @@
 <script setup>
+import { useI18n } from 'vue-i18n'
+const { t } = useI18n()
 /**
  * 规则链节点配置面板
  * 统一管理所有节点类型的配置界面
@@ -71,7 +73,7 @@ async function loadTemplateVariables() {
     templateVariables.value = data || []
   }
   catch (e) {
-    console.error('加载模板变量失败', e)
+    console.error(t('auto.rule_chain_editor_nodeconfigpanel_3695b8f4'), e)
     templateVariables.value = []
   }
   finally {
@@ -171,12 +173,12 @@ const propertyStep = computed(() => {
 // ==================== 操作符选项 ====================
 
 const propertyOperatorOptions = [
-  { label: '>  大于', value: 'GT' },
-  { label: '≥  大于等于', value: 'GE' },
-  { label: '=  等于', value: 'EQ' },
-  { label: '<  小于', value: 'LT' },
-  { label: '≤  小于等于', value: 'LE' },
-  { label: '≠  不等于', value: 'NE' },
+  { label: t('auto.rule_chain_editor_nodeconfigpanel_55261204'), value: 'GT' },
+  { label: t('auto.rule_chain_editor_nodeconfigpanel_ef2679e4'), value: 'GE' },
+  { label: t('auto.rule_chain_editor_nodeconfigpanel_9cd6c2c3'), value: 'EQ' },
+  { label: t('auto.rule_chain_editor_nodeconfigpanel_dd29ed19'), value: 'LT' },
+  { label: t('auto.rule_chain_editor_nodeconfigpanel_847d07e5'), value: 'LE' },
+  { label: t('auto.rule_chain_editor_nodeconfigpanel_00da84e5'), value: 'NE' },
 ]
 
 const eventOperatorOptions = propertyOperatorOptions
@@ -221,7 +223,7 @@ const deviceCascadeProps = {
         const response = await productListApi({ productTypeId: value })
         const products = (response.data || []).map(p => ({
           id: p.id,
-          name: p.model || p.manufacturer || `产品${p.id}`,
+          name: p.model || p.manufacturer || t('auto.rule_chain_default_product_name', { id: p.id }),
           leaf: false,
         }))
         resolve(products)
@@ -280,14 +282,13 @@ function onDeviceCascadeChange(value) {
       targetDeviceId: value[2],
     },
   })
-}
-</script>
+}</script>
 
 <template>
   <div v-if="selectedNode" class="node-config-panel">
     <!-- 节点名称 -->
     <el-form label-width="80px" size="small">
-      <el-form-item label="节点名称">
+      <el-form-item :label="t('auto.rule_chain_editor_nodeconfigpanel_b1785ef0')">
         <el-input
           :model-value="selectedNode.name"
           @update:model-value="emit('update:node', { ...selectedNode, name: $event })"
@@ -298,14 +299,14 @@ function onDeviceCascadeChange(value) {
 
       <!-- 属性上报输入节点 -->
       <template v-if="selectedNode.type === 'INPUT_PROPERTY'">
-        <el-form-item label="监听属性">
+        <el-form-item :label="t('auto.rule_chain_editor_nodeconfigpanel_ad1333bd')">
           <el-select
             :model-value="config.identifiers"
             multiple
             filterable
             collapse-tags
             collapse-tags-tooltip
-            placeholder="留空表示监听所有属性"
+            :placeholder="t('auto.rule_chain_editor_nodeconfigpanel_b2e30615')"
             :disabled="!ruleChain.productId"
             @update:model-value="updateConfig('identifiers', $event)"
           >
@@ -317,24 +318,24 @@ function onDeviceCascadeChange(value) {
             />
           </el-select>
           <div v-if="!ruleChain.productId" class="form-tip warn">
-            请先在左侧选择产品
+            {{ t('auto.rule_chain_editor_nodeconfigpanel_17412c1c') }}
           </div>
           <div v-else class="form-tip">
-            不选择则监听所有属性上报
+            {{ t('auto.rule_chain_editor_nodeconfigpanel_16ca5522') }}
           </div>
         </el-form-item>
       </template>
 
       <!-- 事件上报输入节点 -->
       <template v-if="selectedNode.type === 'INPUT_EVENT'">
-        <el-form-item label="监听事件">
+        <el-form-item :label="t('auto.rule_chain_editor_nodeconfigpanel_2bbffb04')">
           <el-select
             :model-value="config.identifiers"
             multiple
             filterable
             collapse-tags
             collapse-tags-tooltip
-            placeholder="留空表示监听所有事件"
+            :placeholder="t('auto.rule_chain_editor_nodeconfigpanel_903a6a58')"
             :disabled="!ruleChain.productId"
             @update:model-value="updateConfig('identifiers', $event)"
           >
@@ -346,28 +347,28 @@ function onDeviceCascadeChange(value) {
             />
           </el-select>
           <div v-if="!ruleChain.productId" class="form-tip warn">
-            请先在左侧选择产品
+            {{ t('auto.rule_chain_editor_nodeconfigpanel_17412c1c') }}
           </div>
           <div v-else class="form-tip">
-            不选择则监听所有事件上报
+            {{ t('auto.rule_chain_editor_nodeconfigpanel_5ddb6d40') }}
           </div>
         </el-form-item>
       </template>
 
       <!-- 设备上下线节点 -->
       <template v-if="selectedNode.type === 'INPUT_ONLINE'">
-        <el-form-item label="事件类型">
+        <el-form-item :label="t('auto.rule_chain_editor_nodeconfigpanel_f974c846')">
           <el-select
             :model-value="config.onlineStatus"
-            placeholder="请选择上下线事件"
+            :placeholder="t('auto.rule_chain_editor_nodeconfigpanel_8e0b31a7')"
             @update:model-value="updateConfig('onlineStatus', $event)"
           >
-            <el-option label="设备上线" value="online" />
-            <el-option label="设备下线" value="offline" />
-            <el-option label="全部（上线和下线）" value="all" />
+            <el-option :label="t('auto.rule_chain_editor_nodeconfigpanel_c4933c3a')" value="online" />
+            <el-option :label="t('auto.rule_chain_editor_nodeconfigpanel_1c64f797')" value="offline" />
+            <el-option :label="t('auto.rule_chain_editor_nodeconfigpanel_b6584f57')" value="all" />
           </el-select>
           <div class="form-tip">
-            监听规则链关联产品/设备的上线和下线事件
+            {{ t('auto.rule_chain_editor_nodeconfigpanel_d79d9463') }}
           </div>
         </el-form-item>
       </template>
@@ -376,21 +377,21 @@ function onDeviceCascadeChange(value) {
 
       <!-- 属性条件过滤节点 -->
       <template v-if="selectedNode.type === 'FILTER_PROPERTY'">
-        <el-form-item v-if="upstreamNode" label="上游节点">
+        <el-form-item v-if="upstreamNode" :label="t('auto.rule_chain_editor_nodeconfigpanel_78ec4866')">
           <div class="upstream-info">
             <el-tag size="small" :type="upstreamNode.type === 'INPUT_PROPERTY' ? 'success' : 'info'">
               {{ upstreamNode.name }}
             </el-tag>
             <span v-if="upstreamNode.config?.identifiers?.length" class="upstream-detail">
-              已过滤 {{ upstreamNode.config.identifiers.length }} 个属性
+              {{ t('auto.rule_chain_editor_filtered_properties', { count: upstreamNode.config.identifiers.length }) }}
             </span>
           </div>
         </el-form-item>
 
-        <el-form-item label="选择属性">
+        <el-form-item :label="t('auto.rule_chain_editor_nodeconfigpanel_cb02034e')">
           <el-select
             :model-value="config.identifier"
-            placeholder="请先选择产品"
+            :placeholder="t('auto.rule_chain_editor_nodeconfigpanel_5a70dec9')"
             filterable
             :disabled="!ruleChain.productId"
             @update:model-value="updateConfig('identifier', $event)"
@@ -406,15 +407,15 @@ function onDeviceCascadeChange(value) {
             </el-option>
           </el-select>
           <div v-if="!ruleChain.productId" class="form-tip warn">
-            请先在左侧选择产品
+            {{ t('auto.rule_chain_editor_nodeconfigpanel_17412c1c') }}
           </div>
           <div v-else-if="upstreamNode?.config?.identifiers?.length" class="form-tip">
-            属性列表来自上游节点「{{ upstreamNode.name }}」的过滤结果
+            {{ t('auto.rule_chain_editor_property_from_upstream', { name: upstreamNode.name }) }}
           </div>
         </el-form-item>
 
-        <el-form-item label="操作符">
-          <el-select :model-value="config.operator" placeholder="选择比较方式" @update:model-value="updateConfig('operator', $event)">
+        <el-form-item :label="t('auto.rule_chain_editor_nodeconfigpanel_ed4ad0f9')">
+          <el-select :model-value="config.operator" :placeholder="t('auto.rule_chain_editor_nodeconfigpanel_3a5b5a0c')" @update:model-value="updateConfig('operator', $event)">
             <el-option
               v-for="op in propertyOperatorOptions"
               :key="op.value"
@@ -424,29 +425,29 @@ function onDeviceCascadeChange(value) {
           </el-select>
         </el-form-item>
 
-        <el-form-item label="阈值">
+        <el-form-item :label="t('auto.rule_chain_editor_nodeconfigpanel_e0de1c9a')">
           <el-input-number
             :model-value="config.value"
             :min="propertyMin ?? undefined"
             :max="propertyMax ?? undefined"
             :step="propertyStep"
-            :placeholder="selectedProperty?.unit ? `单位: ${selectedProperty.unit}` : '输入阈值'"
+            :placeholder="t('auto.rule_chain_editor_nodeconfigpanel_47a372f2')"
             style="width: 100%"
             @update:model-value="updateConfig('value', $event)"
           />
           <div v-if="selectedProperty && (propertyMin !== null || propertyMax !== null)" class="form-tip">
-            <span v-if="propertyMin !== null">最小 {{ propertyMin }}</span>
+            <span v-if="propertyMin !== null">{{ t('auto.rule_chain_editor_min_value', { value: propertyMin }) }}</span>
             <span v-if="propertyMin !== null && propertyMax !== null"> · </span>
-            <span v-if="propertyMax !== null">最大 {{ propertyMax }}</span>
-            <span v-if="selectedProperty.unit"> · 单位 {{ selectedProperty.unit }}</span>
+            <span v-if="propertyMax !== null">{{ t('auto.rule_chain_editor_max_value', { value: propertyMax }) }}</span>
+            <span v-if="selectedProperty.unit"> · {{ t('auto.rule_chain_editor_unit_value', { value: selectedProperty.unit }) }}</span>
           </div>
         </el-form-item>
 
         <!-- 属性详细信息 -->
-        <el-form-item v-if="selectedProperty" label="属性信息">
+        <el-form-item v-if="selectedProperty" :label="t('auto.rule_chain_editor_nodeconfigpanel_c5ea2ca1')">
           <div class="property-info">
             <span class="info-chip">{{ selectedProperty.dataType?.name }}</span>
-            <span v-if="selectedProperty.unit" class="info-chip">单位 {{ selectedProperty.unit }}</span>
+            <span v-if="selectedProperty.unit" class="info-chip">{{ t('auto.rule_chain_editor_unit_value', { value: selectedProperty.unit }) }}</span>
             <span v-if="selectedProperty.accessMode" class="info-chip">{{ selectedProperty.accessMode }}</span>
           </div>
         </el-form-item>
@@ -454,21 +455,21 @@ function onDeviceCascadeChange(value) {
 
       <!-- 事件类型过滤节点 -->
       <template v-if="selectedNode.type === 'FILTER_EVENT_TYPE'">
-        <el-form-item v-if="upstreamNode" label="上游节点">
+        <el-form-item v-if="upstreamNode" :label="t('auto.rule_chain_editor_nodeconfigpanel_78ec4866')">
           <div class="upstream-info">
             <el-tag size="small" type="success">
               {{ upstreamNode.name }}
             </el-tag>
             <span v-if="upstreamNode.config?.identifiers?.length" class="upstream-detail">
-              已过滤 {{ upstreamNode.config.identifiers.length }} 个事件
+              {{ t('auto.rule_chain_editor_filtered_events', { count: upstreamNode.config.identifiers.length }) }}
             </span>
           </div>
         </el-form-item>
 
-        <el-form-item label="选择事件">
+        <el-form-item :label="t('auto.rule_chain_editor_nodeconfigpanel_1634c038')">
           <el-select
             :model-value="config.identifier"
-            placeholder="请先选择产品"
+            :placeholder="t('auto.rule_chain_editor_nodeconfigpanel_5a70dec9')"
             filterable
             clearable
             :disabled="!ruleChain.productId"
@@ -482,28 +483,28 @@ function onDeviceCascadeChange(value) {
             />
           </el-select>
           <div v-if="!ruleChain.productId" class="form-tip warn">
-            请先在左侧选择产品
+            {{ t('auto.rule_chain_editor_nodeconfigpanel_17412c1c') }}
           </div>
           <div v-else-if="upstreamNode?.config?.identifiers?.length" class="form-tip">
-            事件列表来自上游节点「{{ upstreamNode.name }}」的过滤结果
+            {{ t('auto.rule_chain_editor_event_from_upstream', { name: upstreamNode.name }) }}
           </div>
           <div v-else class="form-tip">
-            不选择则放行所有事件
+            {{ t('auto.rule_chain_editor_nodeconfigpanel_2c060c60') }}
           </div>
         </el-form-item>
 
         <template v-if="selectedEvent">
-          <el-form-item label="事件信息">
+          <el-form-item :label="t('auto.rule_chain_editor_nodeconfigpanel_cb52e834')">
             <div class="property-info">
               <span class="info-chip">{{ selectedEvent.eventType }}</span>
               <span v-if="selectedEvent.remark" class="info-chip muted">{{ selectedEvent.remark }}</span>
             </div>
           </el-form-item>
 
-          <el-form-item v-if="selectedEvent.outputParams?.length" label="过滤参数">
+          <el-form-item v-if="selectedEvent.outputParams?.length" :label="t('auto.rule_chain_editor_nodeconfigpanel_53e772c1')">
             <el-select
               :model-value="config.paramIdentifier"
-              placeholder="选择要过滤的参数"
+              :placeholder="t('auto.rule_chain_editor_nodeconfigpanel_eda4d2e3')"
               filterable
               clearable
               @update:model-value="updateConfig('paramIdentifier', $event)"
@@ -516,13 +517,13 @@ function onDeviceCascadeChange(value) {
               />
             </el-select>
             <div class="form-tip">
-              不选择则只按事件类型过滤
+              {{ t('auto.rule_chain_editor_nodeconfigpanel_a0a42fc0') }}
             </div>
           </el-form-item>
 
           <template v-if="config.paramIdentifier">
-            <el-form-item label="操作符">
-              <el-select :model-value="config.operator" placeholder="选择比较方式" @update:model-value="updateConfig('operator', $event)">
+            <el-form-item :label="t('auto.rule_chain_editor_nodeconfigpanel_ed4ad0f9')">
+              <el-select :model-value="config.operator" :placeholder="t('auto.rule_chain_editor_nodeconfigpanel_3a5b5a0c')" @update:model-value="updateConfig('operator', $event)">
                 <el-option
                   v-for="op in eventOperatorOptions"
                   :key="op.value"
@@ -531,13 +532,13 @@ function onDeviceCascadeChange(value) {
                 />
               </el-select>
             </el-form-item>
-            <el-form-item label="阈值">
-              <el-input :model-value="config.value" placeholder="输入阈值" style="width: 100%" @update:model-value="updateConfig('value', $event)" />
+            <el-form-item :label="t('auto.rule_chain_editor_nodeconfigpanel_e0de1c9a')">
+              <el-input :model-value="config.value" :placeholder="t('auto.rule_chain_editor_nodeconfigpanel_5ff8a712')" style="width: 100%" @update:model-value="updateConfig('value', $event)" />
             </el-form-item>
-            <el-form-item v-if="selectedEventParam" label="参数信息">
+            <el-form-item v-if="selectedEventParam" :label="t('auto.rule_chain_editor_nodeconfigpanel_78527c6b')">
               <div class="property-info">
                 <span class="info-chip">{{ selectedEventParam.dataType?.name }}</span>
-                <span v-if="selectedEventParam.unit" class="info-chip">单位 {{ selectedEventParam.unit }}</span>
+                <span v-if="selectedEventParam.unit" class="info-chip">{{ t('auto.rule_chain_editor_unit_value', { value: selectedEventParam.unit }) }}</span>
               </div>
             </el-form-item>
           </template>
@@ -546,26 +547,24 @@ function onDeviceCascadeChange(value) {
 
       <!-- 脚本过滤节点 -->
       <template v-if="selectedNode.type === 'FILTER_SCRIPT'">
-        <el-form-item label="过滤脚本">
+        <el-form-item :label="t('auto.rule_chain_editor_nodeconfigpanel_559e256b')">
           <el-input
             ref="filterScriptRef"
             :model-value="config.script"
             type="textarea"
             :rows="8"
-            placeholder="// 返回 true 走 True 分支，false 走 False 分支
-// 可用变量见下方
-return msg.temperature > 30;"
+            :placeholder="t('auto.rule_chain_editor_nodeconfigpanel_25f166f0')"
             @update:model-value="updateConfig('script', $event)"
           />
           <div class="form-tip">
-            JavaScript 表达式，返回 true 走 <span class="branch-tag branch-true">True</span> 分支，false 走 <span class="branch-tag branch-false">False</span> 分支
+            {{ t('auto.rule_chain_editor_nodeconfigpanel_b4d7a783') }} <span class="branch-tag branch-true">True</span> {{ t('auto.rule_chain_editor_nodeconfigpanel_422c8c6f') }} <span class="branch-tag branch-false">False</span> {{ t('auto.rule_chain_editor_nodeconfigpanel_bfc04cfd') }}
           </div>
           <VariableInserter
             :target-ref="filterScriptRef"
             :value="config.script"
             :system-variables="systemVariables"
             :property-variables="propertyVariables"
-            label="脚本可用变量"
+            :label="t('auto.rule_chain_editor_nodeconfigpanel_a52d35e4')"
             @update="updateConfig('script', $event)"
           />
         </el-form-item>
@@ -575,35 +574,35 @@ return msg.temperature > 30;"
 
       <!-- 创建告警节点 -->
       <template v-if="selectedNode.type === 'ALARM_CREATE'">
-        <el-form-item label="告警类型">
+        <el-form-item :label="t('auto.rule_chain_editor_nodeconfigpanel_c62e34c5')">
           <el-input :model-value="config.alarmType" placeholder="high_temperature" @update:model-value="updateConfig('alarmType', $event)" />
         </el-form-item>
-        <el-form-item label="告警名称">
-          <el-input :model-value="config.alarmName" placeholder="高温告警-${deviceName}" @update:model-value="updateConfig('alarmName', $event)" />
+        <el-form-item :label="t('auto.rule_chain_editor_nodeconfigpanel_b4450f15')">
+          <el-input :model-value="config.alarmName" :placeholder="t('auto.rule_chain_editor_nodeconfigpanel_8aa544a0')" @update:model-value="updateConfig('alarmName', $event)" />
         </el-form-item>
-        <el-form-item label="严重程度">
+        <el-form-item :label="t('auto.rule_chain_editor_nodeconfigpanel_08fe5024')">
           <el-select :model-value="config.severity" @update:model-value="updateConfig('severity', $event)">
             <el-option value="CRITICAL">
-              <span class="severity-dot critical" />严重 (CRITICAL)
+              <span class="severity-dot critical" />{{ t('auto.rule_chain_editor_nodeconfigpanel_c1fee08b') }}
             </el-option>
             <el-option value="MAJOR">
-              <span class="severity-dot major" />主要 (MAJOR)
+              <span class="severity-dot major" />{{ t('auto.rule_chain_editor_nodeconfigpanel_04c36a62') }}
             </el-option>
             <el-option value="MINOR">
-              <span class="severity-dot minor" />次要 (MINOR)
+              <span class="severity-dot minor" />{{ t('auto.rule_chain_editor_nodeconfigpanel_9aa3ed71') }}
             </el-option>
             <el-option value="WARNING">
-              <span class="severity-dot warning" />警告 (WARNING)
+              <span class="severity-dot warning" />{{ t('auto.rule_chain_editor_nodeconfigpanel_0ca6976a') }}
             </el-option>
           </el-select>
         </el-form-item>
-        <el-form-item label="告警消息">
+        <el-form-item :label="t('auto.rule_chain_editor_nodeconfigpanel_ed1cfa58')">
           <el-input
             ref="alarmMessageRef"
             :model-value="config.message"
             type="textarea"
             :rows="3"
-            placeholder="设备 ${deviceName} 温度 ${temperature} 超过阈值"
+            :placeholder="t('auto.rule_chain_editor_nodeconfigpanel_13319555')"
             @update:model-value="updateConfig('message', $event)"
           />
           <VariableInserter
@@ -618,19 +617,19 @@ return msg.temperature > 30;"
 
       <!-- 清除告警节点 -->
       <template v-if="selectedNode.type === 'ALARM_CLEAR'">
-        <el-form-item label="告警类型">
+        <el-form-item :label="t('auto.rule_chain_editor_nodeconfigpanel_c62e34c5')">
           <el-input :model-value="config.alarmType" placeholder="high_temperature" @update:model-value="updateConfig('alarmType', $event)" />
           <div class="form-tip">
-            留空则清除该设备的所有告警
+            {{ t('auto.rule_chain_editor_nodeconfigpanel_e3d73d06') }}
           </div>
         </el-form-item>
-        <el-form-item label="清除方式">
+        <el-form-item :label="t('auto.rule_chain_editor_nodeconfigpanel_bcb4e674')">
           <el-radio-group :model-value="config.clearType" @update:model-value="updateConfig('clearType', $event)">
             <el-radio label="active">
-              仅清除活动告警
+              {{ t('auto.rule_chain_editor_nodeconfigpanel_b98f897e') }}
             </el-radio>
             <el-radio label="all">
-              清除所有相关告警
+              {{ t('auto.rule_chain_editor_nodeconfigpanel_faa4011e') }}
             </el-radio>
           </el-radio-group>
         </el-form-item>
@@ -640,10 +639,10 @@ return msg.temperature > 30;"
 
       <!-- 消息推送节点 -->
       <template v-if="selectedNode.type === 'OUTPUT_MESSAGE'">
-        <el-form-item label="消息配置">
+        <el-form-item :label="t('auto.rule_chain_editor_nodeconfigpanel_5c6e5976')">
           <el-select
             :model-value="config.messageReceiveId"
-            placeholder="请选择消息配置"
+            :placeholder="t('auto.rule_chain_editor_nodeconfigpanel_43807fe9')"
             filterable
             clearable
             @update:model-value="updateConfig('messageReceiveId', $event)"
@@ -651,20 +650,20 @@ return msg.temperature > 30;"
             <el-option
               v-for="item in messageReceiveOptions"
               :key="item.id"
-              :label="`${item.name} (${item.notifyType === 1 ? '邮件' : item.notifyType === 2 ? '短信' : '电话'})`"
+              :label="t('auto.rule_chain_editor_nodeconfigpanel_bb244b7d')"
               :value="item.id"
             />
           </el-select>
           <div v-if="messageReceiveOptions.length === 0" class="form-tip warn">
-            暂无消息配置，请先在「消息接收」中添加配置
+            {{ t('auto.rule_chain_editor_nodeconfigpanel_5b959604') }}
           </div>
         </el-form-item>
 
-        <el-form-item label="消息标题">
+        <el-form-item :label="t('auto.rule_chain_editor_nodeconfigpanel_a53db514')">
           <el-input
             ref="outputTitleRef"
             :model-value="config.title"
-            placeholder="设备告警通知 - ${deviceName}"
+            :placeholder="t('auto.rule_chain_editor_nodeconfigpanel_79ac6ea2')"
             @update:model-value="updateConfig('title', $event)"
           />
           <VariableInserter
@@ -676,13 +675,13 @@ return msg.temperature > 30;"
           />
         </el-form-item>
 
-        <el-form-item label="消息内容">
+        <el-form-item :label="t('auto.rule_chain_editor_nodeconfigpanel_b87b7756')">
           <el-input
             ref="outputContentRef"
             :model-value="config.content"
             type="textarea"
             :rows="4"
-            placeholder="设备 ${deviceName} 于 ${eventTime} 触发告警，当前值: ${value}"
+            :placeholder="t('auto.rule_chain_editor_nodeconfigpanel_eafe90f3')"
             @update:model-value="updateConfig('content', $event)"
           />
           <VariableInserter
@@ -697,10 +696,10 @@ return msg.temperature > 30;"
 
       <!-- HTTP推送节点 -->
       <template v-if="selectedNode.type === 'OUTPUT_HTTP'">
-        <el-form-item label="推送配置">
+        <el-form-item :label="t('auto.rule_chain_editor_nodeconfigpanel_1bab3e3f')">
           <el-select
             :model-value="config.pushConfigId"
-            placeholder="请选择HTTP推送配置"
+            :placeholder="t('auto.rule_chain_editor_nodeconfigpanel_b4677fd7')"
             filterable
             clearable
             @update:model-value="updateConfig('pushConfigId', $event)"
@@ -718,14 +717,14 @@ return msg.temperature > 30;"
             </el-option>
           </el-select>
           <div v-if="pushConfigOptions.filter(p => p.type === 'HTTP').length === 0" class="form-tip warn">
-            暂无HTTP推送配置，请先在「推送配置」中添加
+            {{ t('auto.rule_chain_editor_nodeconfigpanel_4a0cf764') }}
           </div>
           <div v-else class="form-tip">
-            选择预先配置好的HTTP推送参数
+            {{ t('auto.rule_chain_editor_nodeconfigpanel_e3c534de') }}
           </div>
         </el-form-item>
 
-        <el-form-item label="自定义请求体">
+        <el-form-item :label="t('auto.rule_chain_editor_nodeconfigpanel_fc653dc9')">
           <el-input
             ref="httpBodyRef"
             :model-value="config.customBody"
@@ -735,7 +734,7 @@ return msg.temperature > 30;"
             @update:model-value="updateConfig('customBody', $event)"
           />
           <div class="form-tip">
-            留空使用默认请求体
+            {{ t('auto.rule_chain_editor_nodeconfigpanel_8e10bbce') }}
           </div>
           <VariableInserter
             :target-ref="httpBodyRef"
@@ -749,10 +748,10 @@ return msg.temperature > 30;"
 
       <!-- MQTT推送节点 -->
       <template v-if="selectedNode.type === 'OUTPUT_MQTT'">
-        <el-form-item label="推送配置">
+        <el-form-item :label="t('auto.rule_chain_editor_nodeconfigpanel_1bab3e3f')">
           <el-select
             :model-value="config.pushConfigId"
-            placeholder="请选择MQTT推送配置"
+            :placeholder="t('auto.rule_chain_editor_nodeconfigpanel_e06b93c1')"
             filterable
             clearable
             @update:model-value="updateConfig('pushConfigId', $event)"
@@ -770,14 +769,14 @@ return msg.temperature > 30;"
             </el-option>
           </el-select>
           <div v-if="pushConfigOptions.filter(p => p.type === 'MQTT').length === 0" class="form-tip warn">
-            暂无MQTT推送配置，请先在「推送配置」中添加
+            {{ t('auto.rule_chain_editor_nodeconfigpanel_a277f6a1') }}
           </div>
           <div v-else class="form-tip">
-            选择预先配置好的MQTT推送参数
+            {{ t('auto.rule_chain_editor_nodeconfigpanel_d8efbab0') }}
           </div>
         </el-form-item>
 
-        <el-form-item label="自定义Payload">
+        <el-form-item :label="t('auto.rule_chain_editor_nodeconfigpanel_3912b7ab')">
           <el-input
             ref="mqttPayloadRef"
             :model-value="config.customPayload"
@@ -787,7 +786,7 @@ return msg.temperature > 30;"
             @update:model-value="updateConfig('customPayload', $event)"
           />
           <div class="form-tip">
-            留空使用默认Payload
+            {{ t('auto.rule_chain_editor_nodeconfigpanel_61b701aa') }}
           </div>
           <VariableInserter
             :target-ref="mqttPayloadRef"
@@ -801,55 +800,55 @@ return msg.temperature > 30;"
 
       <!-- 设备指令节点 -->
       <template v-if="selectedNode.type === 'OUTPUT_COMMAND'">
-        <el-form-item label="目标设备">
+        <el-form-item :label="t('auto.rule_chain_editor_nodeconfigpanel_78f600f2')">
           <el-radio-group :model-value="config.targetMode || 'self'" @update:model-value="updateConfig('targetMode', $event)">
             <el-radio-button label="self">
-              当前设备
+              {{ t('auto.rule_chain_editor_nodeconfigpanel_62aca42a') }}
             </el-radio-button>
             <el-radio-button label="other">
-              其他设备
+              {{ t('auto.rule_chain_editor_nodeconfigpanel_6efb7f19') }}
             </el-radio-button>
           </el-radio-group>
         </el-form-item>
 
         <template v-if="config.targetMode === 'other'">
-          <el-form-item label="选择设备">
+          <el-form-item :label="t('auto.rule_chain_editor_nodeconfigpanel_15d00b96')">
             <el-cascader
               :model-value="getDeviceCascadeValue()"
               :props="deviceCascadeProps"
-              placeholder="选择产品类型 > 产品 > 设备"
+              :placeholder="t('auto.rule_chain_editor_nodeconfigpanel_6473954a')"
               filterable
               clearable
               style="width: 100%"
               @update:model-value="onDeviceCascadeChange"
             />
             <div class="form-tip">
-              选择要发送指令的目标设备
+              {{ t('auto.rule_chain_editor_nodeconfigpanel_6c0a7412') }}
             </div>
           </el-form-item>
         </template>
 
-        <el-form-item label="指令类型">
+        <el-form-item :label="t('auto.rule_chain_editor_nodeconfigpanel_9e7d7ccf')">
           <el-select :model-value="config.commandType" @update:model-value="updateConfig('commandType', $event)">
-            <el-option label="服务调用" value="service" />
+            <el-option :label="t('auto.rule_chain_editor_nodeconfigpanel_e0fefbe4')" value="service" />
           </el-select>
           <div class="form-tip">
-            通过调用设备服务实现属性设置或功能控制
+            {{ t('auto.rule_chain_editor_command_type_tip') }}
           </div>
         </el-form-item>
 
-        <el-form-item label="服务标识">
+        <el-form-item :label="t('auto.rule_chain_editor_nodeconfigpanel_fda8afde')">
           <el-input
             :model-value="config.identifier"
-            placeholder="服务identifier，如: setValue"
+            :placeholder="t('auto.rule_chain_editor_nodeconfigpanel_4eb7170b')"
             @update:model-value="updateConfig('identifier', $event)"
           />
           <div class="form-tip">
-            物模型中定义的服务标识符
+            {{ t('auto.rule_chain_editor_service_identifier_tip') }}
           </div>
         </el-form-item>
 
-        <el-form-item label="服务参数">
+        <el-form-item :label="t('auto.rule_chain_editor_nodeconfigpanel_b4d0bad8')">
           <el-input
             ref="cmdParamsRef"
             :model-value="config.params"
@@ -859,7 +858,7 @@ return msg.temperature > 30;"
             @update:model-value="updateConfig('params', $event)"
           />
           <div class="form-tip">
-            JSON 格式的服务参数
+            {{ t('auto.rule_chain_editor_service_params_tip') }}
           </div>
           <VariableInserter
             :target-ref="cmdParamsRef"

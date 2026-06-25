@@ -1,4 +1,5 @@
 <script setup>
+import { useI18n } from 'vue-i18n'
 import { Delete, Edit, RefreshRight } from '@element-plus/icons-vue'
 import { onMounted } from 'vue'
 import { messageReceiveDeleteApi, messageReceivePageApi } from '@/api/index.js'
@@ -6,13 +7,14 @@ import IotTable from '@/components/IotTable.vue'
 import { useTable } from '@/composables/useTable.js'
 import EditDia from '@/views/system/messageReceive/widget/editDia.vue'
 
+const { t } = useI18n()
 const notifyTypeOpt = [
   {
-    label: '邮件',
+    label: t('auto.system_messagereceive_index_e9e8054f'),
     value: 1,
   },
   {
-    label: '短信',
+    label: t('auto.system_messagereceive_index_485c3abb'),
     value: 2,
   },
 ]
@@ -20,11 +22,11 @@ const notifyTypeOpt = [
 const column = [
   {
     prop: 'name',
-    label: '接收名称',
+    label: t('auto.system_messagereceive_index_26bba1d9'),
   },
   {
     prop: 'notifyType',
-    label: '通知类型',
+    label: t('auto.system_messagereceive_index_cd82d2bb'),
     render({ row }) {
       return notifyTypeOpt
         .find(item => item.value === row.notifyType)
@@ -33,17 +35,17 @@ const column = [
   },
   {
     prop: 'receiver',
-    label: '接收号码',
+    label: t('auto.system_messagereceive_index_dc2d48d5'),
   },
   {
     prop: 'remark',
-    label: '备注',
+    label: t('auto.system_messagereceive_index_2432b575'),
   },
   {
     prop: 'cz',
     slot: 'cz',
     width: 150,
-    label: '操作',
+    label: t('auto.system_messagereceive_index_2b6bc0f2'),
   },
 ]
 
@@ -66,7 +68,7 @@ const {
 } = useTable({
   deleteApi: messageReceiveDeleteApi,
   fetchApi: messageReceivePageApi,
-  diaName: '消息通知',
+  diaName: t('auto.system_messagereceive_index_d1d4c33c'),
   defParams: {},
 })
 
@@ -76,8 +78,7 @@ function closeEdite() {
 
 onMounted(() => {
   updatePage()
-})
-</script>
+})</script>
 
 <template>
   <div class="message-receive-page">
@@ -86,10 +87,10 @@ onMounted(() => {
       <div class="header-content">
         <h1 class="page-title">
           <span class="title-icon">✉</span>
-          消息通知
+          {{ t('auto.system_messagereceive_index_d1d4c33c') }}
         </h1>
         <p class="page-subtitle">
-          配置邮件与短信通知接收方式
+          {{ t('auto.system_messagereceive_index_b79a6257') }}
         </p>
       </div>
     </div>
@@ -98,10 +99,10 @@ onMounted(() => {
     <div class="search-bar glass-card">
       <div class="search-row">
         <div class="search-field">
-          <label class="field-label">通知类型</label>
+          <label class="field-label">{{ t('auto.system_messagereceive_index_cd82d2bb') }}</label>
           <el-select
             v-model="params.notifyType"
-            placeholder="请选择通知类型"
+            :placeholder="t('auto.system_messagereceive_index_5e382cb7')"
             filterable
             clearable
             style="width: 160px"
@@ -116,13 +117,13 @@ onMounted(() => {
         </div>
         <div class="search-actions">
           <el-button type="primary" @click="onSearch">
-            搜索
+            {{ t('auto.system_messagereceive_index_e5f71fc3') }}
           </el-button>
           <el-button :icon="RefreshRight" @click="onReset">
-            重置
+            {{ t('auto.system_messagereceive_index_4b9c3271') }}
           </el-button>
           <el-button type="primary" @click="onAdd">
-            添加通知
+            {{ t('auto.system_messagereceive_index_d3cec019') }}
           </el-button>
         </div>
       </div>
@@ -142,10 +143,10 @@ onMounted(() => {
       >
         <template #cz="{ row }">
           <el-button type="primary" link :icon="Edit" @click="onEdit(row)">
-            编辑
+            {{ t('auto.system_messagereceive_index_95b351c8') }}
           </el-button>
           <el-button type="danger" link :icon="Delete" @click="onDelete(row)">
-            删除
+            {{ t('auto.system_messagereceive_index_2f4aaddd') }}
           </el-button>
         </template>
       </IotTable>

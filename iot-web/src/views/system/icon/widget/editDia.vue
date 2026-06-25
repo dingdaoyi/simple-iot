@@ -1,4 +1,5 @@
 <script lang="jsx" setup>
+import { useI18n } from 'vue-i18n'
 import { Plus } from '@element-plus/icons-vue'
 import { ElMessage } from 'element-plus'
 import { computed, ref, watch } from 'vue'
@@ -6,11 +7,12 @@ import { iconAddApi, iconEditeApi } from '@/api'
 import { useForm } from '@/composables/useForm.js'
 import service from '@/utils/request.js'
 
+const { t } = useI18n()
 const props = defineProps(['datas', 'modelValue'])
 const emits = defineEmits(['update', 'update:modelValue'])
 
 const rules = ref({
-  name: [{ required: true, message: '图标名称不能为空', trigger: 'blur' }],
+  name: [{ required: true, message: t('auto.system_icon_editdia_091d9075'), trigger: 'blur' }],
 })
 
 const uploadRef = ref(null)
@@ -37,12 +39,12 @@ const isEdit = computed(() => !!props.datas?.id)
 function onSubmit() {
   // 上传中不允许提交
   if (uploading.value) {
-    ElMessage.warning('文件上传中，请稍候...')
+    ElMessage.warning(t('auto.system_icon_editdia_9039a732'))
     return
   }
   // 新增时必须上传图片
   if (!isEdit.value && !form.value.path) {
-    ElMessage.warning('请上传图标')
+    ElMessage.warning(t('auto.system_icon_editdia_79d0aff9'))
     return
   }
   handleSubmit()
@@ -52,12 +54,12 @@ function onSubmit() {
 function beforeUpload(file) {
   const isImage = file.type.startsWith('image/')
   if (!isImage) {
-    ElMessage.error('只能上传图片文件!')
+    ElMessage.error(t('auto.system_icon_editdia_2c148e94'))
     return false
   }
   const isLt2M = file.size / 1024 / 1024 < 2
   if (!isLt2M) {
-    ElMessage.error('图片大小不能超过 2MB!')
+    ElMessage.error(t('auto.system_icon_editdia_6bffbe61'))
     return false
   }
   return true
@@ -99,16 +101,16 @@ function handleUpload(uploadFile) {
           status: 'success',
           uid: uploadFile.uid,
         }]
-        ElMessage.success('上传成功')
+        ElMessage.success(t('auto.system_icon_editdia_a7699ba7'))
       }
       else {
-        ElMessage.error(result.msg || '上传失败')
+        ElMessage.error(result.msg || t('auto.system_icon_widget_editdia_54e5de42'))
         fileList.value = []
       }
     })
     .catch((err) => {
-      console.error('上传错误:', err)
-      ElMessage.error('上传失败')
+      console.error(t('auto.system_icon_widget_editdia_b5349cfc'), err)
+      ElMessage.error(t('auto.system_icon_editdia_54e5de42'))
       fileList.value = []
     })
     .finally(() => {
@@ -150,13 +152,12 @@ watch(() => props.modelValue, (newVal) => {
     fileList.value = []
     uploading.value = false
   }
-})
-</script>
+})</script>
 
 <template>
   <el-dialog
     :model-value="modelValue"
-    :title="datas?.id ? '编辑图标' : '新增图标'"
+    :title="t('auto.system_icon_editdia_54bf0fea')"
     width="500px"
     @update:model-value="$emit('update:modelValue', $event)"
     @close="onClose"
@@ -167,16 +168,16 @@ watch(() => props.modelValue, (newVal) => {
       :model="form"
       label-width="100px"
     >
-      <el-form-item label="图标名称" prop="name">
+      <el-form-item :label="t('auto.system_icon_editdia_013e1c8d')" prop="name">
         <el-input
           v-model="form.name"
           clearable
-          placeholder="请输入图标名称"
+          :placeholder="t('auto.system_icon_editdia_d03d66bc')"
         />
       </el-form-item>
 
       <!-- 上传组件 -->
-      <el-form-item label="图标" prop="path">
+      <el-form-item :label="t('auto.system_icon_editdia_5ef69f62')" prop="path">
         <el-upload
           ref="uploadRef"
           :file-list="fileList"
@@ -193,17 +194,17 @@ watch(() => props.modelValue, (newVal) => {
         </el-upload>
         <div class="upload-tip">
           <el-text type="info" size="small">
-            支持 jpg、png 格式，大小不超过 2MB
+            {{ t('auto.system_icon_editdia_771a4d9b') }}
           </el-text>
         </div>
       </el-form-item>
     </el-form>
     <template #footer>
       <el-button @click="onClose">
-        取消
+        {{ t('auto.system_icon_editdia_625fb26b') }}
       </el-button>
       <el-button type="primary" :loading="loading || uploading" @click="onSubmit">
-        确定
+        {{ t('auto.system_icon_editdia_38cf16f2') }}
       </el-button>
     </template>
   </el-dialog>

@@ -1,7 +1,9 @@
 <script lang="jsx" setup>
+import { useI18n } from 'vue-i18n'
 import { ref } from 'vue'
 import { productDetailApi, productTypeDetailApi } from '@/api/index.js'
 
+const { t } = useI18n()
 const props = defineProps(['typeId', 'productId'])
 const product = ref({})
 const productType = ref({})
@@ -17,15 +19,14 @@ else {
     .then(({ data }) => {
       productType.value = data
     })
-}
-</script>
+}</script>
 
 <template>
   <div class="wh-full flex flex-col gap-20px p-20px">
     <div class="flex gap-20px ">
       <div class="flex">
         <div class="w-120px">
-          产品类型名称
+          {{ t('auto.tslmodel_productinfo_aca705f9') }}
         </div>
         <div class="text-gray">
           {{ productType.name || '' }}
@@ -36,7 +37,7 @@ else {
     <div v-if="productId" class="flex gap-20px ">
       <div class="flex w-200px gap-20px">
         <div>
-          产品厂家:
+          {{ t('auto.tslmodel_productinfo_845fdc7d') }}
         </div>
         <div class="text-gray">
           {{ product.manufacturer || '' }}
@@ -44,7 +45,7 @@ else {
       </div>
       <div class="flex w-200px gap-20px">
         <div class="">
-          产品型号:
+          {{ t('auto.tslmodel_productinfo_c91a9eb9') }}
         </div>
         <div class="text-gray">
           {{ product.model || '' }}
@@ -52,7 +53,7 @@ else {
       </div>
       <div class="flex w-300px gap-20px">
         <div class="">
-          产品接入密钥:
+          {{ t('auto.tslmodel_productinfo_b36c17c6') }}
         </div>
         <div class="text-gray">
           {{ product.productKey || '' }}
@@ -61,7 +62,7 @@ else {
     </div>
     <div class="flex  gap-20px">
       <div class="">
-        产品描述:
+        {{ t('auto.tslmodel_productinfo_f63db30c') }}
       </div>
       <div class="text-gray">
         {{ product.mark || '' }}

@@ -1,10 +1,12 @@
 <script setup>
 import { computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
+import { useI18n } from 'vue-i18n'
 import { useSidebar } from '@/composables/useSidebar.js'
 
 const route = useRoute()
 const router = useRouter()
+const { t, te } = useI18n()
 const { isCollapsed } = useSidebar()
 
 const menuTree = computed(() => {
@@ -12,6 +14,12 @@ const menuTree = computed(() => {
   const loyoutChild = allRoutes.find(item => item.name === 'layout')
   return loyoutChild.children
 })
+
+function menuLabel(item) {
+  const key = item?.meta?.i18nKey
+  if (key && te(key)) return t(key)
+  return item?.meta?.title || item?.name || ''
+}
 
 function handleMenuItem(path) {
   router.push(path)
@@ -40,7 +48,7 @@ const currRoute = computed(() => route.path)
                     <component :is="item.meta.icon" />
                   </el-icon>
                 </div>
-                <span class="menu-text">{{ item.meta?.title || item.name }}</span>
+                <span class="menu-text">{{ menuLabel(item) }}</span>
               </div>
             </template>
             <template v-for="child in item.children" :key="child.path">
@@ -55,7 +63,7 @@ const currRoute = computed(() => route.path)
                       <component :is="child.meta.icon" />
                     </el-icon>
                   </div>
-                  <span class="menu-text">{{ child.meta?.title || child.name }}</span>
+                  <span class="menu-text">{{ menuLabel(child) }}</span>
                 </div>
               </el-menu-item>
             </template>
@@ -73,7 +81,7 @@ const currRoute = computed(() => route.path)
                   <component :is="item.meta.icon" />
                 </el-icon>
               </div>
-              <span class="menu-text">{{ item.meta?.title || item.name }}</span>
+              <span class="menu-text">{{ menuLabel(item) }}</span>
             </div>
           </el-menu-item>
         </template>
