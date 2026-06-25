@@ -11,7 +11,7 @@ import {
 } from '@/api/index.js'
 import IotTable from '@/components/IotTable.vue'
 import { useTable } from '@/composables/useTable.js'
-import ParamShow from '@/views/tslModel/widget/paramShow.vue' // 引入图标
+import ParamShow from '@/views/tslModel/widget/paramShow.vue' // Import icon display
 import ServiceEdite from '@/views/tslModel/widget/serviceEdite.vue'
 
 const { t } = useI18n()
@@ -35,18 +35,18 @@ function refreshTable() {
 // 自定义删除方法
 async function handleDelete(row) {
   try {
-    await ElMessageBox.confirm(t('auto.tslmodel_widget_service_8c4a16b0'), t('auto.tslmodel_widget_service_02d9819d'), {
-      confirmButtonText: t('auto.tslmodel_service_38cf16f2'),
-      cancelButtonText: t('auto.tslmodel_service_625fb26b'),
+    await ElMessageBox.confirm(t('tsl.you_sure_you_want_delete_this_service'), t('common.tip'), {
+      confirmButtonText: t('common.confirm'),
+      cancelButtonText: t('common.cancel'),
       type: 'warning',
     })
     await serviceDeleteApi(row.id)
-    ElMessage.success(t('auto.tslmodel_service_0007d170'))
+    ElMessage.success(t('tsl.delete_success'))
     refreshTable()
   }
   catch (error) {
     if (error !== 'cancel') {
-      console.error(t('auto.tslmodel_widget_service_b42909e2'), error)
+      console.error(t('tsl.service'), error)
     }
   }
 }
@@ -54,26 +54,26 @@ async function handleDelete(row) {
 const column = [
   {
     prop: 'id',
-    label: t('auto.tslmodel_service_b7ec1d09'),
+    label: t('tsl.service_id'),
   },
   {
     prop: 'name',
-    label: t('auto.tslmodel_service_8f3747c0'),
+    label: t('tsl.service_name'),
   },
   {
     prop: 'identifier',
-    label: t('auto.tslmodel_service_fda8afde'),
+    label: t('tsl.service_identifier_2'),
   },
 
   {
     prop: 'serviceType',
-    label: t('auto.tslmodel_service_924f67de'),
+    label: t('tsl.service_type'),
     formatter(row) {
-      return row.serviceType === 1 ? t('auto.tslmodel_widget_service_47d68cd0') : t('auto.tslmodel_widget_service_10b2761d')
+      return row.serviceType === 1 ? t('device.service') : t('tsl.event')
     },
   },
   {
-    label: t('auto.tslmodel_service_cba87444'),
+    label: t('tsl.parameter_list_2'),
     render({ row }) {
       return h(
         ElButton,
@@ -82,22 +82,22 @@ const column = [
           link: true,
           onClick: () => handleShowParams(row),
         },
-        () => t('auto.tslmodel_widget_service_6fa6500b'),
+        () => t('tsl.view_parameters'),
       )
     },
   },
   {
     prop: 'required',
-    label: t('auto.tslmodel_service_d10a7280'),
+    label: t('tsl.required_2'),
     formatter(row) {
-      return row.required === true ? t('auto.tslmodel_widget_service_417973c1') : t('auto.tslmodel_widget_service_c20cba89')
+      return row.required === true ? t('tsl.required') : t('tsl.param_optional_text')
     },
   },
   {
     prop: 'cz',
     slot: 'cz',
     width: 220,
-    label: t('auto.tslmodel_service_2b6bc0f2'),
+    label: t('common.operation'),
   },
 ]
 const {
@@ -110,7 +110,7 @@ const {
   diaTitle,
   currentItem,
 } = useTable({
-  diaName: t('auto.tslmodel_widget_service_47d68cd0'),
+  diaName: t('device.service'),
   defParams: {
     productTypeId: props.typeId,
     productId: props.productId,
@@ -133,16 +133,16 @@ loadPropertiesDict()</script>
   <div class="wh-full">
     <div class="flex flex-row mb-12px">
       <div class="w-240px mr-12px">
-        <el-input v-model="params.search" clearable :placeholder="t('auto.tslmodel_service_c6d56424')" @keyup.enter="onSearch" />
+        <el-input v-model="params.search" clearable :placeholder="t('tsl.enter_service_name_identifier_search')" @keyup.enter="onSearch" />
       </div>
       <ElButton type="primary" @click="onSearch">
-        {{ t('auto.tslmodel_service_e5f71fc3') }}
+        {{ t('common.search') }}
       </ElButton>
       <ElButton :icon="RefreshRight" @click="onReset">
-        {{ t('auto.tslmodel_service_4b9c3271') }}
+        {{ t('common.reset') }}
       </ElButton>
       <ElButton v-if="showEdite" type="primary" @click="onAdd">
-        {{ t('auto.tslmodel_service_b58c7549') }}
+        {{ t('tsl.add_service') }}
       </ElButton>
     </div>
     <IotTable
@@ -155,10 +155,10 @@ loadPropertiesDict()</script>
     >
       <template #cz="{ row }">
         <ElButton v-if="showEdite" type="primary" link :icon="Edit" @click="onEdit(row)">
-          {{ t('auto.tslmodel_service_09296297') }}
+          {{ t('tsl.edit_definition_2') }}
         </ElButton>
         <ElButton v-if="showEdite" type="danger" link :icon="Delete" @click="handleDelete(row)">
-          {{ t('auto.tslmodel_service_2f4aaddd') }}
+          {{ t('common.delete') }}
         </ElButton>
       </template>
     </IotTable>

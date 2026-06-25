@@ -12,8 +12,8 @@ const props = defineProps(['datas', 'productTypeList', 'modelValue'])
 const emits = defineEmits(['update', 'update:modelValue'])
 
 const rules = ref({
-  productTypeId: [{ required: true, message: t('auto.product_editdia_72d6f12d'), trigger: 'change' }],
-  model: [{ required: true, message: t('auto.product_editdia_c9eafffd'), trigger: 'blur' }],
+  productTypeId: [{ required: true, message: t('product.product_type_required'), trigger: 'change' }],
+  model: [{ required: true, message: t('product.product_model_required'), trigger: 'blur' }],
 })
 
 const { form, onSubmit: handleSubmit, editRef, loading, onClose } = useForm({
@@ -40,11 +40,11 @@ async function handleUpload(options) {
   const isLt2M = file.size / 1024 / 1024 < 2
 
   if (!isImage) {
-    ElMessage.error(t('auto.product_editdia_2c148e94'))
+    ElMessage.error(t('product.only_image_files_can_uploaded'))
     return
   }
   if (!isLt2M) {
-    ElMessage.error(t('auto.product_editdia_6bffbe61'))
+    ElMessage.error(t('product.text_2mb'))
     return
   }
 
@@ -57,14 +57,14 @@ async function handleUpload(options) {
     const url = res.data?.url || (Array.isArray(res.data) ? res.data[0] : null)
     if (url) {
       form.value.icon = url
-      ElMessage.success(t('auto.product_editdia_a7699ba7'))
+      ElMessage.success(t('product.upload_success'))
     }
     else {
-      ElMessage.error(t('auto.product_editdia_fed95497'))
+      ElMessage.error(t('product.upload_failed_no_file_url_returned'))
     }
   }
   catch {
-    ElMessage.error(t('auto.product_editdia_54e5de42'))
+    ElMessage.error(t('product.upload_failed'))
   }
   finally {
     uploadLoading.value = false
@@ -85,7 +85,7 @@ watch(() => props.datas, (val) => {
 <template>
   <el-dialog
     :model-value="modelValue"
-    :title="t('auto.product_editdia_5d8b3184')"
+    :title="datas?.id ? t('common.edit') : t('common.add')"
     width="600px"
     @update:model-value="$emit('update:modelValue', $event)"
     @close="onClose"
@@ -97,12 +97,12 @@ watch(() => props.datas, (val) => {
       label-width="100px"
     >
       <el-form-item
-        :label="t('auto.product_editdia_2db97cae')"
+        :label="t('menu.productType')"
         prop="productTypeId"
       >
         <el-select
           v-model="form.productTypeId"
-          :placeholder="t('auto.product_editdia_f7b25260')"
+          :placeholder="t('product.select_product_type')"
           style="width: 100%"
           filterable
           clearable
@@ -117,7 +117,7 @@ watch(() => props.datas, (val) => {
       </el-form-item>
 
       <el-form-item
-        :label="t('auto.product_editdia_9b105d43')"
+        :label="t('product.product_icon')"
         prop="icon"
       >
         <div class="icon-upload-wrapper">
@@ -131,7 +131,7 @@ watch(() => props.datas, (val) => {
             />
             <div class="preview-actions">
               <el-button type="danger" size="small" @click="removeIcon">
-                {{ t('auto.product_editdia_2f4aaddd') }}
+                {{ t('common.delete') }}
               </el-button>
             </div>
           </div>
@@ -151,46 +151,46 @@ watch(() => props.datas, (val) => {
               <el-icon v-else class="is-loading">
                 <Loading />
               </el-icon>
-              <span class="upload-text">{{ uploadLoading ? t('auto.product_widget_editdia_92cd554e') : t('auto.product_widget_editdia_d825ba2b') }}</span>
+              <span class="upload-text">{{ uploadLoading ? t('product.uploading') : t('system.upload_icon') }}</span>
             </div>
           </el-upload>
 
           <div class="upload-tip">
-            {{ t('auto.product_editdia_9ac019e8') }}
+            {{ t('product.text_128x128px_png_jpg_svg_2mb') }}
           </div>
         </div>
       </el-form-item>
 
       <el-form-item
-        :label="t('auto.product_editdia_ac4190df')"
+        :label="t('product.model')"
         prop="model"
       >
         <el-input
           v-model="form.model"
           clearable
-          :placeholder="t('auto.product_editdia_15e5cd62')"
+          :placeholder="t('product.product_dialog')"
         />
       </el-form-item>
 
       <el-form-item
-        :label="t('auto.product_editdia_8284e8da')"
+        :label="t('product.manufacturer_2')"
         prop="manufacturer"
       >
         <el-input
           v-model="form.manufacturer"
           clearable
-          :placeholder="t('auto.product_editdia_982324e8')"
+          :placeholder="t('product.enter_manufacturer')"
         />
       </el-form-item>
 
       <el-form-item
-        :label="t('auto.product_editdia_2432b575')"
+        :label="t('common.remark')"
         prop="remark"
       >
         <el-input
           v-model="form.remark"
           clearable
-          :placeholder="t('auto.product_editdia_245475e1')"
+          :placeholder="t('product.dialog_product_dialog')"
           type="textarea"
           :rows="2"
         />
@@ -199,10 +199,10 @@ watch(() => props.datas, (val) => {
 
     <template #footer>
       <el-button @click="onClose">
-        {{ t('auto.product_editdia_625fb26b') }}
+        {{ t('common.cancel') }}
       </el-button>
       <el-button type="primary" :loading="loading" @click="onSubmit">
-        {{ t('auto.product_editdia_38cf16f2') }}
+        {{ t('common.confirm') }}
       </el-button>
     </template>
   </el-dialog>

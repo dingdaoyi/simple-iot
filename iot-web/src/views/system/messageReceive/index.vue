@@ -10,11 +10,11 @@ import EditDia from '@/views/system/messageReceive/widget/editDia.vue'
 const { t } = useI18n()
 const notifyTypeOpt = [
   {
-    label: t('auto.system_messagereceive_index_e9e8054f'),
+    label: t('system.email_2'),
     value: 1,
   },
   {
-    label: t('auto.system_messagereceive_index_485c3abb'),
+    label: t('system.messagereceive_system_messagereceive_page'),
     value: 2,
   },
 ]
@@ -22,11 +22,11 @@ const notifyTypeOpt = [
 const column = [
   {
     prop: 'name',
-    label: t('auto.system_messagereceive_index_26bba1d9'),
+    label: t('system.system_messagereceive_page'),
   },
   {
     prop: 'notifyType',
-    label: t('auto.system_messagereceive_index_cd82d2bb'),
+    label: t('system.notification_type'),
     render({ row }) {
       return notifyTypeOpt
         .find(item => item.value === row.notifyType)
@@ -35,17 +35,17 @@ const column = [
   },
   {
     prop: 'receiver',
-    label: t('auto.system_messagereceive_index_dc2d48d5'),
+    label: t('system.receiver_number'),
   },
   {
     prop: 'remark',
-    label: t('auto.system_messagereceive_index_2432b575'),
+    label: t('common.remark'),
   },
   {
     prop: 'cz',
     slot: 'cz',
     width: 150,
-    label: t('auto.system_messagereceive_index_2b6bc0f2'),
+    label: t('common.operation'),
   },
 ]
 
@@ -68,7 +68,7 @@ const {
 } = useTable({
   deleteApi: messageReceiveDeleteApi,
   fetchApi: messageReceivePageApi,
-  diaName: t('auto.system_messagereceive_index_d1d4c33c'),
+  diaName: t('system.notifications'),
   defParams: {},
 })
 
@@ -87,10 +87,10 @@ onMounted(() => {
       <div class="header-content">
         <h1 class="page-title">
           <span class="title-icon">✉</span>
-          {{ t('auto.system_messagereceive_index_d1d4c33c') }}
+          {{ t('system.notifications') }}
         </h1>
         <p class="page-subtitle">
-          {{ t('auto.system_messagereceive_index_b79a6257') }}
+          {{ t('system.configure_email_sms_notification_recipients') }}
         </p>
       </div>
     </div>
@@ -99,10 +99,10 @@ onMounted(() => {
     <div class="search-bar glass-card">
       <div class="search-row">
         <div class="search-field">
-          <label class="field-label">{{ t('auto.system_messagereceive_index_cd82d2bb') }}</label>
+          <label class="field-label">{{ t('system.notification_type') }}</label>
           <el-select
             v-model="params.notifyType"
-            :placeholder="t('auto.system_messagereceive_index_5e382cb7')"
+            :placeholder="t('system.select_notification_type')"
             filterable
             clearable
             style="width: 160px"
@@ -117,13 +117,13 @@ onMounted(() => {
         </div>
         <div class="search-actions">
           <el-button type="primary" @click="onSearch">
-            {{ t('auto.system_messagereceive_index_e5f71fc3') }}
+            {{ t('common.search') }}
           </el-button>
           <el-button :icon="RefreshRight" @click="onReset">
-            {{ t('auto.system_messagereceive_index_4b9c3271') }}
+            {{ t('common.reset') }}
           </el-button>
           <el-button type="primary" @click="onAdd">
-            {{ t('auto.system_messagereceive_index_d3cec019') }}
+            {{ t('system.add_notification_2') }}
           </el-button>
         </div>
       </div>
@@ -143,10 +143,10 @@ onMounted(() => {
       >
         <template #cz="{ row }">
           <el-button type="primary" link :icon="Edit" @click="onEdit(row)">
-            {{ t('auto.system_messagereceive_index_95b351c8') }}
+            {{ t('common.edit') }}
           </el-button>
           <el-button type="danger" link :icon="Delete" @click="onDelete(row)">
-            {{ t('auto.system_messagereceive_index_2f4aaddd') }}
+            {{ t('common.delete') }}
           </el-button>
         </template>
       </IotTable>

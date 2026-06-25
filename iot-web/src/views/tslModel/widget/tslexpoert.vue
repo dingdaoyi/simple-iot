@@ -17,10 +17,10 @@ const error = ref(null)
 async function copyJson() {
   try {
     await navigator.clipboard.writeText(JSON.stringify(jsonData.value, null, 2))
-    ElMessage.success(t('auto.tslmodel_tslexpoert_4fb42e6e'))
+    ElMessage.success(t('tsl.copied_clipboard'))
   }
   catch {
-    ElMessage.error(t('auto.tslmodel_tslexpoert_5154ae17'))
+    ElMessage.error(t('tsl.copy_failed'))
   }
 }
 
@@ -31,7 +31,7 @@ onMounted(async () => {
     jsonData.value = data
   }
   catch (e) {
-    error.value = e.message || t('auto.tslmodel_widget_tslexpoert_866b795e')
+    error.value = e.message || t('common.load_failed')
     console.error('Failed to load TSL data:', e)
   }
   finally {
@@ -43,9 +43,9 @@ onMounted(async () => {
   <div class="tsl-container">
     <!-- 工具栏 -->
     <div class="toolbar">
-      <span class="title">{{ t('auto.tslmodel_tslexpoert_e7da4f3a') }}</span>
+      <span class="title">{{ t('tsl.tsl') }}</span>
       <el-button type="primary" size="small" @click="copyJson">
-        {{ t('auto.tslmodel_tslexpoert_ffe38355') }}
+        {{ t('tsl.json') }}
       </el-button>
     </div>
 
@@ -54,7 +54,7 @@ onMounted(async () => {
       <el-icon class="is-loading" :size="32">
         <Loading />
       </el-icon>
-      <span>{{ t('auto.tslmodel_tslexpoert_26b5bd49') }}</span>
+      <span>{{ t('tsl.loading') }}</span>
     </div>
 
     <!-- 错误状态 -->
@@ -81,7 +81,7 @@ onMounted(async () => {
       <el-icon :size="32" color="var(--iot-color-text-muted)">
         <Document />
       </el-icon>
-      <span>{{ t('auto.tslmodel_tslexpoert_29dab078') }}</span>
+      <span>{{ t('tsl.no_tsl_data') }}</span>
     </div>
   </div>
 </template>

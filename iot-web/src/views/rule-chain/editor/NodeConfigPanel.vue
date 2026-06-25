@@ -73,7 +73,7 @@ async function loadTemplateVariables() {
     templateVariables.value = data || []
   }
   catch (e) {
-    console.error(t('auto.rule_chain_editor_nodeconfigpanel_3695b8f4'), e)
+    console.error(t('ruleChain.failed_load_template_variables'), e)
     templateVariables.value = []
   }
   finally {
@@ -173,12 +173,12 @@ const propertyStep = computed(() => {
 // ==================== 操作符选项 ====================
 
 const propertyOperatorOptions = [
-  { label: t('auto.rule_chain_editor_nodeconfigpanel_55261204'), value: 'GT' },
-  { label: t('auto.rule_chain_editor_nodeconfigpanel_ef2679e4'), value: 'GE' },
-  { label: t('auto.rule_chain_editor_nodeconfigpanel_9cd6c2c3'), value: 'EQ' },
-  { label: t('auto.rule_chain_editor_nodeconfigpanel_dd29ed19'), value: 'LT' },
-  { label: t('auto.rule_chain_editor_nodeconfigpanel_847d07e5'), value: 'LE' },
-  { label: t('auto.rule_chain_editor_nodeconfigpanel_00da84e5'), value: 'NE' },
+  { label: t('ruleChain.greater_than'), value: 'GT' },
+  { label: t('ruleChain.greater_than_equal'), value: 'GE' },
+  { label: t('ruleChain.equal'), value: 'EQ' },
+  { label: t('ruleChain.less_than'), value: 'LT' },
+  { label: t('ruleChain.less_than_equal'), value: 'LE' },
+  { label: t('ruleChain.rule_chain_editor_nodeconfigpanel'), value: 'NE' },
 ]
 
 const eventOperatorOptions = propertyOperatorOptions
@@ -223,7 +223,7 @@ const deviceCascadeProps = {
         const response = await productListApi({ productTypeId: value })
         const products = (response.data || []).map(p => ({
           id: p.id,
-          name: p.model || p.manufacturer || t('auto.rule_chain_default_product_name', { id: p.id }),
+          name: p.model || p.manufacturer || t('ruleChain.product_id', { id: p.id }),
           leaf: false,
         }))
         resolve(products)
@@ -288,7 +288,7 @@ function onDeviceCascadeChange(value) {
   <div v-if="selectedNode" class="node-config-panel">
     <!-- 节点名称 -->
     <el-form label-width="80px" size="small">
-      <el-form-item :label="t('auto.rule_chain_editor_nodeconfigpanel_b1785ef0')">
+      <el-form-item :label="t('ruleChain.node_name')">
         <el-input
           :model-value="selectedNode.name"
           @update:model-value="emit('update:node', { ...selectedNode, name: $event })"
@@ -299,14 +299,14 @@ function onDeviceCascadeChange(value) {
 
       <!-- 属性上报输入节点 -->
       <template v-if="selectedNode.type === 'INPUT_PROPERTY'">
-        <el-form-item :label="t('auto.rule_chain_editor_nodeconfigpanel_ad1333bd')">
+        <el-form-item :label="t('ruleChain.listen_properties')">
           <el-select
             :model-value="config.identifiers"
             multiple
             filterable
             collapse-tags
             collapse-tags-tooltip
-            :placeholder="t('auto.rule_chain_editor_nodeconfigpanel_b2e30615')"
+            :placeholder="t('ruleChain.leave_empty_listen_all_properties')"
             :disabled="!ruleChain.productId"
             @update:model-value="updateConfig('identifiers', $event)"
           >
@@ -318,24 +318,24 @@ function onDeviceCascadeChange(value) {
             />
           </el-select>
           <div v-if="!ruleChain.productId" class="form-tip warn">
-            {{ t('auto.rule_chain_editor_nodeconfigpanel_17412c1c') }}
+            {{ t('ruleChain.select_product_left_first') }}
           </div>
           <div v-else class="form-tip">
-            {{ t('auto.rule_chain_editor_nodeconfigpanel_16ca5522') }}
+            {{ t('ruleChain.selected_listen_all_property_reports') }}
           </div>
         </el-form-item>
       </template>
 
       <!-- 事件上报输入节点 -->
       <template v-if="selectedNode.type === 'INPUT_EVENT'">
-        <el-form-item :label="t('auto.rule_chain_editor_nodeconfigpanel_2bbffb04')">
+        <el-form-item :label="t('ruleChain.listen_events')">
           <el-select
             :model-value="config.identifiers"
             multiple
             filterable
             collapse-tags
             collapse-tags-tooltip
-            :placeholder="t('auto.rule_chain_editor_nodeconfigpanel_903a6a58')"
+            :placeholder="t('ruleChain.leave_empty_listen_all_events')"
             :disabled="!ruleChain.productId"
             @update:model-value="updateConfig('identifiers', $event)"
           >
@@ -347,28 +347,28 @@ function onDeviceCascadeChange(value) {
             />
           </el-select>
           <div v-if="!ruleChain.productId" class="form-tip warn">
-            {{ t('auto.rule_chain_editor_nodeconfigpanel_17412c1c') }}
+            {{ t('ruleChain.select_product_left_first') }}
           </div>
           <div v-else class="form-tip">
-            {{ t('auto.rule_chain_editor_nodeconfigpanel_5ddb6d40') }}
+            {{ t('ruleChain.selected_listen_all_event_reports') }}
           </div>
         </el-form-item>
       </template>
 
       <!-- 设备上下线节点 -->
       <template v-if="selectedNode.type === 'INPUT_ONLINE'">
-        <el-form-item :label="t('auto.rule_chain_editor_nodeconfigpanel_f974c846')">
+        <el-form-item :label="t('ruleChain.event_type')">
           <el-select
             :model-value="config.onlineStatus"
-            :placeholder="t('auto.rule_chain_editor_nodeconfigpanel_8e0b31a7')"
+            :placeholder="t('ruleChain.select_online_offline_event')"
             @update:model-value="updateConfig('onlineStatus', $event)"
           >
-            <el-option :label="t('auto.rule_chain_editor_nodeconfigpanel_c4933c3a')" value="online" />
-            <el-option :label="t('auto.rule_chain_editor_nodeconfigpanel_1c64f797')" value="offline" />
-            <el-option :label="t('auto.rule_chain_editor_nodeconfigpanel_b6584f57')" value="all" />
+            <el-option :label="t('ruleChain.device_online')" value="online" />
+            <el-option :label="t('ruleChain.device_offline')" value="offline" />
+            <el-option :label="t('ruleChain.all_online_offline')" value="all" />
           </el-select>
           <div class="form-tip">
-            {{ t('auto.rule_chain_editor_nodeconfigpanel_d79d9463') }}
+            {{ t('ruleChain.listen_online_offline_events_rule_chain_products_devices') }}
           </div>
         </el-form-item>
       </template>
@@ -377,21 +377,21 @@ function onDeviceCascadeChange(value) {
 
       <!-- 属性条件过滤节点 -->
       <template v-if="selectedNode.type === 'FILTER_PROPERTY'">
-        <el-form-item v-if="upstreamNode" :label="t('auto.rule_chain_editor_nodeconfigpanel_78ec4866')">
+        <el-form-item v-if="upstreamNode" :label="t('ruleChain.upstream_node')">
           <div class="upstream-info">
             <el-tag size="small" :type="upstreamNode.type === 'INPUT_PROPERTY' ? 'success' : 'info'">
               {{ upstreamNode.name }}
             </el-tag>
             <span v-if="upstreamNode.config?.identifiers?.length" class="upstream-detail">
-              {{ t('auto.rule_chain_editor_filtered_properties', { count: upstreamNode.config.identifiers.length }) }}
+              {{ t('ruleChain.filtered_count_properties', { count: upstreamNode.config.identifiers.length }) }}
             </span>
           </div>
         </el-form-item>
 
-        <el-form-item :label="t('auto.rule_chain_editor_nodeconfigpanel_cb02034e')">
+        <el-form-item :label="t('ruleChain.select_property')">
           <el-select
             :model-value="config.identifier"
-            :placeholder="t('auto.rule_chain_editor_nodeconfigpanel_5a70dec9')"
+            :placeholder="t('ruleChain.select_product_first')"
             filterable
             :disabled="!ruleChain.productId"
             @update:model-value="updateConfig('identifier', $event)"
@@ -407,15 +407,15 @@ function onDeviceCascadeChange(value) {
             </el-option>
           </el-select>
           <div v-if="!ruleChain.productId" class="form-tip warn">
-            {{ t('auto.rule_chain_editor_nodeconfigpanel_17412c1c') }}
+            {{ t('ruleChain.select_product_left_first') }}
           </div>
           <div v-else-if="upstreamNode?.config?.identifiers?.length" class="form-tip">
-            {{ t('auto.rule_chain_editor_property_from_upstream', { name: upstreamNode.name }) }}
+            {{ t('ruleChain.property_list_comes_from_upstream_node_name_filters', { name: upstreamNode.name }) }}
           </div>
         </el-form-item>
 
-        <el-form-item :label="t('auto.rule_chain_editor_nodeconfigpanel_ed4ad0f9')">
-          <el-select :model-value="config.operator" :placeholder="t('auto.rule_chain_editor_nodeconfigpanel_3a5b5a0c')" @update:model-value="updateConfig('operator', $event)">
+        <el-form-item :label="t('ruleChain.operator')">
+          <el-select :model-value="config.operator" :placeholder="t('ruleChain.select_comparison_operator')" @update:model-value="updateConfig('operator', $event)">
             <el-option
               v-for="op in propertyOperatorOptions"
               :key="op.value"
@@ -425,29 +425,29 @@ function onDeviceCascadeChange(value) {
           </el-select>
         </el-form-item>
 
-        <el-form-item :label="t('auto.rule_chain_editor_nodeconfigpanel_e0de1c9a')">
+        <el-form-item :label="t('ruleChain.threshold')">
           <el-input-number
             :model-value="config.value"
             :min="propertyMin ?? undefined"
             :max="propertyMax ?? undefined"
             :step="propertyStep"
-            :placeholder="t('auto.rule_chain_editor_nodeconfigpanel_47a372f2')"
+            :placeholder="t('ruleChain.selectedproperty_unit_selectedproperty_unit')"
             style="width: 100%"
             @update:model-value="updateConfig('value', $event)"
           />
           <div v-if="selectedProperty && (propertyMin !== null || propertyMax !== null)" class="form-tip">
-            <span v-if="propertyMin !== null">{{ t('auto.rule_chain_editor_min_value', { value: propertyMin }) }}</span>
+            <span v-if="propertyMin !== null">{{ t('ruleChain.min_value', { value: propertyMin }) }}</span>
             <span v-if="propertyMin !== null && propertyMax !== null"> · </span>
-            <span v-if="propertyMax !== null">{{ t('auto.rule_chain_editor_max_value', { value: propertyMax }) }}</span>
-            <span v-if="selectedProperty.unit"> · {{ t('auto.rule_chain_editor_unit_value', { value: selectedProperty.unit }) }}</span>
+            <span v-if="propertyMax !== null">{{ t('ruleChain.max_value', { value: propertyMax }) }}</span>
+            <span v-if="selectedProperty.unit"> · {{ t('ruleChain.unit_value', { value: selectedProperty.unit }) }}</span>
           </div>
         </el-form-item>
 
         <!-- 属性详细信息 -->
-        <el-form-item v-if="selectedProperty" :label="t('auto.rule_chain_editor_nodeconfigpanel_c5ea2ca1')">
+        <el-form-item v-if="selectedProperty" :label="t('ruleChain.property_info')">
           <div class="property-info">
             <span class="info-chip">{{ selectedProperty.dataType?.name }}</span>
-            <span v-if="selectedProperty.unit" class="info-chip">{{ t('auto.rule_chain_editor_unit_value', { value: selectedProperty.unit }) }}</span>
+            <span v-if="selectedProperty.unit" class="info-chip">{{ t('ruleChain.unit_value', { value: selectedProperty.unit }) }}</span>
             <span v-if="selectedProperty.accessMode" class="info-chip">{{ selectedProperty.accessMode }}</span>
           </div>
         </el-form-item>
@@ -455,21 +455,21 @@ function onDeviceCascadeChange(value) {
 
       <!-- 事件类型过滤节点 -->
       <template v-if="selectedNode.type === 'FILTER_EVENT_TYPE'">
-        <el-form-item v-if="upstreamNode" :label="t('auto.rule_chain_editor_nodeconfigpanel_78ec4866')">
+        <el-form-item v-if="upstreamNode" :label="t('ruleChain.upstream_node')">
           <div class="upstream-info">
             <el-tag size="small" type="success">
               {{ upstreamNode.name }}
             </el-tag>
             <span v-if="upstreamNode.config?.identifiers?.length" class="upstream-detail">
-              {{ t('auto.rule_chain_editor_filtered_events', { count: upstreamNode.config.identifiers.length }) }}
+              {{ t('ruleChain.filtered_count_events', { count: upstreamNode.config.identifiers.length }) }}
             </span>
           </div>
         </el-form-item>
 
-        <el-form-item :label="t('auto.rule_chain_editor_nodeconfigpanel_1634c038')">
+        <el-form-item :label="t('ruleChain.select_event')">
           <el-select
             :model-value="config.identifier"
-            :placeholder="t('auto.rule_chain_editor_nodeconfigpanel_5a70dec9')"
+            :placeholder="t('ruleChain.select_product_first')"
             filterable
             clearable
             :disabled="!ruleChain.productId"
@@ -483,28 +483,28 @@ function onDeviceCascadeChange(value) {
             />
           </el-select>
           <div v-if="!ruleChain.productId" class="form-tip warn">
-            {{ t('auto.rule_chain_editor_nodeconfigpanel_17412c1c') }}
+            {{ t('ruleChain.select_product_left_first') }}
           </div>
           <div v-else-if="upstreamNode?.config?.identifiers?.length" class="form-tip">
-            {{ t('auto.rule_chain_editor_event_from_upstream', { name: upstreamNode.name }) }}
+            {{ t('ruleChain.event_list_comes_from_upstream_node_name_filters', { name: upstreamNode.name }) }}
           </div>
           <div v-else class="form-tip">
-            {{ t('auto.rule_chain_editor_nodeconfigpanel_2c060c60') }}
+            {{ t('ruleChain.selected_all_events_pass') }}
           </div>
         </el-form-item>
 
         <template v-if="selectedEvent">
-          <el-form-item :label="t('auto.rule_chain_editor_nodeconfigpanel_cb52e834')">
+          <el-form-item :label="t('ruleChain.event_info')">
             <div class="property-info">
               <span class="info-chip">{{ selectedEvent.eventType }}</span>
               <span v-if="selectedEvent.remark" class="info-chip muted">{{ selectedEvent.remark }}</span>
             </div>
           </el-form-item>
 
-          <el-form-item v-if="selectedEvent.outputParams?.length" :label="t('auto.rule_chain_editor_nodeconfigpanel_53e772c1')">
+          <el-form-item v-if="selectedEvent.outputParams?.length" :label="t('ruleChain.filter_parameter')">
             <el-select
               :model-value="config.paramIdentifier"
-              :placeholder="t('auto.rule_chain_editor_nodeconfigpanel_eda4d2e3')"
+              :placeholder="t('ruleChain.select_parameter_filter')"
               filterable
               clearable
               @update:model-value="updateConfig('paramIdentifier', $event)"
@@ -517,13 +517,13 @@ function onDeviceCascadeChange(value) {
               />
             </el-select>
             <div class="form-tip">
-              {{ t('auto.rule_chain_editor_nodeconfigpanel_a0a42fc0') }}
+              {{ t('ruleChain.selected_filter_event_type_only') }}
             </div>
           </el-form-item>
 
           <template v-if="config.paramIdentifier">
-            <el-form-item :label="t('auto.rule_chain_editor_nodeconfigpanel_ed4ad0f9')">
-              <el-select :model-value="config.operator" :placeholder="t('auto.rule_chain_editor_nodeconfigpanel_3a5b5a0c')" @update:model-value="updateConfig('operator', $event)">
+            <el-form-item :label="t('ruleChain.operator')">
+              <el-select :model-value="config.operator" :placeholder="t('ruleChain.select_comparison_operator')" @update:model-value="updateConfig('operator', $event)">
                 <el-option
                   v-for="op in eventOperatorOptions"
                   :key="op.value"
@@ -532,13 +532,13 @@ function onDeviceCascadeChange(value) {
                 />
               </el-select>
             </el-form-item>
-            <el-form-item :label="t('auto.rule_chain_editor_nodeconfigpanel_e0de1c9a')">
-              <el-input :model-value="config.value" :placeholder="t('auto.rule_chain_editor_nodeconfigpanel_5ff8a712')" style="width: 100%" @update:model-value="updateConfig('value', $event)" />
+            <el-form-item :label="t('ruleChain.threshold')">
+              <el-input :model-value="config.value" :placeholder="t('ruleChain.enter_threshold')" style="width: 100%" @update:model-value="updateConfig('value', $event)" />
             </el-form-item>
-            <el-form-item v-if="selectedEventParam" :label="t('auto.rule_chain_editor_nodeconfigpanel_78527c6b')">
+            <el-form-item v-if="selectedEventParam" :label="t('ruleChain.parameter_info')">
               <div class="property-info">
                 <span class="info-chip">{{ selectedEventParam.dataType?.name }}</span>
-                <span v-if="selectedEventParam.unit" class="info-chip">{{ t('auto.rule_chain_editor_unit_value', { value: selectedEventParam.unit }) }}</span>
+                <span v-if="selectedEventParam.unit" class="info-chip">{{ t('ruleChain.unit_value', { value: selectedEventParam.unit }) }}</span>
               </div>
             </el-form-item>
           </template>
@@ -547,24 +547,24 @@ function onDeviceCascadeChange(value) {
 
       <!-- 脚本过滤节点 -->
       <template v-if="selectedNode.type === 'FILTER_SCRIPT'">
-        <el-form-item :label="t('auto.rule_chain_editor_nodeconfigpanel_559e256b')">
+        <el-form-item :label="t('ruleChain.filter_script')">
           <el-input
             ref="filterScriptRef"
             :model-value="config.script"
             type="textarea"
             :rows="8"
-            :placeholder="t('auto.rule_chain_editor_nodeconfigpanel_25f166f0')"
+            :placeholder="t('ruleChain.true_true_false_false_return_msg_temperature_30')"
             @update:model-value="updateConfig('script', $event)"
           />
           <div class="form-tip">
-            {{ t('auto.rule_chain_editor_nodeconfigpanel_b4d7a783') }} <span class="branch-tag branch-true">True</span> {{ t('auto.rule_chain_editor_nodeconfigpanel_422c8c6f') }} <span class="branch-tag branch-false">False</span> {{ t('auto.rule_chain_editor_nodeconfigpanel_bfc04cfd') }}
+            {{ t('ruleChain.javascript_true') }} <span class="branch-tag branch-true">True</span> {{ t('ruleChain.false') }} <span class="branch-tag branch-false">False</span> {{ t('ruleChain.branch') }}
           </div>
           <VariableInserter
             :target-ref="filterScriptRef"
             :value="config.script"
             :system-variables="systemVariables"
             :property-variables="propertyVariables"
-            :label="t('auto.rule_chain_editor_nodeconfigpanel_a52d35e4')"
+            :label="t('ruleChain.script_variables')"
             @update="updateConfig('script', $event)"
           />
         </el-form-item>
@@ -574,35 +574,35 @@ function onDeviceCascadeChange(value) {
 
       <!-- 创建告警节点 -->
       <template v-if="selectedNode.type === 'ALARM_CREATE'">
-        <el-form-item :label="t('auto.rule_chain_editor_nodeconfigpanel_c62e34c5')">
+        <el-form-item :label="t('ruleChain.alarm_type')">
           <el-input :model-value="config.alarmType" placeholder="high_temperature" @update:model-value="updateConfig('alarmType', $event)" />
         </el-form-item>
-        <el-form-item :label="t('auto.rule_chain_editor_nodeconfigpanel_b4450f15')">
-          <el-input :model-value="config.alarmName" :placeholder="t('auto.rule_chain_editor_nodeconfigpanel_8aa544a0')" @update:model-value="updateConfig('alarmName', $event)" />
+        <el-form-item :label="t('alarm.alarm_name')">
+          <el-input :model-value="config.alarmName" :placeholder="t('ruleChain.editor_nodeconfigpanel_devicename')" @update:model-value="updateConfig('alarmName', $event)" />
         </el-form-item>
-        <el-form-item :label="t('auto.rule_chain_editor_nodeconfigpanel_08fe5024')">
+        <el-form-item :label="t('ruleChain.editor_nodeconfigpanel_rule_chain_editor_nodeconfigpanel')">
           <el-select :model-value="config.severity" @update:model-value="updateConfig('severity', $event)">
             <el-option value="CRITICAL">
-              <span class="severity-dot critical" />{{ t('auto.rule_chain_editor_nodeconfigpanel_c1fee08b') }}
+              <span class="severity-dot critical" />{{ t('ruleChain.critical') }}
             </el-option>
             <el-option value="MAJOR">
-              <span class="severity-dot major" />{{ t('auto.rule_chain_editor_nodeconfigpanel_04c36a62') }}
+              <span class="severity-dot major" />{{ t('ruleChain.major') }}
             </el-option>
             <el-option value="MINOR">
-              <span class="severity-dot minor" />{{ t('auto.rule_chain_editor_nodeconfigpanel_9aa3ed71') }}
+              <span class="severity-dot minor" />{{ t('ruleChain.minor') }}
             </el-option>
             <el-option value="WARNING">
-              <span class="severity-dot warning" />{{ t('auto.rule_chain_editor_nodeconfigpanel_0ca6976a') }}
+              <span class="severity-dot warning" />{{ t('ruleChain.warning') }}
             </el-option>
           </el-select>
         </el-form-item>
-        <el-form-item :label="t('auto.rule_chain_editor_nodeconfigpanel_ed1cfa58')">
+        <el-form-item :label="t('ruleChain.alarm_message')">
           <el-input
             ref="alarmMessageRef"
             :model-value="config.message"
             type="textarea"
             :rows="3"
-            :placeholder="t('auto.rule_chain_editor_nodeconfigpanel_13319555')"
+            :placeholder="t('ruleChain.devicename_temperature')"
             @update:model-value="updateConfig('message', $event)"
           />
           <VariableInserter
@@ -617,19 +617,19 @@ function onDeviceCascadeChange(value) {
 
       <!-- 清除告警节点 -->
       <template v-if="selectedNode.type === 'ALARM_CLEAR'">
-        <el-form-item :label="t('auto.rule_chain_editor_nodeconfigpanel_c62e34c5')">
+        <el-form-item :label="t('ruleChain.alarm_type')">
           <el-input :model-value="config.alarmType" placeholder="high_temperature" @update:model-value="updateConfig('alarmType', $event)" />
           <div class="form-tip">
-            {{ t('auto.rule_chain_editor_nodeconfigpanel_e3d73d06') }}
+            {{ t('ruleChain.leave_empty_clear_all_alarms_device') }}
           </div>
         </el-form-item>
-        <el-form-item :label="t('auto.rule_chain_editor_nodeconfigpanel_bcb4e674')">
+        <el-form-item :label="t('ruleChain.clear_mode')">
           <el-radio-group :model-value="config.clearType" @update:model-value="updateConfig('clearType', $event)">
             <el-radio label="active">
-              {{ t('auto.rule_chain_editor_nodeconfigpanel_b98f897e') }}
+              {{ t('ruleChain.clear_active_alarms_only') }}
             </el-radio>
             <el-radio label="all">
-              {{ t('auto.rule_chain_editor_nodeconfigpanel_faa4011e') }}
+              {{ t('ruleChain.clear_all_related_alarms') }}
             </el-radio>
           </el-radio-group>
         </el-form-item>
@@ -639,10 +639,10 @@ function onDeviceCascadeChange(value) {
 
       <!-- 消息推送节点 -->
       <template v-if="selectedNode.type === 'OUTPUT_MESSAGE'">
-        <el-form-item :label="t('auto.rule_chain_editor_nodeconfigpanel_5c6e5976')">
+        <el-form-item :label="t('ruleChain.message_config')">
           <el-select
             :model-value="config.messageReceiveId"
-            :placeholder="t('auto.rule_chain_editor_nodeconfigpanel_43807fe9')"
+            :placeholder="t('ruleChain.select_message_config')"
             filterable
             clearable
             @update:model-value="updateConfig('messageReceiveId', $event)"
@@ -650,20 +650,20 @@ function onDeviceCascadeChange(value) {
             <el-option
               v-for="item in messageReceiveOptions"
               :key="item.id"
-              :label="t('auto.rule_chain_editor_nodeconfigpanel_bb244b7d')"
+              :label="t('ruleChain.item_name_item_notifytype_1_item_notifytype_2')"
               :value="item.id"
             />
           </el-select>
           <div v-if="messageReceiveOptions.length === 0" class="form-tip warn">
-            {{ t('auto.rule_chain_editor_nodeconfigpanel_5b959604') }}
+            {{ t('ruleChain.no_message_config_add_one_message_receiving_first') }}
           </div>
         </el-form-item>
 
-        <el-form-item :label="t('auto.rule_chain_editor_nodeconfigpanel_a53db514')">
+        <el-form-item :label="t('ruleChain.message_title')">
           <el-input
             ref="outputTitleRef"
             :model-value="config.title"
-            :placeholder="t('auto.rule_chain_editor_nodeconfigpanel_79ac6ea2')"
+            :placeholder="t('ruleChain.devicename')"
             @update:model-value="updateConfig('title', $event)"
           />
           <VariableInserter
@@ -675,13 +675,13 @@ function onDeviceCascadeChange(value) {
           />
         </el-form-item>
 
-        <el-form-item :label="t('auto.rule_chain_editor_nodeconfigpanel_b87b7756')">
+        <el-form-item :label="t('ruleChain.message_content')">
           <el-input
             ref="outputContentRef"
             :model-value="config.content"
             type="textarea"
             :rows="4"
-            :placeholder="t('auto.rule_chain_editor_nodeconfigpanel_eafe90f3')"
+            :placeholder="t('ruleChain.devicename_eventtime_value')"
             @update:model-value="updateConfig('content', $event)"
           />
           <VariableInserter
@@ -696,10 +696,10 @@ function onDeviceCascadeChange(value) {
 
       <!-- HTTP推送节点 -->
       <template v-if="selectedNode.type === 'OUTPUT_HTTP'">
-        <el-form-item :label="t('auto.rule_chain_editor_nodeconfigpanel_1bab3e3f')">
+        <el-form-item :label="t('ruleChain.push_config')">
           <el-select
             :model-value="config.pushConfigId"
-            :placeholder="t('auto.rule_chain_editor_nodeconfigpanel_b4677fd7')"
+            :placeholder="t('ruleChain.editor_nodeconfigpanel_http')"
             filterable
             clearable
             @update:model-value="updateConfig('pushConfigId', $event)"
@@ -717,14 +717,14 @@ function onDeviceCascadeChange(value) {
             </el-option>
           </el-select>
           <div v-if="pushConfigOptions.filter(p => p.type === 'HTTP').length === 0" class="form-tip warn">
-            {{ t('auto.rule_chain_editor_nodeconfigpanel_4a0cf764') }}
+            {{ t('ruleChain.http') }}
           </div>
           <div v-else class="form-tip">
-            {{ t('auto.rule_chain_editor_nodeconfigpanel_e3c534de') }}
+            {{ t('ruleChain.select_preconfigured_http_push_parameters') }}
           </div>
         </el-form-item>
 
-        <el-form-item :label="t('auto.rule_chain_editor_nodeconfigpanel_fc653dc9')">
+        <el-form-item :label="t('ruleChain.custom_request_body')">
           <el-input
             ref="httpBodyRef"
             :model-value="config.customBody"
@@ -734,7 +734,7 @@ function onDeviceCascadeChange(value) {
             @update:model-value="updateConfig('customBody', $event)"
           />
           <div class="form-tip">
-            {{ t('auto.rule_chain_editor_nodeconfigpanel_8e10bbce') }}
+            {{ t('ruleChain.leave_empty_use_default_request_body') }}
           </div>
           <VariableInserter
             :target-ref="httpBodyRef"
@@ -748,10 +748,10 @@ function onDeviceCascadeChange(value) {
 
       <!-- MQTT推送节点 -->
       <template v-if="selectedNode.type === 'OUTPUT_MQTT'">
-        <el-form-item :label="t('auto.rule_chain_editor_nodeconfigpanel_1bab3e3f')">
+        <el-form-item :label="t('ruleChain.push_config')">
           <el-select
             :model-value="config.pushConfigId"
-            :placeholder="t('auto.rule_chain_editor_nodeconfigpanel_e06b93c1')"
+            :placeholder="t('ruleChain.select_mqtt_push_config')"
             filterable
             clearable
             @update:model-value="updateConfig('pushConfigId', $event)"
@@ -769,14 +769,14 @@ function onDeviceCascadeChange(value) {
             </el-option>
           </el-select>
           <div v-if="pushConfigOptions.filter(p => p.type === 'MQTT').length === 0" class="form-tip warn">
-            {{ t('auto.rule_chain_editor_nodeconfigpanel_a277f6a1') }}
+            {{ t('ruleChain.mqtt') }}
           </div>
           <div v-else class="form-tip">
-            {{ t('auto.rule_chain_editor_nodeconfigpanel_d8efbab0') }}
+            {{ t('ruleChain.editor_nodeconfigpanel_mqtt') }}
           </div>
         </el-form-item>
 
-        <el-form-item :label="t('auto.rule_chain_editor_nodeconfigpanel_3912b7ab')">
+        <el-form-item :label="t('ruleChain.payload')">
           <el-input
             ref="mqttPayloadRef"
             :model-value="config.customPayload"
@@ -786,7 +786,7 @@ function onDeviceCascadeChange(value) {
             @update:model-value="updateConfig('customPayload', $event)"
           />
           <div class="form-tip">
-            {{ t('auto.rule_chain_editor_nodeconfigpanel_61b701aa') }}
+            {{ t('ruleChain.editor_nodeconfigpanel_payload') }}
           </div>
           <VariableInserter
             :target-ref="mqttPayloadRef"
@@ -800,55 +800,55 @@ function onDeviceCascadeChange(value) {
 
       <!-- 设备指令节点 -->
       <template v-if="selectedNode.type === 'OUTPUT_COMMAND'">
-        <el-form-item :label="t('auto.rule_chain_editor_nodeconfigpanel_78f600f2')">
+        <el-form-item :label="t('ruleChain.target_device')">
           <el-radio-group :model-value="config.targetMode || 'self'" @update:model-value="updateConfig('targetMode', $event)">
             <el-radio-button label="self">
-              {{ t('auto.rule_chain_editor_nodeconfigpanel_62aca42a') }}
+              {{ t('ruleChain.current_device') }}
             </el-radio-button>
             <el-radio-button label="other">
-              {{ t('auto.rule_chain_editor_nodeconfigpanel_6efb7f19') }}
+              {{ t('ruleChain.other_device') }}
             </el-radio-button>
           </el-radio-group>
         </el-form-item>
 
         <template v-if="config.targetMode === 'other'">
-          <el-form-item :label="t('auto.rule_chain_editor_nodeconfigpanel_15d00b96')">
+          <el-form-item :label="t('ruleChain.select_device')">
             <el-cascader
               :model-value="getDeviceCascadeValue()"
               :props="deviceCascadeProps"
-              :placeholder="t('auto.rule_chain_editor_nodeconfigpanel_6473954a')"
+              :placeholder="t('ruleChain.select_product_type_product_device')"
               filterable
               clearable
               style="width: 100%"
               @update:model-value="onDeviceCascadeChange"
             />
             <div class="form-tip">
-              {{ t('auto.rule_chain_editor_nodeconfigpanel_6c0a7412') }}
+              {{ t('ruleChain.select_target_device_command') }}
             </div>
           </el-form-item>
         </template>
 
-        <el-form-item :label="t('auto.rule_chain_editor_nodeconfigpanel_9e7d7ccf')">
+        <el-form-item :label="t('ruleChain.command_type')">
           <el-select :model-value="config.commandType" @update:model-value="updateConfig('commandType', $event)">
-            <el-option :label="t('auto.rule_chain_editor_nodeconfigpanel_e0fefbe4')" value="service" />
+            <el-option :label="t('ruleChain.service_call')" value="service" />
           </el-select>
           <div class="form-tip">
-            {{ t('auto.rule_chain_editor_command_type_tip') }}
+            {{ t('ruleChain.set_properties_control_functions_by_invoking_device_services') }}
           </div>
         </el-form-item>
 
-        <el-form-item :label="t('auto.rule_chain_editor_nodeconfigpanel_fda8afde')">
+        <el-form-item :label="t('ruleChain.service_identifier')">
           <el-input
             :model-value="config.identifier"
-            :placeholder="t('auto.rule_chain_editor_nodeconfigpanel_4eb7170b')"
+            :placeholder="t('ruleChain.identifier_setvalue')"
             @update:model-value="updateConfig('identifier', $event)"
           />
           <div class="form-tip">
-            {{ t('auto.rule_chain_editor_service_identifier_tip') }}
+            {{ t('ruleChain.service_identifier_defined_tsl_model') }}
           </div>
         </el-form-item>
 
-        <el-form-item :label="t('auto.rule_chain_editor_nodeconfigpanel_b4d0bad8')">
+        <el-form-item :label="t('ruleChain.service_parameters')">
           <el-input
             ref="cmdParamsRef"
             :model-value="config.params"
@@ -858,7 +858,7 @@ function onDeviceCascadeChange(value) {
             @update:model-value="updateConfig('params', $event)"
           />
           <div class="form-tip">
-            {{ t('auto.rule_chain_editor_service_params_tip') }}
+            {{ t('ruleChain.service_parameters_json_format') }}
           </div>
           <VariableInserter
             :target-ref="cmdParamsRef"

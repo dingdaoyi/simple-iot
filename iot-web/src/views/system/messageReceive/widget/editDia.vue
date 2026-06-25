@@ -11,21 +11,21 @@ const emits = defineEmits(['update', 'update:modelValue'])
 
 const notifyTypeOpt = [
   {
-    label: t('auto.system_messagereceive_editdia_e9e8054f'),
+    label: t('system.email'),
     value: 1,
   },
   {
-    label: t('auto.system_messagereceive_editdia_485c3abb'),
+    label: t('system.sms'),
     value: 2,
   },
   {
-    label: t('auto.system_messagereceive_editdia_5a93d3f7'),
+    label: t('system.phone'),
     value: 3,
   },
 ]
 
 const rules = ref({
-  name: [{ required: true, message: t('auto.system_messagereceive_editdia_df09fff7'), trigger: 'blur' }],
+  name: [{ required: true, message: t('system.name_required'), trigger: 'blur' }],
 })
 
 const { form, onSubmit: handleSubmit, editRef, loading } = useForm({
@@ -53,7 +53,7 @@ watch(() => props.datas, (val) => {
 <template>
   <el-dialog
     :model-value="modelValue"
-    :title="t('auto.system_messagereceive_editdia_5d8b3184')"
+    :title="datas?.id ? t('system.edit_notification') : t('system.add_notification')"
     width="500px"
     @update:model-value="$emit('update:modelValue', $event)"
   >
@@ -64,22 +64,22 @@ watch(() => props.datas, (val) => {
       label-width="100px"
     >
       <el-form-item
-        :label="t('auto.system_messagereceive_editdia_26bba1d9')"
+        :label="t('system.messagereceive_dialog_system_messagereceive_dialog')"
         prop="name"
       >
         <el-input
           v-model="form.name"
           clearable
-          :placeholder="t('auto.system_messagereceive_editdia_030ecec0')"
+          :placeholder="t('system.system_messagereceive_dialog')"
         />
       </el-form-item>
       <el-form-item
-        :label="t('auto.system_messagereceive_editdia_6d00710a')"
+        :label="t('system.message_type')"
         prop="notifyType"
       >
         <el-select
           v-model="form.notifyType"
-          :placeholder="t('auto.system_messagereceive_editdia_708c9d6d')"
+          :placeholder="t('common.please_select')"
           style="width: 100%"
         >
           <el-option
@@ -91,32 +91,32 @@ watch(() => props.datas, (val) => {
         </el-select>
       </el-form-item>
       <el-form-item
-        :label="t('auto.system_messagereceive_editdia_88340ead')"
+        :label="t('system.receiver')"
         prop="receiver"
       >
         <el-input
           v-model="form.receiver"
           clearable
-          :placeholder="t('auto.system_messagereceive_editdia_bd664852')"
+          :placeholder="t('system.enter_phone_email')"
         />
       </el-form-item>
       <el-form-item
-        :label="t('auto.system_messagereceive_editdia_2432b575')"
+        :label="t('common.remark')"
         prop="remark"
       >
         <el-input
           v-model="form.remark"
           clearable
-          :placeholder="t('auto.system_messagereceive_editdia_e54550e0')"
+          :placeholder="t('system.enter_remarks')"
         />
       </el-form-item>
     </el-form>
     <template #footer>
       <el-button @click="onCancel">
-        {{ t('auto.system_messagereceive_editdia_625fb26b') }}
+        {{ t('common.cancel') }}
       </el-button>
       <el-button type="primary" :loading="loading" @click="onSubmit">
-        {{ t('auto.system_messagereceive_editdia_38cf16f2') }}
+        {{ t('common.confirm') }}
       </el-button>
     </template>
   </el-dialog>

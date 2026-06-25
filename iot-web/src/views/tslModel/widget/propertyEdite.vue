@@ -12,10 +12,10 @@ const props = defineProps(['datas', 'typeId', 'productId', 'modelValue', 'title'
 const emits = defineEmits(['update', 'update:modelValue'])
 
 const rules = ref({
-  name: [{ required: true, message: t('auto.tslmodel_propertyedite_9dd30989'), trigger: 'blur' }],
-  identifier: [{ required: true, message: t('auto.tslmodel_propertyedite_ac228e59'), trigger: 'blur' }],
-  accessMode: [{ required: true, message: t('auto.tslmodel_propertyedite_3bef9972'), trigger: 'change' }],
-  dataType: [{ required: true, message: t('auto.tslmodel_propertyedite_3c1e1d42'), trigger: 'change' }],
+  name: [{ required: true, message: t('tsl.property_name_required'), trigger: 'blur' }],
+  identifier: [{ required: true, message: t('tsl.identifier_required'), trigger: 'blur' }],
+  accessMode: [{ required: true, message: t('tsl.read_write_type_required'), trigger: 'change' }],
+  dataType: [{ required: true, message: t('tsl.data_type_required'), trigger: 'change' }],
 })
 const form = ref({
   productTypeId: props.typeId,
@@ -55,12 +55,12 @@ async function onSubmit() {
         ? customPropertyAddApi
         : standardPropertyAddApi
     await func(form.value)
-    ElMessage.success(t('auto.tslmodel_propertyedite_33130f5c'))
+    ElMessage.success(t('tsl.operation_succeeded'))
     emits('update')
     emits('update:modelValue', false)
   }
   catch {
-    ElMessage.error(t('auto.tslmodel_propertyedite_5fa802be'))
+    ElMessage.error(t('tsl.operation_failed'))
   }
   finally {
     loading.value = false
@@ -69,32 +69,32 @@ async function onSubmit() {
 
 const dataTypeOpt = [
   {
-    label: t('auto.tslmodel_propertyedite_96739004'),
+    label: t('tsl.int'),
     value: 1,
     type: 'number',
   },
   {
-    label: t('auto.tslmodel_propertyedite_c8331dfe'),
+    label: t('tsl.float'),
     value: 2,
     type: 'number',
   },
   {
-    label: t('auto.tslmodel_propertyedite_819dbdab'),
+    label: t('tsl.double'),
     value: 3,
     type: 'number',
   },
   {
-    label: t('auto.tslmodel_propertyedite_30f39f2a'),
+    label: t('tsl.enum'),
     value: 4,
     type: 'enum',
   },
   {
-    label: t('auto.tslmodel_propertyedite_cc4dd1da'),
+    label: t('tsl.string'),
     value: 5,
     type: 'text',
   },
   {
-    label: t('auto.tslmodel_propertyedite_97b0b649'),
+    label: t('tsl.boolean'),
     value: 6,
     type: 'bool',
   },
@@ -139,7 +139,7 @@ function changeUnit(value) {
 <template>
   <el-dialog
     :model-value="modelValue"
-    :title="t('auto.tslmodel_propertyedite_8f914e5f')"
+    :title="datas?.id ? t('tsl.edit_property') : t('tsl.add_property')"
     width="600px"
     @update:model-value="$emit('update:modelValue', $event)"
     @close="onClose"
@@ -151,32 +151,32 @@ function changeUnit(value) {
       :label-width="100"
     >
       <el-form-item
-        :label="t('auto.tslmodel_propertyedite_45fc3131')"
+        :label="t('tsl.property_name')"
         prop="name"
       >
         <el-input
           v-model="form.name"
           clearable
-          :placeholder="t('auto.tslmodel_propertyedite_e2dfb9f0')"
+          :placeholder="t('tsl.enter_property_name')"
         />
       </el-form-item>
       <el-form-item
-        :label="t('auto.tslmodel_propertyedite_f3c00c7e')"
+        :label="t('tsl.identifier')"
         prop="identifier"
       >
         <el-input
           v-model="form.identifier"
           clearable
-          :placeholder="t('auto.tslmodel_propertyedite_59a3f583')"
+          :placeholder="t('tsl.enter_identifier')"
         />
       </el-form-item>
       <el-form-item
-        :label="t('auto.tslmodel_propertyedite_185f7bf6')"
+        :label="t('tsl.data_type')"
         prop="dataType"
       >
         <el-select
           v-model="form.dataType"
-          :placeholder="t('auto.tslmodel_propertyedite_708c9d6d')"
+          :placeholder="t('common.please_select')"
           style="width: 100%"
           @change="changeDataType"
         >
@@ -189,62 +189,62 @@ function changeUnit(value) {
         </el-select>
       </el-form-item>
       <el-form-item
-        :label="t('auto.tslmodel_propertyedite_1fc8d87b')"
+        :label="t('tsl.access_mode_3')"
         prop="accessMode"
       >
         <el-radio-group v-model="form.accessMode">
           <el-radio value="r">
-            {{ t('auto.tslmodel_propertyedite_85541bd9') }}
+            {{ t('tsl.read_only') }}
           </el-radio>
           <el-radio value="rw">
-            {{ t('auto.tslmodel_propertyedite_2300ad28') }}
+            {{ t('tsl.read_write') }}
           </el-radio>
         </el-radio-group>
       </el-form-item>
       <el-form-item
         v-if="currentType === 'number'"
-        :label="t('auto.tslmodel_propertyedite_39dc34b5')"
+        :label="t('tsl.step_2')"
         prop="step"
       >
         <el-input-number
           v-model="form.step"
           :min="1"
           style="width: 100%"
-          :placeholder="t('auto.tslmodel_propertyedite_1dd21048')"
+          :placeholder="t('tsl.enter_step_value')"
         />
       </el-form-item>
       <el-form-item
         v-if="currentType === 'number'"
-        :label="t('auto.tslmodel_propertyedite_5da89314')"
+        :label="t('tsl.max')"
         prop="max"
       >
         <el-input-number
           v-model="form.max"
           :step="form.step"
           style="width: 100%"
-          :placeholder="t('auto.tslmodel_propertyedite_b17723ed')"
+          :placeholder="t('tsl.enter_maximum_value')"
         />
       </el-form-item>
       <el-form-item
         v-if="currentType === 'number'"
-        :label="t('auto.tslmodel_propertyedite_c322edb8')"
+        :label="t('tsl.min')"
         prop="min"
       >
         <el-input-number
           v-model="form.min"
           :step="form.step"
           style="width: 100%"
-          :placeholder="t('auto.tslmodel_propertyedite_3ca1dad5')"
+          :placeholder="t('tsl.enter_minimum_value')"
         />
       </el-form-item>
       <el-form-item
         v-if="currentType === 'number'"
-        :label="t('auto.tslmodel_propertyedite_f2996845')"
+        :label="t('tsl.unit')"
         prop="unit"
       >
         <el-select
           v-model="form.unit"
-          :placeholder="t('auto.tslmodel_propertyedite_708c9d6d')"
+          :placeholder="t('common.please_select')"
           style="width: 100%"
           @change="changeUnit"
         >
@@ -256,7 +256,7 @@ function changeUnit(value) {
           />
         </el-select>
       </el-form-item>
-      <el-form-item v-if="currentType === 'enum'" :label="t('auto.tslmodel_propertyedite_a645bf4d')" prop="enums">
+      <el-form-item v-if="currentType === 'enum'" :label="t('tsl.enum_2')" prop="enums">
         <div class="enum-inputs">
           <div
             v-for="(item, index) in form.enums"
@@ -265,12 +265,12 @@ function changeUnit(value) {
           >
             <el-input-number
               v-model="item.key"
-              :placeholder="t('auto.tslmodel_propertyedite_36bf4729')"
+              :placeholder="t('tsl.key_name')"
               style="width: 40%"
             />
             <el-input
               v-model="item.value"
-              :placeholder="t('auto.tslmodel_propertyedite_fe7509e0')"
+              :placeholder="t('tsl.value')"
               style="width: 40%"
             />
             <el-button
@@ -278,68 +278,68 @@ function changeUnit(value) {
               class="enum-delete-btn"
               @click="removeEnumValue(index)"
             >
-              {{ t('auto.tslmodel_propertyedite_2f4aaddd') }}
+              {{ t('common.delete') }}
             </el-button>
           </div>
           <el-button class="enum-add-btn" @click="addEnumValue">
-            {{ t('auto.tslmodel_propertyedite_c8598cc1') }}
+            {{ t('tsl.add_enum_value') }}
           </el-button>
         </div>
       </el-form-item>
       <el-form-item
         v-if="currentType === 'text'"
-        :label="t('auto.tslmodel_propertyedite_a2d2b978')"
+        :label="t('tsl.string_length')"
         prop="length"
       >
         <el-input-number
           v-model="form.length"
           :min="1"
           style="width: 100%"
-          :placeholder="t('auto.tslmodel_propertyedite_7bb2b9ad')"
+          :placeholder="t('tsl.enter_string_length')"
         />
       </el-form-item>
       <el-form-item
         v-if="currentType === 'bool'"
-        :label="t('auto.tslmodel_propertyedite_b6020546')"
+        :label="t('tsl.propertyedite_false')"
         prop="bool0"
       >
         <el-input
           v-model="form.bool0"
           clearable
-          :placeholder="t('auto.tslmodel_propertyedite_62b0229d')"
+          :placeholder="t('tsl.false')"
         />
       </el-form-item>
       <el-form-item
         v-if="currentType === 'bool'"
-        :label="t('auto.tslmodel_propertyedite_5e68d75b')"
+        :label="t('tsl.propertyedite_true')"
         prop="bool1"
       >
         <el-input
           v-model="form.bool1"
           clearable
-          :placeholder="t('auto.tslmodel_propertyedite_32a0ad8e')"
+          :placeholder="t('tsl.true')"
         />
       </el-form-item>
       <el-form-item
-        :label="t('auto.tslmodel_propertyedite_2432b575')"
+        :label="t('common.remark')"
         prop="remark"
       >
         <el-input
           v-model="form.remark"
           clearable
-          :placeholder="t('auto.tslmodel_propertyedite_245475e1')"
+          :placeholder="t('tsl.enter_remarks')"
         />
       </el-form-item>
-      <el-form-item :label="t('auto.tslmodel_propertyedite_5ef69f62')" prop="iconId">
+      <el-form-item :label="t('tsl.icon')" prop="iconId">
         <IconInput v-model:value="form.iconId" />
       </el-form-item>
     </el-form>
     <template #footer>
       <el-button class="glass-btn glass-btn-secondary" @click="onClose">
-        {{ t('auto.tslmodel_propertyedite_625fb26b') }}
+        {{ t('common.cancel') }}
       </el-button>
       <el-button type="primary" :loading="loading" class="glass-btn glass-btn-primary" @click="onSubmit">
-        {{ datas?.id ? t('auto.tslmodel_widget_propertyedite_be5fbbe3') : t('auto.tslmodel_widget_propertyedite_66ab5e9f') }}
+        {{ datas?.id ? t('common.save') : t('common.add') }}
       </el-button>
     </template>
   </el-dialog>

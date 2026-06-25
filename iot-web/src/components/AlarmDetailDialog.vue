@@ -133,7 +133,7 @@ async function handleAcknowledge() {
     emits('refresh')
   }
   catch (e) {
-    console.error(t('auto.component_alarmdetaildialog_c92aaa37'), e)
+    console.error(t('alarm.alarmdetaildialog'), e)
   }
 }
 
@@ -147,7 +147,7 @@ async function handleClear() {
     emits('refresh')
   }
   catch (e) {
-    console.error(t('auto.component_alarmdetaildialog_cd6849ea'), e)
+    console.error(t('alarm.alarmdetaildialog_alarmdetaildialog'), e)
   }
 }
 </script>

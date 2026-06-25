@@ -53,7 +53,7 @@ const emit = defineEmits(['update'])
 
 const hasSystem = computed(() => props.systemVariables.length > 0)
 const hasProperty = computed(() => props.propertyVariables.length > 0)
-const displayLabel = computed(() => props.label || t('auto.rule_chain_editor_variableinserter_ebf8e213'))
+const displayLabel = computed(() => props.label || t('ruleChain.available_variables'))
 
 // 获取真正的 input/textarea DOM
 function getInputEl() {
@@ -94,11 +94,11 @@ function insertAt(variable) {
         <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" /></svg>
       </el-icon>
       <span>{{ displayLabel }}</span>
-      <span class="vi-hint">{{ t('auto.rule_chain_editor_variableinserter_ee5b2387') }}</span>
+      <span class="vi-hint">{{ t('ruleChain.click_insert_at_cursor') }}</span>
     </div>
 
     <div v-if="hasSystem" class="vi-group">
-      <span class="vi-group-title sys">{{ t('auto.rule_chain_editor_variableinserter_8a8b895f') }}</span>
+      <span class="vi-group-title sys">{{ t('ruleChain.editor_variableinserter_rule_chain_editor_variableinserter') }}</span>
       <el-tooltip
         v-for="v in systemVariables"
         :key="v.variable"
@@ -118,7 +118,7 @@ function insertAt(variable) {
     </div>
 
     <div v-if="hasProperty" class="vi-group">
-      <span class="vi-group-title prop">{{ t('auto.rule_chain_editor_variableinserter_24d67862') }}</span>
+      <span class="vi-group-title prop">{{ t('ruleChain.rule_chain_editor_variableinserter') }}</span>
       <el-tooltip
         v-for="v in propertyVariables.slice(0, maxProperties)"
         :key="v.variable"

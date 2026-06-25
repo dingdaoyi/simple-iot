@@ -16,31 +16,31 @@ outPutParam.value = props.datas?.outputParamIds?.map(id => findItem(id)) || []</
 
 <template>
   <el-dialog
-    :title="t('auto.tslmodel_paramshow_cba87444')"
+    :title="t('tsl.parameter_list')"
     width="620px"
   >
     <div class="flex flex-col gap-40px">
       <div v-if="outPutParam.length > 0" class="flex flex-col w-full">
         <div class="text-16px">
-          {{ t('auto.tslmodel_paramshow_283598a6') }}
+          {{ t('tsl.output_params_3') }}
         </div>
         <el-divider />
         <div>
           <el-table :data="outPutParam" style="width: 100%">
-            <el-table-column prop="name" :label="t('auto.tslmodel_paramshow_d7ec2d3f')" />
-            <el-table-column prop="identifier" :label="t('auto.tslmodel_paramshow_f3c00c7e')" />
+            <el-table-column prop="name" :label="t('common.name')" />
+            <el-table-column prop="identifier" :label="t('tsl.identifier')" />
           </el-table>
         </div>
       </div>
       <div v-if="inputParam.length > 0" class="flex flex-col w-full">
         <div class="text-16px">
-          {{ t('auto.tslmodel_paramshow_6e21a018') }}
+          {{ t('tsl.input_params_2') }}
         </div>
         <el-divider />
         <div>
           <el-table :data="inputParam" style="width: 100%">
-            <el-table-column prop="name" :label="t('auto.tslmodel_paramshow_d7ec2d3f')" />
-            <el-table-column prop="identifier" :label="t('auto.tslmodel_paramshow_f3c00c7e')" />
+            <el-table-column prop="name" :label="t('common.name')" />
+            <el-table-column prop="identifier" :label="t('tsl.identifier')" />
           </el-table>
         </div>
       </div>

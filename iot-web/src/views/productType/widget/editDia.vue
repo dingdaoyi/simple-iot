@@ -11,7 +11,7 @@ const props = defineProps(['datas', 'parentId', 'modelValue'])
 const emits = defineEmits(['update', 'update:modelValue'])
 
 const rules = ref({
-  name: [{ required: true, message: t('auto.producttype_editdia_003b0ed3'), trigger: 'blur' }],
+  name: [{ required: true, message: t('product_type.producttype_dialog'), trigger: 'blur' }],
 })
 
 const { form, onSubmit: handleSubmit, editRef, loading, onClose } = useForm({
@@ -36,7 +36,7 @@ if (props?.datas) {
 <template>
   <el-dialog
     :model-value="modelValue"
-    :title="t('auto.producttype_editdia_5d8b3184')"
+    :title="datas?.id ? t('common.edit') : t('common.add')"
     width="500px"
     @update:model-value="$emit('update:modelValue', $event)"
     @close="onClose"
@@ -48,29 +48,29 @@ if (props?.datas) {
       :label-width="100"
     >
       <el-form-item
-        :label="t('auto.producttype_editdia_11382905')"
+        :label="t('product_type.dialog_producttype_dialog')"
         prop="name"
       >
         <el-input
           v-model="form.name"
           clearable
-          :placeholder="t('auto.producttype_editdia_d1ac18cc')"
+          :placeholder="t('product_type.enter_category_name')"
         />
       </el-form-item>
       <el-form-item
-        :label="t('auto.producttype_editdia_2432b575')"
+        :label="t('common.remark')"
         prop="mark"
       >
         <el-input
           v-model="form.mark"
           clearable
-          :placeholder="t('auto.producttype_editdia_3cac6342')"
+          :placeholder="t('product_type.enter_remarks')"
         />
       </el-form-item>
     </el-form>
     <template #footer>
       <el-button @click="onClose">
-        {{ t('auto.producttype_editdia_625fb26b') }}
+        {{ t('common.cancel') }}
       </el-button>
       <el-button
         type="primary"

@@ -56,10 +56,10 @@ const messageReceiveOptions = ref([])
 // 推送配置选项（用于HTTP/MQTT节点）
 const pushConfigOptions = ref([])
 
-// 物模型{{ t('auto.rule_chain_editor_msg_property') }}列表（用于{{ t('auto.rule_chain_editor_msg_property') }}过滤节点）
+// 物模型{{ t('ruleChain.property') }}列表（用于{{ t('ruleChain.property') }}过滤节点）
 const tslProperties = ref([])
 
-// 物模型{{ t('auto.rule_chain_editor_msg_event') }}列表（用于{{ t('auto.rule_chain_editor_msg_event') }}输入节点）
+// 物模型{{ t('ruleChain.event') }}列表（用于{{ t('ruleChain.event') }}输入节点）
 const tslEvents = ref([])
 
 // 选中的节点
@@ -75,7 +75,7 @@ const debugResult = ref(null)
 const debugForm = ref({
   deviceKey: 'demo-device-001',
   deviceId: null,
-  deviceName: t('auto.rule_chain_editor_index_4896fb0b'),
+  deviceName: t('ruleChain.demo_device'),
   messageType: 'PROPERTY',
   propertiesJson: '{\n  "temperature": 36.5,\n  "humidity": 62\n}',
   eventIdentifier: '',
@@ -128,7 +128,7 @@ const nodeCreateMenu = ref({
 // 是否是编辑模式
 const isEdit = computed(() => !!route.params.id && route.params.id !== 'new')
 
-// 获取选中节点的上游输入节点（用于过滤节点获取可选{{ t('auto.rule_chain_editor_msg_property') }}）
+// 获取选中节点的上游输入节点（用于过滤节点获取可选{{ t('ruleChain.property') }}）
 const upstreamInputNode = computed(() => {
   if (!selectedNode.value)
     return null
@@ -188,15 +188,15 @@ function isValidConnection(sourceType, targetType, _connectionType) {
 
   // 输入节点的特殊连接规则
   if (sourceCategory === 'INPUT') {
-    // INPUT_PROPERTY ({{ t('auto.rule_chain_editor_msg_property') }}上报) → 不能连接 FILTER_EVENT_TYPE
+    // INPUT_PROPERTY ({{ t('ruleChain.property') }}上报) → 不能连接 FILTER_EVENT_TYPE
     if (sourceType === 'INPUT_PROPERTY' && targetType === 'FILTER_EVENT_TYPE') {
       return false
     }
-    // INPUT_EVENT ({{ t('auto.rule_chain_editor_msg_event') }}上报) → 不能连接 FILTER_PROPERTY
+    // INPUT_EVENT ({{ t('ruleChain.event') }}上报) → 不能连接 FILTER_PROPERTY
     if (sourceType === 'INPUT_EVENT' && targetType === 'FILTER_PROPERTY') {
       return false
     }
-    // INPUT_ONLINE (设备上{{ t('auto.rule_chain_editor_msg_offline') }}) → 不能连接任何 FILTER 节点
+    // INPUT_ONLINE (设备上{{ t('ruleChain.offline') }}) → 不能连接任何 FILTER 节点
     if (sourceType === 'INPUT_ONLINE' && targetCategory === 'FILTER') {
       return false
     }
@@ -225,42 +225,42 @@ function getConnectionErrorMessage(sourceType, targetType) {
   const targetCategory = getNodeCategory(targetType)
 
   if (targetCategory === 'INPUT') {
-    return t('auto.rule_chain_editor_index_52b30d5e')
+    return t('ruleChain.input_nodes_cannot_be_connection_targets')
   }
 
   // OUTPUT 节点是终端
   if (sourceCategory === 'OUTPUT') {
-    return t('auto.rule_chain_editor_index_141c73e0')
+    return t('ruleChain.output_nodes_terminal_nodes_cannot_continue_connecting')
   }
 
   // 输入节点连接限制的错误提示
   if (sourceCategory === 'INPUT') {
     if (sourceType === 'INPUT_PROPERTY' && targetType === 'FILTER_EVENT_TYPE') {
-      return t('auto.rule_chain_editor_index_fccc39cb')
+      return t('ruleChain.property_reports_cannot_connect_event_type_filters_use')
     }
     if (sourceType === 'INPUT_EVENT' && targetType === 'FILTER_PROPERTY') {
-      return t('auto.rule_chain_editor_index_f1f34367')
+      return t('ruleChain.event_reports_cannot_connect_property_condition_filters_use')
     }
     if (sourceType === 'INPUT_ONLINE' && targetCategory === 'FILTER') {
-      return t('auto.rule_chain_editor_index_133193da')
+      return t('ruleChain.device_online_offline_events_cannot_use_filter_nodes')
     }
   }
 
   // FILTER 节点连接限制
   if (sourceCategory === 'FILTER') {
     if (targetCategory !== 'OUTPUT' && targetCategory !== 'ALARM') {
-      return t('auto.rule_chain_editor_index_89e00ef5')
+      return t('ruleChain.filter_nodes_can_only_connect_output_alarm_nodes')
     }
   }
 
   // ALARM 节点连接限制
   if (sourceCategory === 'ALARM') {
     if (targetCategory !== 'OUTPUT') {
-      return t('auto.rule_chain_editor_index_60a2489e')
+      return t('ruleChain.alarm_nodes_can_only_connect_output_nodes_custom')
     }
   }
 
-  return t('auto.rule_chain_editor_index_4402c705')
+  return t('ruleChain.this_connection_not_allowed')
 }
 
 // 节点搜索关键词
@@ -360,16 +360,16 @@ const connectionLines = computed(() => {
     const connType = getConnectionType(conn)
 
     // 计算源端口位置（根据连接类型和节点类型）
-    const sourceX = sourceNode.x + 180 // 节点宽度
-    let sourceY = sourceNode.y + 40 // 默认中心高度
+    const sourceX = sourceNode.x + 180 // Node width
+    let sourceY = sourceNode.y + 40 // Default center height
 
     // 过滤节点根据 type 调整 Y 位置（与CSS中的端口位置一致）
     if (isFilterNode(sourceNode.type)) {
       if (connType === 'True') {
-        sourceY = sourceNode.y + 24 // True 端口位置 (CSS: top: 24px)
+        sourceY = sourceNode.y + 24 // True port position (CSS: top: 24px)
       }
       else if (connType === 'False') {
-        sourceY = sourceNode.y + 52 // False 端口位置 (CSS: top: 52px)
+        sourceY = sourceNode.y + 52 // False port position (CSS: top: 52px)
       }
     }
 
@@ -428,7 +428,7 @@ async function loadNodeTypes() {
     nodeTypes.value = result
   }
   catch (e) {
-    console.error(t('auto.rule_chain_editor_index_21bf4794'), e)
+    console.error(t('ruleChain.failed_load_node_types'), e)
   }
 }
 
@@ -439,7 +439,7 @@ async function loadProductTypes() {
     productTypeOptions.value = data || []
   }
   catch (e) {
-    console.error(t('auto.rule_chain_editor_index_91947e4e'), e)
+    console.error(t('ruleChain.failed_load_product_types'), e)
   }
 }
 
@@ -450,7 +450,7 @@ async function loadMessageReceiveOptions() {
     messageReceiveOptions.value = data || []
   }
   catch (e) {
-    console.error(t('auto.rule_chain_editor_index_b0d3b768'), e)
+    console.error(t('ruleChain.failed_load_message_configs'), e)
   }
 }
 
@@ -461,7 +461,7 @@ async function loadPushConfigOptions() {
     pushConfigOptions.value = data || []
   }
   catch (e) {
-    console.error(t('auto.rule_chain_editor_index_61fbc1e7'), e)
+    console.error(t('ruleChain.failed_load_push_configs'), e)
   }
 }
 
@@ -476,7 +476,7 @@ async function loadProducts() {
     productOptions.value = normalizeList(data)
   }
   catch (e) {
-    console.error(t('auto.rule_chain_editor_index_56a640a4'), e)
+    console.error(t('ruleChain.failed_load_products'), e)
   }
 }
 
@@ -491,7 +491,7 @@ async function loadDevices() {
     deviceOptions.value = normalizeList(data)
   }
   catch (e) {
-    console.error(t('auto.rule_chain_editor_index_6aa80d09'), e)
+    console.error(t('ruleChain.failed_load_devices'), e)
   }
 }
 
@@ -513,11 +513,11 @@ async function onProductChange() {
     ruleChain.value.sourceId = ruleChain.value.productId
   }
   loadDevices()
-  // 加载物模型{{ t('auto.rule_chain_editor_msg_property') }}
+  // 加载物模型{{ t('ruleChain.property') }}
   await loadTslProperties()
 }
 
-// 加载物模型{{ t('auto.rule_chain_editor_msg_property') }}和{{ t('auto.rule_chain_editor_msg_event') }}
+// 加载物模型{{ t('ruleChain.property') }}和{{ t('ruleChain.event') }}
 async function loadTslProperties() {
   if (!ruleChain.value.productId) {
     tslProperties.value = []
@@ -531,7 +531,7 @@ async function loadTslProperties() {
     tslEvents.value = tslModel.events || []
   }
   catch (e) {
-    console.error(t('auto.rule_chain_editor_index_497f72f1'), e)
+    console.error(t('ruleChain.failed_load_tsl_model'), e)
     tslProperties.value = []
     tslEvents.value = []
   }
@@ -592,13 +592,13 @@ async function loadDetail() {
           break
       }
     }
-    // 加载物模型{{ t('auto.rule_chain_editor_msg_property') }}
+    // 加载物模型{{ t('ruleChain.property') }}
     if (ruleChain.value.productId) {
       await loadTslProperties()
     }
   }
   catch (e) {
-    console.error(t('auto.rule_chain_editor_index_9acff5fc'), e)
+    console.error(t('ruleChain.failed_load_rule_chain'), e)
   }
 }
 
@@ -627,7 +627,7 @@ function onCanvasDrop(event) {
     return
   const type = JSON.parse(nodeTypeData)
   const rect = canvasRef.value.getBoundingClientRect()
-  const x = event.clientX - rect.left - 90 // 居中
+  const x = event.clientX - rect.left - 90 // Center horizontally
   const y = event.clientY - rect.top - 30
   addNode(type, x, y)
 }
@@ -706,7 +706,7 @@ function onConnectionDrag(event) {
   const node = connectionDrag.value.sourceNode
 
   // 计算源端口位置（与CSS中的端口位置一致）
-  let sourceY = node.y + 40 // 默认中心
+  let sourceY = node.y + 40 // Default center
   if (connectionDrag.value.connectionType === 'True') {
     sourceY = node.y + 24 // True 端口位置 (CSS: top: 24px)
   }
@@ -724,7 +724,7 @@ function onConnectionDrag(event) {
 // 停止连接线拖拽
 function stopConnection(event) {
   if (connectionDrag.value.isDragging) {
-    // 检查是否放在某{{ t('auto.rule_chain_editor_nodes_unit') }}的输入端口上
+    // 检查是否放在某{{ t('ruleChain.nodes') }}的输入端口上
     const rect = canvasRef.value.getBoundingClientRect()
     const dropX = event.clientX - rect.left
     const dropY = event.clientY - rect.top
@@ -736,14 +736,14 @@ function stopConnection(event) {
         && dropY >= node.y
         && dropY <= node.y + 80
         && node.id !== connectionDrag.value.sourceNode.id
-        && !isInputNode(node.type) // 输入节点不能作为目标
+        && !isInputNode(node.type) // Input nodes cannot be targets
       )
     })
 
     // 确定连接类型
     let connectionType = connectionDrag.value.connectionType
     if (connectionType === 'input') {
-      connectionType = 'Success' // 从输入端口拖出的默认是 Success
+      connectionType = 'Success' // Default to Success when dragging from an input port
     }
 
     if (targetNode) {
@@ -770,7 +770,7 @@ function stopConnection(event) {
         ruleChain.value.configuration.connections.push({
           source: connectionDrag.value.sourceNode.id,
           target: targetNode.id,
-          type: connectionType, // 使用 type 字段与后端保持一致
+          type: connectionType, // Keep the type field aligned with the backend
         })
       }
     }
@@ -801,7 +801,7 @@ function showNodeCreateMenu(clientX, clientY, canvasX, canvasY, connectionType) 
   })
 
   if (availableTypes.length === 0) {
-    ElMessage.warning(t('auto.rule_chain_editor_index_402480b9'))
+    ElMessage.warning(t('ruleChain.no_connectable_node_types'))
     return
   }
 
@@ -824,7 +824,7 @@ function createNodeAndConnect(type) {
     id: generateId(),
     type: type.type,
     name: type.name,
-    x: Math.max(0, nodeCreateMenu.value.canvasX - 90), // 居中
+    x: Math.max(0, nodeCreateMenu.value.canvasX - 90), // Center horizontally
     y: Math.max(0, nodeCreateMenu.value.canvasY - 40),
     config: {},
     color: type.color || '#6366f1',
@@ -862,7 +862,7 @@ function deleteNode(nodeId) {
   }
 }
 
-// 更新{{ t('auto.rule_chain_editor_node_config') }}（同步更新 selectedNode 和 nodes 数组）
+// 更新{{ t('ruleChain.node_config') }}（同步更新 selectedNode 和 nodes 数组）
 function updateNode(updatedNode) {
   selectedNode.value = updatedNode
   const index = ruleChain.value.configuration.nodes.findIndex(n => n.id === updatedNode.id)
@@ -913,7 +913,7 @@ function parseJsonField(value, fieldName) {
     return JSON.parse(value)
   }
   catch (e) {
-    throw new Error(t('auto.rule_chain_invalid_json', { field: fieldName, message: e.message }))
+    throw new Error(t('ruleChain.field_not_valid_json_message', { field: fieldName, message: e.message }))
   }
 }
 
@@ -935,7 +935,7 @@ function openDebugDialog() {
 
 async function handleDebugRun() {
   if (ruleChain.value.configuration.nodes.length === 0) {
-    ElMessage.warning(t('auto.rule_chain_editor_index_61cde3f4'))
+    ElMessage.warning(t('ruleChain.add_rule_node_first'))
     return
   }
 
@@ -947,18 +947,18 @@ async function handleDebugRun() {
       deviceId: debugForm.value.deviceId,
       deviceName: debugForm.value.deviceName,
       messageType: debugForm.value.messageType,
-      properties: parseJsonField(debugForm.value.propertiesJson, t('auto.rule_chain_editor_index_3623956f')),
+      properties: parseJsonField(debugForm.value.propertiesJson, t('ruleChain.property_data')),
       eventIdentifier: debugForm.value.eventIdentifier || null,
-      eventParams: parseJsonField(debugForm.value.eventParamsJson, t('auto.rule_chain_editor_index_ea90dcdc')),
-      enrichedData: parseJsonField(debugForm.value.enrichedDataJson, t('auto.rule_chain_editor_index_ec3d03fe')),
+      eventParams: parseJsonField(debugForm.value.eventParamsJson, t('ruleChain.event_parameters')),
+      enrichedData: parseJsonField(debugForm.value.enrichedDataJson, t('ruleChain.extra_variables')),
     }
     const { data } = await ruleChainDebugApi(payload)
     debugResult.value = normalizeApiData(data)
-    ElMessage.success(t('auto.rule_chain_editor_index_72334435'))
+    ElMessage.success(t('ruleChain.debug_run_completed_execution_path_highlighted_canvas'))
   }
   catch (e) {
-    ElMessage.error(e.message || t('auto.rule_chain_editor_index_0ca27ade'))
-    console.error(t('auto.rule_chain_editor_index_0ca27ade'), e)
+    ElMessage.error(e.message || t('ruleChain.debug_run_failed'))
+    console.error(t('ruleChain.debug_run_failed'), e)
   }
   finally {
     debugRunning.value = false
@@ -983,15 +983,15 @@ async function handleValidateDraft() {
       validation,
     }
     if (validation.valid) {
-      ElMessage.success(t('auto.rule_chain_editor_index_2090c2f3'))
+      ElMessage.success(t('ruleChain.rule_chain_editor_page'))
     }
     else {
-      ElMessage.warning(t('auto.rule_chain_validation_errors', { count: validation.errors?.length || 0 }))
+      ElMessage.warning(t('ruleChain.rule_chain_validation_found_count_errors', { count: validation.errors?.length || 0 }))
     }
   }
   catch (e) {
-    ElMessage.error(e.message || t('auto.rule_chain_editor_index_7dadad33'))
-    console.error(t('auto.rule_chain_editor_index_7dadad33'), e)
+    ElMessage.error(e.message || t('ruleChain.rule_chain_validation_failed'))
+    console.error(t('ruleChain.rule_chain_validation_failed'), e)
   }
   finally {
     debugRunning.value = false
@@ -1012,7 +1012,7 @@ async function handleSave() {
     router.push('/rule-chain')
   }
   catch (e) {
-    console.error(t('auto.rule_chain_editor_index_6de920b4'), e)
+    console.error(t('ruleChain.save_failed'), e)
   }
   finally {
     saving.value = false
@@ -1139,16 +1139,16 @@ onBeforeUnmount(() => {
     <div class="editor-header glass-card">
       <div class="header-left">
         <el-button @click="handleBack">
-          <span>{{ t('auto.rule_chain_editor_index_ba769ad1') }}</span>
+          <span>{{ t('ruleChain.back') }}</span>
         </el-button>
-        <span class="title">{{ isEdit ? t('auto.rule_chain_editor_index_802347f3') : t('auto.rule_chain_editor_index_ea00409b') }}</span>
+        <span class="title">{{ isEdit ? t('ruleChain.edit_rule_engine') : t('ruleChain.create_rule_engine') }}</span>
       </div>
       <div class="header-right">
         <el-button :loading="debugRunning" @click="openDebugDialog">
-          {{ t('auto.rule_chain_editor_index_5ccd42d9') }}
+          {{ t('ruleChain.debug_run') }}
         </el-button>
         <el-button type="primary" :loading="saving" @click="handleSave">
-          {{ t('auto.rule_chain_editor_index_be5fbbe3') }}
+          {{ t('common.save') }}
           <span class="shortcut-hint">Ctrl+S</span>
         </el-button>
       </div>
@@ -1158,24 +1158,24 @@ onBeforeUnmount(() => {
       <!-- 左侧节点面板 -->
       <div class="node-panel glass-card">
         <div class="panel-title">
-          {{ t('auto.rule_chain_editor_index_3acffa5a') }}
+          {{ t('ruleChain.editor_rule_chain_editor_page') }}
         </div>
 
         <!-- 巻加产品类型和产品的辅助字段 -->
         <el-form label-width="70px" size="small">
-          <el-form-item :label="t('auto.rule_chain_editor_index_d7ec2d3f')">
-            <el-input v-model="ruleChain.name" :placeholder="t('auto.rule_chain_editor_index_87080256')" />
+          <el-form-item :label="t('common.name')">
+            <el-input v-model="ruleChain.name" :placeholder="t('ruleChain.rule_name_2')" />
           </el-form-item>
-          <el-form-item :label="t('auto.rule_chain_editor_index_c11322c9')">
+          <el-form-item :label="t('ruleChain.data_source')">
             <el-select v-model="ruleChain.sourceType" @change="onSourceTypeChange">
-              <el-option :label="t('auto.rule_chain_editor_index_a015434e')" value="PRODUCT" />
-              <el-option :label="t('auto.rule_chain_editor_index_c52cabf2')" value="DEVICE" />
+              <el-option :label="t('ruleChain.product')" value="PRODUCT" />
+              <el-option :label="t('ruleChain.specific_device')" value="DEVICE" />
             </el-select>
           </el-form-item>
-          <el-form-item :label="t('auto.rule_chain_editor_index_2db97cae')">
+          <el-form-item :label="t('menu.productType')">
             <el-select
               v-model="ruleChain.productTypeId"
-              :placeholder="t('auto.rule_chain_editor_index_f7b25260')"
+              :placeholder="t('ruleChain.select_product_type')"
               filterable
               clearable
               @change="onProductTypeChange"
@@ -1188,10 +1188,10 @@ onBeforeUnmount(() => {
               />
             </el-select>
           </el-form-item>
-          <el-form-item :label="t('auto.rule_chain_editor_index_a015434e')">
+          <el-form-item :label="t('ruleChain.product')">
             <el-select
               v-model="ruleChain.productId"
-              :placeholder="t('auto.rule_chain_editor_index_fad20076')"
+              :placeholder="t('ruleChain.select_product_type_first')"
               filterable
               clearable
               :disabled="!ruleChain.productTypeId"
@@ -1205,10 +1205,10 @@ onBeforeUnmount(() => {
               />
             </el-select>
           </el-form-item>
-          <el-form-item v-if="ruleChain.sourceType === 'DEVICE'" :label="t('auto.rule_chain_editor_index_f55f1736')">
+          <el-form-item v-if="ruleChain.sourceType === 'DEVICE'" :label="t('ruleChain.device')">
             <el-select
               v-model="ruleChain.sourceId"
-              :placeholder="t('auto.rule_chain_editor_index_5a70dec9')"
+              :placeholder="t('ruleChain.select_product_first_2')"
               filterable
               clearable
               :disabled="!ruleChain.productId"
@@ -1227,7 +1227,7 @@ onBeforeUnmount(() => {
         <div class="node-search">
           <el-input
             v-model="nodeSearchKeyword"
-            :placeholder="t('auto.rule_chain_editor_index_c2ccd731')"
+            :placeholder="t('ruleChain.search_node_types')"
             clearable
             prefix-icon="Search"
           />
@@ -1348,7 +1348,7 @@ onBeforeUnmount(() => {
           </svg>
 
           <div v-if="ruleChain.configuration.nodes.length === 0" class="empty-tip">
-            {{ t('auto.rule_chain_editor_index_80389d80') }}
+            {{ t('ruleChain.drag_nodes_from_left_canvas_click_node_add_it') }}
           </div>
 
           <!-- 节点 -->
@@ -1429,7 +1429,7 @@ onBeforeUnmount(() => {
       <!-- 右侧配置面板 -->
       <div v-if="selectedNode" class="config-panel glass-card">
         <div class="panel-title">
-          {{ t('auto.rule_chain_editor_node_config') }}
+          {{ t('ruleChain.node_config') }}
         </div>
         <div class="config-content">
           <NodeConfigPanel
@@ -1448,41 +1448,41 @@ onBeforeUnmount(() => {
       </div>
     </div>
 
-    <el-dialog v-model="debugDialogVisible" :title="t('auto.rule_chain_editor_index_b6e94128')" width="980px" destroy-on-close>
+    <el-dialog v-model="debugDialogVisible" :title="t('ruleChain.rule_chain_debug_run')" width="980px" destroy-on-close>
       <div class="debug-dialog-content">
         <el-form class="debug-form" label-width="90px" size="small">
-          <el-form-item :label="t('auto.rule_chain_editor_index_6d00710a')">
+          <el-form-item :label="t('ruleChain.message_type')">
             <el-radio-group v-model="debugForm.messageType">
               <el-radio-button label="PROPERTY">
-                {{ t('auto.rule_chain_editor_msg_property') }}
+                {{ t('ruleChain.property') }}
               </el-radio-button>
               <el-radio-button label="EVENT">
-                {{ t('auto.rule_chain_editor_msg_event') }}
+                {{ t('ruleChain.event') }}
               </el-radio-button>
               <el-radio-button label="ONLINE">
-                {{ t('auto.rule_chain_editor_msg_online') }}
+                {{ t('ruleChain.online') }}
               </el-radio-button>
               <el-radio-button label="OFFLINE">
-                {{ t('auto.rule_chain_editor_msg_offline') }}
+                {{ t('ruleChain.offline') }}
               </el-radio-button>
             </el-radio-group>
           </el-form-item>
-          <el-form-item :label="t('auto.rule_chain_editor_index_89be6dad')">
+          <el-form-item :label="t('ruleChain.device_key')">
             <el-input v-model="debugForm.deviceKey" placeholder="deviceKey" />
           </el-form-item>
-          <el-form-item :label="t('auto.rule_chain_editor_index_9f694f60')">
-            <el-input v-model="debugForm.deviceName" :placeholder="t('auto.rule_chain_editor_index_9f694f60')" />
+          <el-form-item :label="t('ruleChain.device_name')">
+            <el-input v-model="debugForm.deviceName" :placeholder="t('ruleChain.device_name')" />
           </el-form-item>
-          <el-form-item :label="t('auto.rule_chain_editor_index_e8e7e616')">
+          <el-form-item :label="t('ruleChain.json')">
             <el-input v-model="debugForm.propertiesJson" type="textarea" :rows="5" placeholder="{ &quot;temperature&quot;: 36.5 }" />
           </el-form-item>
-          <el-form-item :label="t('auto.rule_chain_editor_index_7153b4e3')">
-            <el-input v-model="debugForm.eventIdentifier" :placeholder="t('auto.rule_chain_editor_index_715a6c1d')" />
+          <el-form-item :label="t('ruleChain.event_identifier')">
+            <el-input v-model="debugForm.eventIdentifier" :placeholder="t('ruleChain.event_identifier_high_temperature')" />
           </el-form-item>
-          <el-form-item :label="t('auto.rule_chain_editor_index_ea90dcdc')">
+          <el-form-item :label="t('ruleChain.event_parameters')">
             <el-input v-model="debugForm.eventParamsJson" type="textarea" :rows="3" placeholder="{ &quot;level&quot;: &quot;HIGH&quot; }" />
           </el-form-item>
-          <el-form-item :label="t('auto.rule_chain_editor_index_ec3d03fe')">
+          <el-form-item :label="t('ruleChain.extra_variables')">
             <el-input v-model="debugForm.enrichedDataJson" type="textarea" :rows="3" placeholder="{ &quot;tenant&quot;: &quot;demo&quot; }" />
           </el-form-item>
         </el-form>
@@ -1490,17 +1490,17 @@ onBeforeUnmount(() => {
         <div class="debug-result-panel">
           <div class="debug-result-header">
             <div>
-              <strong>{{ t('auto.rule_chain_editor_execution_trace') }}</strong>
+              <strong>{{ t('ruleChain.execution_trace') }}</strong>
               <span v-if="debugResult" class="debug-summary">
-                {{ debugResult.success ? t('auto.rule_chain_editor_index_330363df') : t('auto.rule_chain_editor_index_acd5cb84') }} · {{ debugResult.executedNodeCount || 0 }} {{ t('auto.rule_chain_editor_nodes_unit') }} · {{ debugResult.durationMs || 0 }}ms
+                {{ debugResult.success ? t('ruleChain.success') : t('ruleChain.failed') }} · {{ debugResult.executedNodeCount || 0 }} {{ t('ruleChain.nodes') }} · {{ debugResult.durationMs || 0 }}ms
               </span>
             </div>
             <div class="debug-actions">
               <el-button :loading="debugRunning" @click="handleValidateDraft">
-                {{ t('auto.rule_chain_editor_validate_structure') }}
+                {{ t('ruleChain.validate_structure') }}
               </el-button>
               <el-button type="primary" :loading="debugRunning" @click="handleDebugRun">
-                {{ t('auto.rule_chain_editor_run_debug') }}
+                {{ t('ruleChain.run_debug') }}
               </el-button>
             </div>
           </div>
@@ -1522,7 +1522,7 @@ onBeforeUnmount(() => {
             </el-alert>
           </div>
 
-          <el-empty v-if="!debugResult" :description="t('auto.rule_chain_editor_index_aa366d56')" />
+          <el-empty v-if="!debugResult" :description="t('ruleChain.show_node_execution_trace_after_running')" />
           <el-timeline v-else class="debug-timeline">
             <el-timeline-item
               v-for="trace in debugResult.traces || []"
@@ -1538,13 +1538,13 @@ onBeforeUnmount(() => {
                   </el-tag>
                 </div>
                 <div class="trace-detail">
-                  {{ trace.detail || trace.error || t('auto.rule_chain_editor_index_7e92e0a0') }}
+                  {{ trace.detail || trace.error || t('ruleChain.no_details') }}
                 </div>
                 <el-collapse>
-                  <el-collapse-item :title="t('auto.rule_chain_editor_index_1a836868')" name="input">
+                  <el-collapse-item :title="t('ruleChain.input_snapshot')" name="input">
                     <pre>{{ formatJson(trace.input) }}</pre>
                   </el-collapse-item>
-                  <el-collapse-item :title="t('auto.rule_chain_editor_index_eae152e6')" name="output">
+                  <el-collapse-item :title="t('ruleChain.output_snapshot')" name="output">
                     <pre>{{ formatJson(trace.output) }}</pre>
                   </el-collapse-item>
                 </el-collapse>
@@ -1563,7 +1563,7 @@ onBeforeUnmount(() => {
         :style="{ left: `${nodeCreateMenu.x}px`, top: `${nodeCreateMenu.y}px` }"
       >
         <div class="menu-header">
-          <span>{{ t('auto.rule_chain_editor_choose_node') }}</span>
+          <span>{{ t('ruleChain.choose_node_create') }}</span>
           <el-button link size="small" @click="closeNodeCreateMenu">
             <el-icon><Close /></el-icon>
           </el-button>
@@ -1887,7 +1887,7 @@ onBeforeUnmount(() => {
       stroke-width: 2;
       opacity: 0;
       transition: opacity 0.2s;
-      pointer-events: none; // 默认不拦截{{ t('auto.rule_chain_editor_msg_event') }}，让 hitbox 接收点击
+      pointer-events: none; // 默认不拦截{{ t('ruleChain.event') }}，让 hitbox 接收点击
       cursor: pointer;
     }
     .delete-text {
@@ -1898,7 +1898,7 @@ onBeforeUnmount(() => {
       dominant-baseline: central;
       opacity: 0;
       transition: opacity 0.2s;
-      pointer-events: none; // 默认不拦截{{ t('auto.rule_chain_editor_msg_event') }}，让 hitbox 接收点击
+      pointer-events: none; // 默认不拦截{{ t('ruleChain.event') }}，让 hitbox 接收点击
       cursor: pointer;
       user-select: none;
     }
@@ -2119,7 +2119,7 @@ onBeforeUnmount(() => {
     color: var(--iot-color-text-muted);
     margin-top: 4px;
   }
-  // {{ t('auto.rule_chain_editor_msg_property') }}信息样式
+  // {{ t('ruleChain.property') }}信息样式
   .property-info {
     display: flex;
     flex-wrap: wrap;

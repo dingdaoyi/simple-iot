@@ -21,25 +21,25 @@ const column = [
   },
   {
     prop: 'name',
-    label: t('auto.producttype_index_11382905'),
+    label: t('product_type.producttype_page'),
   },
   {
     prop: 'status',
-    label: t('auto.producttype_index_3fea7ca7'),
+    label: t('common.status'),
     width: 100,
     formatter(row) {
-      return row.status ? t('auto.producttype_index_7854b52a') : t('auto.producttype_index_710ad08b')
+      return row.status ? t('common.enable') : t('product_type.disable')
     },
   },
   {
     prop: 'mark',
-    label: t('auto.producttype_index_b57447a7'),
+    label: t('product_type.remarks'),
   },
   {
     prop: 'cz',
     slot: 'cz',
     width: 280,
-    label: t('auto.producttype_index_2b6bc0f2'),
+    label: t('common.operation'),
   },
 ]
 
@@ -54,7 +54,7 @@ const {
 } = useTable({
   deleteApi: productTypeDelApi,
   fetchApi: productTypeListApi,
-  diaName: t('auto.producttype_index_2db97cae'),
+  diaName: t('menu.productType'),
   defParams: {
     withChild: true,
   },
@@ -94,10 +94,10 @@ function tslConfig(row) {
       <div class="header-content">
         <h1 class="page-title">
           <span class="title-icon">◈</span>
-          {{ t('auto.producttype_index_a4d2e3eb') }}
+          {{ t('product_type.product_type_management') }}
         </h1>
         <p class="page-subtitle">
-          {{ t('auto.producttype_index_bc20ea4a') }}
+          {{ t('product_type.manage_product_categories_hierarchy') }}
         </p>
       </div>
     </div>
@@ -106,11 +106,11 @@ function tslConfig(row) {
     <div class="search-bar glass-card">
       <div class="search-row">
         <div class="search-input">
-          <label class="input-label">{{ t('auto.producttype_index_1cb81449') }}</label>
+          <label class="input-label">{{ t('product_type.search_type') }}</label>
           <el-input
             v-model="params.name"
             clearable
-            :placeholder="t('auto.producttype_index_688d8509')"
+            :placeholder="t('product_type.enter_product_type_name_search')"
             prefix-icon="Search"
             @keyup.enter="onSearch"
           />
@@ -118,14 +118,14 @@ function tslConfig(row) {
         <div class="search-actions">
           <el-button type="primary" @click="onSearch">
             <span class="btn-icon">⌕</span>
-            {{ t('auto.producttype_index_e5f71fc3') }}
+            {{ t('common.search') }}
           </el-button>
           <el-button :icon="RefreshRight" @click="onReset">
-            {{ t('auto.producttype_index_4b9c3271') }}
+            {{ t('common.reset') }}
           </el-button>
           <el-button type="primary" @click="onAdd">
             <span class="btn-icon">+</span>
-            {{ t('auto.producttype_index_13c0562f') }}
+            {{ t('product_type.add_type_2') }}
           </el-button>
         </div>
       </div>
@@ -144,19 +144,19 @@ function tslConfig(row) {
         <template #expand="{ row }">
           <div class="expand-content">
             <div class="expand-item">
-              <span class="expand-label">{{ t('auto.producttype_index_116afd6d') }}</span>
+              <span class="expand-label">{{ t('product_type.id') }}</span>
               <span class="expand-value">{{ row.id }}</span>
             </div>
             <div class="expand-item">
-              <span class="expand-label">{{ t('auto.producttype_index_8867216a') }}</span>
+              <span class="expand-label">{{ t('product_type.type_code') }}</span>
               <span class="expand-value">{{ row.partTypeCode || '-' }}</span>
             </div>
             <div class="expand-item">
-              <span class="expand-label">{{ t('auto.producttype_index_2e540d11') }}</span>
+              <span class="expand-label">{{ t('product_type.parent_id') }}</span>
               <span class="expand-value">{{ row.parentId }}</span>
             </div>
             <div class="expand-item">
-              <span class="expand-label">{{ t('auto.producttype_index_d332d16b') }}</span>
+              <span class="expand-label">{{ t('product_type.children') }}</span>
               <span class="expand-value">{{ row.children?.length || 0 }}</span>
             </div>
           </div>
@@ -164,16 +164,16 @@ function tslConfig(row) {
 
         <template #cz="{ row }">
           <el-button type="primary" link :icon="Setting" @click="tslConfig(row)">
-            {{ t('auto.producttype_index_c2f1f925') }}
+            {{ t('product_type.feature_configuration') }}
           </el-button>
           <el-button type="primary" link :icon="Edit" @click="onEdit(row)">
-            {{ t('auto.producttype_index_95b351c8') }}
+            {{ t('common.edit') }}
           </el-button>
           <el-button v-if="row.parentId === -1" type="primary" link :icon="Plus" @click="onAddChild(row)">
-            {{ t('auto.producttype_index_c38907a1') }}
+            {{ t('product_type.add_child') }}
           </el-button>
           <el-button type="danger" link :icon="Delete" @click="onDelete(row)">
-            {{ t('auto.producttype_index_2f4aaddd') }}
+            {{ t('common.delete') }}
           </el-button>
         </template>
       </IotTable>

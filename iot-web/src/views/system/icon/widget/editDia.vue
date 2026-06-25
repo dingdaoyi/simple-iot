@@ -12,7 +12,7 @@ const props = defineProps(['datas', 'modelValue'])
 const emits = defineEmits(['update', 'update:modelValue'])
 
 const rules = ref({
-  name: [{ required: true, message: t('auto.system_icon_editdia_091d9075'), trigger: 'blur' }],
+  name: [{ required: true, message: t('system.system_icon_dialog'), trigger: 'blur' }],
 })
 
 const uploadRef = ref(null)
@@ -39,12 +39,12 @@ const isEdit = computed(() => !!props.datas?.id)
 function onSubmit() {
   // 上传中不允许提交
   if (uploading.value) {
-    ElMessage.warning(t('auto.system_icon_editdia_9039a732'))
+    ElMessage.warning(t('system.uploading_file_wait'))
     return
   }
   // 新增时必须上传图片
   if (!isEdit.value && !form.value.path) {
-    ElMessage.warning(t('auto.system_icon_editdia_79d0aff9'))
+    ElMessage.warning(t('system.upload_icon_2'))
     return
   }
   handleSubmit()
@@ -54,12 +54,12 @@ function onSubmit() {
 function beforeUpload(file) {
   const isImage = file.type.startsWith('image/')
   if (!isImage) {
-    ElMessage.error(t('auto.system_icon_editdia_2c148e94'))
+    ElMessage.error(t('system.icon_dialog_system_icon_dialog'))
     return false
   }
   const isLt2M = file.size / 1024 / 1024 < 2
   if (!isLt2M) {
-    ElMessage.error(t('auto.system_icon_editdia_6bffbe61'))
+    ElMessage.error(t('system.text_2mb'))
     return false
   }
   return true
@@ -101,16 +101,16 @@ function handleUpload(uploadFile) {
           status: 'success',
           uid: uploadFile.uid,
         }]
-        ElMessage.success(t('auto.system_icon_editdia_a7699ba7'))
+        ElMessage.success(t('system.upload_success'))
       }
       else {
-        ElMessage.error(result.msg || t('auto.system_icon_widget_editdia_54e5de42'))
+        ElMessage.error(result.msg || t('common.upload_failed'))
         fileList.value = []
       }
     })
     .catch((err) => {
-      console.error(t('auto.system_icon_widget_editdia_b5349cfc'), err)
-      ElMessage.error(t('auto.system_icon_editdia_54e5de42'))
+      console.error(t('system.system_icon_widget_dialog'), err)
+      ElMessage.error(t('system.upload_failed'))
       fileList.value = []
     })
     .finally(() => {
@@ -157,7 +157,7 @@ watch(() => props.modelValue, (newVal) => {
 <template>
   <el-dialog
     :model-value="modelValue"
-    :title="t('auto.system_icon_editdia_54bf0fea')"
+    :title="isEdit ? t('system.edit_icon') : t('system.add_icon')"
     width="500px"
     @update:model-value="$emit('update:modelValue', $event)"
     @close="onClose"
@@ -168,16 +168,16 @@ watch(() => props.modelValue, (newVal) => {
       :model="form"
       label-width="100px"
     >
-      <el-form-item :label="t('auto.system_icon_editdia_013e1c8d')" prop="name">
+      <el-form-item :label="t('system.icon_name')" prop="name">
         <el-input
           v-model="form.name"
           clearable
-          :placeholder="t('auto.system_icon_editdia_d03d66bc')"
+          :placeholder="t('system.enter_icon_name')"
         />
       </el-form-item>
 
       <!-- 上传组件 -->
-      <el-form-item :label="t('auto.system_icon_editdia_5ef69f62')" prop="path">
+      <el-form-item :label="t('system.icon')" prop="path">
         <el-upload
           ref="uploadRef"
           :file-list="fileList"
@@ -194,17 +194,17 @@ watch(() => props.modelValue, (newVal) => {
         </el-upload>
         <div class="upload-tip">
           <el-text type="info" size="small">
-            {{ t('auto.system_icon_editdia_771a4d9b') }}
+            {{ t('system.jpg_png_2mb') }}
           </el-text>
         </div>
       </el-form-item>
     </el-form>
     <template #footer>
       <el-button @click="onClose">
-        {{ t('auto.system_icon_editdia_625fb26b') }}
+        {{ t('common.cancel') }}
       </el-button>
       <el-button type="primary" :loading="loading || uploading" @click="onSubmit">
-        {{ t('auto.system_icon_editdia_38cf16f2') }}
+        {{ t('common.confirm') }}
       </el-button>
     </template>
   </el-dialog>

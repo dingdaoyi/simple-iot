@@ -10,19 +10,19 @@ import EditDia from '@/views/push-config/widget/editDia.vue'
 
 const { t } = useI18n()
 const typeOpt = [
-  { label: t('auto.push_config_index_f83e315e'), value: 'HTTP' },
-  { label: t('auto.push_config_index_18bd3062'), value: 'MQTT' },
+  { label: t('push_config.http'), value: 'HTTP' },
+  { label: t('push_config.mqtt_forwarding'), value: 'MQTT' },
 ]
 
 const column = [
   {
     prop: 'name',
-    label: t('auto.push_config_index_4fcad1c9'),
+    label: t('push_config.config_name'),
     minWidth: 150,
   },
   {
     prop: 'type',
-    label: t('auto.push_config_index_6d95c8c1'),
+    label: t('push_config.type_2'),
     width: 120,
     render({ row }) {
       return typeOpt.find(item => item.value === row.type)?.label || '-'
@@ -30,7 +30,7 @@ const column = [
   },
   {
     prop: 'description',
-    label: t('auto.push_config_index_3bdd08ad'),
+    label: t('common.description'),
     minWidth: 180,
     showOverflowTooltip: true,
   },
@@ -44,20 +44,20 @@ const column = [
   },
   {
     prop: 'isEnabled',
-    label: t('auto.push_config_index_3fea7ca7'),
+    label: t('common.status'),
     width: 100,
     slot: 'status',
   },
   {
     prop: 'createTime',
-    label: t('auto.push_config_index_eca37cb0'),
+    label: t('push_config.created_at'),
     width: 160,
   },
   {
     prop: 'cz',
     slot: 'cz',
     width: 210,
-    label: t('auto.push_config_index_2b6bc0f2'),
+    label: t('common.operation'),
     fixed: 'right',
   },
 ]
@@ -81,7 +81,7 @@ const {
 } = useTable({
   deleteApi: pushConfigDeleteApi,
   fetchApi: pushConfigPageApi,
-  diaName: t('auto.push_config_index_1bab3e3f'),
+  diaName: t('push_config.push_config'),
   defParams: {},
 })
 
@@ -135,10 +135,10 @@ async function runTestPush() {
     const data = res?.data || res
     testResult.value = data
     if (data?.success) {
-      ElMessage.success(t('auto.push_config_index_bd89aeb0'))
+      ElMessage.success(t('push_config.test_push_succeeded'))
     }
     else {
-      ElMessage.warning(data?.message || t('auto.push_config_index_1b213b21'))
+      ElMessage.warning(data?.message || t('push_config.push_test_failed'))
     }
   }
   finally {
@@ -157,10 +157,10 @@ onMounted(() => {
       <div class="header-content">
         <h1 class="page-title">
           <span class="title-icon">📡</span>
-          {{ t('auto.push_config_index_1bab3e3f') }}
+          {{ t('push_config.push_config') }}
         </h1>
         <p class="page-subtitle">
-          {{ t('auto.push_config_index_ab561d89') }}
+          {{ t('push_config.http_mqtt') }}
         </p>
       </div>
     </div>
@@ -169,20 +169,20 @@ onMounted(() => {
     <div class="search-bar glass-card">
       <div class="search-row">
         <div class="search-field">
-          <label class="field-label">{{ t('auto.push_config_index_4fcad1c9') }}</label>
+          <label class="field-label">{{ t('push_config.config_name') }}</label>
           <el-input
             v-model="params.name"
-            :placeholder="t('auto.push_config_index_b984df04')"
+            :placeholder="t('push_config.enter_config_name_2')"
             clearable
             style="width: 200px"
             @keyup.enter="onSearch"
           />
         </div>
         <div class="search-field">
-          <label class="field-label">{{ t('auto.push_config_index_6d95c8c1') }}</label>
+          <label class="field-label">{{ t('push_config.type_2') }}</label>
           <el-select
             v-model="params.type"
-            :placeholder="t('auto.push_config_index_95f11c56')"
+            :placeholder="t('push_config.select_type')"
             filterable
             clearable
             style="width: 140px"
@@ -196,26 +196,26 @@ onMounted(() => {
           </el-select>
         </div>
         <div class="search-field">
-          <label class="field-label">{{ t('auto.push_config_index_3fea7ca7') }}</label>
+          <label class="field-label">{{ t('common.status') }}</label>
           <el-select
             v-model="params.isEnabled"
-            :placeholder="t('auto.push_config_index_708c9d6d')"
+            :placeholder="t('common.please_select')"
             clearable
             style="width: 120px"
           >
-            <el-option :label="t('auto.push_config_index_7854b52a')" :value="true" />
-            <el-option :label="t('auto.push_config_index_710ad08b')" :value="false" />
+            <el-option :label="t('common.enable')" :value="true" />
+            <el-option :label="t('push_config.disable')" :value="false" />
           </el-select>
         </div>
         <div class="search-actions">
           <el-button type="primary" @click="onSearch">
-            {{ t('auto.push_config_index_e5f71fc3') }}
+            {{ t('common.search') }}
           </el-button>
           <el-button :icon="RefreshRight" @click="onReset">
-            {{ t('auto.push_config_index_4b9c3271') }}
+            {{ t('common.reset') }}
           </el-button>
           <el-button type="primary" @click="onAdd">
-            {{ t('auto.push_config_index_11e5e642') }}
+            {{ t('push_config.push_config_page') }}
           </el-button>
         </div>
       </div>
@@ -235,38 +235,38 @@ onMounted(() => {
       >
         <template #status="{ row }">
           <el-tag :type="row.isEnabled ? 'success' : 'info'" size="small">
-            {{ row.isEnabled ? t('auto.push_config_index_7854b52a') : t('auto.push_config_index_710ad08b') }}
+            {{ row.isEnabled ? t('common.enable') : t('push_config.disable') }}
           </el-tag>
         </template>
         <template #cz="{ row }">
           <el-button type="primary" link :icon="Promotion" @click="openTestDialog(row)">
-            {{ t('auto.push_config_index_db06c78d') }}
+            {{ t('push_config.test') }}
           </el-button>
           <el-button type="primary" link :icon="Edit" @click="onEdit(row)">
-            {{ t('auto.push_config_index_95b351c8') }}
+            {{ t('common.edit') }}
           </el-button>
           <el-button type="danger" link :icon="Delete" @click="onDelete(row)">
-            {{ t('auto.push_config_index_2f4aaddd') }}
+            {{ t('common.delete') }}
           </el-button>
         </template>
       </IotTable>
     </div>
 
     <!-- 测试推送对话框 -->
-    <el-dialog v-model="testDialogVisible" :title="t('auto.push_config_index_f9761bc9')" width="640px">
+    <el-dialog v-model="testDialogVisible" :title="t('push_config.test_push_config')" width="640px">
       <el-form label-width="90px">
-        <el-form-item :label="t('auto.push_config_index_4fcad1c9')">
+        <el-form-item :label="t('push_config.config_name')">
           <el-input :model-value="testTarget?.name || '-'" disabled />
         </el-form-item>
-        <el-form-item :label="t('auto.push_config_index_f974c846')">
+        <el-form-item :label="t('device.event_type')">
           <el-input v-model="testForm.eventType" placeholder="push.test" />
         </el-form-item>
-        <el-form-item :label="t('auto.push_config_index_aa56ca1c')">
+        <el-form-item :label="t('push_config.test_payload')">
           <el-input
             v-model="testForm.payload"
             type="textarea"
             :rows="8"
-            :placeholder="t('auto.push_config_index_d8a06149')"
+            :placeholder="t('push_config.enter_json_plain_text')"
           />
         </el-form-item>
         <el-alert
@@ -274,7 +274,7 @@ onMounted(() => {
           type="info"
           show-icon
           :closable="false"
-          :title="t('auto.push_config_index_299b4b6a')"
+          :title="t('push_config.hmac_x_simple_iot_timestamp_signature_event')"
         />
         <el-alert
           v-if="testResult"
@@ -282,7 +282,7 @@ onMounted(() => {
           :type="testResult.success ? 'success' : 'error'"
           show-icon
           :closable="false"
-          ::title="t('auto.push_config_index_832722d2')"
+          ::title="t('push_config.testresult_message_testresult_success')"
         >
           <template v-if="testResult.responseBody" #default>
             <pre>{{ testResult.responseBody }}</pre>
@@ -291,10 +291,10 @@ onMounted(() => {
       </el-form>
       <template #footer>
         <el-button @click="testDialogVisible = false">
-          {{ t('auto.push_config_index_b15d9127') }}
+          {{ t('push_config.close') }}
         </el-button>
         <el-button type="primary" :loading="testLoading" @click="runTestPush">
-          {{ t('auto.push_config_index_99b3a7ac') }}
+          {{ t('push_config.send_test') }}
         </el-button>
       </template>
     </el-dialog>

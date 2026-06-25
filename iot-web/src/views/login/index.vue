@@ -7,7 +7,7 @@ import { useAccountStore, useThemeStore } from '@/store'
 import LoginBg from './weight/LoginBg'
 
 const { t } = useI18n()
-const { proxy: ctx } = getCurrentInstance() // 可以把ctx当成vue2中的this
+const { proxy: ctx } = getCurrentInstance() // Use ctx like this in Vue 2
 const store = useAccountStore()
 const themeStore = useThemeStore()
 const router = useRouter()
@@ -42,7 +42,7 @@ function onSubmit() {
         const { code, data } = rs
         if (code === 200) {
           ctx.$message.success({
-            message: t('auto.login_index_71fa3bd0'),
+            message: t('common.login_successful'),
             duration: 1000,
           })
 

@@ -16,26 +16,26 @@ const { t } = useI18n()
 const router = useRouter()
 
 const sourceTypeOpt = [
-  { label: t('auto.rule_chain_index_a015434e'), value: 'PRODUCT' },
-  { label: t('auto.rule_chain_index_e3900200'), value: 'DEVICE_GROUP' },
-  { label: t('auto.rule_chain_index_c52cabf2'), value: 'DEVICE' },
+  { label: t('ruleChain.product_2'), value: 'PRODUCT' },
+  { label: t('ruleChain.device_group'), value: 'DEVICE_GROUP' },
+  { label: t('ruleChain.specific_device_2'), value: 'DEVICE' },
 ]
 
 const column = [
   {
     prop: 'name',
-    label: t('auto.rule_chain_index_87080256'),
+    label: t('ruleChain.rule_name_3'),
     minWidth: 150,
   },
   {
     prop: 'description',
-    label: t('auto.rule_chain_index_3bdd08ad'),
+    label: t('common.description'),
     minWidth: 200,
     showOverflowTooltip: true,
   },
   {
     prop: 'sourceType',
-    label: t('auto.rule_chain_index_6de026f2'),
+    label: t('ruleChain.data_source_type'),
     width: 120,
     formatter(row) {
       return sourceTypeOpt.find(item => item.value === row.sourceType)?.label ?? row.sourceType ?? '-'
@@ -43,40 +43,40 @@ const column = [
   },
   {
     prop: 'sourceName',
-    label: t('auto.rule_chain_index_c11322c9'),
+    label: t('ruleChain.data_source_2'),
     minWidth: 150,
   },
   {
     prop: 'nodeCount',
-    label: t('auto.rule_chain_index_93cb163f'),
+    label: t('ruleChain.nodes_2'),
     width: 80,
     align: 'center',
   },
   {
     prop: 'isRoot',
-    label: t('auto.rule_chain_index_7995876b'),
+    label: t('ruleChain.root_rule'),
     width: 90,
     align: 'center',
     formatter(row) {
-      return row.isRoot ? t('auto.rule_chain_index_0a60ac8f') : t('auto.rule_chain_index_c9744f45')
+      return row.isRoot ? t('common.yes') : t('common.no')
     },
   },
   {
     prop: 'isEnabled',
-    label: t('auto.rule_chain_index_3fea7ca7'),
+    label: t('common.status'),
     width: 100,
     slot: 'status',
   },
   {
     prop: 'updatedTime',
-    label: t('auto.rule_chain_index_a001a226'),
+    label: t('device.property_time'),
     width: 160,
   },
   {
     prop: 'cz',
     slot: 'cz',
     width: 220,
-    label: t('auto.rule_chain_index_2b6bc0f2'),
+    label: t('common.operation'),
     fixed: 'right',
   },
 ]
@@ -95,7 +95,7 @@ const {
 } = useTable({
   deleteApi: ruleChainDeleteApi,
   fetchApi: ruleChainPageApi,
-  diaName: t('auto.rule_chain_index_b0fae043'),
+  diaName: t('ruleChain.rule'),
   defParams: {},
 })
 
@@ -114,7 +114,7 @@ async function onToggle(row) {
   try {
     await ruleChainToggleApi(row.id, !row.isEnabled)
     row.isEnabled = !row.isEnabled
-    ElMessage.success(row.isEnabled ? t('auto.rule_chain_index_53ace430') : t('auto.rule_chain_index_1c1ed981'))
+    ElMessage.success(row.isEnabled ? t('common.enabled') : t('ruleChain.disabled'))
   }
   catch (e) {
     console.error(e)
@@ -134,10 +134,10 @@ onMounted(() => {
           <el-icon :size="24" class="title-icon">
             <Operation />
           </el-icon>
-          {{ t('auto.rule_chain_index_31c02e22') }}
+          {{ t('ruleChain.rule_chain_page') }}
         </h1>
         <p class="page-subtitle">
-          {{ t('auto.rule_chain_index_4687f166') }}
+          {{ t('ruleChain.visually_configure_device_data_processing_rules') }}
         </p>
       </div>
     </div>
@@ -146,14 +146,14 @@ onMounted(() => {
     <div class="search-bar glass-card">
       <el-form :inline="false" class="search-form">
         <div class="form-row">
-          <el-form-item :label="t('auto.rule_chain_index_87080256')">
-            <el-input v-model="params.name" clearable :placeholder="t('auto.rule_chain_index_40f3f17d')" @keyup.enter="onSearch" />
+          <el-form-item :label="t('ruleChain.rule_name_3')">
+            <el-input v-model="params.name" clearable :placeholder="t('ruleChain.enter_rule_name')" @keyup.enter="onSearch" />
           </el-form-item>
 
-          <el-form-item :label="t('auto.rule_chain_index_6de026f2')">
+          <el-form-item :label="t('ruleChain.data_source_type')">
             <el-select
               v-model="params.sourceType"
-              :placeholder="t('auto.rule_chain_index_708c9d6d')"
+              :placeholder="t('common.please_select')"
               filterable
               clearable
             >
@@ -166,10 +166,10 @@ onMounted(() => {
             </el-select>
           </el-form-item>
 
-          <el-form-item :label="t('auto.rule_chain_index_3fea7ca7')">
-            <el-select v-model="params.isEnabled" :placeholder="t('auto.rule_chain_index_708c9d6d')" clearable>
-              <el-option :label="t('auto.rule_chain_index_7854b52a')" :value="true" />
-              <el-option :label="t('auto.rule_chain_index_710ad08b')" :value="false" />
+          <el-form-item :label="t('common.status')">
+            <el-select v-model="params.isEnabled" :placeholder="t('common.please_select')" clearable>
+              <el-option :label="t('common.enable')" :value="true" />
+              <el-option :label="t('ruleChain.disable')" :value="false" />
             </el-select>
           </el-form-item>
         </div>
@@ -177,14 +177,14 @@ onMounted(() => {
         <div class="form-actions">
           <el-button type="primary" @click="onSearch">
             <span class="btn-icon">⌕</span>
-            {{ t('auto.rule_chain_index_e5f71fc3') }}
+            {{ t('common.search') }}
           </el-button>
           <el-button :icon="RefreshRight" @click="onReset">
-            {{ t('auto.rule_chain_index_4b9c3271') }}
+            {{ t('common.reset') }}
           </el-button>
           <el-button type="primary" @click="onAdd">
             <el-icon><Plus /></el-icon>
-            {{ t('auto.rule_chain_index_f10ed468') }}
+            {{ t('ruleChain.create_rule') }}
           </el-button>
         </div>
       </el-form>
@@ -211,11 +211,11 @@ onMounted(() => {
         <template #cz="{ row }">
           <el-button type="primary" link @click="onEdit(row)">
             <el-icon><Edit /></el-icon>
-            {{ t('auto.rule_chain_index_95b351c8') }}
+            {{ t('common.edit') }}
           </el-button>
           <el-button type="danger" link @click="onDelete(row)">
             <el-icon><Delete /></el-icon>
-            {{ t('auto.rule_chain_index_2f4aaddd') }}
+            {{ t('common.delete') }}
           </el-button>
         </template>
       </IotTable>

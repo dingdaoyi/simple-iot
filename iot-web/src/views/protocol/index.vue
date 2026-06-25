@@ -17,7 +17,7 @@ const protocolTypeOpt = [
     color: 'warning',
   },
   {
-    label: t('auto.protocol_index_a52f5c20'),
+    label: t('protocol.system_default_2'),
     value: 2,
     color: 'info',
   },
@@ -38,21 +38,21 @@ const scriptLangOpt = {
 const column = [
   {
     prop: 'name',
-    label: t('auto.protocol_index_6924dc1d'),
+    label: t('protocol.protocol_name'),
     width: 180,
     fixed: 'left',
   },
   {
     prop: 'status',
-    label: t('auto.protocol_index_3fea7ca7'),
+    label: t('common.status'),
     width: 100,
     render({ row }) {
-      return h(ElTag, { type: row.status === 1 ? 'success' : 'info' }, () => row.status === 1 ? t('auto.protocol_index_53ace430') : t('auto.protocol_index_1c1ed981'))
+      return h(ElTag, { type: row.status === 1 ? 'success' : 'info' }, () => row.status === 1 ? t('common.enabled') : t('protocol.disabled'))
     },
   },
   {
     prop: 'protoType',
-    label: t('auto.protocol_index_e825ec78'),
+    label: t('protocol.protocol_type_2'),
     width: 120,
     render({ row }) {
       const opt = protocolTypeOpt.find(item => item.value === row.protoType)
@@ -61,12 +61,12 @@ const column = [
   },
   {
     prop: 'protoKey',
-    label: t('auto.protocol_index_b58edac0'),
+    label: t('protocol.protocol_key_2'),
     width: 160,
   },
   {
     prop: 'scriptLang',
-    label: t('auto.protocol_index_aae5ff1f'),
+    label: t('protocol.language'),
     width: 120,
     render({ row }) {
       if (row.protoType !== 3)
@@ -77,7 +77,7 @@ const column = [
   },
   {
     prop: 'mark',
-    label: t('auto.protocol_index_8a4cf07c'),
+    label: t('protocol.remark'),
     minWidth: 150,
     showOverflowTooltip: true,
   },
@@ -86,7 +86,7 @@ const column = [
     slot: 'cz',
     width: 200,
     fixed: 'right',
-    label: t('auto.protocol_index_2b6bc0f2'),
+    label: t('common.operation'),
   },
 ]
 
@@ -108,7 +108,7 @@ const {
 } = useTable({
   deleteApi: protocolDeleteApi,
   fetchApi: protocolListApi,
-  diaName: t('auto.protocol_index_faa1ad5e'),
+  diaName: t('product.protocol'),
   defParams: {},
 })
 
@@ -123,25 +123,25 @@ function onEdit(row) {
 
 async function toggleStatus(row) {
   const newStatus = row.status !== 1
-  const action = newStatus ? t('auto.protocol_index_7854b52a') : t('auto.protocol_index_710ad08b')
+  const action = newStatus ? t('common.enable') : t('protocol.disable')
 
   try {
     await ElMessageBox.confirm(
-      t('auto.protocol_confirm_status', { action, name: row.name, tip: newStatus ? t('auto.protocol_enable_tip') : t('auto.protocol_disable_tip') }),
-      t('auto.protocol_index_ce828a79'),
+      t('protocol.you_sure_you_want_action_protocol_name_tip', { action, name: row.name, tip: newStatus ? t('protocol.after_enabling_protocol_will_be_loaded_into_memory') : t('protocol.after_disabling_protocol_will_be_unloaded_from_memory') }),
+      t('protocol.operation_confirmation'),
       {
-        confirmButtonText: t('auto.protocol_index_38cf16f2'),
-        cancelButtonText: t('auto.protocol_index_625fb26b'),
+        confirmButtonText: t('common.confirm'),
+        cancelButtonText: t('common.cancel'),
         type: 'warning',
       },
     )
     await protocolSetStatusApi(row.id, newStatus)
     row.status = newStatus ? 1 : 2
-    ElMessage.success(t('auto.protocol_status_success', { action }))
+    ElMessage.success(t('protocol.protocol_action', { action }))
   }
   catch (error) {
     if (error !== 'cancel') {
-      ElMessage.error(t('auto.operation_failed_with_msg', { message: error.message || t('auto.unknown_error') }))
+      ElMessage.error(t('protocol.operation_failed_message', { message: error.message || t('protocol.unknown_error') }))
     }
   }
 }
@@ -154,8 +154,8 @@ onMounted(() => {
   <div class="protocol-page">
     <!-- 页面标题 -->
     <PageHeader
-      :title="t('auto.protocol_index_6f8e6b0c')"
-      :subtitle="t('auto.protocol_index_631f6ded')"
+      :title="t('protocol.protocol')"
+      :subtitle="t('protocol.manage_device_communication_protocols_supporting_java_javascript_other')"
       :icon="Connection"
     />
 
@@ -163,10 +163,10 @@ onMounted(() => {
     <div class="search-bar glass-card">
       <el-form :inline="false" class="search-form">
         <div class="form-row">
-          <el-form-item :label="t('auto.protocol_index_e825ec78')">
+          <el-form-item :label="t('protocol.protocol_type_2')">
             <el-select
               v-model="params.protoType"
-              :placeholder="t('auto.protocol_index_728cbe38')"
+              :placeholder="t('protocol.select_protocol_type_2')"
               filterable
               clearable
               style="width: 150px"
@@ -180,10 +180,10 @@ onMounted(() => {
             </el-select>
           </el-form-item>
 
-          <el-form-item :label="t('auto.protocol_index_aae5ff1f')">
+          <el-form-item :label="t('protocol.language')">
             <el-select
               v-model="params.scriptLang"
-              :placeholder="t('auto.protocol_index_2b21eccb')"
+              :placeholder="t('protocol.protocol_page')"
               filterable
               clearable
               style="width: 150px"
@@ -197,21 +197,21 @@ onMounted(() => {
             </el-select>
           </el-form-item>
 
-          <el-form-item :label="t('auto.protocol_index_6924dc1d')">
+          <el-form-item :label="t('protocol.protocol_name')">
             <el-input
               v-model="params.name"
               clearable
-              :placeholder="t('auto.protocol_index_f79bd6a2')"
+              :placeholder="t('protocol.enter_protocol_name_2')"
               style="width: 200px"
               @keyup.enter="onSearch"
             />
           </el-form-item>
 
-          <el-form-item :label="t('auto.protocol_index_b58edac0')">
+          <el-form-item :label="t('protocol.protocol_key_2')">
             <el-input
               v-model="params.protoKey"
               clearable
-              :placeholder="t('auto.protocol_index_98182d06')"
+              :placeholder="t('protocol.enter_protocol_key')"
               style="width: 180px"
               @keyup.enter="onSearch"
             />
@@ -221,14 +221,14 @@ onMounted(() => {
         <div class="form-actions">
           <el-button type="primary" @click="onSearch">
             <span class="btn-icon">⌕</span>
-            {{ t('auto.protocol_index_e5f71fc3') }}
+            {{ t('common.search') }}
           </el-button>
           <el-button :icon="RefreshRight" @click="onReset">
-            {{ t('auto.protocol_index_4b9c3271') }}
+            {{ t('common.reset') }}
           </el-button>
           <el-button type="primary" @click="onAdd">
             <span class="btn-icon">+</span>
-            {{ t('auto.protocol_index_c601ea4f') }}
+            {{ t('protocol.add_protocol_2') }}
           </el-button>
         </div>
       </el-form>
@@ -252,10 +252,10 @@ onMounted(() => {
             link
             @click="toggleStatus(row)"
           >
-            {{ row.status === 1 ? t('auto.protocol_index_710ad08b') : t('auto.protocol_index_7854b52a') }}
+            {{ row.status === 1 ? t('protocol.disable') : t('common.enable') }}
           </el-button>
           <el-button type="primary" link @click="onEdit(row)">
-            {{ t('auto.protocol_index_95b351c8') }}
+            {{ t('common.edit') }}
           </el-button>
           <el-button
             v-if="row.protoType !== 2"
@@ -263,7 +263,7 @@ onMounted(() => {
             link
             @click="onDelete(row)"
           >
-            {{ t('auto.protocol_index_2f4aaddd') }}
+            {{ t('common.delete') }}
           </el-button>
         </template>
       </IotTable>

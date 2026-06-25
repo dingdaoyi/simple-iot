@@ -26,7 +26,7 @@ else {
     <div class="flex gap-20px ">
       <div class="flex">
         <div class="w-120px">
-          {{ t('auto.tslmodel_productinfo_aca705f9') }}
+          {{ t('tsl.product_type_name') }}
         </div>
         <div class="text-gray">
           {{ productType.name || '' }}
@@ -37,7 +37,7 @@ else {
     <div v-if="productId" class="flex gap-20px ">
       <div class="flex w-200px gap-20px">
         <div>
-          {{ t('auto.tslmodel_productinfo_845fdc7d') }}
+          {{ t('tsl.info_manufacturer') }}
         </div>
         <div class="text-gray">
           {{ product.manufacturer || '' }}
@@ -45,7 +45,7 @@ else {
       </div>
       <div class="flex w-200px gap-20px">
         <div class="">
-          {{ t('auto.tslmodel_productinfo_c91a9eb9') }}
+          {{ t('tsl.product_model') }}
         </div>
         <div class="text-gray">
           {{ product.model || '' }}
@@ -53,7 +53,7 @@ else {
       </div>
       <div class="flex w-300px gap-20px">
         <div class="">
-          {{ t('auto.tslmodel_productinfo_b36c17c6') }}
+          {{ t('tsl.product_access_key') }}
         </div>
         <div class="text-gray">
           {{ product.productKey || '' }}
@@ -62,7 +62,7 @@ else {
     </div>
     <div class="flex  gap-20px">
       <div class="">
-        {{ t('auto.tslmodel_productinfo_f63db30c') }}
+        {{ t('tsl.product_description') }}
       </div>
       <div class="text-gray">
         {{ product.mark || '' }}

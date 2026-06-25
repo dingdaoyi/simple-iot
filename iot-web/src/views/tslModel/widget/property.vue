@@ -13,36 +13,36 @@ const column = [
 
   {
     prop: 'name',
-    label: t('auto.tslmodel_property_45fc3131'),
+    label: t('tsl.property_name'),
   },
   {
     prop: 'identifier',
-    label: t('auto.tslmodel_property_8be288ea'),
+    label: t('tsl.property_identifier_2'),
   },
   {
     prop: 'id',
-    label: t('auto.tslmodel_property_3404df91'),
+    label: t('tsl.id'),
   },
   {
     prop: 'dataTypeName',
-    label: t('auto.tslmodel_property_185f7bf6'),
+    label: t('tsl.data_type'),
   },
   {
     prop: 'definitions',
-    label: t('auto.tslmodel_property_a32474fd'),
+    label: t('tsl.data_definition'),
   },
   {
     prop: 'accessMode',
-    label: t('auto.tslmodel_property_1fc8d87b'),
+    label: t('tsl.access_mode_2'),
     formatter(row) {
-      return row.accessMode === 'r' ? t('auto.tslmodel_widget_property_85541bd9') : t('auto.tslmodel_widget_property_2300ad28')
+      return row.accessMode === 'r' ? t('tsl.property_read_only') : t('tsl.read_write')
     },
   },
   {
     prop: 'cz',
     slot: 'cz',
     width: 220,
-    label: t('auto.tslmodel_property_2b6bc0f2'),
+    label: t('common.operation'),
   },
 ]
 const {
@@ -59,7 +59,7 @@ const {
   currentItem,
 } = useTable({
   deleteApi: propertyDeleteApi,
-  diaName: t('auto.tslmodel_widget_property_24d67862'),
+  diaName: t('tsl.property'),
   defParams: {
     productTypeId: props.typeId,
     productId: props.productId,
@@ -70,16 +70,16 @@ const {
   <div class="wh-full">
     <div class="flex flex-row mb-12px">
       <div class="w-240px mr-12px">
-        <el-input v-model="params.search" clearable :placeholder="t('auto.tslmodel_property_2773a445')" @keyup.enter="onSearch" />
+        <el-input v-model="params.search" clearable :placeholder="t('tsl.enter_property_name_identifier_search')" @keyup.enter="onSearch" />
       </div>
       <el-button type="primary" @click="onSearch">
-        {{ t('auto.tslmodel_property_e5f71fc3') }}
+        {{ t('common.search') }}
       </el-button>
       <el-button :icon="RefreshRight" @click="onReset">
-        {{ t('auto.tslmodel_property_4b9c3271') }}
+        {{ t('common.reset') }}
       </el-button>
       <el-button v-if="showEdite" type="primary" @click="onAdd">
-        {{ t('auto.tslmodel_property_b58c7549') }}
+        {{ t('tsl.add_property') }}
       </el-button>
     </div>
     <IotTable
@@ -92,10 +92,10 @@ const {
     >
       <template #cz="{ row }">
         <el-button v-if="showEdite" type="primary" link :icon="Edit" @click="onEdit(row)">
-          {{ t('auto.tslmodel_property_09296297') }}
+          {{ t('tsl.edit_definition') }}
         </el-button>
         <el-button v-if="showEdite" type="danger" link :icon="Delete" @click="onDelete(row)">
-          {{ t('auto.tslmodel_property_2f4aaddd') }}
+          {{ t('common.delete') }}
         </el-button>
       </template>
     </IotTable>

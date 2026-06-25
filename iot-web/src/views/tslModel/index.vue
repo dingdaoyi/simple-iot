@@ -14,14 +14,14 @@ const route = useRoute()
 const breadcrumbs = ref(
   [
     {
-      label: t('auto.tslmodel_index_2db97cae'),
+      label: t('menu.productType'),
       path: '/productType',
     },
     {
-      label: t('auto.tslmodel_index_1ff43b4a'),
+      label: t('tsl.tsl_model'),
     },
     {
-      label: t('auto.tslmodel_index_1ff43b4a'),
+      label: t('tsl.tsl_model'),
     },
   ],
 )
@@ -44,7 +44,7 @@ function loadDetails() {
             label: data.model,
           },
           {
-            label: t('auto.tslmodel_index_1ff43b4a'),
+            label: t('tsl.tsl_model'),
           },
         ]
       })
@@ -67,10 +67,10 @@ loadDetails()</script>
         v-model="activeName"
         class="tsl-tabs"
       >
-        <el-tab-pane :label="t('auto.tslmodel_index_6ea1fe6b')" name="first">
+        <el-tab-pane :label="t('tsl.basic_information')" name="first">
           <ProductInfo :type-id="productTypeId" :product-id="productId" />
         </el-tab-pane>
-        <el-tab-pane :label="t('auto.tslmodel_index_256aa787')" name="service">
+        <el-tab-pane :label="t('tsl.service_definition')" name="service">
           <ServiceConfig :type-id="productTypeId" :product-id="productId" />
         </el-tab-pane>
         <el-tab-pane v-if="productId" label="TSL" name="tsl">

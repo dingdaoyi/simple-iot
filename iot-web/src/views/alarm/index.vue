@@ -31,43 +31,43 @@ const statusOpt = ref([])
 const column = [
   {
     prop: 'severity',
-    label: t('auto.alarm_index_08fe5024'),
+    label: t('alarm.severity'),
     width: 100,
     align: 'center',
     slot: 'severity',
   },
   {
     prop: 'alarmName',
-    label: t('auto.alarm_index_b4450f15'),
+    label: t('alarm.alarm_name'),
     minWidth: 180,
   },
   {
     prop: 'alarmType',
-    label: t('auto.alarm_index_c62e34c5'),
+    label: t('alarm.alarm_type'),
     width: 120,
   },
   {
     prop: 'deviceName',
-    label: t('auto.alarm_index_f55f1736'),
+    label: t('alarm.device'),
     width: 140,
   },
   {
     prop: 'message',
-    label: t('auto.alarm_index_ed1cfa58'),
+    label: t('alarm.alarm_message'),
     minWidth: 200,
     slot: 'message',
     showOverflowTooltip: true,
   },
   {
     prop: 'status',
-    label: t('auto.alarm_index_3fea7ca7'),
+    label: t('common.status'),
     width: 90,
     align: 'center',
     slot: 'status',
   },
   {
     prop: 'startTs',
-    label: t('auto.alarm_index_592c5958'),
+    label: t('alarm.start_time'),
     width: 160,
     slot: 'startTs',
   },
@@ -75,7 +75,7 @@ const column = [
     prop: 'cz',
     slot: 'cz',
     width: 180,
-    label: t('auto.alarm_index_2b6bc0f2'),
+    label: t('common.operation'),
   },
 ]
 
@@ -104,7 +104,7 @@ async function loadStatistics() {
     statusOpt.value = data.statusOptions || []
   }
   catch (e) {
-    console.error(t('auto.alarm_index_8522b582'), e)
+    console.error(t('alarm.failed_load_statistics'), e)
   }
 }
 
@@ -117,15 +117,15 @@ async function refreshAlarmView() {
 async function handleAcknowledge(row) {
   try {
     await alarmAcknowledgeApi(row.id)
-    ElMessage.success(t('auto.alarm_index_082079d7'))
+    ElMessage.success(t('alarm.alarm_page'))
     if (currentAlarm.value?.id === row.id) {
       currentAlarm.value = { ...currentAlarm.value, status: 'ACKNOWLEDGED' }
     }
     await refreshAlarmView()
   }
   catch (e) {
-    console.error(t('auto.alarm_index_c92aaa37'), e)
-    ElMessage.error(t('auto.alarm_index_c92aaa37'))
+    console.error(t('alarm.acknowledge_failed'), e)
+    ElMessage.error(t('alarm.acknowledge_failed'))
   }
 }
 
@@ -133,7 +133,7 @@ async function handleAcknowledge(row) {
 async function handleClear(row) {
   try {
     await alarmClearApi(row.id)
-    ElMessage.success(t('auto.alarm_index_3ebbc5f7'))
+    ElMessage.success(t('alarm.alarm_cleared'))
     if (currentAlarm.value?.id === row.id) {
       currentAlarm.value = { ...currentAlarm.value, status: 'CLEARED' }
       detailVisible.value = false
@@ -141,8 +141,8 @@ async function handleClear(row) {
     await refreshAlarmView()
   }
   catch (e) {
-    console.error(t('auto.alarm_index_cd6849ea'), e)
-    ElMessage.error(t('auto.alarm_index_cd6849ea'))
+    console.error(t('alarm.clear_failed'), e)
+    ElMessage.error(t('alarm.clear_failed'))
   }
 }
 
@@ -169,10 +169,10 @@ function handleDetail(row) {
 // 获取严重程度标签
 function getSeverityTag(severity) {
   const map = {
-    CRITICAL: { type: 'danger', text: t('auto.alarm_index_e2e27a87'), color: '#dc2626' },
-    MAJOR: { type: 'warning', text: t('auto.alarm_index_00dc03d7'), color: '#ea580c' },
-    MINOR: { type: 'info', text: t('auto.alarm_index_bde77082'), color: '#f59e0b' },
-    WARNING: { type: '', text: t('auto.alarm_index_900c70fa'), color: '#3b82f6' },
+    CRITICAL: { type: 'danger', text: t('alarm.critical'), color: '#dc2626' },
+    MAJOR: { type: 'warning', text: t('alarm.major'), color: '#ea580c' },
+    MINOR: { type: 'info', text: t('alarm.minor'), color: '#f59e0b' },
+    WARNING: { type: '', text: t('alarm.warning'), color: '#3b82f6' },
   }
   return map[severity] || { type: '', text: severity, color: '#6b7280' }
 }
@@ -180,9 +180,9 @@ function getSeverityTag(severity) {
 // 获取状态标签
 function getStatusTag(status) {
   const map = {
-    ACTIVE: { type: 'danger', text: t('auto.alarm_index_36c6f572') },
-    CLEARED: { type: 'success', text: t('auto.alarm_index_59462c81') },
-    ACKNOWLEDGED: { type: 'warning', text: t('auto.alarm_index_4113e726') },
+    ACTIVE: { type: 'danger', text: t('alarm.active') },
+    CLEARED: { type: 'success', text: t('alarm.cleared') },
+    ACKNOWLEDGED: { type: 'warning', text: t('alarm.acknowledged') },
   }
   return map[status] || { type: '', text: status }
 }
@@ -223,41 +223,41 @@ const detailSections = computed(() => {
 
   // 基本信息
   sections.push({
-    title: t('auto.alarm_index_9e5ffa06'),
+    title: t('alarm.base_info'),
     items: [
-      { label: t('auto.alarm_index_b4450f15'), value: alarm.alarmName },
-      { label: t('auto.alarm_index_c62e34c5'), value: alarm.alarmType },
-      { label: t('auto.alarm_index_08fe5024'), value: getSeverityTag(alarm.severity).text, tag: true, tagType: getSeverityTag(alarm.severity).type },
-      { label: t('auto.alarm_index_3fea7ca7'), value: getStatusTag(alarm.status).text, tag: true, tagType: getStatusTag(alarm.status).type },
+      { label: t('alarm.alarm_name'), value: alarm.alarmName },
+      { label: t('alarm.alarm_type'), value: alarm.alarmType },
+      { label: t('alarm.severity'), value: getSeverityTag(alarm.severity).text, tag: true, tagType: getSeverityTag(alarm.severity).type },
+      { label: t('common.status'), value: getStatusTag(alarm.status).text, tag: true, tagType: getStatusTag(alarm.status).type },
     ],
   })
 
   // 设备信息
   sections.push({
-    title: t('auto.alarm_index_b967fdef'),
+    title: t('alarm.device_info_2'),
     items: [
-      { label: t('auto.alarm_index_9f694f60'), value: alarm.deviceName },
-      { label: t('auto.alarm_index_89be6dad'), value: alarm.deviceKey },
+      { label: t('device.device_name'), value: alarm.deviceName },
+      { label: t('alarm.key'), value: alarm.deviceKey },
     ],
   })
 
   // 时间信息
   sections.push({
-    title: t('auto.alarm_index_a209df54'),
+    title: t('alarm.time_information'),
     items: [
-      { label: t('auto.alarm_index_592c5958'), value: formatTime(alarm.startTs) },
-      { label: t('auto.alarm_index_f782779e'), value: formatTime(alarm.endTs) },
-      { label: t('auto.alarm_index_6441d8ca'), value: formatTime(alarm.clearTs) },
-      { label: t('auto.alarm_index_e1d7b74b'), value: alarm.clearBy || '-' },
+      { label: t('alarm.start_time'), value: formatTime(alarm.startTs) },
+      { label: t('alarm.end_time'), value: formatTime(alarm.endTs) },
+      { label: t('alarm.clear_time'), value: formatTime(alarm.clearTs) },
+      { label: t('alarm.cleared_2'), value: alarm.clearBy || '-' },
     ],
   })
 
   // 告警消息
   const messageContent = alarm.message && alarm.message.trim() ? alarm.message : '-'
   sections.push({
-    title: t('auto.alarm_index_ed1cfa58'),
+    title: t('alarm.alarm_message'),
     items: [
-      { label: t('auto.alarm_index_b87b7756'), value: messageContent, full: true },
+      { label: t('alarm.message_content'), value: messageContent, full: true },
     ],
   })
 
@@ -268,7 +268,7 @@ const detailSections = computed(() => {
       value: typeof value === 'object' ? JSON.stringify(value, null, 2) : String(value),
     }))
     sections.push({
-      title: t('auto.alarm_index_f1b82d02'),
+      title: t('alarm.trigger_data'),
       items: detailItems,
     })
   }
@@ -285,8 +285,8 @@ onMounted(() => {
   <div class="alarm-page">
     <!-- 页面标题 -->
     <PageHeader
-      :title="t('auto.alarm_index_12dae261')"
-      :subtitle="t('auto.alarm_index_cc629988')"
+      :title="t('alarm.alarms')"
+      :subtitle="t('alarm.device_alarm_monitoring_handling')"
       :icon="Bell"
     >
       <template #actions>
@@ -296,7 +296,7 @@ onMounted(() => {
               {{ statistics.activeCount }}
             </div>
             <div class="stat-label">
-              {{ t('auto.alarm_index_b150b553') }}
+              {{ t('alarm.active_alarm') }}
             </div>
           </div>
         </div>
@@ -307,16 +307,16 @@ onMounted(() => {
     <div class="search-bar glass-card">
       <el-form :inline="false" class="search-form">
         <div class="form-row">
-          <el-form-item :label="t('auto.alarm_index_89be6dad')">
-            <el-input v-model="params.deviceKey" clearable :placeholder="t('auto.alarm_index_437e02fb')" @keyup.enter="onSearch" />
+          <el-form-item :label="t('alarm.key')">
+            <el-input v-model="params.deviceKey" clearable :placeholder="t('alarm.enter_device_key')" @keyup.enter="onSearch" />
           </el-form-item>
 
-          <el-form-item :label="t('auto.alarm_index_c62e34c5')">
-            <el-input v-model="params.alarmType" clearable :placeholder="t('auto.alarm_index_c0e0f331')" @keyup.enter="onSearch" />
+          <el-form-item :label="t('alarm.alarm_type')">
+            <el-input v-model="params.alarmType" clearable :placeholder="t('alarm.enter_alarm_type')" @keyup.enter="onSearch" />
           </el-form-item>
 
-          <el-form-item :label="t('auto.alarm_index_08fe5024')">
-            <el-select v-model="params.severity" clearable :placeholder="t('auto.alarm_index_a8b0c204')">
+          <el-form-item :label="t('alarm.severity')">
+            <el-select v-model="params.severity" clearable :placeholder="t('alarm.all')">
               <el-option
                 v-for="item in severityOpt"
                 :key="item.value"
@@ -326,8 +326,8 @@ onMounted(() => {
             </el-select>
           </el-form-item>
 
-          <el-form-item :label="t('auto.alarm_index_3fea7ca7')">
-            <el-select v-model="params.status" clearable :placeholder="t('auto.alarm_index_a8b0c204')">
+          <el-form-item :label="t('common.status')">
+            <el-select v-model="params.status" clearable :placeholder="t('alarm.all')">
               <el-option
                 v-for="item in statusOpt"
                 :key="item.value"
@@ -383,7 +383,7 @@ onMounted(() => {
         <template #cz="{ row }">
           <el-button type="primary" link @click="handleDetail(row)">
             <el-icon><View /></el-icon>
-            {{ t('auto.alarm_index_f26225bd') }}
+            {{ t('alarm.detail') }}
           </el-button>
           <el-button
             v-if="row.status === 'ACTIVE'"
@@ -392,7 +392,7 @@ onMounted(() => {
             @click="handleAcknowledge(row)"
           >
             <el-icon><Check /></el-icon>
-            {{ t('auto.alarm_index_e83a256e') }}
+            {{ t('alarm.confirm') }}
           </el-button>
           <el-button
             v-if="row.status !== 'CLEARED'"
@@ -401,7 +401,7 @@ onMounted(() => {
             @click="handleClear(row)"
           >
             <el-icon><Close /></el-icon>
-            {{ t('auto.alarm_index_4403fca0') }}
+            {{ t('alarm.clear') }}
           </el-button>
         </template>
       </IotTable>
@@ -410,7 +410,7 @@ onMounted(() => {
     <!-- 告警详情弹窗 -->
     <el-dialog
       v-model="detailVisible"
-      :title="t('auto.alarm_index_67837fb1')"
+      :title="t('alarm.alarm_detail')"
       width="640px"
       class="alarm-detail-dialog"
     >
@@ -449,7 +449,7 @@ onMounted(() => {
             @click="handleAcknowledgeInDetail"
           >
             <el-icon><Check /></el-icon>
-            {{ t('auto.alarm_index_a7c8e9c3') }}
+            {{ t('alarm.acknowledge_alarm') }}
           </el-button>
           <el-button
             v-if="currentAlarm?.status !== 'CLEARED'"
@@ -457,10 +457,10 @@ onMounted(() => {
             @click="handleClearInDetail"
           >
             <el-icon><Close /></el-icon>
-            {{ t('auto.alarm_index_b38faf05') }}
+            {{ t('alarm.clear_alarm') }}
           </el-button>
           <el-button @click="detailVisible = false">
-            {{ t('auto.alarm_index_b15d9127') }}
+            {{ t('alarm.close') }}
           </el-button>
         </div>
       </template>

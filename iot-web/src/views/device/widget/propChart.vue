@@ -34,11 +34,11 @@ const options = ref({
     },
     axisLine: {
       lineStyle: {
-        color: 'rgb(186,231,255)', // 设置x轴轴线颜色
+        color: 'rgb(186,231,255)', // Set x-axis line color
       },
     },
     axisLabel: {
-      color: '##76889F', // 设置x轴标签文字颜色
+      color: '##76889F', // Set x-axis label color
     },
     data: ['2024-01-01', '2024-02-01', '2024-03-01', '2024-04-01', '2024-05-01', '2024-06-01'],
   }],
@@ -52,7 +52,7 @@ const options = ref({
     axisLine: {
       show: true,
       lineStyle: {
-        color: 'rgb(186,231,255)', // 设置x轴轴线颜色
+        color: 'rgb(186,231,255)', // Set x-axis line color
       },
     },
     splitLine: {
@@ -63,7 +63,7 @@ const options = ref({
       },
     },
     axisLabel: {
-      color: '#76889F', // 设置右y轴标签文字颜色
+      color: '#76889F', // Set right y-axis label color
       // formatter: '{value} %'
     },
   }],

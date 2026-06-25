@@ -113,7 +113,7 @@ async function loadRecentDevices() {
     recentDevices.value = res.data?.records || res.data || []
   }
   catch (e) {
-    console.error(t('auto.home_index_f6dd70fd'), e)
+    console.error(t('home.failed_load_devices'), e)
   }
   finally {
     devicesLoading.value = false
@@ -139,7 +139,7 @@ async function loadAlerts() {
     }))
   }
   catch (e) {
-    console.error(t('auto.home_index_0fe1b899'), e)
+    console.error(t('home.home_page'), e)
   }
   finally {
     alertsLoading.value = false
@@ -154,7 +154,7 @@ async function loadAlertStats() {
     alertStats.value.activeCount = data.activeCount || 0
   }
   catch (e) {
-    console.error(t('auto.home_index_e9876fd4'), e)
+    console.error(t('home.failed_load_alarm_statistics'), e)
   }
 }
 

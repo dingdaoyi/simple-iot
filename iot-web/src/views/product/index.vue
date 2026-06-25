@@ -44,7 +44,7 @@ const {
 } = useTable({
   deleteApi: productDeleteApi,
   fetchApi: productPageApi,
-  diaName: t('auto.product_index_a015434e'),
+  diaName: t('product.product'),
   defParams: {},
 })
 
@@ -58,7 +58,7 @@ function closeEdite() {
 function onAddChild(row) {
   parentId.value = row.id
   dialogVisible.value = true
-  diaTitle.value = t('auto.product_index_5ff09388')
+  diaTitle.value = t('product.add_sub_product')
 }
 
 function tslConfig(row) {
@@ -68,7 +68,7 @@ function tslConfig(row) {
 // 获取产品类型名称
 function getProductTypeName(typeId) {
   const type = productTypeList.value.find(t => t.id === typeId)
-  return type?.name || t('auto.product_index_485d34dc')
+  return type?.name || t('product.unknown_type')
 }
 
 // 跳转到设备列表
@@ -103,34 +103,34 @@ const column = [
   },
   {
     prop: 'icon',
-    label: t('auto.product_index_5ef69f62'),
+    label: t('product.icon'),
     width: 80,
     slot: 'icon',
   },
   {
     prop: 'productTypeName',
-    label: t('auto.product_index_2db97cae'),
+    label: t('menu.productType'),
     width: 150,
   },
   {
     prop: 'model',
-    label: t('auto.product_index_ac4190df'),
+    label: t('product.model_2'),
     width: 150,
   },
   {
     prop: 'manufacturer',
-    label: t('auto.product_index_8284e8da'),
+    label: t('product.manufacturer_3'),
     width: 150,
   },
   {
     prop: 'remark',
-    label: t('auto.product_index_b57447a7'),
+    label: t('product.remarks'),
   },
   {
     prop: 'cz',
     slot: 'cz',
     width: 280,
-    label: t('auto.product_index_2b6bc0f2'),
+    label: t('common.operation'),
   },
 ]
 
@@ -139,7 +139,7 @@ onMounted(() => {
   productTypeListApi().then(({ data }) => {
     productTypeList.value = data
   }).catch((err) => {
-    console.error(t('auto.product_index_59c02f94'), err)
+    console.error(t('product.failed_fetch_product_types'), err)
   })
 })</script>
 
@@ -152,10 +152,10 @@ onMounted(() => {
           <el-icon class="title-icon" :size="28">
             <Box />
           </el-icon>
-          {{ t('auto.product_index_fc38494c') }}
+          {{ t('product.product_management') }}
         </h1>
         <p class="page-subtitle">
-          {{ t('auto.product_index_2ba1a498') }}
+          {{ t('product.manage_iot_product_information_configuration') }}
         </p>
       </div>
     </div>
@@ -166,7 +166,7 @@ onMounted(() => {
         <div class="search-fields">
           <el-select
             v-model="params.productTypeId"
-            :placeholder="t('auto.product_index_b82ec15f')"
+            :placeholder="t('product.select_product_type_2')"
             filterable
             clearable
             class="search-select"
@@ -181,7 +181,7 @@ onMounted(() => {
           <el-input
             v-model="params.model"
             clearable
-            :placeholder="t('auto.product_index_7cab8429')"
+            :placeholder="t('product.enter_product_model')"
             :prefix-icon="Search"
             class="search-input"
             @keyup.enter="onSearch"
@@ -189,7 +189,7 @@ onMounted(() => {
           <el-input
             v-model="params.manufacturer"
             clearable
-            :placeholder="t('auto.product_index_19034848')"
+            :placeholder="t('product.enter_manufacturer_2')"
             class="search-input"
             @keyup.enter="onSearch"
           />
@@ -197,14 +197,14 @@ onMounted(() => {
         <div class="search-actions">
           <el-button type="primary" @click="onSearch">
             <el-icon><Search /></el-icon>
-            {{ t('auto.product_index_e5f71fc3') }}
+            {{ t('common.search') }}
           </el-button>
           <el-button :icon="RefreshRight" @click="onReset">
-            {{ t('auto.product_index_4b9c3271') }}
+            {{ t('common.reset') }}
           </el-button>
           <el-button type="primary" @click="onAdd">
             <el-icon><Plus /></el-icon>
-            {{ t('auto.product_index_03f6134c') }}
+            {{ t('product.product_page') }}
           </el-button>
         </div>
       </div>
@@ -240,11 +240,11 @@ onMounted(() => {
         <!-- 详细信息 -->
         <div class="card-details">
           <div class="detail-row">
-            <span class="detail-label">{{ t('auto.product_index_8284e8da') }}</span>
-            <span class="detail-value">{{ product.manufacturer || t('auto.product_index_fe2d26a2') }}</span>
+            <span class="detail-label">{{ t('product.manufacturer_3') }}</span>
+            <span class="detail-value">{{ product.manufacturer || t('product.not_set') }}</span>
           </div>
           <div v-if="product.remark" class="detail-row">
-            <span class="detail-label">{{ t('auto.product_index_2432b575') }}</span>
+            <span class="detail-label">{{ t('common.remark') }}</span>
             <span class="detail-value">{{ product.remark }}</span>
           </div>
         </div>
@@ -253,26 +253,26 @@ onMounted(() => {
         <div class="card-actions">
           <el-button type="primary" size="small" @click="goToDevices(product)">
             <el-icon><Monitor /></el-icon>
-            {{ t('auto.product_index_6d0a0414') }}
+            {{ t('product.view_devices') }}
           </el-button>
           <el-dropdown trigger="click" @command="(cmd) => handleCommand(cmd, product)">
             <el-button size="small">
               <el-icon><Setting /></el-icon>
-              {{ t('auto.product_index_0ec9eaf9') }}
+              {{ t('product.more') }}
             </el-button>
             <template #dropdown>
               <el-dropdown-menu>
                 <el-dropdown-item command="config">
-                  <el-icon><Setting /></el-icon>{{ t('auto.product_index_c2f1f925') }}
+                  <el-icon><Setting /></el-icon>{{ t('product.feature_configuration') }}
                 </el-dropdown-item>
                 <el-dropdown-item command="edit">
-                  <el-icon><Edit /></el-icon>{{ t('auto.product_index_95b351c8') }}
+                  <el-icon><Edit /></el-icon>{{ t('common.edit') }}
                 </el-dropdown-item>
                 <el-dropdown-item command="delete" divided>
                   <el-icon color="#f56c6c">
                     <Delete />
                   </el-icon>
-                  <span style="color: #f56c6c">{{ t('auto.product_index_2f4aaddd') }}</span>
+                  <span style="color: #f56c6c">{{ t('common.delete') }}</span>
                 </el-dropdown-item>
               </el-dropdown-menu>
             </template>
@@ -285,10 +285,10 @@ onMounted(() => {
         <el-icon :size="64" color="var(--iot-color-text-muted)">
           <Box />
         </el-icon>
-        <p>{{ t('auto.product_index_empty_data') }}</p>
+        <p>{{ t('product.no_product_data') }}</p>
         <el-button type="primary" @click="onAdd">
           <el-icon><Plus /></el-icon>
-          {{ t('auto.product_index_add_first') }}
+          {{ t('product.add_first_product') }}
         </el-button>
       </div>
     </div>
@@ -308,19 +308,19 @@ onMounted(() => {
         <template #expand="{ row }">
           <div class="expand-content">
             <div class="expand-item">
-              <span class="expand-label">{{ t('auto.product_index_2125533e') }}</span>
+              <span class="expand-label">{{ t('product.product_id') }}</span>
               <span class="expand-value">{{ row.id }}</span>
             </div>
             <div class="expand-item">
-              <span class="expand-label">{{ t('auto.product_index_116afd6d') }}</span>
+              <span class="expand-label">{{ t('product.id') }}</span>
               <span class="expand-value">{{ row.productTypeId }}</span>
             </div>
             <div class="expand-item">
-              <span class="expand-label">{{ t('auto.product_index_2e540d11') }}</span>
+              <span class="expand-label">{{ t('product.parent_id') }}</span>
               <span class="expand-value">{{ row.parentId }}</span>
             </div>
             <div class="expand-item">
-              <span class="expand-label">{{ t('auto.product_index_eca37cb0') }}</span>
+              <span class="expand-label">{{ t('product.created_at') }}</span>
               <span class="expand-value">{{ row.createTime || '-' }}</span>
             </div>
           </div>
@@ -337,16 +337,16 @@ onMounted(() => {
 
         <template #cz="{ row }">
           <el-button type="primary" link :icon="Setting" @click="tslConfig(row)">
-            {{ t('auto.product_index_c2f1f925') }}
+            {{ t('product.feature_configuration') }}
           </el-button>
           <el-button type="primary" link :icon="Edit" @click="onEdit(row)">
-            {{ t('auto.product_index_95b351c8') }}
+            {{ t('common.edit') }}
           </el-button>
           <el-button v-if="row.parentId === -1" type="primary" link :icon="Plus" @click="onAddChild(row)">
-            {{ t('auto.product_index_c38907a1') }}
+            {{ t('product.add_child') }}
           </el-button>
           <el-button type="danger" link :icon="Delete" @click="onDelete(row)">
-            {{ t('auto.product_index_2f4aaddd') }}
+            {{ t('common.delete') }}
           </el-button>
         </template>
       </IotTable>
@@ -360,14 +360,14 @@ onMounted(() => {
           @click="viewMode = 'card'"
         >
           <el-icon><Grid /></el-icon>
-          {{ t('auto.product_index_card_view') }}
+          {{ t('product.cards') }}
         </el-button>
         <el-button
           :type="viewMode === 'table' ? 'primary' : 'default'"
           @click="viewMode = 'table'"
         >
           <el-icon><List /></el-icon>
-          {{ t('auto.product_index_list_view') }}
+          {{ t('product.list') }}
         </el-button>
       </el-button-group>
     </div>

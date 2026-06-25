@@ -23,7 +23,7 @@ const {
 } = useTable({
   deleteApi: iconDeleteApi,
   fetchApi: iconListApi,
-  diaName: t('auto.system_icon_index_5ef69f62'),
+  diaName: t('system.icon_icon'),
   defParams: {},
 })
 
@@ -42,10 +42,10 @@ onMounted(() => {
       <div class="header-content">
         <h1 class="page-title">
           <span class="title-icon">◈</span>
-          {{ t('auto.system_icon_index_d9a54f80') }}
+          {{ t('system.icons') }}
         </h1>
         <p class="page-subtitle">
-          {{ t('auto.system_icon_index_4a93bbe6') }}
+          {{ t('system.icon_system_icon_page') }}
         </p>
       </div>
     </div>
@@ -54,11 +54,11 @@ onMounted(() => {
     <div class="search-bar glass-card">
       <div class="search-row">
         <div class="search-input">
-          <label class="input-label">{{ t('auto.system_icon_index_013e1c8d') }}</label>
+          <label class="input-label">{{ t('system.icon_name') }}</label>
           <el-input
             v-model="params.name"
             clearable
-            :placeholder="t('auto.system_icon_index_77bbe5d1')"
+            :placeholder="t('system.enter_icon_name_search')"
             prefix-icon="Search"
             @keyup.enter="onSearch"
           />
@@ -66,14 +66,14 @@ onMounted(() => {
         <div class="search-actions">
           <el-button type="primary" @click="onSearch">
             <span class="btn-icon">⌕</span>
-            {{ t('auto.system_icon_index_e5f71fc3') }}
+            {{ t('common.search') }}
           </el-button>
           <el-button :icon="RefreshRight" @click="onReset">
-            {{ t('auto.system_icon_index_4b9c3271') }}
+            {{ t('common.reset') }}
           </el-button>
           <el-button type="primary" @click="onAdd">
             <span class="btn-icon">+</span>
-            {{ t('auto.system_icon_index_035692d6') }}
+            {{ t('system.system_icon_page') }}
           </el-button>
         </div>
       </div>
@@ -88,10 +88,10 @@ onMounted(() => {
             📁
           </div>
           <p class="empty-text">
-            {{ t('auto.system_icon_index_f9827d1c') }}
+            {{ t('system.no_icon_data') }}
           </p>
           <el-button type="primary" @click="onAdd">
-            {{ t('auto.system_icon_index_5810e91b') }}
+            {{ t('system.add_first_icon') }}
           </el-button>
         </div>
 
@@ -114,7 +114,7 @@ onMounted(() => {
                 <template #error>
                   <div class="icon-error">
                     <span class="error-icon">⚠️</span>
-                    <span class="error-text">{{ t('auto.system_icon_index_866b795e') }}</span>
+                    <span class="error-text">{{ t('system.load_failed') }}</span>
                   </div>
                 </template>
                 <template #placeholder>
