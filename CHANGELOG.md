@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.1.1] — 2026-06-25
+
 ### Added
 - **Bilingual frontend UI** — added `zh-CN` / `en-US` language packs, a language switcher, Element Plus locale sync and semantic translation keys across the main console.
 - **Rule-chain editor improvements** — canvas zoom/pan, keyboard shortcuts, node search, validation, script filter support and debug path highlighting.
@@ -50,5 +52,6 @@ First public release. The platform has been used internally for over a year and 
 - Frontend: Vue 3 · Vite · Element Plus · Pinia · Vue Router · Axios · ECharts.
 - Infra: Docker Compose · RustFS (S3-compatible) · GitHub Actions.
 
-[Unreleased]: https://github.com/dingdaoyi/simple-iot/compare/v0.1.0...HEAD
+[Unreleased]: https://github.com/dingdaoyi/simple-iot/compare/v0.1.1...HEAD
+[0.1.1]: https://github.com/dingdaoyi/simple-iot/compare/v0.1.0...v0.1.1
 [0.1.0]: https://github.com/dingdaoyi/simple-iot/releases/tag/v0.1.0
