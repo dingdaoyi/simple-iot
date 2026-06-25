@@ -1,6 +1,6 @@
 # Roadmap
 
-> Last updated: 2026-06-17 · Maintainer: [@dingdaoyi](https://github.com/dingdaoyi)
+> Last updated: 2026-06-25 · Maintainer: [@dingdaoyi](https://github.com/dingdaoyi)
 >
 > Have an idea? Open a [GitHub Discussion](https://github.com/dingdaoyi/simple-iot/discussions) or vote on an item below 👍.
 
@@ -12,7 +12,7 @@ This roadmap is the honest list of what is **missing**, **rough**, or **deserves
 
 | # | Item | Why it matters |
 |---|---|---|
-| P0-1 | **Test coverage** — currently 2 test files vs 320 main classes. Add unit tests for `RuleEngine`, `MqttDriver`, `InfluxDataProcessor`, `ProtocolDecoder` registry; target ≥ 40% line coverage on `iot-server` core packages. | The platform handles real devices — silent regressions are unacceptable. |
+| P0-1 | **Test coverage** — rule-engine input/filter nodes now have focused tests; continue expanding coverage for output/alarm nodes, `MqttDriver`, `InfluxDataProcessor` and protocol decoders; target ≥ 40% line coverage on `iot-server` core packages. | The platform handles real devices — silent regressions are unacceptable. |
 | P0-2 | **Integration test** harness with Testcontainers (Postgres + InfluxDB + embedded MQTT) and a smoke test that boots the whole stack and pushes a telemetry sample end-to-end. | Catches Docker / wiring breakage before release. |
 | P0-3 | **Open API spec** — generate OpenAPI 3.1 from controllers (`springdoc-openapi`) and publish under `/v3/api-docs` + a hosted Swagger UI. | Currently API docs are hand-written under `/api/dict` only. |
 | P0-4 | **Auth hardening** — JWT secret rotation, refresh-token revocation list, password complexity policy (currently any length accepted). | Default deployments expose admin/123456 — needs a forced change-password on first login. |
@@ -27,11 +27,11 @@ This roadmap is the honest list of what is **missing**, **rough**, or **deserves
 | P1-1 | **Multi-tenant** — tenant_id on every table, row-level security, per-tenant quotas. | Right now everyone shares one space. |
 | P1-2 | **Device groups & tags** — bulk operations, tag-based rule routing. | Hard to operate >1000 devices without grouping. |
 | P1-3 | **Alarm enhancements** — escalation policies, on-call schedule, snooze, alarm comments. | Current alarm is fire-and-forget. |
-| P1-4 | **Rule-engine v2** — branching nodes, sub-flows, debug-replay (record incoming payload → replay through chain). | Complex flows are hard to author and debug today. |
+| P1-4 | **Rule-engine v2** — validation, script filters and debug path highlighting have landed; continue with sub-flows, replay from recorded payloads and richer execution traces. | Complex flows should be easy to author and debug. |
 | P1-5 | **Custom dashboards** — drag-and-drop widget canvas (line, gauge, value card, map, table) bound to device telemetry. | Required to call this an "IoT platform" with a straight face. |
 | P1-6 | **OTA firmware** — upload firmware → push to device groups → progress + rollback. | Most real IoT projects need OTA on day 1. |
 | P1-7 | **Mobile-friendly Web UI** — current admin is desktop-only; need a responsive read-only view for ops on the phone. | Tied to the UI overhaul (see "Frontend" below). |
-| P1-8 | **i18n** — Web UI is Chinese-only today; add English locale and a vue-i18n scaffold. | English README is misleading without it. |
+| P1-8 | ✅ **i18n foundation** — `zh-CN` / `en-US` UI, language switcher and Element Plus locale sync have landed; continue translating new pages as they are added. | Keeps the console usable for both Chinese and English users. |
 
 ## P2 — protocol / driver expansion
 
@@ -48,7 +48,7 @@ This roadmap is the honest list of what is **missing**, **rough**, or **deserves
 
 The current Web UI works, but visually it is closer to "internal admin tool" than to "modern IoT platform". A redesign is being scoped:
 
-- New design tokens (typography scale, semantic colors, spacing rhythm) — Linear / Vercel inspired, no glassmorphism gimmicks.
+- New design tokens (typography scale, semantic colors, spacing rhythm) with a clean product-console style.
 - Component audit (forms, tables, dialogs, empty states, dark mode parity).
 - Real telemetry-oriented dashboard widgets (sparkline cards, status grids, alarm timeline).
 - Onboarding flow (first-run wizard, sample device + sample rule chain).
@@ -74,9 +74,12 @@ The current Web UI works, but visually it is closer to "internal admin tool" tha
 - ✅ Bilingual README (EN + zh-CN)
 - ✅ Brand identity — logo, banner, tagline
 - ✅ GitHub Discussions, Issue / PR templates, CODE_OF_CONDUCT, SECURITY policy
-- ✅ CI: build + frontend lint + commitlint
+- ✅ CI: backend build + frontend build/lint + Docker smoke test
 - ✅ VitePress documentation site at <https://dingdaoyi.github.io/simple-iot/>
 - ✅ Driver-page dictionary endpoint fix
+- ✅ Frontend i18n foundation (`zh-CN` / `en-US`)
+- ✅ Rule-chain editor zoom/pan, shortcuts, node search, validation and debug path highlighting
+- ✅ Demo deploy workflow hardened for flaky SSH and slow links
 
 ## Not planned
 

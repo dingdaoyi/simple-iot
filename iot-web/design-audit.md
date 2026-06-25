@@ -243,7 +243,7 @@ Rule chain editor（`src/views/rule-chain/editor/index.vue`）：
 
 现状识别：代码真实主色不是单一值。`global.scss` 中 light mode 定义 `--iot-color-primary: #6366f1`、`--iot-color-accent: #06b6d4`（`src/styles/global.scss:16-20`），dark mode 没有重写 primary/accent，只重写背景/文本/阴影（`src/styles/global.scss:102-146`）。Element Plus 的主色是 `--el-color-primary: #167eff`（`src/styles/element.scss:4-6`），旧 `var.scss` 还有 `$mainColor: #409eff`（`src/styles/var.scss:1`），AGENTS 期望主色为 `#6366f1`。因此当前 light/dark 的 IoT 主色实际均为 indigo `#6366f1`，但组件库主色实际为 `#167eff`。
 
-是否建议换：**yes**。`#6366f1` 紫蓝科技感强，但与大量 AI/SaaS 模板撞色，IoT/工业平台需要更冷静的深蓝/钢青基调；同时避开 Vue 绿 `#42b883` 和 ThingsBoard/EMQX 常见绿蓝组合。建议切到“深海钢青 + 电光琥珀 + 冷灰蓝”。
+是否建议换：**yes**。`#6366f1` 紫蓝科技感强，但与大量 AI/SaaS 模板撞色，IoT/工业平台需要更冷静的深蓝/钢青基调；同时应避开常见的通用蓝绿色模板观感，形成更稳定的工业控制台识别度。建议切到“深海钢青 + 电光琥珀 + 冷灰蓝”。
 
 新主色板提案：
 

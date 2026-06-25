@@ -7,15 +7,27 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- **Bilingual frontend UI** — added `zh-CN` / `en-US` language packs, a language switcher, Element Plus locale sync and semantic translation keys across the main console.
+- **Rule-chain editor improvements** — canvas zoom/pan, keyboard shortcuts, node search, validation, script filter support and debug path highlighting.
+- **Signed push testing** — better delivery-setting validation and HMAC-style push test coverage for integration scenarios.
+
+### Changed
+- **Project introduction** — refreshed README and documentation homepage around product capabilities and release highlights, without competitor-comparison positioning.
+- **Demo deployment** — GitHub Actions now triggers a remote demo-server build via SSH/nohup/status polling instead of uploading Docker image tarballs over a slow SSH link.
+- **Frontend CI** — added `pnpm lint` to the GitHub Actions frontend job.
+
 ### Fixed
-- **Driver page dropdowns** — added two missing dictionary endpoints (`GET /dict/driver-type`, `GET /dict/connection-type`) on the backend and the corresponding `getDriverTypeEnum()` / `getConnectionTypeEnum()` exports in `iot-web/src/api/dict.js`. The driver list page now loads its protocol-type and connection-type filters correctly. ([#0fa7f53](https://github.com/dingdaoyi/simple-iot/commit/0fa7f53))
+- **Script/protocol test errors** — user script mistakes now return readable validation responses instead of noisy server-side 500 errors.
+- **Driver page dropdowns** — added two missing dictionary endpoints (`GET /dict/driver-type`, `GET /dict/connection-type`) and frontend API exports so filters load correctly. ([#0fa7f53](https://github.com/dingdaoyi/simple-iot/commit/0fa7f53))
+- **Demo health checks** — disabled mail health from failing container health when SMTP is intentionally not configured in the demo environment.
 
 ## [0.1.0] — 2026-06-17
 
 First public release. The platform has been used internally for over a year and is now opened up with proper docs, branding and community infrastructure.
 
 ### Added
-- **Bilingual README** (English + 简体中文) with badges, comparison table, architecture diagram and screenshots.
+- **Bilingual README** (English + 简体中文) with badges, architecture diagram, screenshots and quick-start instructions.
 - Brand assets: logo and banner SVG/PNG.
 - Project metadata: GitHub Topics, Star History, license.
 - Community files: `CONTRIBUTING.md`, `CODE_OF_CONDUCT.md`, `SECURITY.md`, issue and pull-request templates.

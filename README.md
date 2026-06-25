@@ -20,24 +20,25 @@
 
 ---
 
-## ✨ Why Simple IoT?
+## ✨ What is Simple IoT?
 
-Most IoT platforms are heavy, distributed, and overkill for small/mid-size deployments.
-**Simple IoT** is the opposite: a single Spring Boot binary + a Vue 3 web app, **no Kafka, no Zookeeper, no microservice mess**. You can run the whole stack on a 2 GB VPS and connect thousands of devices in minutes.
+**Simple IoT** is a self-hosted IoT platform for teams that want to connect devices, model telemetry, build rule flows and operate alarms without assembling a large distributed stack first.
 
-| | Simple IoT | ThingsBoard CE | EMQX + custom UI |
-|---|---|---|---|
-| Architecture | Single binary | Multiple services | Broker + you build the rest |
-| Memory footprint | ~ 512 MB | ~ 2 GB+ | ~ 1 GB + your stack |
-| MQTT broker | Built-in (mica-mqtt) | Built-in | Yes (this is the only feature) |
-| Visual rule engine | ✅ Drag-and-drop | ✅ | ❌ |
-| Scriptable protocols | ✅ Java / JS / Groovy / Lua | Limited | ❌ |
-| Time-series storage | InfluxDB 3 | Cassandra / Postgres | You pick |
-| Modern UI | Minimal, Linear-style, dark mode | Material, dated | Build your own |
-| One-command deploy | `./deploy.sh` | `docker-compose` (heavy) | DIY |
-| Best fit | SMB, internal tools, edge gateways | Enterprise, multi-tenant SaaS | Pure messaging |
+The project keeps the runtime intentionally compact: one Spring Boot application, one Vue 3 console, PostgreSQL for business data, InfluxDB for telemetry and Docker Compose for deployment. It is easy to read, fork, run on a small server and adapt to real projects.
 
-> **TL;DR** — if you want a real, production-grade IoT platform that you can actually self-host, read, fork and ship without becoming a distributed-systems expert, **Simple IoT** is for you.
+## 🌟 Release Highlights
+
+This release focuses on making Simple IoT easier to try, operate and present:
+
+| Area | What's new |
+|---|---|
+| **International UI** | Full `zh-CN` / `en-US` frontend i18n, semantic translation keys, language switcher and Element Plus locale sync. |
+| **Rule-chain authoring** | Improved editor usability with canvas zoom/pan, keyboard shortcuts, node search, validation and debug path highlighting. |
+| **Scriptable automation** | Script filter nodes and safer protocol/script test handling: user script mistakes now return readable validation results instead of noisy server errors. |
+| **Integration reliability** | Push configuration validation, signed push testing and better delivery-setting checks. |
+| **Demo & release quality** | Hardened GitHub Actions, frontend lint in CI, stable demo deployment and public smoke verification. |
+
+> **In short** — Simple IoT is a practical, lightweight IoT console you can run yourself, inspect end-to-end and evolve with your product.
 
 ---
 
@@ -70,15 +71,15 @@ That's it. PostgreSQL, RustFS (S3-compatible), the backend and the frontend all 
 | Module | What it does |
 |--------|--------------|
 | **Device Management** | Registration, online/offline tracking, batch operations, command dispatch |
-| **Product & Thing Model** | Product types, properties, services, events — TSL inspired by Alink |
+| **Product & Thing Model** | Product types, properties, services and events for structured device capabilities |
 | **Protocol Engine** | Hot-loaded scripts in **Java / JavaScript / Groovy / Lua**, no restart needed |
-| **Visual Rule Engine** | Drag-and-drop chain editor: input → filter → transform → action |
+| **Visual Rule Engine** | Drag-and-drop chain editor with validation, debug paths, script filters and reusable nodes |
 | **Alarm Center** | Severity levels (info / warning / critical / urgent), active / cleared lifecycle |
 | **Data Ingestion** | InfluxDB 3 time-series storage, Caffeine in-process cache |
 | **Notifications** | Email & SMS push, HTTP callbacks, MQTT forward, device commands |
 | **Dashboard** | Device totals, online stats, system metrics (CPU / memory / disk), live alarms |
 | **Auth & Permissions** | Sa-Token based, fine-grained, role/menu/button level |
-| **Minimal UI** | Minimal, Linear-style design, light/dark/auto theme, responsive |
+| **International UI** | Modern Vue 3 console with `zh-CN` / `en-US`, light/dark/auto theme and responsive layouts |
 
 ---
 
@@ -198,11 +199,12 @@ Web ready at `http://localhost:5173`. Vite proxies `/iot` → `http://localhost:
 
 ## 🗺️ Roadmap
 
-- [ ] **v0.1** — Stable single-node release, English docs, Docker Hub images
-- [ ] **v0.2** — i18n (English UI), thing-model import/export, device groups
-- [ ] **v0.3** — Custom data dashboards (drag-and-drop widgets)
-- [ ] **v0.4** — OTA upgrade flow, edge gateway packaging
-- [ ] **v0.5** — Plugin system (protocol packs as standalone JARs)
+- [x] **v0.1** — Stable single-node release, bilingual docs, CI, public demo
+- [x] **v0.2** — `zh-CN` / `en-US` UI, rule-chain editor polish, demo deploy hardening
+- [ ] **v0.3** — thing-model import/export, device groups
+- [ ] **v0.4** — Custom data dashboards (drag-and-drop widgets)
+- [ ] **v0.5** — OTA upgrade flow, edge gateway packaging
+- [ ] **v0.6** — Plugin system (protocol packs as standalone JARs)
 - [ ] **v1.0** — Production hardening, performance benchmarks, helm chart
 
 Open an issue or [Discussion](https://github.com/dingdaoyi/simple-iot/discussions) if there's a feature you want to see prioritised.
@@ -245,6 +247,6 @@ If this project helps you, please **drop a star ⭐** — it's the easiest way t
 
 <div align="center">
 
-<sub>Built with ❤️ for makers, integrators and small teams who want IoT done right — without the complexity tax.</sub>
+<sub>Built with ❤️ for makers, integrators and small teams shipping practical IoT products.</sub>
 
 </div>
