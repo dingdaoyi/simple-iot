@@ -43,16 +43,30 @@ cp .env.example .env       # 按需修改密码
 
 > **公网部署前请务必改掉默认密码。**
 
-## 4. 接入第一台设备
+## 4. 试跑实时遥测
+
+Docker 栈默认会预置一个演示传感器，你可以直接发布一条样例数据：
+
+```bash
+mosquitto_pub -h localhost -p 1883 \
+  -i sample_demo-sensor-001 \
+  -u demo-sensor-001 \
+  -P demo-secret \
+  -t sampleiot/pro/demo-smart-sensor \
+  -m '{"temperature":72.5,"humidity":43,"voltage":220.8,"online":true,"mode":"auto"}'
+```
+
+这条数据会经过演示 JavaScript 协议解码，写入遥测，并触发预置的高温告警规则。
+更多细节见 [MQTT 快速测试](./mqtt-test)。
+
+## 5. 接入第一台设备
 
 1. **产品** → **+ 新建** → 选 `MQTT` 协议。
 2. 在该产品下新增 **设备**，记下 `clientId` / `secret`。
 3. 用任意 MQTT 客户端连接 `tcp://<host>:1883`，使用上一步的凭证。
 4. 在 **设备 → 遥测** 页实时观察上报数据。
 
-报文格式样例见 [MQTT 快速测试](./mqtt-test)。
-
-## 5. 配一条规则
+## 6. 配一条规则
 
 1. **规则引擎** → **+ 新建规则链**。
 2. 拖一个 **输入** 节点，连到 **过滤**，再连到 **动作**。

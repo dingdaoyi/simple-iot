@@ -43,16 +43,30 @@ password: 123456
 
 > **Change this password before exposing the stack to a public network.**
 
-## 4. Onboard your first device
+## 4. Try live telemetry
+
+The Docker stack seeds a demo sensor by default. You can publish one sample immediately:
+
+```bash
+mosquitto_pub -h localhost -p 1883 \
+  -i sample_demo-sensor-001 \
+  -u demo-sensor-001 \
+  -P demo-secret \
+  -t sampleiot/pro/demo-smart-sensor \
+  -m '{"temperature":72.5,"humidity":43,"voltage":220.8,"online":true,"mode":"auto"}'
+```
+
+This goes through the demo JavaScript protocol, stores telemetry and triggers the seeded high-temperature alarm rule.
+For more details, see [MQTT Quick Test](./mqtt-test).
+
+## 5. Onboard your first device
 
 1. Go to **Products** → click **+ New** → choose `MQTT` as protocol.
 2. Add a **device** under that product. Note its `clientId` and `secret`.
 3. Connect with any MQTT client to `tcp://<host>:1883` using those credentials.
 4. Watch live telemetry stream into the **Devices → Telemetry** tab.
 
-For wire-format examples see the [MQTT Quick Test](./mqtt-test) page.
-
-## 5. Build a rule
+## 6. Build a rule
 
 1. Go to **Rule Engine** → **+ New rule chain**.
 2. Drag an **Input** node, connect it to a **Filter**, then to an **Action**.

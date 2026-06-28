@@ -60,6 +60,8 @@ Then open:
 | MQTT broker | `mqtt://localhost:1883` | — |
 | MQTT WebSocket | `ws://localhost:8083/mqtt` | — |
 
+The Docker stack seeds a demo sensor by default (`demo-sensor-001` / `demo-secret`) so the dashboard and MQTT smoke path are useful immediately. See [MQTT Quick Test](docs/guide/mqtt-test.md) for a copy-paste telemetry publish command.
+
 That's it. PostgreSQL, RustFS (S3-compatible), the backend and the frontend all spin up together.
 
 > Want to develop locally? See the [development guide](#-development).

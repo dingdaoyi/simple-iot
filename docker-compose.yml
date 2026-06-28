@@ -87,6 +87,8 @@ services:
       MAIL_PASSWORD: ${MAIL_PASSWORD:-}
       # Disable mail health check (so SMTP unreachable does not fail /actuator/health)
       MANAGEMENT_HEALTH_MAIL_ENABLED: ${MANAGEMENT_HEALTH_MAIL_ENABLED:-false}
+      # Optional demo telemetry seed for a populated first-run dashboard and MQTT smoke test
+      SAMPLE_IOT_DEMO_SEED_ENABLED: ${SAMPLE_IOT_DEMO_SEED_ENABLED:-true}
     ports:
       # 公网：仅 MQTT TCP，给 IoT 设备直连
       - "${MQTT_PORT:-1883}:1883"

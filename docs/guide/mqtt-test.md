@@ -1,101 +1,87 @@
 # MQTT Quick Test
 
-This page shows the wire format for Simple IoT's built-in MQTT broker so you can onboard your first device.
+This page gives you a ready-to-run MQTT telemetry path for Simple IoT's built-in broker.
 
-> **Prerequisite**: the device must already exist under **Products → Devices** in the admin UI. Below we use the placeholder `device-id` standing for the device number `B29Gx0OpapnOtPrQXtb4`.
+## 1. Use the seeded demo device
 
-## 1. Publish telemetry (property)
+Docker Compose enables the optional demo telemetry seed by default with:
 
-**Topic**: `simple/iot/pro/{device-id}`
-
-**Payload**:
-
-```json
-{
-  "header": {
-    "msgId": 1,
-    "identifier": "pressure"
-  },
-  "body": {
-    "value": "20"
-  }
-}
+```bash
+SAMPLE_IOT_DEMO_SEED_ENABLED=true
 ```
 
-Once published the value shows up under **Devices → Telemetry**.
+On startup the backend creates an idempotent demo dataset:
 
-## 2. Publish an event
+| Item | Value |
+|---|---|
+| Product | `Demo Smart Sensor` |
+| Product key | `demo-smart-sensor` |
+| Device | `Demo Sensor 001` |
+| Device key / MQTT username | `demo-sensor-001` |
+| Device secret / MQTT password | `demo-secret` |
+| Protocol | `demo-json-telemetry` |
+| Alarm rule | `temperature > 60` creates `demo_high_temperature` |
 
-**Topic**: `simple/iot/ev/{device-id}`
+To disable the seed for a production-like deployment, set `SAMPLE_IOT_DEMO_SEED_ENABLED=false` in `.env` and recreate `iot-server`.
 
-**Payload**:
+## 2. Publish telemetry
 
-```json
-{
-  "header": {
-    "msgId": 1,
-    "identifier": "alarm"
-  },
-  "body": {
-    "data": {
-      "temper": "1"
-    }
-  }
-}
+Simple IoT's default MQTT driver uses:
+
+| Field | Default format |
+|---|---|
+| Client ID | `sample_{deviceKey}` |
+| Username | `{deviceKey}` |
+| Password | device secret |
+| Property topic | `sampleiot/pro/{productKey}` |
+| Event topic | `sampleiot/ev/{productKey}` |
+| Service reply topic | `sampleiot/cam_res/{productKey}` |
+
+Publish a high-temperature sample to the seeded device:
+
+```bash
+mosquitto_pub -h localhost -p 1883 \
+  -i sample_demo-sensor-001 \
+  -u demo-sensor-001 \
+  -P demo-secret \
+  -t sampleiot/pro/demo-smart-sensor \
+  -m '{"temperature":72.5,"humidity":43,"voltage":220.8,"online":true,"mode":"auto"}'
 ```
 
-Events flow into the **Alarm Center** and can be consumed by the rule engine.
+Expected result:
 
-## 3. Service invocation (downstream command)
+1. The payload is decoded by the `demo-json-telemetry` JavaScript protocol.
+2. Telemetry is written as properties: `temperature`, `humidity`, `voltage`, `online`, `mode`.
+3. Because `temperature` is above `60`, the demo rule chain creates an active `demo_high_temperature` alarm.
 
-**HTTP call** (platform side):
+## 3. Generate a payload from the simulator
 
-```http
-POST http://127.0.0.1:5010/iot/service/{device-id}/customservice
-Content-Type: application/json
+After compiling the backend, the small CLI helper prints the exact connection details and JSON payload:
 
-{
-  "levele": 12
-}
+```bash
+./mvnw -pl iot-server -am -DskipTests compile
+java -cp iot-server/target/classes com.github.dingdaoyi.demo.DemoTelemetrySimulator
 ```
 
-**Response**:
+Override values for manual smoke runs:
 
-```json
-{
-  "code": 1,
-  "success": true,
-  "msg": "操作成功",
-  "data": {
-    "levele": 12
-  }
-}
+```bash
+java -cp iot-server/target/classes com.github.dingdaoyi.demo.DemoTelemetrySimulator \
+  temperature=55.2 humidity=48 voltage=219.6 mode=manual
 ```
 
-**Device-side MQTT reply**:
+If you changed the MQTT driver prefixes in `application.yml`, pass matching simulator overrides:
 
-- Topic: `simple/iot/cam_res/{device-id}`, QoS 1
-- Payload:
-
-```json
-{
-  "header": {
-    "msgId": 0,
-    "identifier": "customservice"
-  },
-  "body": {
-    "data": {
-      "levele": 12
-    }
-  }
-}
+```bash
+java -cp iot-server/target/classes com.github.dingdaoyi.demo.DemoTelemetrySimulator \
+  topicPrefix=custom-prefix clientIdPrefix=device_
 ```
 
 ## Topic cheat sheet
 
 | Direction | Topic | Purpose |
 |---|---|---|
-| Device → Platform | `simple/iot/pro/{device-id}` | Property report |
-| Device → Platform | `simple/iot/ev/{device-id}` | Event report |
-| Platform → Device | `simple/iot/cmd/{device-id}` | Service invocation |
-| Device → Platform | `simple/iot/cam_res/{device-id}` | Service reply |
+| Device → Platform | `sampleiot/pro/{productKey}` | Property report |
+| Device → Platform | `sampleiot/ev/{productKey}` | Event report |
+| Platform → Device | `sampleiot/cmd/{productKey}` | Service invocation |
+| Device → Platform | `sampleiot/cam_res/{productKey}` | Service reply |

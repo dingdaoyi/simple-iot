@@ -115,6 +115,8 @@ sample:
       mqtt:
         mqtt-client-id-prefix: sample_
         topic-prefix: sampleiot
+    demo:
+      seed-enabled: ${SAMPLE_IOT_DEMO_SEED_ENABLED:false}
     device-channel-type: single
     influxdb:
       url: ${INFLUXDB_URL:http://127.0.0.1:8086}

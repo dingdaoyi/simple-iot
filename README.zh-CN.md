@@ -60,6 +60,8 @@ chmod +x deploy.sh
 | MQTT | `mqtt://localhost:1883` | — |
 | MQTT WebSocket | `ws://localhost:8083/mqtt` | — |
 
+Docker 栈默认会预置一个演示传感器（`demo-sensor-001` / `demo-secret`），仪表盘和 MQTT 冒烟链路启动后就有内容。复制上报命令见 [MQTT 快速测试](docs/zh/guide/mqtt-test.md)。
+
 完事。PostgreSQL、RustFS（S3 兼容）、后端、前端一起拉起。
 
 > 想本地开发？看 [开发指南](#-本地开发)。
