@@ -8,7 +8,7 @@ import org.springframework.context.annotation.Configuration;
  * @author dingyunwei
  */
 @Configuration
-@ConfigurationProperties(prefix = "sample.iot.driver")
+@ConfigurationProperties(prefix = "simple.iot.driver")
 @Data
 public class DriverConfig {
     /**

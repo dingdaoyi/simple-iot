@@ -15,11 +15,22 @@ class DemoTelemetrySimulatorCliTest {
         assertThat(payload.deviceKey()).isEqualTo(DemoTelemetryConstants.DEVICE_KEY);
         assertThat(payload.productKey()).isEqualTo(DemoTelemetryConstants.PRODUCT_KEY);
         assertThat(payload.protoKey()).isEqualTo(DemoTelemetryConstants.PROTO_KEY);
-        assertThat(payload.topic()).isEqualTo("sampleiot/pro/" + DemoTelemetryConstants.PRODUCT_KEY);
-        assertThat(payload.clientId()).isEqualTo("sample_" + DemoTelemetryConstants.DEVICE_KEY);
+        assertThat(payload.topic()).isEqualTo("simpleiot/pro/" + DemoTelemetryConstants.PRODUCT_KEY);
+        assertThat(payload.clientId()).isEqualTo("simple_" + DemoTelemetryConstants.DEVICE_KEY);
         assertThat(payload.username()).isEqualTo(DemoTelemetryConstants.DEVICE_KEY);
         assertThat(payload.password()).isEqualTo(DemoTelemetryConstants.DEVICE_SECRET);
         assertThat(payload.json()).contains("temperature").contains("humidity").contains("voltage");
+    }
+
+    @Test
+    void eventPayloadUsesSeededEventIdentifierAndEventTopic() {
+        DemoTelemetrySimulator.Payload payload = DemoTelemetrySimulator.payload(Map.of("event", "true"));
+
+        assertThat(payload.topic()).isEqualTo("simpleiot/ev/" + DemoTelemetryConstants.PRODUCT_KEY);
+        assertThat(payload.json())
+                .contains("\"eventIdentifier\":\"" + DemoTelemetryConstants.HIGH_TEMP_EVENT_IDENTIFIER + "\"")
+                .contains("\"eventType\":\"WARN\"")
+                .contains("\"temperature\":72.5");
     }
 
     @Test
@@ -36,8 +47,8 @@ class DemoTelemetrySimulatorCliTest {
         ));
 
         assertThat(payload.deviceKey()).isEqualTo("dev-1");
-        assertThat(payload.topic()).isEqualTo("sampleiot/pro/prod-1");
-        assertThat(payload.clientId()).isEqualTo("sample_dev-1");
+        assertThat(payload.topic()).isEqualTo("simpleiot/pro/prod-1");
+        assertThat(payload.clientId()).isEqualTo("simple_dev-1");
         assertThat(payload.json()).contains("\"temperature\":66.6");
         assertThat(payload.json()).contains("\"humidity\":55");
         assertThat(payload.json()).contains("\"voltage\":221.7");

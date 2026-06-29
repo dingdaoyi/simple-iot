@@ -7,7 +7,7 @@
 Docker Compose 默认通过下面的环境变量开启可选演示遥测种子数据：
 
 ```bash
-SAMPLE_IOT_DEMO_SEED_ENABLED=true
+SIMPLE_IOT_DEMO_SEED_ENABLED=true
 ```
 
 后端启动时会幂等创建一组演示数据：
@@ -22,7 +22,7 @@ SAMPLE_IOT_DEMO_SEED_ENABLED=true
 | 协议 | `demo-json-telemetry` |
 | 告警规则 | `temperature > 60` 时创建 `demo_high_temperature` 告警 |
 
-如果要模拟更接近生产的空环境，在 `.env` 中设置 `SAMPLE_IOT_DEMO_SEED_ENABLED=false`，然后重建/重启 `iot-server`。
+如果要模拟更接近生产的空环境，在 `.env` 中设置 `SIMPLE_IOT_DEMO_SEED_ENABLED=false`，然后重建/重启 `iot-server`。
 
 ## 2. 发布遥测数据
 
@@ -30,21 +30,21 @@ Simple IoT 默认 MQTT 驱动使用以下格式：
 
 | 字段 | 默认格式 |
 |---|---|
-| Client ID | `sample_{deviceKey}` |
+| Client ID | `simple_{deviceKey}` |
 | Username | `{deviceKey}` |
 | Password | 设备密钥 |
-| 属性上报 Topic | `sampleiot/pro/{productKey}` |
-| 事件上报 Topic | `sampleiot/ev/{productKey}` |
-| 服务应答 Topic | `sampleiot/cam_res/{productKey}` |
+| 属性上报 Topic | `simpleiot/pro/{productKey}` |
+| 事件上报 Topic | `simpleiot/ev/{productKey}` |
+| 服务应答 Topic | `simpleiot/cam_res/{productKey}` |
 
 向预置设备发布一条高温样例：
 
 ```bash
 mosquitto_pub -h localhost -p 1883 \
-  -i sample_demo-sensor-001 \
+  -i simple_demo-sensor-001 \
   -u demo-sensor-001 \
   -P demo-secret \
-  -t sampleiot/pro/demo-smart-sensor \
+  -t simpleiot/pro/demo-smart-sensor \
   -m '{"temperature":72.5,"humidity":43,"voltage":220.8,"online":true,"mode":"auto"}'
 ```
 
@@ -81,7 +81,7 @@ java -cp iot-server/target/classes com.github.dingdaoyi.demo.DemoTelemetrySimula
 
 | 方向 | Topic | 用途 |
 |---|---|---|
-| 设备 → 平台 | `sampleiot/pro/{productKey}` | 属性上报 |
-| 设备 → 平台 | `sampleiot/ev/{productKey}` | 事件上报 |
-| 平台 → 设备 | `sampleiot/cmd/{productKey}` | 服务调用 |
-| 设备 → 平台 | `sampleiot/cam_res/{productKey}` | 服务调用应答 |
+| 设备 → 平台 | `simpleiot/pro/{productKey}` | 属性上报 |
+| 设备 → 平台 | `simpleiot/ev/{productKey}` | 事件上报 |
+| 平台 → 设备 | `simpleiot/cmd/{productKey}` | 服务调用 |
+| 设备 → 平台 | `simpleiot/cam_res/{productKey}` | 服务调用应答 |

@@ -72,14 +72,14 @@ public class MqttTopicConstants implements ApplicationContextAware {
             TOPIC_MAP.put(PROPERTY_TOPIC, topicPrefix + "/" + PROPERTY_TOPIC);
             TOPIC_MAP.put(COMMAND_RES_TOPIC, topicPrefix + "/" + COMMAND_RES_TOPIC);
             TOPIC_MAP.put(ERROR_RESPONSE_TOPIC, topicPrefix + "/" + ERROR_RESPONSE_TOPIC);
-            TOPIC_PARSE_PATTERN = Pattern.compile("^" + topicPrefix + "/(\\w*)/(\\w*)$");
+            TOPIC_PARSE_PATTERN = Pattern.compile("^" + Pattern.quote(topicPrefix) + "/([A-Za-z0-9_]+)/([A-Za-z0-9_-]+)$");
         } else {
             TOPIC_MAP.put(EVENT_TOPIC, EVENT_TOPIC);
             TOPIC_MAP.put(COMMAND_TOPIC, COMMAND_TOPIC);
             TOPIC_MAP.put(PROPERTY_TOPIC, PROPERTY_TOPIC);
             TOPIC_MAP.put(COMMAND_RES_TOPIC, COMMAND_RES_TOPIC);
             TOPIC_MAP.put(ERROR_RESPONSE_TOPIC, ERROR_RESPONSE_TOPIC);
-            TOPIC_PARSE_PATTERN = Pattern.compile("^(\\w*)/(\\w*)$");
+            TOPIC_PARSE_PATTERN = Pattern.compile("^([A-Za-z0-9_]+)/([A-Za-z0-9_-]+)$");
         }
         log.info("MqttTopicConstants 初始化成功!");
     }

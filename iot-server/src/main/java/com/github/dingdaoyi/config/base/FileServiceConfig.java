@@ -22,14 +22,14 @@ import java.net.URI;
 public class FileServiceConfig {
 
     @Bean
-    @ConditionalOnProperty(prefix = "sample.iot",name = "storage-type",havingValue = "file")
+    @ConditionalOnProperty(prefix = "simple.iot",name = "storage-type",havingValue = "file")
     public LocalStorageService storageService(IotConfigProperties iotConfigProperties) throws IOException {
         IotConfigProperties.LocalStorage localstorage = iotConfigProperties.getLocalstorage();
         return new LocalStorageService(localstorage.getLocalDir());
     }
 
     @Bean
-    @ConditionalOnProperty(prefix = "sample.iot", name = "storage-type", havingValue = "s3")
+    @ConditionalOnProperty(prefix = "simple.iot", name = "storage-type", havingValue = "s3")
     public S3StorageService s3StorageService(IotConfigProperties iotConfigProperties) {
         IotConfigProperties.S3Storage s3Config = iotConfigProperties.getS3storage();
 

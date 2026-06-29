@@ -60,6 +60,15 @@ class MqttTopicTest {
     }
 
     @Test
+    void parseAllowsHyphenatedProductKeys() {
+        Optional<MqttTopic> topic = MqttTopic.parse("iot/ev/demo-smart-sensor");
+
+        assertThat(topic).isPresent();
+        assertThat(topic.get().getMessageType()).isEqualTo(ProtoMessageType.EVENT);
+        assertThat(topic.get().getProductKey()).isEqualTo("demo-smart-sensor");
+    }
+
+    @Test
     void parseRejectsUnknownMessageTypeInsteadOfReturningNullType() {
         Optional<MqttTopic> topic = MqttTopic.parse("iot/unknown/PK001");
 

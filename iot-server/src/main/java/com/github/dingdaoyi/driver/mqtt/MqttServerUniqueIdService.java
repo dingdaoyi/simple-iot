@@ -23,8 +23,14 @@ public class MqttServerUniqueIdService implements IMqttServerUniqueIdService {
     }
     @Override
     public String getUniqueId(ChannelContext context, String clientId, String userName, String password) {
-        if (Strings.CS.startsWith(clientId, mqttClientIdPrefix)) {
-            return StringUtils.substringAfter(clientId, mqttClientIdPrefix);
+        if (StringUtils.isNotBlank(mqttClientIdPrefix) && Strings.CS.startsWith(clientId, mqttClientIdPrefix)) {
+            String deviceKey = StringUtils.substringAfter(clientId, mqttClientIdPrefix);
+            if (StringUtils.isNotBlank(deviceKey)) {
+                return deviceKey;
+            }
+        }
+        if (StringUtils.isNotBlank(userName)) {
+            return userName;
         }
         return ERROR_UNIQUE_ID;
     }

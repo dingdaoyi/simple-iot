@@ -49,10 +49,10 @@ The Docker stack seeds a demo sensor by default. You can publish one sample imme
 
 ```bash
 mosquitto_pub -h localhost -p 1883 \
-  -i sample_demo-sensor-001 \
+  -i simple_demo-sensor-001 \
   -u demo-sensor-001 \
   -P demo-secret \
-  -t sampleiot/pro/demo-smart-sensor \
+  -t simpleiot/pro/demo-smart-sensor \
   -m '{"temperature":72.5,"humidity":43,"voltage":220.8,"online":true,"mode":"auto"}'
 ```
 

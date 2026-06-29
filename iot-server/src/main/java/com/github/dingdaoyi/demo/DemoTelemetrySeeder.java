@@ -1,27 +1,35 @@
 package com.github.dingdaoyi.demo;
 
 import com.github.dingdaoyi.entity.Device;
+import com.github.dingdaoyi.entity.ModelService;
 import com.github.dingdaoyi.entity.ModelProperty;
 import com.github.dingdaoyi.entity.Product;
 import com.github.dingdaoyi.entity.ProductType;
 import com.github.dingdaoyi.entity.Protocol;
 import com.github.dingdaoyi.entity.RuleChain;
+import com.github.dingdaoyi.entity.ServiceProperty;
 import com.github.dingdaoyi.entity.enu.ProtoType;
 import com.github.dingdaoyi.entity.enu.RuleSourceType;
+import com.github.dingdaoyi.entity.enu.ServiceTypeEnum;
 import com.github.dingdaoyi.iot.proto.ProtocolFactory;
 import com.github.dingdaoyi.proto.model.DataTypeEnum;
 import com.github.dingdaoyi.proto.model.ParamType;
+import com.github.dingdaoyi.proto.model.tsl.EventTypeEnum;
 import com.github.dingdaoyi.proto.model.tsl.PropertyAccessMode;
 import com.github.dingdaoyi.rule.config.AlarmCreateConfig;
+import com.github.dingdaoyi.rule.config.FilterEventTypeConfig;
 import com.github.dingdaoyi.rule.config.FilterPropertyConfig;
+import com.github.dingdaoyi.rule.config.InputEventConfig;
 import com.github.dingdaoyi.rule.config.InputPropertyConfig;
 import com.github.dingdaoyi.service.CacheService;
 import com.github.dingdaoyi.service.DeviceService;
 import com.github.dingdaoyi.service.ModelPropertyService;
+import com.github.dingdaoyi.service.ModelServiceService;
 import com.github.dingdaoyi.service.ProductService;
 import com.github.dingdaoyi.service.ProductTypeService;
 import com.github.dingdaoyi.service.ProtocolService;
 import com.github.dingdaoyi.service.RuleChainService;
+import com.github.dingdaoyi.service.ServicePropertyService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -41,6 +49,8 @@ public class DemoTelemetrySeeder {
     private final ProductService productService;
     private final DeviceService deviceService;
     private final ModelPropertyService modelPropertyService;
+    private final ModelServiceService modelServiceService;
+    private final ServicePropertyService servicePropertyService;
     private final RuleChainService ruleChainService;
     private final CacheService cacheService;
 
@@ -50,7 +60,8 @@ public class DemoTelemetrySeeder {
         ProductType productType = upsertProductType();
         Product product = upsertProduct(protocol, productType);
         upsertDevice(product);
-        upsertModelProperties(product, productType);
+        List<ModelProperty> properties = upsertModelProperties(product, productType);
+        upsertHighTemperatureEvent(product, productType, properties);
         upsertRuleChain(product);
         cacheService.evictTslModel(DemoTelemetryConstants.PRODUCT_KEY);
         ProtocolFactory.reloadProtocol(DemoTelemetryConstants.PROTO_KEY);
@@ -128,7 +139,7 @@ public class DemoTelemetrySeeder {
         deviceService.saveOrUpdate(device);
     }
 
-    private void upsertModelProperties(Product product, ProductType productType) {
+    private List<ModelProperty> upsertModelProperties(Product product, ProductType productType) {
         List<ModelProperty> properties = List.of(
                 property(product, productType, "temperature", "Temperature", DataTypeEnum.DOUBLE, "℃", "Celsius", 100L, -40L),
                 property(product, productType, "humidity", "Humidity", DataTypeEnum.INT, "%", "Percent", 100L, 0L),
@@ -146,6 +157,39 @@ public class DemoTelemetrySeeder {
                 property.setId(existing.getId());
             }
             modelPropertyService.saveOrUpdate(property);
+        }
+        return properties;
+    }
+
+    private void upsertHighTemperatureEvent(Product product, ProductType productType, List<ModelProperty> eventParams) {
+        ModelService event = modelServiceService.lambdaQuery()
+                .eq(ModelService::getProductId, product.getId())
+                .eq(ModelService::getServiceType, ServiceTypeEnum.EVENT)
+                .eq(ModelService::getIdentifier, DemoTelemetryConstants.HIGH_TEMP_EVENT_IDENTIFIER)
+                .one();
+        if (event == null) {
+            event = new ModelService();
+        }
+        event.setProductId(product.getId());
+        event.setProductTypeId(productType.getId());
+        event.setIdentifier(DemoTelemetryConstants.HIGH_TEMP_EVENT_IDENTIFIER);
+        event.setName("High Temperature Event");
+        event.setServiceType(ServiceTypeEnum.EVENT);
+        event.setEventType(EventTypeEnum.WARN);
+        event.setRemark("Event emitted by the demo sensor when temperature is high.");
+        event.setCustom(true);
+        event.setRequired(false);
+        event.setAsync(false);
+        event.setIconId(0);
+        modelServiceService.saveOrUpdate(event);
+
+        Integer eventId = event.getId();
+        servicePropertyService.removeByServiceId(eventId);
+        List<ServiceProperty> bindings = eventParams.stream()
+                .map(property -> new ServiceProperty(eventId, property.getId(), ServiceProperty.OUTPUT_TYPE))
+                .toList();
+        if (!bindings.isEmpty()) {
+            servicePropertyService.saveBatch(bindings);
         }
     }
 
@@ -208,6 +252,15 @@ public class DemoTelemetrySeeder {
         filterConfig.setOperator("GT");
         filterConfig.setValue(DemoTelemetryConstants.HIGH_TEMP_THRESHOLD);
 
+        InputEventConfig inputEventConfig = new InputEventConfig();
+        inputEventConfig.setIdentifiers(List.of(DemoTelemetryConstants.HIGH_TEMP_EVENT_IDENTIFIER));
+
+        FilterEventTypeConfig filterEventConfig = new FilterEventTypeConfig();
+        filterEventConfig.setIdentifier(DemoTelemetryConstants.HIGH_TEMP_EVENT_IDENTIFIER);
+        filterEventConfig.setParamIdentifier("temperature");
+        filterEventConfig.setOperator("GT");
+        filterEventConfig.setValue(String.valueOf(DemoTelemetryConstants.HIGH_TEMP_THRESHOLD));
+
         AlarmCreateConfig alarmConfig = new AlarmCreateConfig();
         alarmConfig.setAlarmType(DemoTelemetryConstants.HIGH_TEMP_ALARM_TYPE);
         alarmConfig.setAlarmName("High temperature alarm for ${deviceKey}");
@@ -217,11 +270,15 @@ public class DemoTelemetrySeeder {
         List<RuleChain.RuleNode> nodes = new ArrayList<>();
         nodes.add(node("input-property", "Demo property report", "INPUT_PROPERTY", inputConfig));
         nodes.add(node("filter-high-temperature", "Temperature > 60℃", "FILTER_PROPERTY", filterConfig));
+        nodes.add(node("input-event", "Demo high temperature event", "INPUT_EVENT", inputEventConfig));
+        nodes.add(node("filter-high-temperature-event", "High temperature event > 60℃", "FILTER_EVENT_TYPE", filterEventConfig));
         nodes.add(node("create-alarm", "Create high temperature alarm", "ALARM_CREATE", alarmConfig));
 
         List<RuleChain.RuleConnection> connections = new ArrayList<>();
         connections.add(connection("input-property", "filter-high-temperature", "Success"));
         connections.add(connection("filter-high-temperature", "create-alarm", "True"));
+        connections.add(connection("input-event", "filter-high-temperature-event", "Success"));
+        connections.add(connection("filter-high-temperature-event", "create-alarm", "True"));
 
         RuleChain.RuleChainConfiguration configuration = new RuleChain.RuleChainConfiguration();
         configuration.setNodes(nodes);
@@ -252,17 +309,26 @@ public class DemoTelemetrySeeder {
         return """
                 exports.decode = function(request) {
                   const data = JSON.parse(request.data);
-                  return {
-                    messageId: 1,
+                  const dataList = [
+                    { identifier: 'temperature', type: 'DOUBLE', value: data.temperature },
+                    { identifier: 'humidity', type: 'INT', value: data.humidity },
+                    { identifier: 'voltage', type: 'DOUBLE', value: data.voltage },
+                    { identifier: 'online', type: 'BOOL', value: data.online },
+                    { identifier: 'mode', type: 'TEXT', value: data.mode }
+                  ].filter(item => item.value !== undefined && item.value !== null);
+                  const result = {
+                    messageId: data.messageId || 1,
                     rawData: request.data,
-                    dataList: [
-                      { identifier: 'temperature', type: 'DOUBLE', value: data.temperature },
-                      { identifier: 'humidity', type: 'INT', value: data.humidity },
-                      { identifier: 'voltage', type: 'DOUBLE', value: data.voltage },
-                      { identifier: 'online', type: 'BOOL', value: data.online },
-                      { identifier: 'mode', type: 'TEXT', value: data.mode }
-                    ]
+                    dataList: dataList
                   };
+                  if (request.messageType === 'EVENT' || data.eventIdentifier) {
+                    result.eventData = {
+                      identifier: data.eventIdentifier || 'high_temperature',
+                      eventType: data.eventType || 'WARN',
+                      params: dataList
+                    };
+                  }
+                  return result;
                 };
                 """;
     }

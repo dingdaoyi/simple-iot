@@ -3,11 +3,13 @@ package com.github.dingdaoyi.demo;
 import com.github.dingdaoyi.entity.Alarm;
 import com.github.dingdaoyi.entity.Device;
 import com.github.dingdaoyi.entity.ModelProperty;
+import com.github.dingdaoyi.entity.ModelService;
 import com.github.dingdaoyi.entity.Product;
 import com.github.dingdaoyi.entity.Protocol;
 import com.github.dingdaoyi.entity.RuleChain;
 import com.github.dingdaoyi.entity.enu.AlarmStatus;
 import com.github.dingdaoyi.entity.enu.ProtoType;
+import com.github.dingdaoyi.entity.enu.ServiceTypeEnum;
 import com.github.dingdaoyi.iot.IotDataProcessor;
 import com.github.dingdaoyi.iot.proto.ProtocolFactory;
 import com.github.dingdaoyi.mapper.AlarmMapper;
@@ -16,6 +18,7 @@ import com.github.dingdaoyi.proto.model.ProtoMessageType;
 import com.github.dingdaoyi.proto.model.DataTypeEnum;
 import com.github.dingdaoyi.service.DeviceService;
 import com.github.dingdaoyi.service.ModelPropertyService;
+import com.github.dingdaoyi.service.ModelServiceService;
 import com.github.dingdaoyi.service.ProductService;
 import com.github.dingdaoyi.service.ProtocolService;
 import com.github.dingdaoyi.service.RuleChainService;
@@ -70,6 +73,8 @@ class DemoTelemetrySeedSmokeTest {
     @Autowired
     ModelPropertyService modelPropertyService;
     @Autowired
+    ModelServiceService modelServiceService;
+    @Autowired
     RuleChainService ruleChainService;
     @Autowired
     IotDataProcessor iotDataProcessor;
@@ -87,7 +92,11 @@ class DemoTelemetrySeedSmokeTest {
         assertThat(protocol).isNotNull();
         assertThat(protocol.getProtoType()).isEqualTo(ProtoType.JAVASCRIPT);
         assertThat(protocol.getScriptLang()).isEqualTo("javascript");
-        assertThat(protocol.getScriptContent()).contains("exports.decode").contains("temperature");
+        assertThat(protocol.getScriptContent())
+                .contains("exports.decode")
+                .contains("temperature")
+                .contains("eventData")
+                .contains(DemoTelemetryConstants.HIGH_TEMP_EVENT_IDENTIFIER);
         assertThat(ProtocolFactory.getDecoder(DemoTelemetryConstants.PROTO_KEY)).isPresent();
 
         Product product = productService.lambdaQuery()
@@ -115,6 +124,14 @@ class DemoTelemetrySeedSmokeTest {
                 .extracting(ModelProperty::getDataType)
                 .isEqualTo(DataTypeEnum.DOUBLE);
 
+        ModelService highTemperatureEvent = modelServiceService.lambdaQuery()
+                .eq(ModelService::getProductId, product.getId())
+                .eq(ModelService::getServiceType, ServiceTypeEnum.EVENT)
+                .eq(ModelService::getIdentifier, DemoTelemetryConstants.HIGH_TEMP_EVENT_IDENTIFIER)
+                .one();
+        assertThat(highTemperatureEvent).isNotNull();
+        assertThat(highTemperatureEvent.getName()).isEqualTo("High Temperature Event");
+
         RuleChain ruleChain = ruleChainService.lambdaQuery()
                 .eq(RuleChain::getSourceId, product.getId())
                 .one();
@@ -122,7 +139,7 @@ class DemoTelemetrySeedSmokeTest {
         assertThat(ruleChain.getIsEnabled()).isTrue();
         assertThat(ruleChain.getConfiguration().getNodes())
                 .extracting(RuleChain.RuleNode::getType)
-                .containsExactlyInAnyOrder("INPUT_PROPERTY", "FILTER_PROPERTY", "ALARM_CREATE");
+                .containsExactlyInAnyOrder("INPUT_PROPERTY", "FILTER_PROPERTY", "INPUT_EVENT", "FILTER_EVENT_TYPE", "ALARM_CREATE");
     }
 
     @Test
@@ -147,6 +164,32 @@ class DemoTelemetrySeedSmokeTest {
         assertThat(alarm.getAlarmType()).isEqualTo("demo_high_temperature");
         assertThat(alarm.getAlarmName()).contains(DemoTelemetryConstants.DEVICE_KEY).contains("High temperature");
         assertThat(alarm.getStatus()).isEqualTo(AlarmStatus.ACTIVE);
+        assertThat(alarm.getDeviceKey()).isEqualTo(DemoTelemetryConstants.DEVICE_KEY);
+        assertThat(alarm.getMessage()).contains("72.5");
+        assertThat(alarm.getDetails()).containsKeys("temperature", "humidity", "voltage", "mode");
+    }
+
+    @Test
+    void seededDemoEventTelemetryCanTriggerHighTemperatureAlarmEndToEnd() {
+        demoTelemetrySeeder.seed();
+
+        DeviceRequest request = new DeviceRequest();
+        request.setDeviceKey(DemoTelemetryConstants.DEVICE_KEY);
+        request.setProductKey(DemoTelemetryConstants.PRODUCT_KEY);
+        request.setProtoKey(DemoTelemetryConstants.PROTO_KEY);
+        request.setMessageType(ProtoMessageType.EVENT);
+        request.setData(("{\"eventIdentifier\":\"" + DemoTelemetryConstants.HIGH_TEMP_EVENT_IDENTIFIER
+                + "\",\"temperature\":72.5,\"humidity\":43,\"voltage\":220.8,\"online\":true,\"mode\":\"auto\"}")
+                .getBytes(StandardCharsets.UTF_8));
+
+        iotDataProcessor.messageUp(request);
+
+        await().atMost(Duration.ofSeconds(5)).untilAsserted(() -> {
+            List<Alarm> alarms = alarmMapper.selectList(null);
+            assertThat(alarms).hasSize(1);
+        });
+        Alarm alarm = alarmMapper.selectList(null).getFirst();
+        assertThat(alarm.getAlarmType()).isEqualTo(DemoTelemetryConstants.HIGH_TEMP_ALARM_TYPE);
         assertThat(alarm.getDeviceKey()).isEqualTo(DemoTelemetryConstants.DEVICE_KEY);
         assertThat(alarm.getMessage()).contains("72.5");
         assertThat(alarm.getDetails()).containsKeys("temperature", "humidity", "voltage", "mode");

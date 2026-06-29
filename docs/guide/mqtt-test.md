@@ -7,7 +7,7 @@ This page gives you a ready-to-run MQTT telemetry path for Simple IoT's built-in
 Docker Compose enables the optional demo telemetry seed by default with:
 
 ```bash
-SAMPLE_IOT_DEMO_SEED_ENABLED=true
+SIMPLE_IOT_DEMO_SEED_ENABLED=true
 ```
 
 On startup the backend creates an idempotent demo dataset:
@@ -22,7 +22,7 @@ On startup the backend creates an idempotent demo dataset:
 | Protocol | `demo-json-telemetry` |
 | Alarm rule | `temperature > 60` creates `demo_high_temperature` |
 
-To disable the seed for a production-like deployment, set `SAMPLE_IOT_DEMO_SEED_ENABLED=false` in `.env` and recreate `iot-server`.
+To disable the seed for a production-like deployment, set `SIMPLE_IOT_DEMO_SEED_ENABLED=false` in `.env` and recreate `iot-server`.
 
 ## 2. Publish telemetry
 
@@ -30,21 +30,21 @@ Simple IoT's default MQTT driver uses:
 
 | Field | Default format |
 |---|---|
-| Client ID | `sample_{deviceKey}` |
+| Client ID | `simple_{deviceKey}` |
 | Username | `{deviceKey}` |
 | Password | device secret |
-| Property topic | `sampleiot/pro/{productKey}` |
-| Event topic | `sampleiot/ev/{productKey}` |
-| Service reply topic | `sampleiot/cam_res/{productKey}` |
+| Property topic | `simpleiot/pro/{productKey}` |
+| Event topic | `simpleiot/ev/{productKey}` |
+| Service reply topic | `simpleiot/cam_res/{productKey}` |
 
 Publish a high-temperature sample to the seeded device:
 
 ```bash
 mosquitto_pub -h localhost -p 1883 \
-  -i sample_demo-sensor-001 \
+  -i simple_demo-sensor-001 \
   -u demo-sensor-001 \
   -P demo-secret \
-  -t sampleiot/pro/demo-smart-sensor \
+  -t simpleiot/pro/demo-smart-sensor \
   -m '{"temperature":72.5,"humidity":43,"voltage":220.8,"online":true,"mode":"auto"}'
 ```
 
@@ -81,7 +81,7 @@ java -cp iot-server/target/classes com.github.dingdaoyi.demo.DemoTelemetrySimula
 
 | Direction | Topic | Purpose |
 |---|---|---|
-| Device → Platform | `sampleiot/pro/{productKey}` | Property report |
-| Device → Platform | `sampleiot/ev/{productKey}` | Event report |
-| Platform → Device | `sampleiot/cmd/{productKey}` | Service invocation |
-| Device → Platform | `sampleiot/cam_res/{productKey}` | Service reply |
+| Device → Platform | `simpleiot/pro/{productKey}` | Property report |
+| Device → Platform | `simpleiot/ev/{productKey}` | Event report |
+| Platform → Device | `simpleiot/cmd/{productKey}` | Service invocation |
+| Device → Platform | `simpleiot/cam_res/{productKey}` | Service reply |

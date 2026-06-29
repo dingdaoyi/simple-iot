@@ -104,7 +104,7 @@ sms:
 logging:
   level:
     root: info
-sample:
+simple:
   iot:
     # 开启设备密钥认证
     enable-device-secret: true
@@ -113,17 +113,17 @@ sample:
     storage-type: file
     driver:
       mqtt:
-        mqtt-client-id-prefix: sample_
-        topic-prefix: sampleiot
+        mqtt-client-id-prefix: simple_
+        topic-prefix: simpleiot
     demo:
-      seed-enabled: ${SAMPLE_IOT_DEMO_SEED_ENABLED:false}
+      seed-enabled: ${SIMPLE_IOT_DEMO_SEED_ENABLED:false}
     device-channel-type: single
     influxdb:
       url: ${INFLUXDB_URL:http://127.0.0.1:8086}
       token: ${INFLUXDB_TOKEN:Evc2GMqMqWS}
       prop-database: prop_data
-      event-database: even_data
-      database: sample
+      event-database: event_data
+      database: ${INFLUXDB_DATABASE:simple}
 
 management:
   endpoint:

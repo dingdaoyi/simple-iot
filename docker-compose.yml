@@ -74,6 +74,7 @@ services:
       # InfluxDB 配置
       INFLUXDB_URL: ${INFLUXDB_URL:-http://influxdb:8181}
       INFLUXDB_TOKEN: ${INFLUXDB_TOKEN:-iot_token_123456}
+      INFLUXDB_DATABASE: ${INFLUXDB_DATABASE:-simple}
       # S3/RustFS 配置
       S3_ACCESS_KEY_ID: ${S3_ACCESS_KEY_ID:-rustfsadmin}
       S3_SECRET_ACCESS_KEY: ${S3_SECRET_ACCESS_KEY:-rustfsadmin123}
@@ -88,7 +89,7 @@ services:
       # Disable mail health check (so SMTP unreachable does not fail /actuator/health)
       MANAGEMENT_HEALTH_MAIL_ENABLED: ${MANAGEMENT_HEALTH_MAIL_ENABLED:-false}
       # Optional demo telemetry seed for a populated first-run dashboard and MQTT smoke test
-      SAMPLE_IOT_DEMO_SEED_ENABLED: ${SAMPLE_IOT_DEMO_SEED_ENABLED:-true}
+      SIMPLE_IOT_DEMO_SEED_ENABLED: ${SIMPLE_IOT_DEMO_SEED_ENABLED:-true}
     ports:
       # 公网：仅 MQTT TCP，给 IoT 设备直连
       - "${MQTT_PORT:-1883}:1883"

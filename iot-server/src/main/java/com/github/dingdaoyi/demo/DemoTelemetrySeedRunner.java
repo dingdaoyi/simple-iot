@@ -15,7 +15,7 @@ import org.springframework.stereotype.Component;
 @Component
 @Order(100)
 @RequiredArgsConstructor
-@ConditionalOnProperty(prefix = "sample.iot.demo", name = "seed-enabled", havingValue = "true")
+@ConditionalOnProperty(prefix = "simple.iot.demo", name = "seed-enabled", havingValue = "true")
 public class DemoTelemetrySeedRunner implements ApplicationRunner {
 
     private final DemoTelemetrySeeder demoTelemetrySeeder;

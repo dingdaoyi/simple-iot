@@ -9,7 +9,7 @@ import org.springframework.context.annotation.Configuration;
  */
 @Data
 @Configuration
-@ConfigurationProperties("sample.iot")
+@ConfigurationProperties("simple.iot")
 public class IotConfigProperties {
     /**
      * 开启设备密钥认证

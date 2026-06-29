@@ -60,12 +60,21 @@ public class InfluxDataProcessor implements DataProcessor, DeviceDataService {
 
     @Override
     public void process(DecodeResult message, String deviceKey, TslModel tslModel) {
-        String productKey = tslModel.getProductKey();
+        String productKey = StringUtils.trimToEmpty(tslModel.getProductKey());
         if (CollectionUtil.isNotEmpty(message.getDataList())) {
-            this.saveProperties(message.getDataList(), deviceKey, productKey);
+            try {
+                this.saveProperties(message.getDataList(), deviceKey, productKey);
+            } catch (Exception e) {
+                log.error("保存属性信息失败;deviceKey={}|productKey={}|reason={}", deviceKey, productKey, e.getMessage(), e);
+            }
         }
         if (message.getEventData() != null) {
-            this.saveEvent(message.getEventData(), message.getRowData(), deviceKey);
+            try {
+                this.saveEvent(message.getEventData(), message.getRowData(), deviceKey);
+            } catch (Exception e) {
+                log.error("保存事件信息失败;deviceKey={}|identifier={}|reason={}", deviceKey,
+                        message.getEventData().getIdentifier(), e.getMessage(), e);
+            }
         }
     }
 
@@ -191,8 +200,8 @@ public class InfluxDataProcessor implements DataProcessor, DeviceDataService {
 
         try (Stream<PointValues> stream = influxDBClient.queryPoints(sqlParams, Map.of(
                 "deviceKey", query.getDeviceKey(),
-                "beginTime", DateUtil.formatLocalDateTime(query.getBeginTime()),
-                "endTime", DateUtil.formatLocalDateTime(query.getEndTime())), queryOptions)) {
+                "beginTime", toInfluxSqlTimestamp(query.getBeginTime()),
+                "endTime", toInfluxSqlTimestamp(query.getEndTime())), queryOptions)) {
 
             stream.forEach(row -> dataList.add(new KeyValue<>(TimeUtils.toDateTimeStr(row.getTimestamp()), row.getField(identifier))));
         } catch (Exception e) {
@@ -205,21 +214,43 @@ public class InfluxDataProcessor implements DataProcessor, DeviceDataService {
     public List<DeviceEventDataVo> eventLogs(DeviceDataQuery query) {
         QueryOptions queryOptions = new QueryOptions(properties.getDatabase(), QueryType.SQL);
         //TODO 需要解决分页等问题
-        String sqlParams = "select * from " + properties.getEventDatabase() + " where \"deviceKey\"=$deviceKey" +
+        String sqlParams = "select * from \"" + properties.getEventDatabase() + "\" where \"deviceKey\"=$deviceKey" +
                            (StringUtils.isNotBlank(query.getIdentifier()) ? " and \"identifier\"=$identifier" : "") +
-                           " and time> $beginTime and time<= $endTime order by time desc limit 100";
+                           " and time >= $beginTime and time <= $endTime order by time desc limit 100";
         Map<String, Object> params = new HashMap<>();
         params.put("deviceKey", query.getDeviceKey());
-        params.put("beginTime", DateUtil.formatLocalDateTime(query.getBeginTime()));
-        params.put("endTime", DateUtil.formatLocalDateTime(query.getEndTime()));
+        params.put("beginTime", toInfluxSqlTimestamp(query.getBeginTime()));
+        params.put("endTime", toInfluxSqlTimestamp(query.getEndTime()));
         if (StringUtils.isNotBlank(query.getIdentifier())) {
             params.put("identifier", query.getIdentifier());
         }
         try (Stream<PointValues> stream = influxDBClient.queryPoints(sqlParams, params, queryOptions)) {
             return stream.map(DeviceEventDataVo::fromPointValues).toList();
         } catch (Exception e) {
+            if (isMissingMeasurementError(e)) {
+                log.warn("事件日志 measurement 不存在，按空数据返回: {}", properties.getEventDatabase());
+                return List.of();
+            }
             log.error("查询出错:{}", e.getMessage());
             throw new BusinessException(ResultCode.BAD_REQUEST, "请求参数错误!");
         }
+    }
+
+    private String toInfluxSqlTimestamp(LocalDateTime time) {
+        return time.atZone(ZoneId.systemDefault()).toInstant().toString();
+    }
+
+    private boolean isMissingMeasurementError(Exception exception) {
+        Throwable current = exception;
+        while (current != null) {
+            String message = current.getMessage();
+            if (StringUtils.containsIgnoreCase(message, "table")
+                && StringUtils.containsIgnoreCase(message, properties.getEventDatabase())
+                && StringUtils.containsIgnoreCase(message, "not found")) {
+                return true;
+            }
+            current = current.getCause();
+        }
+        return false;
     }
 }

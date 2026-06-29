@@ -15,7 +15,7 @@ mqtt:
   server:
     enabled: false
 
-sample:
+simple:
   iot:
     storage-type: file
     localstorage:
@@ -23,6 +23,6 @@ sample:
     influxdb:
       url: http://127.0.0.1:8086
       token: ${SIMPLE_IOT_INTEGRATION_INFLUX_TOKEN:}
-      database: sample
+      database: simple
       prop-database: prop_data
       event-database: event_data

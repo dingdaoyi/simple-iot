@@ -9,8 +9,10 @@ import java.util.StringJoiner;
  */
 public final class DemoTelemetrySimulator {
 
-    private static final String DEFAULT_TOPIC_PREFIX = "sampleiot";
-    private static final String DEFAULT_MQTT_CLIENT_ID_PREFIX = "sample_";
+    private static final String DEFAULT_TOPIC_PREFIX = "simpleiot";
+    private static final String DEFAULT_MQTT_CLIENT_ID_PREFIX = "simple_";
+    private static final String PROPERTY_TOPIC_SEGMENT = "pro";
+    private static final String EVENT_TOPIC_SEGMENT = "ev";
 
     private DemoTelemetrySimulator() {
     }
@@ -46,15 +48,23 @@ public final class DemoTelemetrySimulator {
         String password = overrides.getOrDefault("password", DemoTelemetryConstants.DEVICE_SECRET);
         String topicPrefix = overrides.getOrDefault("topicPrefix", DEFAULT_TOPIC_PREFIX);
         String clientIdPrefix = overrides.getOrDefault("clientIdPrefix", DEFAULT_MQTT_CLIENT_ID_PREFIX);
+        boolean eventMessage = Boolean.parseBoolean(overrides.getOrDefault("event", "false"));
 
-        String json = new StringJoiner(",", "{", "}")
+        StringJoiner jsonJoiner = new StringJoiner(",", "{", "}");
+        if (eventMessage) {
+            jsonJoiner.add("\"eventIdentifier\":\""
+                    + escapeJson(overrides.getOrDefault("eventIdentifier", DemoTelemetryConstants.HIGH_TEMP_EVENT_IDENTIFIER))
+                    + "\"");
+            jsonJoiner.add("\"eventType\":\"" + escapeJson(overrides.getOrDefault("eventType", "WARN")) + "\"");
+        }
+        String json = jsonJoiner
                 .add("\"temperature\":" + temperature)
                 .add("\"humidity\":" + humidity)
                 .add("\"voltage\":" + voltage)
                 .add("\"online\":" + online)
                 .add("\"mode\":\"" + escapeJson(mode) + "\"")
                 .toString();
-        String topic = joinTopic(topicPrefix, "pro", productKey);
+        String topic = joinTopic(topicPrefix, eventMessage ? EVENT_TOPIC_SEGMENT : PROPERTY_TOPIC_SEGMENT, productKey);
         String clientId = clientIdPrefix + deviceKey;
         String username = deviceKey;
         return new Payload(productKey, deviceKey, protoKey, topic, clientId, username, password, json);

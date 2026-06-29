@@ -31,7 +31,7 @@ const breadcrumbs = computed(() => [
 const currentHost = computed(() => window.location.hostname || 'localhost')
 const mqttTcpEndpoint = computed(() => `mqtt://${currentHost.value}:1883`)
 const mqttWsEndpoint = computed(() => `ws://${currentHost.value}:8083/mqtt`)
-const mqttClientId = computed(() => deviceDetail.value.deviceKey ? `sample_${deviceDetail.value.deviceKey}` : '-')
+const mqttClientId = computed(() => deviceDetail.value.deviceKey ? `simple_${deviceDetail.value.deviceKey}` : '-')
 const mqttUsername = computed(() => deviceDetail.value.deviceKey || '-')
 const mqttPassword = computed(() => deviceDetail.value.deviceSecret || '')
 const mqttPasswordText = computed(() => {
@@ -43,16 +43,16 @@ const productKey = computed(() => deviceDetail.value.product?.productKey || '-')
 const mqttTopics = computed(() => {
   if (!deviceDetail.value.product?.productKey) {
     return [
-      { label: t('device.property_report'), value: 'sampleiot/pro/{productKey}' },
-      { label: t('device.event_report'), value: 'sampleiot/ev/{productKey}' },
-      { label: t('device.service_reply'), value: 'sampleiot/cam_res/{productKey}' },
+      { label: t('device.property_report'), value: 'simpleiot/pro/{productKey}' },
+      { label: t('device.event_report'), value: 'simpleiot/ev/{productKey}' },
+      { label: t('device.service_reply'), value: 'simpleiot/cam_res/{productKey}' },
     ]
   }
 
   return [
-    { label: t('device.property_report'), value: `sampleiot/pro/${deviceDetail.value.product.productKey}` },
-    { label: t('device.event_report'), value: `sampleiot/ev/${deviceDetail.value.product.productKey}` },
-    { label: t('device.service_reply'), value: `sampleiot/cam_res/${deviceDetail.value.product.productKey}` },
+    { label: t('device.property_report'), value: `simpleiot/pro/${deviceDetail.value.product.productKey}` },
+    { label: t('device.event_report'), value: `simpleiot/ev/${deviceDetail.value.product.productKey}` },
+    { label: t('device.service_reply'), value: `simpleiot/cam_res/${deviceDetail.value.product.productKey}` },
   ]
 })
 
