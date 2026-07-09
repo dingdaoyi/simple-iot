@@ -51,6 +51,11 @@ service.interceptors.response.use(
   // 响应失败进入第2个函数，该函数的参数是错误对象
   async (error) => {
     const user = useAccountStore()
+    // 网络错误（超时、连接断开等）时 error.response 为 undefined
+    if (!error.response) {
+      ElMessage.error(error?.message || '网络请求失败，请检查网络连接')
+      return Promise.reject(error)
+    }
     const { data, status } = error.response
     if (status === 401) {
       user.clearToken()

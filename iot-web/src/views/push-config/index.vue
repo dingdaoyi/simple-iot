@@ -141,6 +141,9 @@ async function runTestPush() {
       ElMessage.warning(data?.message || t('push_config.push_test_failed'))
     }
   }
+  catch {
+    // 错误提示已由 request 拦截器处理
+  }
   finally {
     testLoading.value = false
   }
