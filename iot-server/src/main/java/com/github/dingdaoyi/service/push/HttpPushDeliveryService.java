@@ -60,6 +60,9 @@ public class HttpPushDeliveryService {
         return deliverHttp(config, body, eventType);
     }
 
+    // ponytail: 3 retries with 1s/2s/4s backoff, only on transient errors (5xx, IO)
+    private static final int MAX_RETRIES = 3;
+
     public PushDeliveryResult deliverHttp(PushConfig config, String body, String eventType) {
         String method = config.getHttpMethod() != null ? config.getHttpMethod() : "POST";
         String url = config.getHttpUrl();
@@ -69,9 +72,7 @@ public class HttpPushDeliveryService {
             HttpHeaders headers = buildHeaders(config, body, eventType);
             HttpEntity<String> entity = new HttpEntity<>(body == null ? "" : body, headers);
 
-            ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.valueOf(method.toUpperCase()), entity, String.class);
-            String message = String.format("HTTP推送成功: %s %s -> %s", method.toUpperCase(), url, response.getStatusCode());
-            PushDeliveryResult result = PushDeliveryResult.success(response.getStatusCode().value(), message, response.getBody());
+            PushDeliveryResult result = executeWithRetry(url, method, entity);
             saveLog(config, eventType, result, start);
             return result;
         } catch (Exception e) {
@@ -80,6 +81,40 @@ public class HttpPushDeliveryService {
             saveLog(config, eventType, result, start);
             return result;
         }
+    }
+
+    // ponytail: retry loop with exponential backoff on transient failures
+    private PushDeliveryResult executeWithRetry(String url, String method, HttpEntity<String> entity) {
+        Exception lastException = null;
+        for (int attempt = 0; attempt < MAX_RETRIES; attempt++) {
+            try {
+                ResponseEntity<String> response = restTemplate.exchange(
+                        url, HttpMethod.valueOf(method.toUpperCase()), entity, String.class);
+                String message = String.format("HTTP推送成功: %s %s -> %s",
+                        method.toUpperCase(), url, response.getStatusCode());
+                return PushDeliveryResult.success(response.getStatusCode().value(), message, response.getBody());
+            } catch (Exception e) {
+                lastException = e;
+                if (attempt < MAX_RETRIES - 1 && isRetryable(e)) {
+                    long backoff = (long) Math.pow(2, attempt) * 1000L;
+                    log.warn("HTTP推送重试 {}/{} ({}ms): {} {}", attempt + 1, MAX_RETRIES - 1, backoff, method, url);
+                    try { Thread.sleep(backoff); } catch (InterruptedException ignored) {}
+                } else {
+                    break;
+                }
+            }
+        }
+        throw lastException instanceof RuntimeException
+                ? (RuntimeException) lastException
+                : new RuntimeException(lastException);
+    }
+
+    // ponytail: retry on 5xx and IO/timeout; don't retry 4xx (bad config won't fix itself)
+    private boolean isRetryable(Exception e) {
+        if (e instanceof java.net.SocketTimeoutException) return true;
+        if (e instanceof java.io.IOException) return true;
+        if (e instanceof org.springframework.web.client.HttpServerErrorException) return true;
+        return false;
     }
 
     // ponytail: one-liner log save, fire-and-forget via try-catch so logging never fails the push
