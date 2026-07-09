@@ -2,6 +2,8 @@ package com.github.dingdaoyi.service.push;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.dingdaoyi.entity.PushConfig;
+import com.github.dingdaoyi.entity.PushLog;
+import com.github.dingdaoyi.mapper.PushLogMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.*;
@@ -27,25 +29,29 @@ public class HttpPushDeliveryService {
     private final ObjectMapper objectMapper;
     private final PushWebhookSigner signer;
     private final PushEndpointGuard endpointGuard;
+    private final PushLogMapper pushLogMapper;
     private final Clock clock;
 
     @Autowired
     public HttpPushDeliveryService(RestTemplate restTemplate,
                                    ObjectMapper objectMapper,
                                    PushWebhookSigner signer,
-                                   PushEndpointGuard endpointGuard) {
-        this(restTemplate, objectMapper, signer, endpointGuard, Clock.systemUTC());
+                                   PushEndpointGuard endpointGuard,
+                                   PushLogMapper pushLogMapper) {
+        this(restTemplate, objectMapper, signer, endpointGuard, pushLogMapper, Clock.systemUTC());
     }
 
     HttpPushDeliveryService(RestTemplate restTemplate,
                             ObjectMapper objectMapper,
                             PushWebhookSigner signer,
                             PushEndpointGuard endpointGuard,
+                            PushLogMapper pushLogMapper,
                             Clock clock) {
         this.restTemplate = restTemplate;
         this.objectMapper = objectMapper;
         this.signer = signer;
         this.endpointGuard = endpointGuard;
+        this.pushLogMapper = pushLogMapper;
         this.clock = clock;
     }
 
@@ -57,6 +63,7 @@ public class HttpPushDeliveryService {
     public PushDeliveryResult deliverHttp(PushConfig config, String body, String eventType) {
         String method = config.getHttpMethod() != null ? config.getHttpMethod() : "POST";
         String url = config.getHttpUrl();
+        long start = System.currentTimeMillis();
         try {
             endpointGuard.validate(url);
             HttpHeaders headers = buildHeaders(config, body, eventType);
@@ -64,10 +71,33 @@ public class HttpPushDeliveryService {
 
             ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.valueOf(method.toUpperCase()), entity, String.class);
             String message = String.format("HTTP推送成功: %s %s -> %s", method.toUpperCase(), url, response.getStatusCode());
-            return PushDeliveryResult.success(response.getStatusCode().value(), message, response.getBody());
+            PushDeliveryResult result = PushDeliveryResult.success(response.getStatusCode().value(), message, response.getBody());
+            saveLog(config, eventType, result, start);
+            return result;
         } catch (Exception e) {
             log.error("HTTP推送失败: {} {}", method, url, e);
-            return PushDeliveryResult.failure("HTTP推送失败: " + e.getMessage());
+            PushDeliveryResult result = PushDeliveryResult.failure("HTTP推送失败: " + e.getMessage());
+            saveLog(config, eventType, result, start);
+            return result;
+        }
+    }
+
+    // ponytail: one-liner log save, fire-and-forget via try-catch so logging never fails the push
+    private void saveLog(PushConfig config, String eventType, PushDeliveryResult result, long start) {
+        try {
+            PushLog logEntry = new PushLog();
+            logEntry.setPushConfigId(config.getId());
+            logEntry.setPushConfigName(config.getName());
+            logEntry.setEventType(eventType);
+            logEntry.setSuccess(result.isSuccess());
+            logEntry.setStatusCode(result.getStatusCode());
+            logEntry.setMessage(result.getMessage());
+            logEntry.setResponseBody(result.getResponseBody() != null && result.getResponseBody().length() > 2000
+                    ? result.getResponseBody().substring(0, 2000) : result.getResponseBody());
+            logEntry.setDurationMs(System.currentTimeMillis() - start);
+            pushLogMapper.insert(logEntry);
+        } catch (Exception e) {
+            log.warn("推送日志保存失败", e);
         }
     }
 

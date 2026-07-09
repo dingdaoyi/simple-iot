@@ -82,6 +82,7 @@ class HttpPushDeliveryServiceTest {
             new ObjectMapper(),
             new PushWebhookSigner(),
             new PushEndpointGuard(allowPrivateEndpoints),
+            null, // ponytail: no mapper in unit tests, saveLog will silently skip
             Clock.fixed(Instant.ofEpochMilli(1710000000000L), ZoneOffset.UTC)
         );
     }
