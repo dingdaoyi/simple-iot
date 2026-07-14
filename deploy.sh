@@ -192,6 +192,58 @@ deploy() {
     status
 }
 
+# 备份 (Postgres + RustFS)
+backup() {
+    local ts=$(date +%Y%m%d_%H%M%S)
+    local dir="backups/${ts}"
+    mkdir -p "$dir"
+    log_info "备份到 $dir ..."
+
+    # Postgres: pg_dump 压缩
+    docker compose exec -T postgres pg_dump -U "${POSTGRES_USERNAME:-postgres}" "${DATABASE:-simple}" \
+        | gzip > "$dir/postgres.sql.gz"
+    log_info "Postgres 备份完成: $dir/postgres.sql.gz"
+
+    # RustFS: 打包 volume
+    docker run --rm -v "$(docker compose volume ls -q | grep rustfs_data):/data:ro" \
+        -v "$(pwd)/$dir:/backup" busybox tar czf /backup/rustfs.tar.gz -C /data .
+    log_info "RustFS 备份完成: $dir/rustfs.tar.gz"
+
+    # .env 快照
+    [ -f .env ] && cp .env "$dir/env.snapshot"
+    log_info "备份完成: $dir"
+    echo ""
+    echo "恢复: ./deploy.sh restore $ts"
+}
+
+# 恢复
+restore() {
+    local ts="$1"
+    [ -z "$ts" ] && { log_error "用法: ./deploy.sh restore <timestamp>"; exit 1; }
+    local dir="backups/${ts}"
+    [ -d "$dir" ] || { log_error "备份目录不存在: $dir"; exit 1; }
+
+    log_warn "这将覆盖当前数据，是否继续? (y/n)"
+    read -r confirm
+    [ "$confirm" = "y" ] || { log_info "取消恢复"; return; }
+
+    log_info "恢复 Postgres ..."
+    docker compose exec -T postgres psql -U "${POSTGRES_USERNAME:-postgres}" -d "${DATABASE:-simple}" \
+        -c "DROP SCHEMA public CASCADE; CREATE SCHEMA public;"
+    gunzip -c "$dir/postgres.sql.gz" \
+        | docker compose exec -T postgres psql -U "${POSTGRES_USERNAME:-postgres}" -d "${DATABASE:-simple}"
+    log_info "Postgres 恢复完成"
+
+    log_info "恢复 RustFS ..."
+    docker compose stop rustfs
+    docker run --rm -v "$(docker compose volume ls -q | grep rustfs_data):/data" \
+        -v "$(pwd)/$dir:/backup" busybox sh -c "rm -rf /data/* && tar xzf /backup/rustfs.tar.gz -C /data"
+    docker compose start rustfs
+    log_info "RustFS 恢复完成"
+
+    log_info "恢复完成 (建议重启: ./deploy.sh restart)"
+}
+
 # 更新部署
 update() {
     log_info "更新部署..."
@@ -219,6 +271,8 @@ help() {
     echo "  deploy    - 完整部署 (检查InfluxDB + init + build + start)"
     echo "  update    - 更新部署 (git pull + build + restart)"
     echo "  influxdb  - 安装 InfluxDB 3 (使用官方脚本)"
+    echo "  backup    - 备份 Postgres + RustFS 到 backups/"
+    echo "  restore   - 恢复备份 (用法: ./deploy.sh restore <timestamp>)"
     echo "  help      - 显示帮助信息"
 }
 
@@ -257,6 +311,15 @@ case "$1" in
         ;;
     update)
         update
+        ;;
+    backup)
+        check_docker
+        backup
+        ;;
+    restore)
+        check_docker
+        shift
+        restore "$@"
         ;;
     influxdb)
         install_influxdb

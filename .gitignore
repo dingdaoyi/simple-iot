@@ -68,7 +68,8 @@ yarn.lock
 /iot-web/.env.development
 CLAUDE.md
 /.planning/
-/.hermes/
+/backups/
+.hermes/
 
 # Codex / OMC local state
 .omc
