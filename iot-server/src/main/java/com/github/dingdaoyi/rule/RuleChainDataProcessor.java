@@ -8,6 +8,7 @@ import com.github.dingdaoyi.proto.model.DeviceEventData;
 import com.github.dingdaoyi.proto.model.tsl.TslModel;
 import com.github.dingdaoyi.service.DeviceService;
 import com.github.dingdaoyi.service.RuleChainService;
+import com.github.dingdaoyi.service.RuleExecutionLogService;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -33,6 +34,9 @@ public class RuleChainDataProcessor implements DataProcessor {
     @Resource
     private DeviceService deviceService;
 
+    @Resource
+    private RuleExecutionLogService ruleExecutionLogService;
+
     @Override
     public void process(DecodeResult decodeResult, String deviceKey, TslModel tslModel) {
         // 1. 获取设备信息
@@ -56,8 +60,11 @@ public class RuleChainDataProcessor implements DataProcessor {
         // 4. 依次执行规则链
         for (RuleChain ruleChain : ruleChains) {
             try {
+                long start = System.nanoTime();
                 ruleChainEngine.execute(ruleChain, context);
-                log.debug("规则链执行完成: {} - {}", ruleChain.getName(), context.getTraces());
+                long durationMs = (System.nanoTime() - start) / 1_000_000;
+                log.debug("规则链执行完成: {} - {} 条轨迹, {}ms", ruleChain.getName(), context.getTraces().size(), durationMs);
+                ruleExecutionLogService.saveLogAsync(ruleChain.getId(), context, durationMs);
             } catch (Exception e) {
                 log.error("规则链执行失败: {} - {}", ruleChain.getName(), e.getMessage(), e);
             }
@@ -100,8 +107,11 @@ public class RuleChainDataProcessor implements DataProcessor {
         List<RuleChain> ruleChains = ruleChainService.getByDeviceKey(deviceKey);
         for (RuleChain ruleChain : ruleChains) {
             try {
+                long start = System.nanoTime();
                 ruleChainEngine.execute(ruleChain, context);
-                log.debug("规则链执行完成({}): {} - {}", online ? "上线" : "下线", ruleChain.getName(), context.getTraces());
+                long durationMs = (System.nanoTime() - start) / 1_000_000;
+                log.debug("规则链执行完成({}): {} - {} 条轨迹, {}ms", online ? "上线" : "下线", ruleChain.getName(), context.getTraces().size(), durationMs);
+                ruleExecutionLogService.saveLogAsync(ruleChain.getId(), context, durationMs);
             } catch (Exception e) {
                 log.error("规则链执行失败: {} - {}", ruleChain.getName(), e.getMessage(), e);
             }

@@ -24,7 +24,9 @@ class RuleChainControllerDebugTest {
     private final RuleChainService ruleChainService = mock(RuleChainService.class);
     private final ProductService productService = mock(ProductService.class);
     private final TslModelService tslModelService = mock(TslModelService.class);
-    private final RuleChainController controller = new RuleChainController(ruleChainService, productService, tslModelService);
+    private final com.github.dingdaoyi.service.RuleExecutionLogService ruleExecutionLogService = mock(com.github.dingdaoyi.service.RuleExecutionLogService.class);
+    private final com.github.dingdaoyi.rule.RuleChainEngine ruleChainEngine = mock(com.github.dingdaoyi.rule.RuleChainEngine.class);
+    private final RuleChainController controller = new RuleChainController(ruleChainService, productService, tslModelService, ruleExecutionLogService, ruleChainEngine);
 
     @Test
     void debugDelegatesDraftRuleChainToService() {

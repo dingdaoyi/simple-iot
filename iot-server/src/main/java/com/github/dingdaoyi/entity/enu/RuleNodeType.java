@@ -29,7 +29,10 @@ public enum RuleNodeType {
     OUTPUT_MESSAGE("消息推送", NodeCategory.OUTPUT, "复用现有消息通知"),
     OUTPUT_HTTP("HTTP推送", NodeCategory.OUTPUT, "引用推送配置，推送到外部API"),
     OUTPUT_MQTT("MQTT推送", NodeCategory.OUTPUT, "引用推送配置，转发到其他Topic"),
-    OUTPUT_COMMAND("设备指令", NodeCategory.OUTPUT, "下发RPC指令");
+    OUTPUT_COMMAND("设备指令", NodeCategory.OUTPUT, "下发RPC指令"),
+
+    // ==================== 子流节点 ====================
+    SUB_FLOW("子规则链", NodeCategory.FLOW, "调用另一条规则链，支持嵌套");
 
     @EnumValue
     @JsonValue
@@ -53,7 +56,8 @@ public enum RuleNodeType {
         INPUT("输入", "#10b981"),
         FILTER("过滤", "#3b82f6"),
         ALARM("告警", "#ef4444"),
-        OUTPUT("输出", "#8b5cf6");
+        OUTPUT("输出", "#8b5cf6"),
+        FLOW("子流", "#f59e0b");
 
         private final String name;
         private final String color;

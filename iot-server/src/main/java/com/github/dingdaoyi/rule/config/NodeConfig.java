@@ -30,7 +30,9 @@ import java.io.Serializable;
     @JsonSubTypes.Type(value = OutputMessageConfig.class, name = "OUTPUT_MESSAGE"),
     @JsonSubTypes.Type(value = OutputHttpConfig.class, name = "OUTPUT_HTTP"),
     @JsonSubTypes.Type(value = OutputMqttConfig.class, name = "OUTPUT_MQTT"),
-    @JsonSubTypes.Type(value = OutputCommandConfig.class, name = "OUTPUT_COMMAND")
+    @JsonSubTypes.Type(value = OutputCommandConfig.class, name = "OUTPUT_COMMAND"),
+    // 子流节点
+    @JsonSubTypes.Type(value = SubFlowConfig.class, name = "SUB_FLOW")
 })
 @Schema(description = "节点配置基类")
 public abstract class NodeConfig implements Serializable {

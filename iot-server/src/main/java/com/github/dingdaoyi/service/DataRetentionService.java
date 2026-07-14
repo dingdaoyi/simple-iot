@@ -25,6 +25,7 @@ public class DataRetentionService {
 
     private final AlarmMapper alarmMapper;
     private final PushLogMapper pushLogMapper;
+    private final RuleExecutionLogService ruleExecutionLogService;
 
     @Value("${simple.iot.retention.alarm-days:90}")
     private int alarmRetentionDays;
@@ -32,15 +33,21 @@ public class DataRetentionService {
     @Value("${simple.iot.retention.push-log-days:30}")
     private int pushLogRetentionDays;
 
-    public DataRetentionService(AlarmMapper alarmMapper, PushLogMapper pushLogMapper) {
+    @Value("${simple.iot.retention.rule-exec-log-days:30}")
+    private int ruleExecLogRetentionDays;
+
+    public DataRetentionService(AlarmMapper alarmMapper, PushLogMapper pushLogMapper,
+                                 RuleExecutionLogService ruleExecutionLogService) {
         this.alarmMapper = alarmMapper;
         this.pushLogMapper = pushLogMapper;
+        this.ruleExecutionLogService = ruleExecutionLogService;
     }
 
     @Scheduled(cron = "0 0 3 * * *", zone = "Asia/Shanghai")
     public void purgeOldData() {
         purgeClearedAlarms();
         purgeOldPushLogs();
+        purgeOldRuleExecLogs();
     }
 
     private void purgeClearedAlarms() {
@@ -61,6 +68,13 @@ public class DataRetentionService {
         int deleted = pushLogMapper.delete(wrapper);
         if (deleted > 0) {
             log.info("Purged {} push logs older than {} days", deleted, pushLogRetentionDays);
+        }
+    }
+
+    private void purgeOldRuleExecLogs() {
+        int deleted = ruleExecutionLogService.cleanOldLogs(ruleExecLogRetentionDays);
+        if (deleted > 0) {
+            log.info("Purged {} rule execution logs older than {} days", deleted, ruleExecLogRetentionDays);
         }
     }
 }

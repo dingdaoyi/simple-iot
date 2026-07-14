@@ -16,6 +16,8 @@ import com.github.dingdaoyi.model.vo.RuleChainValidationResultVo;
 import com.github.dingdaoyi.model.vo.RuleChainPageVo;
 import com.github.dingdaoyi.proto.model.tsl.TslModel;
 import com.github.dingdaoyi.proto.model.tsl.TslProperty;
+import com.github.dingdaoyi.rule.RuleChainEngine;
+import com.github.dingdaoyi.rule.RuleContext;
 import com.github.dingdaoyi.service.ProductService;
 import com.github.dingdaoyi.service.RuleChainService;
 import com.github.dingdaoyi.service.TslModelService;
@@ -41,6 +43,8 @@ public class RuleChainController {
     private final RuleChainService ruleChainService;
     private final ProductService productService;
     private final TslModelService tslModelService;
+    private final com.github.dingdaoyi.service.RuleExecutionLogService ruleExecutionLogService;
+    private final com.github.dingdaoyi.rule.RuleChainEngine ruleChainEngine;
 
     @GetMapping("{id}")
     @Operation(summary = "规则链详情")
@@ -170,5 +174,82 @@ public class RuleChainController {
         }
 
         return BaseResult.success(variables);
+    }
+
+    // ==================== 执行日志与回放 ====================
+
+    @GetMapping("{ruleChainId}/execution-logs")
+    @Operation(summary = "查询规则链执行日志")
+    public BaseResult<PageResult<com.github.dingdaoyi.entity.RuleExecutionLog>> executionLogs(
+            @PathVariable Integer ruleChainId,
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "20") int size,
+            @RequestParam(required = false) String deviceKey) {
+        return BaseResult.success(ruleExecutionLogService.page(page, size, ruleChainId, deviceKey));
+    }
+
+    @GetMapping("execution-log/{logId}")
+    @Operation(summary = "执行日志详情(含轨迹)")
+    public BaseResult<com.github.dingdaoyi.entity.RuleExecutionLog> executionLogDetail(
+            @PathVariable Integer logId) {
+        com.github.dingdaoyi.entity.RuleExecutionLog log = ruleExecutionLogService.getById(logId);
+        if (log == null) {
+            return BaseResult.fail(ResultCode.NOT_FOUND.getCode(), "执行日志不存在");
+        }
+        return BaseResult.success(log);
+    }
+
+    @PostMapping("execution-log/{logId}/replay")
+    @Operation(summary = "重放历史执行(用原始输入快照重新执行规则链)")
+    public BaseResult<RuleChainDebugResultVo> replay(
+            @PathVariable Integer logId) {
+        com.github.dingdaoyi.entity.RuleExecutionLog log = ruleExecutionLogService.getById(logId);
+        if (log == null) {
+            return BaseResult.fail(ResultCode.NOT_FOUND.getCode(), "执行日志不存在");
+        }
+        RuleChain ruleChain = ruleChainService.getById(log.getRuleChainId());
+        if (ruleChain == null) {
+            return BaseResult.fail(ResultCode.NOT_FOUND.getCode(), "规则链不存在");
+        }
+
+        // 从日志重建上下文
+        RuleContext context = new RuleContext();
+        context.setDeviceKey(log.getDeviceKey());
+        context.setDeviceId(log.getDeviceId());
+        context.setDeviceName(log.getDeviceName());
+        if (log.getMessageType() != null) {
+            context.setMessageType(RuleContext.MessageType.valueOf(log.getMessageType()));
+        }
+        context.setEventTime(log.getEventTime() != null ? log.getEventTime() : java.time.LocalDateTime.now());
+
+        // 从输入快照恢复属性
+        if (log.getInputSnapshot() != null) {
+            Object props = log.getInputSnapshot().get("properties");
+            if (props instanceof Map<?, ?> propMap) {
+                com.github.dingdaoyi.proto.model.DecodeResult dr = new com.github.dingdaoyi.proto.model.DecodeResult();
+                for (Map.Entry<?, ?> entry : propMap.entrySet()) {
+                    dr.getDataList().add(new com.github.dingdaoyi.proto.model.DeviceData(
+                        String.valueOf(entry.getKey()),
+                        com.github.dingdaoyi.proto.model.DataTypeEnum.TEXT,
+                        entry.getValue()
+                    ));
+                }
+                context.setDecodeResult(dr);
+            }
+        }
+
+        long start = System.nanoTime();
+        ruleChainEngine.execute(ruleChain, context);
+        long durationMs = (System.nanoTime() - start) / 1_000_000;
+
+        RuleChainDebugResultVo result = new RuleChainDebugResultVo();
+        result.setRuleChainId(ruleChain.getId());
+        result.setRuleChainName(ruleChain.getName());
+        result.setDurationMs(durationMs);
+        result.setTraces(context.getTraces());
+        result.setExecutedNodeCount(context.getTraces().size());
+        result.setSuccess(context.getTraces().stream()
+            .noneMatch(t -> "FAILED".equals(t.getStatus()) || "ERROR".equals(t.getStatus())));
+        return BaseResult.success(result);
     }
 }
