@@ -25,6 +25,7 @@ public class RuleChainEngine {
     private List<RuleNodeExecutor> executors;
 
     @Resource
+    @org.springframework.context.annotation.Lazy
     private RuleChainService ruleChainService;
 
     private Map<RuleNodeType, RuleNodeExecutor> executorMap;
