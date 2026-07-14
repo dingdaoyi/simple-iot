@@ -216,6 +216,11 @@
                         <!-- OrbStack/Docker 29 rejects Docker API versions older than 1.40. -->
                         <api.version>1.40</api.version>
                     </systemPropertyVariables>
+                    <!-- Testcontainers tests require a Docker daemon; skip them in CI. -->
+                    <excludes>
+                        <exclude>**/DemoTelemetrySeedSmokeTest.java</exclude>
+                        <exclude>**/ApplicationPostgresIntegrationTest.java</exclude>
+                    </excludes>
                 </configuration>
             </plugin>
         </plugins>
