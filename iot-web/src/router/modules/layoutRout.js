@@ -22,6 +22,7 @@ const productType = () => import('@/views/productType')
 const protocol = () => import('@/views/protocol')
 const product = () => import('@/views/product')
 const device = () => import('@/views/device')
+const deviceGroup = () => import('@/views/device-group/index.vue')
 const tslModel = () => import('@/views/tslModel')
 const deviceDetails = () => import('@/views/device/widget/details.vue')
 const icon = () => import('@/views/system/icon')
@@ -107,6 +108,16 @@ export default [
               title: '设备管理',
               i18nKey: 'menu.device',
               icon: Document,
+            },
+          },
+          {
+            path: '/device-group',
+            name: 'deviceGroup',
+            component: deviceGroup,
+            meta: {
+              title: '设备分组',
+              i18nKey: 'menu.deviceGroup',
+              icon: Connection,
             },
           },
           {
