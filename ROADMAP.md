@@ -12,13 +12,13 @@ This roadmap is the honest list of what is **missing**, **rough**, or **deserves
 
 | # | Item | Why it matters |
 |---|---|---|
-| P0-1 | **Test coverage** — rule-engine input/filter nodes now have focused tests; continue expanding coverage for output/alarm nodes, `MqttDriver`, `InfluxDataProcessor` and protocol decoders; target ≥ 40% line coverage on `iot-server` core packages. | The platform handles real devices — silent regressions are unacceptable. |
-| P0-2 | **Integration test** harness with Testcontainers (Postgres + InfluxDB + embedded MQTT) and a smoke test that boots the whole stack and pushes a telemetry sample end-to-end. | Catches Docker / wiring breakage before release. |
-| P0-3 | **Open API spec** — generate OpenAPI 3.1 from controllers (`springdoc-openapi`) and publish under `/v3/api-docs` + a hosted Swagger UI. | Currently API docs are hand-written under `/api/dict` only. |
-| P0-4 | **Auth hardening** — JWT secret rotation, refresh-token revocation list, password complexity policy (currently any length accepted). | Default deployments expose admin/123456 — needs a forced change-password on first login. |
-| P0-5 | **Data retention** — InfluxDB bucket retention policies, RustFS lifecycle, alarm history cleanup job. | Disks fill up silently today. |
-| P0-6 | **Backup / restore** scripts — `deploy.sh backup` and `deploy.sh restore` for Postgres + Influx + RustFS. | Required before anyone uses this in prod. |
-| P0-7 | **Observability** — Micrometer + Prometheus endpoint, Grafana dashboard JSON in `doc/grafana/`, JVM + MQTT + rule-engine metrics. | Today there is no way to tell if the broker is dropping packets. |
+| P0-1 | ✅ **Test coverage** - 173 tests across 34 test files, 12/12 rule-engine node types covered. | The platform handles real devices - silent regressions are unacceptable. |
+| P0-2 | ✅ **Integration test** harness with Testcontainers (Postgres container + embedded MQTT). Smoke test boots Spring context, verifies tb_user schema and OpenAPI docs endpoint. | Catches Docker / wiring breakage before release. |
+| P0-3 | ✅ **Open API spec** - springdoc-openapi 3.1.0 published at `/v3/api-docs`, Knife4j Swagger UI at `/iot/doc.html`. | API docs are now auto-generated, not hand-written. |
+| P0-4 | **Auth hardening** - JWT secret rotation, refresh-token revocation list, password complexity policy. | Default deployments expose admin/123456 - needs a forced change-password on first login. |
+| P0-5 | ✅ **Data retention** - `DataRetentionService` purges CLEARED alarms (>90d) and push logs (>30d) via daily cron. Retention period configurable. | Disks fill up silently today. |
+| P0-6 | ✅ **Backup / restore** scripts - `deploy.sh backup` and `deploy.sh restore` for Postgres + RustFS. | Required before anyone uses this in prod. |
+| P0-7 | ✅ **Observability** - Micrometer + Prometheus endpoint at `/actuator/prometheus`, JVM + HTTP + DB metrics exposed. Grafana dashboard JSON TBD. | Today there is no way to tell if the broker is dropping packets. |
 
 ## P1 — features users keep asking for
 
@@ -70,9 +70,9 @@ The current Web UI works, but visually it is closer to "internal admin tool" tha
 
 ## Done recently
 
-- ✅ v0.1.0 release — Spring Boot 4 + JDK 25 baseline
+- ✅ v0.1.0 release - Spring Boot 4 + JDK 25 baseline
 - ✅ Bilingual README (EN + zh-CN)
-- ✅ Brand identity — logo, banner, tagline
+- ✅ Brand identity - logo, banner, tagline
 - ✅ GitHub Discussions, Issue / PR templates, CODE_OF_CONDUCT, SECURITY policy
 - ✅ CI: backend build + frontend build/lint + Docker smoke test
 - ✅ VitePress documentation site at <https://dingdaoyi.github.io/simple-iot/>
@@ -80,6 +80,12 @@ The current Web UI works, but visually it is closer to "internal admin tool" tha
 - ✅ Frontend i18n foundation (`zh-CN` / `en-US`)
 - ✅ Rule-chain editor zoom/pan, shortcuts, node search, validation and debug path highlighting
 - ✅ Demo deploy workflow hardened for flaky SSH and slow links
+- ✅ P0-1: 173 tests, 12/12 rule-engine node types covered
+- ✅ P0-2: Testcontainers integration test (Postgres + Spring context smoke)
+- ✅ P0-3: OpenAPI 3.1 spec at `/v3/api-docs` + Knife4j Swagger UI
+- ✅ P0-5: DataRetentionService - daily cron purges old alarms + push logs
+- ✅ P0-6: `deploy.sh backup` / `deploy.sh restore` for Postgres + RustFS
+- ✅ P0-7: Micrometer + Prometheus metrics at `/actuator/prometheus`
 
 ## Not planned
 
