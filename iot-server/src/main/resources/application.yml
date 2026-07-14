@@ -129,6 +129,15 @@ management:
   endpoint:
     health:
       show-details: always
+    prometheus:
+      enabled: true
+  endpoints:
+    web:
+      exposure:
+        include: health,info,prometheus,metrics
   health:
     mail:
-      enabled: false
+      enabled: ${MANAGEMENT_HEALTH_MAIL_ENABLED:false}
+  metrics:
+    tags:
+      application: ${spring.application.name}

@@ -35,6 +35,7 @@ public class SaTokenConfigure implements WebMvcConfigurer {
         DEFAULT_SKIP_URL.add("/static/**");
         DEFAULT_SKIP_URL.add("/webjars/**");
         DEFAULT_SKIP_URL.add("/swagger-resources/**");
+        DEFAULT_SKIP_URL.add("/actuator/**");
     }
 
     @Resource
