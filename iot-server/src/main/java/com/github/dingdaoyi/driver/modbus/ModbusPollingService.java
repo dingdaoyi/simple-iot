@@ -160,12 +160,15 @@ public class ModbusPollingService {
         return JSONUtil.toList(json, RegisterMapping.class);
     }
 
-    /** Encode as system-default JSON format so IotDataProcessor can decode */
+    /** Encode as JSON: {type:property, params:{id:{value:..,dataType:..}}} */
     private String encodeAsJson(List<DeviceData> dataList) {
         var obj = JSONUtil.createObj();
         var params = JSONUtil.createObj();
         for (DeviceData d : dataList) {
-            params.set(d.getIdentifier(), d.getValue());
+            var item = JSONUtil.createObj();
+            item.set("value", d.getValue());
+            item.set("dataType", d.getDataType().getValue());
+            params.set(d.getIdentifier(), item);
         }
         obj.set("type", "property");
         obj.set("params", params);
