@@ -689,7 +689,9 @@ export default {
   menu: {
     alarm: '告警管理',
     alarmList: '告警列表',
-    dashboard: '首页',
+    dashboard: '自定义仪表盘',
+    dashboardEditor: '仪表盘编辑器',
+    dashboardEdit: '编辑仪表盘',
     device: '设备管理',
     deviceDetails: '设备详情',
     deviceGroup: '设备分组',

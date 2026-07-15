@@ -689,7 +689,9 @@ export default {
   menu: {
     alarm: 'Alarms',
     alarmList: 'Alarm List',
-    dashboard: 'Dashboard',
+    dashboard: 'Dashboards',
+    dashboardEditor: 'Dashboard Editor',
+    dashboardEdit: 'Edit Dashboard',
     device: 'Device',
     deviceDetails: 'Device Details',
     deviceGroup: 'Device Groups',

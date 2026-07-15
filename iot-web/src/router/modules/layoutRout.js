@@ -34,6 +34,8 @@ const driver = () => import('@/views/driver/index.vue')
 const ruleChain = () => import('@/views/rule-chain/index.vue')
 const ruleChainEditor = () => import('@/views/rule-chain/editor/index.vue')
 const alarm = () => import('@/views/alarm/index.vue')
+const dashboardList = () => import('@/views/dashboard/DashboardList.vue')
+const dashboardEditor = () => import('@/views/dashboard/DashboardEditor.vue')
 
 export default [
   {
@@ -182,6 +184,38 @@ export default [
               title: '告警管理',
               i18nKey: 'menu.alarm',
               icon: Warning,
+            },
+          },
+          {
+            path: '/dashboard',
+            name: 'dashboardList',
+            component: dashboardList,
+            meta: {
+              title: '自定义仪表盘',
+              i18nKey: 'menu.dashboard',
+              icon: TrendCharts,
+            },
+          },
+          {
+            path: '/dashboard/editor',
+            name: 'dashboardEditor',
+            component: dashboardEditor,
+            meta: {
+              hidden: true,
+              title: '仪表盘编辑器',
+              i18nKey: 'menu.dashboardEditor',
+              icon: TrendCharts,
+            },
+          },
+          {
+            path: '/dashboard/editor/:id',
+            name: 'dashboardEditorEdit',
+            component: dashboardEditor,
+            meta: {
+              hidden: true,
+              title: '编辑仪表盘',
+              i18nKey: 'menu.dashboardEdit',
+              icon: TrendCharts,
             },
           },
         ],
