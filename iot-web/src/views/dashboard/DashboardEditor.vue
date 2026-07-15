@@ -210,10 +210,10 @@ onMounted(() => {
         />
       </div>
       <div class="toolbar-right">
-        <el-button type="danger" :icon="Delete" size="small" :disabled="!dashboard.id" @click="onDelete">
+        <el-button link type="danger" :icon="Delete" size="small" :disabled="!dashboard.id" @click="onDelete">
           删除
         </el-button>
-        <el-button type="primary" :icon="Check" size="small" :loading="saving" @click="onSave">
+        <el-button link type="primary" :icon="Check" size="small" :loading="saving" @click="onSave">
           保存
         </el-button>
       </div>
@@ -305,7 +305,7 @@ onMounted(() => {
                 <el-option
                   v-for="p in products"
                   :key="p.id"
-                  :label="p.productName"
+                  :label="p.model"
                   :value="p.id"
                 />
               </el-select>

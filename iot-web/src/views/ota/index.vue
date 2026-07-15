@@ -150,7 +150,7 @@ onMounted(() => {
           <el-table-column prop="version" label="版本" width="80" />
           <el-table-column label="产品" width="120">
             <template #default="{ row }">
-              {{ products.find(p => p.id === row.productId)?.productName || row.productId }}
+              {{ products.find(p => p.id === row.productId)?.model || row.productId }}
             </template>
           </el-table-column>
           <el-table-column prop="fileSize" label="大小" width="80">
@@ -165,16 +165,16 @@ onMounted(() => {
               </el-tag>
             </template>
           </el-table-column>
-          <el-table-column prop="createdTime" label="创建时间" width="160" />
+          <el-table-column prop="createTime" label="创建时间" width="160" />
           <el-table-column label="操作" width="200" fixed="right">
             <template #default="{ row }">
-              <el-button v-if="row.status !== 'PUBLISHED'" size="small" type="primary" link @click="onPublish(row.id)">
+              <el-button v-if="row.status !== 'PUBLISHED'" link size="small" type="primary" @click="onPublish(row.id)">
                 发布
               </el-button>
-              <el-button v-if="row.status === 'PUBLISHED'" size="small" type="success" link @click="openCreateTask(row.id)">
+              <el-button v-if="row.status === 'PUBLISHED'" link size="small" type="success" @click="openCreateTask(row.id)">
                 推送升级
               </el-button>
-              <el-button size="small" type="danger" link @click="onDelete(row.id)">
+              <el-button link size="small" type="danger" @click="onDelete(row.id)">
                 删除
               </el-button>
             </template>
@@ -200,10 +200,10 @@ onMounted(() => {
           <el-table-column prop="total" label="总数" width="60" />
           <el-table-column prop="success" label="成功" width="60" />
           <el-table-column prop="fail" label="失败" width="60" />
-          <el-table-column prop="createdTime" label="创建时间" width="160" />
+          <el-table-column prop="createTime" label="创建时间" width="160" />
           <el-table-column label="操作" width="100" fixed="right">
             <template #default="{ row }">
-              <el-button size="small" link @click="onTaskDetail(row.id)">
+              <el-button link size="small" type="primary" @click="onTaskDetail(row.id)">
                 详情
               </el-button>
             </template>
@@ -217,7 +217,7 @@ onMounted(() => {
       <el-form label-width="80px">
         <el-form-item label="产品">
           <el-select v-model="uploadForm.productId" placeholder="选择产品" filterable style="width: 100%">
-            <el-option v-for="p in products" :key="p.id" :label="p.productName" :value="p.id" />
+            <el-option v-for="p in products" :key="p.id" :label="p.model" :value="p.id" />
           </el-select>
         </el-form-item>
         <el-form-item label="名称">
@@ -298,7 +298,7 @@ onMounted(() => {
           {{ taskDetail?.fail }}
         </el-descriptions-item>
         <el-descriptions-item label="创建时间">
-          {{ taskDetail?.createdTime }}
+          {{ taskDetail?.createTime }}
         </el-descriptions-item>
       </el-descriptions>
       <div v-if="taskDetail?.progress" style="margin-top: 12px;">
