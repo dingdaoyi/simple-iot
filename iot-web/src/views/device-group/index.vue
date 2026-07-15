@@ -411,7 +411,7 @@ onMounted(() => {
     </el-dialog>
 
     <!-- Transfer Dialog -->
-    <el-dialog v-model="transferVisible" :title="transferTitle" width="700px" destroy-on-close>
+    <el-dialog v-model="transferVisible" :title="transferTitle" width="900px" destroy-on-close>
       <el-transfer
         v-model="transferValue"
         v-loading="transferLoading"
@@ -419,7 +419,7 @@ onMounted(() => {
         :titles="['可选设备', '已分配']"
         filterable
         filter-placeholder="搜索设备"
-        style="--el-transfer-panel-width: 300px"
+        style="--el-transfer-panel-width: 350px; display: flex; justify-content: center"
       />
       <template #footer>
         <el-button @click="transferVisible = false">
