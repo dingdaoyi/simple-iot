@@ -48,7 +48,7 @@ public class OtaController {
             @RequestParam(required = false) Integer productId) {
         QueryWrapper<Firmware> qw = new QueryWrapper<>();
         if (productId != null) qw.eq("product_id", productId);
-        qw.orderByDesc("created_time");
+        qw.orderByDesc("create_time");
         return BaseResult.success(firmwareMapper.selectList(qw));
     }
 
@@ -101,7 +101,7 @@ public class OtaController {
             @RequestParam(required = false) Integer firmwareId) {
         QueryWrapper<OtaTask> qw = new QueryWrapper<>();
         if (firmwareId != null) qw.eq("firmware_id", firmwareId);
-        qw.orderByDesc("created_time");
+        qw.orderByDesc("create_time");
         return BaseResult.success(otaTaskMapper.selectList(qw));
     }
 
