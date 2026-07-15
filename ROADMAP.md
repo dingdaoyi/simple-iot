@@ -29,7 +29,7 @@ This roadmap is the honest list of what is **missing**, **rough**, or **deserves
 | P1-3 | ✅ **Alarm enhancements** - comments, escalate severity, acknowledge-with-note. | Current alarm is fire-and-forget. |
 | P1-4 | ✅ **Rule-engine v2** - sub-flows with cycle detection, persistent execution logs, replay from recorded payloads. | Complex flows should be easy to author and debug. |
 | P1-5 | **Custom dashboards** — drag-and-drop widget canvas (line, gauge, value card, map, table) bound to device telemetry. | Required to call this an "IoT platform" with a straight face. |
-| P1-6 | **OTA firmware** — upload firmware → push to device groups → progress + rollback. | Most real IoT projects need OTA on day 1. |
+| ~~P1-6~~ | ✅ **OTA firmware** - upload firmware -> push to device groups -> progress tracking. | Most real IoT projects need OTA on day 1. |
 | P1-7 | **Mobile-friendly Web UI** — current admin is desktop-only; need a responsive read-only view for ops on the phone. | Tied to the UI overhaul (see "Frontend" below). |
 | P1-8 | ✅ **i18n foundation** — `zh-CN` / `en-US` UI, language switcher and Element Plus locale sync have landed; continue translating new pages as they are added. | Keeps the console usable for both Chinese and English users. |
 
