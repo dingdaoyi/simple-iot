@@ -692,6 +692,8 @@ export default {
     dashboard: '自定义仪表盘',
     dashboardEditor: '仪表盘编辑器',
     dashboardEdit: '编辑仪表盘',
+    ota: 'OTA升级',
+    otaManagement: 'OTA固件管理',
     device: '设备管理',
     deviceDetails: '设备详情',
     deviceGroup: '设备分组',

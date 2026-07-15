@@ -692,6 +692,8 @@ export default {
     dashboard: 'Dashboards',
     dashboardEditor: 'Dashboard Editor',
     dashboardEdit: 'Edit Dashboard',
+    ota: 'OTA Upgrade',
+    otaManagement: 'OTA Firmware',
     device: 'Device',
     deviceDetails: 'Device Details',
     deviceGroup: 'Device Groups',

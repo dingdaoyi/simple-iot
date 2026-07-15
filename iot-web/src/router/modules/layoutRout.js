@@ -13,6 +13,7 @@ import {
   Setting,
   Tools,
   TrendCharts,
+  UploadFilled,
   Warning,
 } from '@element-plus/icons-vue'
 import layout from '@/layout'
@@ -36,6 +37,7 @@ const ruleChainEditor = () => import('@/views/rule-chain/editor/index.vue')
 const alarm = () => import('@/views/alarm/index.vue')
 const dashboardList = () => import('@/views/dashboard/DashboardList.vue')
 const dashboardEditor = () => import('@/views/dashboard/DashboardEditor.vue')
+const ota = () => import('@/views/ota/index.vue')
 
 export default [
   {
@@ -216,6 +218,27 @@ export default [
               title: '编辑仪表盘',
               i18nKey: 'menu.dashboardEdit',
               icon: TrendCharts,
+            },
+          },
+        ],
+      },
+      {
+        path: '/ota',
+        name: 'ota',
+        meta: {
+          title: 'OTA升级',
+          i18nKey: 'menu.ota',
+          icon: UploadFilled,
+        },
+        children: [
+          {
+            path: '/ota',
+            name: 'otaManagement',
+            component: ota,
+            meta: {
+              title: 'OTA固件管理',
+              i18nKey: 'menu.otaManagement',
+              icon: UploadFilled,
             },
           },
         ],
