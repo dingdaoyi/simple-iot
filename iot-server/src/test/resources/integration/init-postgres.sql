@@ -270,3 +270,17 @@ CREATE TABLE IF NOT EXISTS tb_ota_task (
     create_time timestamp DEFAULT CURRENT_TIMESTAMP,
     update_time timestamp DEFAULT CURRENT_TIMESTAMP
 );
+
+-- Modbus config
+CREATE TABLE IF NOT EXISTS tb_modbus_config (
+    id SERIAL PRIMARY KEY,
+    device_id INTEGER NOT NULL,
+    host VARCHAR(100) NOT NULL,
+    port INTEGER NOT NULL DEFAULT 502,
+    unit_id SMALLINT NOT NULL DEFAULT 1,
+    interval_ms INTEGER NOT NULL DEFAULT 5000,
+    register_map jsonb DEFAULT '[]'::jsonb,
+    enabled boolean NOT NULL DEFAULT true,
+    create_time timestamp DEFAULT CURRENT_TIMESTAMP,
+    update_time timestamp DEFAULT CURRENT_TIMESTAMP
+);

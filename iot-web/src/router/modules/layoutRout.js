@@ -38,6 +38,7 @@ const alarm = () => import('@/views/alarm/index.vue')
 const dashboardList = () => import('@/views/dashboard/DashboardList.vue')
 const dashboardEditor = () => import('@/views/dashboard/DashboardEditor.vue')
 const ota = () => import('@/views/ota/index.vue')
+const modbus = () => import('@/views/modbus/index.vue')
 
 export default [
   {
@@ -239,6 +240,27 @@ export default [
               title: 'OTA固件管理',
               i18nKey: 'menu.otaManagement',
               icon: UploadFilled,
+            },
+          },
+        ],
+      },
+      {
+        path: '/modbus',
+        name: 'modbus',
+        meta: {
+          title: 'Modbus',
+          i18nKey: 'menu.modbus',
+          icon: Connection,
+        },
+        children: [
+          {
+            path: '/modbus',
+            name: 'modbusManagement',
+            component: modbus,
+            meta: {
+              title: 'Modbus TCP',
+              i18nKey: 'menu.modbusManagement',
+              icon: Connection,
             },
           },
         ],

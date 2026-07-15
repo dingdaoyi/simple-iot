@@ -694,6 +694,8 @@ export default {
     dashboardEdit: 'Edit Dashboard',
     ota: 'OTA Upgrade',
     otaManagement: 'OTA Firmware',
+    modbus: 'Modbus',
+    modbusManagement: 'Modbus TCP',
     device: 'Device',
     deviceDetails: 'Device Details',
     deviceGroup: 'Device Groups',

@@ -694,6 +694,8 @@ export default {
     dashboardEdit: '编辑仪表盘',
     ota: 'OTA升级',
     otaManagement: 'OTA固件管理',
+    modbus: 'Modbus',
+    modbusManagement: 'Modbus TCP',
     device: '设备管理',
     deviceDetails: '设备详情',
     deviceGroup: '设备分组',
