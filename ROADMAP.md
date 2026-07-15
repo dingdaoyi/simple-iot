@@ -25,9 +25,9 @@ This roadmap is the honest list of what is **missing**, **rough**, or **deserves
 | # | Item | Why it matters |
 |---|---|---|
 | P1-1 | **Multi-tenant** — tenant_id on every table, row-level security, per-tenant quotas. | Right now everyone shares one space. |
-| P1-2 | **Device groups & tags** — bulk operations, tag-based rule routing. | Hard to operate >1000 devices without grouping. |
-| P1-3 | **Alarm enhancements** — escalation policies, on-call schedule, snooze, alarm comments. | Current alarm is fire-and-forget. |
-| P1-4 | **Rule-engine v2** — validation, script filters and debug path highlighting have landed; continue with sub-flows, replay from recorded payloads and richer execution traces. | Complex flows should be easy to author and debug. |
+| P1-2 | ✅ **Device groups & tags** - tree-structured groups, multi-tag system, bulk device assignment. | Hard to operate >1000 devices without grouping. |
+| P1-3 | ✅ **Alarm enhancements** - comments, escalate severity, acknowledge-with-note. | Current alarm is fire-and-forget. |
+| P1-4 | ✅ **Rule-engine v2** - sub-flows with cycle detection, persistent execution logs, replay from recorded payloads. | Complex flows should be easy to author and debug. |
 | P1-5 | **Custom dashboards** — drag-and-drop widget canvas (line, gauge, value card, map, table) bound to device telemetry. | Required to call this an "IoT platform" with a straight face. |
 | P1-6 | **OTA firmware** — upload firmware → push to device groups → progress + rollback. | Most real IoT projects need OTA on day 1. |
 | P1-7 | **Mobile-friendly Web UI** — current admin is desktop-only; need a responsive read-only view for ops on the phone. | Tied to the UI overhaul (see "Frontend" below). |
