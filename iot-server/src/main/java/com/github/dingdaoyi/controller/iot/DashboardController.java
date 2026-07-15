@@ -53,7 +53,7 @@ public class DashboardController {
         long activeAlarms = alarmMapper.selectCount(
                 new QueryWrapper<Alarm>().eq("status", "ACTIVE"));
         long todayAlarms = alarmMapper.selectCount(
-                new QueryWrapper<Alarm>().ge("alarm_time", todayStart));
+                new QueryWrapper<Alarm>().ge("create_time", todayStart));
         stats.put("activeAlarms", activeAlarms);
         stats.put("todayAlarms", todayAlarms);
 
