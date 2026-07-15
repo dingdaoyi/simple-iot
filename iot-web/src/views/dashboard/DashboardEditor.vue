@@ -14,7 +14,7 @@ import { computed, onMounted, ref, watch } from 'vue'
 import { GridItem, GridLayout } from 'vue-grid-layout'
 import { useRoute, useRouter } from 'vue-router'
 import { dashboardDelete, dashboardGet, dashboardSave, dashboardUpdate } from '@/api/dashboard'
-import { deviceListApi, productListApi } from '@/api/index'
+import { deviceListApi, productListApi, productTypeListApi } from '@/api/index'
 import request from '@/utils/request'
 import WidgetRenderer from './WidgetRenderer.vue'
 
@@ -44,9 +44,22 @@ const selectedWidget = computed(() => {
 })
 
 // 级联选择数据
+const productTypes = ref([])
 const products = ref([])
 const devices = ref([])
 const properties = ref([])
+const filterProductTypeId = ref(null)
+
+const filteredProducts = computed(() => {
+  if (!filterProductTypeId.value)
+    return products.value
+  return products.value.filter(p => p.productTypeId === filterProductTypeId.value)
+})
+
+async function loadProductTypes() {
+  const res = await productTypeListApi({})
+  productTypes.value = res.data || []
+}
 
 async function loadProducts() {
   const res = await productListApi({})
@@ -193,6 +206,7 @@ async function onDelete() {
 onMounted(() => {
   loadDashboard()
   loadProducts()
+  loadProductTypes()
 })
 </script>
 
@@ -294,6 +308,22 @@ onMounted(() => {
             <el-form-item label="标题">
               <el-input v-model="selectedWidget.title" />
             </el-form-item>
+            <el-form-item label="产品类型">
+              <el-select
+                v-model="filterProductTypeId"
+                placeholder="全部类型"
+                clearable
+                filterable
+                style="width: 100%"
+              >
+                <el-option
+                  v-for="t in productTypes"
+                  :key="t.id"
+                  :label="t.name"
+                  :value="t.id"
+                />
+              </el-select>
+            </el-form-item>
             <el-form-item label="产品">
               <el-select
                 :model-value="selectedWidget.config.productId"
@@ -303,7 +333,7 @@ onMounted(() => {
                 @change="onProductChange"
               >
                 <el-option
-                  v-for="p in products"
+                  v-for="p in filteredProducts"
                   :key="p.id"
                   :label="p.model"
                   :value="p.id"

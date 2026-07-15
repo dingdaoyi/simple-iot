@@ -2,7 +2,7 @@
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { computed, onMounted, ref, watch } from 'vue'
 import { deviceGroupTreeApi } from '@/api/deviceGroup'
-import { deviceListApi, productListApi } from '@/api/index'
+import { deviceListApi, productListApi, productTypeListApi } from '@/api/index'
 import { firmwareDeleteApi, firmwareListApi, firmwarePublishApi, firmwareUploadApi, otaTaskCreateApi, otaTaskGetApi, otaTaskListApi } from '@/api/ota'
 
 const activeTab = ref('firmware')
@@ -13,6 +13,14 @@ const firmwareList = ref([])
 const uploadVisible = ref(false)
 const uploadForm = ref({ productId: null, name: '', version: '', description: '', file: null })
 const products = ref([])
+const productTypes = ref([])
+const filterProductTypeId = ref(null)
+
+const filteredProducts = computed(() => {
+  if (!filterProductTypeId.value)
+    return products.value
+  return products.value.filter(p => p.productTypeId === filterProductTypeId.value)
+})
 
 // === Tasks ===
 const taskList = ref([])
@@ -26,6 +34,11 @@ const devices = ref([])
 async function loadProducts() {
   const res = await productListApi({})
   products.value = res.data || []
+}
+
+async function loadProductTypes() {
+  const res = await productTypeListApi({})
+  productTypes.value = res.data || []
 }
 
 async function loadFirmware() {
@@ -128,6 +141,7 @@ const firmwareName = computed(() => id => firmwareList.value.find(f => f.id === 
 
 onMounted(() => {
   loadProducts()
+  loadProductTypes()
   loadFirmware()
   loadTasks()
   loadGroups()
@@ -215,9 +229,14 @@ onMounted(() => {
     <!-- Upload Dialog -->
     <el-dialog v-model="uploadVisible" title="上传固件" width="500px" destroy-on-close>
       <el-form label-width="80px">
+        <el-form-item label="产品类型">
+          <el-select v-model="filterProductTypeId" placeholder="全部类型" clearable filterable style="width: 100%">
+            <el-option v-for="t in productTypes" :key="t.id" :label="t.name" :value="t.id" />
+          </el-select>
+        </el-form-item>
         <el-form-item label="产品">
           <el-select v-model="uploadForm.productId" placeholder="选择产品" filterable style="width: 100%">
-            <el-option v-for="p in products" :key="p.id" :label="p.model" :value="p.id" />
+            <el-option v-for="p in filteredProducts" :key="p.id" :label="p.model" :value="p.id" />
           </el-select>
         </el-form-item>
         <el-form-item label="名称">
