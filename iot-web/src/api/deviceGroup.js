@@ -103,6 +103,13 @@ export function deviceTagRemoveApi(tagId, deviceIds) {
   })
 }
 
+export function deviceTagDevicesApi(tagId) {
+  return request({
+    url: `/device-tag/${tagId}/devices`,
+    method: 'get',
+  })
+}
+
 export function deviceTagsByDeviceApi(deviceId) {
   return request({
     url: `/device-tag/device/${deviceId}`,

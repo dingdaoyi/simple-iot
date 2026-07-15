@@ -10,10 +10,12 @@ import { ElMessage, ElMessageBox } from 'element-plus'
  * DashboardEditor - 拖拽式仪表盘编辑器
  * 使用 vue-grid-layout 实现拖拽缩放, 右侧面板配置 widget 属性
  */
-import { computed, onMounted, ref } from 'vue'
+import { computed, onMounted, ref, watch } from 'vue'
 import { GridItem, GridLayout } from 'vue-grid-layout'
 import { useRoute, useRouter } from 'vue-router'
 import { dashboardDelete, dashboardGet, dashboardSave, dashboardUpdate } from '@/api/dashboard'
+import { deviceListApi, productListApi } from '@/api/index'
+import request from '@/utils/request'
 import WidgetRenderer from './WidgetRenderer.vue'
 
 const route = useRoute()
@@ -41,6 +43,68 @@ const selectedWidget = computed(() => {
   return dashboard.value.layout[selectedWidgetIdx.value] || null
 })
 
+// 级联选择数据
+const products = ref([])
+const devices = ref([])
+const properties = ref([])
+
+async function loadProducts() {
+  const res = await productListApi({})
+  products.value = res.data || []
+}
+
+async function loadDevices(productId) {
+  if (!productId) {
+    devices.value = []
+    return
+  }
+  const res = await deviceListApi({ productId })
+  devices.value = res.data || []
+}
+
+async function loadProperties(productId) {
+  if (!productId) {
+    properties.value = []
+    return
+  }
+  const product = products.value.find(p => p.id === productId)
+  if (!product)
+    return
+  const res = await request({
+    url: '/model/property/product/type',
+    method: 'get',
+    params: { productTypeId: product.productTypeId, productId, all: true },
+  })
+  properties.value = res.data || []
+}
+
+function onProductChange(productId) {
+  selectedWidget.value.config.productId = productId
+  selectedWidget.value.config.deviceKey = ''
+  selectedWidget.value.config.identifier = ''
+  loadDevices(productId)
+  loadProperties(productId)
+}
+
+function onDeviceChange(deviceKey) {
+  selectedWidget.value.config.deviceKey = deviceKey
+}
+
+function onPropertyChange(identifier) {
+  selectedWidget.value.config.identifier = identifier
+}
+
+watch(selectedWidgetIdx, async (idx) => {
+  if (idx === null)
+    return
+  const cfg = dashboard.value.layout[idx]?.config
+  if (!cfg)
+    return
+  if (cfg.productId) {
+    await Promise.all([loadDevices(cfg.productId), loadProperties(cfg.productId)])
+  }
+})
+
 function addWidget(type) {
   const idx = dashboard.value.layout.length
   dashboard.value.layout.push({
@@ -52,6 +116,7 @@ function addWidget(type) {
     title: widgetTypes.find(w => w.type === type)?.label || type,
     config: {
       type,
+      productId: null,
       deviceKey: '',
       identifier: '',
       timeRange: 1,
@@ -125,7 +190,10 @@ async function onDelete() {
   router.push('/dashboard')
 }
 
-onMounted(loadDashboard)
+onMounted(() => {
+  loadDashboard()
+  loadProducts()
+})
 </script>
 
 <template>
@@ -226,11 +294,55 @@ onMounted(loadDashboard)
             <el-form-item label="标题">
               <el-input v-model="selectedWidget.title" />
             </el-form-item>
-            <el-form-item label="设备Key">
-              <el-input v-model="selectedWidget.config.deviceKey" placeholder="设备标识" />
+            <el-form-item label="产品">
+              <el-select
+                :model-value="selectedWidget.config.productId"
+                placeholder="选择产品"
+                filterable
+                style="width: 100%"
+                @change="onProductChange"
+              >
+                <el-option
+                  v-for="p in products"
+                  :key="p.id"
+                  :label="p.productName"
+                  :value="p.id"
+                />
+              </el-select>
             </el-form-item>
-            <el-form-item label="属性标识">
-              <el-input v-model="selectedWidget.config.identifier" placeholder="如 temperature" />
+            <el-form-item label="设备">
+              <el-select
+                :model-value="selectedWidget.config.deviceKey"
+                placeholder="选择设备"
+                filterable
+                style="width: 100%"
+                :disabled="!selectedWidget.config.productId"
+                @change="onDeviceChange"
+              >
+                <el-option
+                  v-for="d in devices"
+                  :key="d.deviceKey"
+                  :label="`${d.deviceName} (${d.deviceKey})`"
+                  :value="d.deviceKey"
+                />
+              </el-select>
+            </el-form-item>
+            <el-form-item label="属性">
+              <el-select
+                :model-value="selectedWidget.config.identifier"
+                placeholder="选择属性"
+                filterable
+                style="width: 100%"
+                :disabled="!selectedWidget.config.productId"
+                @change="onPropertyChange"
+              >
+                <el-option
+                  v-for="p in properties"
+                  :key="p.identifier"
+                  :label="`${p.name} (${p.identifier})`"
+                  :value="p.identifier"
+                />
+              </el-select>
             </el-form-item>
             <el-form-item v-if="['line-chart', 'bar-chart', 'data-table'].includes(selectedWidget.config.type)" label="时间范围">
               <el-select v-model="selectedWidget.config.timeRange" style="width: 100%">

@@ -3,9 +3,11 @@ package com.github.dingdaoyi.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.github.dingdaoyi.entity.DeviceTag;
+import com.github.dingdaoyi.entity.Device;
 import com.github.dingdaoyi.entity.DeviceTagRelation;
 import com.github.dingdaoyi.mapper.DeviceTagMapper;
 import com.github.dingdaoyi.mapper.DeviceTagRelationMapper;
+import com.github.dingdaoyi.mapper.DeviceMapper;
 import com.github.dingdaoyi.service.DeviceTagService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,9 +21,11 @@ public class DeviceTagServiceImpl extends ServiceImpl<DeviceTagMapper, DeviceTag
         implements DeviceTagService {
 
     private final DeviceTagRelationMapper relationMapper;
+    private final DeviceMapper deviceMapper;
 
-    public DeviceTagServiceImpl(DeviceTagRelationMapper relationMapper) {
+    public DeviceTagServiceImpl(DeviceTagRelationMapper relationMapper, DeviceMapper deviceMapper) {
         this.relationMapper = relationMapper;
+        this.deviceMapper = deviceMapper;
     }
 
     @Override
@@ -66,5 +70,19 @@ public class DeviceTagServiceImpl extends ServiceImpl<DeviceTagMapper, DeviceTag
             return Collections.emptyList();
         }
         return listByIds(tagIds);
+    }
+
+    @Override
+    public List<Device> listDevicesByTagId(Integer tagId) {
+        List<Integer> deviceIds = relationMapper.selectList(
+                        new LambdaQueryWrapper<DeviceTagRelation>()
+                                .eq(DeviceTagRelation::getTagId, tagId))
+                .stream()
+                .map(DeviceTagRelation::getDeviceId)
+                .collect(Collectors.toList());
+        if (deviceIds.isEmpty()) {
+            return Collections.emptyList();
+        }
+        return deviceMapper.selectBatchIds(deviceIds);
     }
 }

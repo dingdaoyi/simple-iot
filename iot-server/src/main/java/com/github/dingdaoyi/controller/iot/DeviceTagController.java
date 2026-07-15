@@ -1,6 +1,7 @@
 package com.github.dingdaoyi.controller.iot;
 
 import com.github.dingdaoyi.core.base.BaseResult;
+import com.github.dingdaoyi.entity.Device;
 import com.github.dingdaoyi.entity.DeviceTag;
 import com.github.dingdaoyi.service.DeviceTagService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -56,6 +57,12 @@ public class DeviceTagController {
                                              @RequestBody List<Integer> deviceIds) {
         deviceTagService.untagDevices(tagId, deviceIds);
         return BaseResult.success(true);
+    }
+
+    @GetMapping("{tagId}/devices")
+    @Operation(summary = "标签下设备列表")
+    public BaseResult<List<Device>> listDevices(@PathVariable Integer tagId) {
+        return BaseResult.success(deviceTagService.listDevicesByTagId(tagId));
     }
 
     @GetMapping("/device/{deviceId}")

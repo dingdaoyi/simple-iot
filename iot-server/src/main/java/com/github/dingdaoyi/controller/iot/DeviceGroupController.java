@@ -1,6 +1,7 @@
 package com.github.dingdaoyi.controller.iot;
 
 import com.github.dingdaoyi.core.base.BaseResult;
+import com.github.dingdaoyi.entity.Device;
 import com.github.dingdaoyi.entity.DeviceGroup;
 import com.github.dingdaoyi.service.DeviceGroupService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -65,8 +66,8 @@ public class DeviceGroupController {
     }
 
     @GetMapping("{groupId}/devices")
-    @Operation(summary = "分组下设备ID列表")
-    public BaseResult<List<Integer>> listDeviceIds(@PathVariable Integer groupId) {
-        return BaseResult.success(deviceGroupService.listDeviceIds(groupId));
+    @Operation(summary = "分组下设备列表")
+    public BaseResult<List<Device>> listDevices(@PathVariable Integer groupId) {
+        return BaseResult.success(deviceGroupService.listDevices(groupId));
     }
 }

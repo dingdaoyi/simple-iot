@@ -3,7 +3,7 @@ import request from '@/utils/request'
 // 首页统计 (原有 API)
 export function getDashboardStatistics() {
   return request({
-    url: '/api/dashboard/statistics',
+    url: '/dashboard/statistics',
     method: 'get',
   })
 }

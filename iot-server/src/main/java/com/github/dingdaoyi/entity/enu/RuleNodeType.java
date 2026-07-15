@@ -20,6 +20,7 @@ public enum RuleNodeType {
     FILTER_PROPERTY("属性条件", NodeCategory.FILTER, "基于物模型属性过滤"),
     FILTER_EVENT_TYPE("事件类型", NodeCategory.FILTER, "按事件类型过滤"),
     FILTER_SCRIPT("脚本过滤", NodeCategory.FILTER, "自定义脚本过滤"),
+    FILTER_DEVICE_GROUP("设备分组", NodeCategory.FILTER, "只允许指定分组下的设备通过"),
 
     // ==================== 告警节点 ====================
     ALARM_CREATE("创建告警", NodeCategory.ALARM, "创建告警记录"),

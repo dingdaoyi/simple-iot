@@ -23,6 +23,7 @@ import java.io.Serializable;
     @JsonSubTypes.Type(value = FilterPropertyConfig.class, name = "FILTER_PROPERTY"),
     @JsonSubTypes.Type(value = FilterEventTypeConfig.class, name = "FILTER_EVENT_TYPE"),
     @JsonSubTypes.Type(value = FilterScriptConfig.class, name = "FILTER_SCRIPT"),
+    @JsonSubTypes.Type(value = DeviceGroupFilterConfig.class, name = "FILTER_DEVICE_GROUP"),
     // 告警节点
     @JsonSubTypes.Type(value = AlarmCreateConfig.class, name = "ALARM_CREATE"),
     @JsonSubTypes.Type(value = AlarmClearConfig.class, name = "ALARM_CLEAR"),
