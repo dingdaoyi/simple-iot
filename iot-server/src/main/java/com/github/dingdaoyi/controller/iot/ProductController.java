@@ -35,9 +35,13 @@ public class ProductController {
     private final ModelPropertyService modelPropertyService;
 
     @GetMapping
-    @Operation(summary = "根据产品类型和厂家获取")
-    public BaseResult<List<Product>> list(@RequestParam Integer productTypeId,
-                                 @RequestParam(required = false) String manufacturer) {
+    @Operation(summary = "获取产品列表")
+    public BaseResult<List<Product>> list(
+            @RequestParam(required = false) Integer productTypeId,
+            @RequestParam(required = false) String manufacturer) {
+        if (productTypeId == null && manufacturer == null) {
+            return BaseResult.success(productService.list());
+        }
         return BaseResult.success(productService.listByType(productTypeId, manufacturer));
     }
 
