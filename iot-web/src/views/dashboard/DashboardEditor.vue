@@ -180,10 +180,18 @@ async function onSave() {
   try {
     const fn = dashboard.value.id ? dashboardUpdate : dashboardSave
     await fn(dashboard.value)
-    ElMessage.success('保存成功')
+    // ponytail: save API returns Boolean; for new dashboards, re-fetch list to get the id
     if (!dashboard.value.id) {
-      // 新建后返回列表
-      router.push('/dashboard')
+      ElMessage.success('保存成功')
+      // reload list to find the new dashboard by name
+      const listRes = await import('@/api/dashboard').then(m => m.dashboardList())
+      const found = (listRes?.data || []).find(d => d.name === dashboard.value.name)
+      if (found) {
+        dashboard.value.id = found.id
+      }
+    }
+    else {
+      ElMessage.success('保存成功')
     }
   }
   catch {
@@ -406,57 +414,59 @@ onMounted(() => {
   display: flex;
   flex-direction: column;
   height: 100%;
-  gap: 8px;
-  padding: 8px;
+  gap: var(--space-sm);
+  padding: var(--space-sm);
 }
 
 .editor-toolbar {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 8px 12px;
+  padding: var(--space-sm) var(--space-md);
 
   .toolbar-left,
   .toolbar-right {
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: var(--space-sm);
   }
 }
 
 .editor-body {
   display: flex;
-  gap: 8px;
+  gap: var(--space-sm);
   flex: 1;
   min-height: 0;
 }
 
 .widget-palette {
-  width: 140px;
+  width: 150px;
   flex-shrink: 0;
-  padding: 8px;
+  padding: var(--space-md);
 
   .palette-title {
-    font-size: 12px;
+    font-size: 11px;
     color: var(--iot-color-text-muted);
-    margin-bottom: 8px;
-    text-transform: uppercase;
+    margin-bottom: var(--space-md);
+    font-weight: 600;
     letter-spacing: 0.5px;
   }
 
   .palette-item {
     display: flex;
     align-items: center;
-    gap: 8px;
-    padding: 8px 10px;
-    border-radius: var(--radius-md);
+    gap: var(--space-sm);
+    padding: var(--space-sm) var(--space-md);
+    border-radius: var(--radius-sm);
     cursor: pointer;
     transition: all var(--transition-fast);
     font-size: 13px;
     margin-bottom: 4px;
+    color: var(--iot-color-text-secondary);
 
     &:hover {
       background: var(--iot-glass-bg-hover);
+      color: var(--iot-color-primary);
     }
 
     .palette-icon {
@@ -470,7 +480,7 @@ onMounted(() => {
   min-width: 0;
   overflow: auto;
   position: relative;
-  padding: 4px;
+  padding: var(--space-sm);
 }
 
 .empty-canvas {
@@ -482,19 +492,19 @@ onMounted(() => {
 }
 
 .config-panel {
-  width: 260px;
+  width: 280px;
   flex-shrink: 0;
-  padding: 12px;
+  padding: var(--space-md);
   overflow-y: auto;
 
   .panel-title {
     display: flex;
     align-items: center;
     gap: 6px;
-    font-size: 12px;
+    font-size: 11px;
     color: var(--iot-color-text-muted);
-    margin-bottom: 12px;
-    text-transform: uppercase;
+    margin-bottom: var(--space-md);
+    font-weight: 600;
     letter-spacing: 0.5px;
   }
 
@@ -507,28 +517,30 @@ onMounted(() => {
 
 .widget-card {
   height: 100%;
-  border: 1px solid var(--iot-glass-border);
-  border-radius: var(--radius-md);
-  background: var(--iot-glass-bg);
+  border: 1px solid var(--iot-color-border-light);
+  border-radius: var(--radius-sm);
+  background: var(--iot-color-bg-card);
   display: flex;
   flex-direction: column;
   overflow: hidden;
   cursor: move;
+  transition: border-color var(--transition-fast);
 
   &.selected {
     border-color: var(--iot-color-primary);
-    box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.2);
+    box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.15);
   }
 
   .widget-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 4px 8px;
+    padding: 6px 10px;
     font-size: 12px;
     font-weight: 600;
-    border-bottom: 1px solid var(--iot-glass-border);
+    border-bottom: 1px solid var(--iot-color-border-light);
     flex-shrink: 0;
+    color: var(--iot-color-text-secondary);
 
     .widget-delete {
       opacity: 0;

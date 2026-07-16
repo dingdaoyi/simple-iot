@@ -292,6 +292,36 @@ h6 {
     box-shadow: none;
     transform: none !important;
   }
+
+  // ponytail: text/link buttons must not inherit gradient backgrounds
+  &.is-text,
+  &.is-link {
+    background: transparent;
+    border: none;
+    box-shadow: none;
+    transform: none;
+
+    &:hover {
+      background: var(--iot-glass-bg-hover);
+      transform: none;
+    }
+
+    &.el-button--primary {
+      color: var(--iot-color-primary);
+    }
+    &.el-button--danger {
+      color: var(--iot-color-danger);
+      &:hover {
+        background: rgba(239, 68, 68, 0.1);
+      }
+    }
+    &.el-button--success {
+      color: var(--iot-color-success);
+    }
+    &.el-button--warning {
+      color: var(--iot-color-warning);
+    }
+  }
 }
 
 /* ============================================

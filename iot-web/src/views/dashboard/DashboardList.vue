@@ -1,9 +1,6 @@
 <script setup>
 import { Delete, Edit, Plus, View } from '@element-plus/icons-vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
-/**
- * DashboardList - 仪表盘列表 + 预览
- */
 import { onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { dashboardDelete, dashboardList } from '@/api/dashboard'
@@ -60,9 +57,6 @@ onMounted(loadList)
           创建可视化面板，实时监控设备数据
         </p>
       </div>
-    </div>
-
-    <div class="action-bar">
       <el-button type="primary" :icon="Plus" @click="onCreate">
         新建仪表盘
       </el-button>
@@ -74,27 +68,27 @@ onMounted(loadList)
         :key="d.id"
         class="dashboard-card glass-card"
       >
-        <div class="card-header">
+        <div class="card-top">
           <span class="card-name">{{ d.name }}</span>
-          <el-tag v-if="d.isDefault" type="success" size="small">
+          <el-tag v-if="d.isDefault" type="success" size="small" effect="plain">
             默认
           </el-tag>
         </div>
-        <div class="card-desc">
+        <p class="card-desc">
           {{ d.description || '暂无描述' }}
-        </div>
+        </p>
         <div class="card-meta">
           <span>{{ d.layout?.length || 0 }} 个组件</span>
           <span>{{ d.updateTime }}</span>
         </div>
         <div class="card-actions">
-          <el-button :icon="View" text size="small" @click="onPreview(d)">
+          <el-button text size="small" :icon="View" @click="onPreview(d)">
             预览
           </el-button>
-          <el-button :icon="Edit" text type="primary" size="small" @click="onEdit(d.id)">
+          <el-button text type="primary" size="small" :icon="Edit" @click="onEdit(d.id)">
             编辑
           </el-button>
-          <el-button :icon="Delete" text type="danger" size="small" @click="onDelete(d)">
+          <el-button text type="danger" size="small" :icon="Delete" @click="onDelete(d)">
             删除
           </el-button>
         </div>
@@ -108,7 +102,6 @@ onMounted(loadList)
       </div>
     </div>
 
-    <!-- 预览弹窗 -->
     <el-dialog
       v-model="previewVisible"
       :title="previewDashboard?.name || '预览'"
@@ -152,27 +145,35 @@ onMounted(loadList)
 </template>
 
 <style scoped lang="scss">
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: var(--space-lg);
+}
+
 .dashboard-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-  gap: 16px;
-  padding: 0 0 16px;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: var(--space-lg);
+  padding-bottom: var(--space-xl);
 }
 
 .dashboard-card {
-  padding: 16px;
+  padding: var(--space-lg);
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: var(--space-sm);
 
-  .card-header {
+  .card-top {
     display: flex;
     justify-content: space-between;
     align-items: center;
 
     .card-name {
-      font-size: 16px;
+      font-size: 15px;
       font-weight: 600;
+      color: var(--iot-color-text-primary);
     }
   }
 
@@ -180,6 +181,8 @@ onMounted(loadList)
     font-size: 13px;
     color: var(--iot-color-text-secondary);
     min-height: 20px;
+    margin: 0;
+    line-height: 1.5;
   }
 
   .card-meta {
@@ -192,9 +195,10 @@ onMounted(loadList)
   .card-actions {
     display: flex;
     justify-content: flex-end;
-    gap: 4px;
-    border-top: 1px solid var(--iot-glass-border);
-    padding-top: 8px;
+    gap: 2px;
+    border-top: 1px solid var(--iot-color-border-light);
+    padding-top: var(--space-sm);
+    margin-top: auto;
   }
 }
 
@@ -211,17 +215,18 @@ onMounted(loadList)
 
 .preview-widget {
   height: 100%;
-  border: 1px solid var(--iot-glass-border);
-  border-radius: var(--radius-md);
+  border: 1px solid var(--iot-color-border-light);
+  border-radius: var(--radius-sm);
   display: flex;
   flex-direction: column;
   overflow: hidden;
 
   .widget-header {
-    padding: 4px 8px;
+    padding: 6px 10px;
     font-size: 12px;
     font-weight: 600;
-    border-bottom: 1px solid var(--iot-glass-border);
+    border-bottom: 1px solid var(--iot-color-border-light);
+    color: var(--iot-color-text-secondary);
   }
 
   .widget-body {
