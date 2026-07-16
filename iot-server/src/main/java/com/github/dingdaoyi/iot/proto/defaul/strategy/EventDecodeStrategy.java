@@ -29,6 +29,11 @@ public class EventDecodeStrategy extends AbstractMessageDecodeStrategy<MqttEvent
     }
 
     @Override
+    public Class<MqttEventMessage> bodyClass() {
+        return MqttEventMessage.class;
+    }
+
+    @Override
     public TypeReference<MqttMessage<MqttEventMessage>> typeReference() {
         return new TypeReference<>() {};
     }

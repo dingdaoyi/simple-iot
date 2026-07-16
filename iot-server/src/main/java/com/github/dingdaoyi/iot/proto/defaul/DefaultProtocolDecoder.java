@@ -64,7 +64,19 @@ public class DefaultProtocolDecoder implements ProtocolDecoder {
      */
     private <T> DecodeResult doDecode(MessageDecodeStrategy<T> strategy, String json,
                                        TslModel tslModel, String deviceKey) throws ProtocolException {
-        MqttMessage<T> message = JSONUtil.toBean(json, strategy.typeReference(), true);
+        // ponytail: hutool TypeReference loses generic T at runtime, parse manually
+        cn.hutool.json.JSONObject jsonObj = JSONUtil.parseObj(json);
+        MqttMessage<T> message = new MqttMessage<>();
+        MqttHeader header = jsonObj.getJSONObject("header") != null
+                ? jsonObj.getJSONObject("header").toBean(MqttHeader.class)
+                : new MqttHeader();
+        message.setHeader(header);
+        // body is parsed by the strategy's specific type
+        cn.hutool.json.JSONObject bodyObj = jsonObj.getJSONObject("body");
+        if (bodyObj != null) {
+            T body = bodyObj.toBean(strategy.bodyClass());
+            message.setBody(body);
+        }
         return strategy.decode(message, tslModel, deviceKey);
     }
 

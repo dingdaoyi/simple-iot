@@ -29,6 +29,11 @@ public class PropertyDecodeStrategy extends AbstractMessageDecodeStrategy<MqttPo
     }
 
     @Override
+    public Class<MqttPopMessage> bodyClass() {
+        return MqttPopMessage.class;
+    }
+
+    @Override
     public TypeReference<MqttMessage<MqttPopMessage>> typeReference() {
         return new TypeReference<>() {};
     }

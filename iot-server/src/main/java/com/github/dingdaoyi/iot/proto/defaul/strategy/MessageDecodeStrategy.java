@@ -25,6 +25,11 @@ public interface MessageDecodeStrategy<T> {
     TypeReference<MqttMessage<T>> typeReference();
 
     /**
+     * body 的具体 Class，用于 JSON 反序列化
+     */
+    Class<T> bodyClass();
+
+    /**
      * 解码消息
      * @param message MQTT 消息
      * @param tslModel 物模型

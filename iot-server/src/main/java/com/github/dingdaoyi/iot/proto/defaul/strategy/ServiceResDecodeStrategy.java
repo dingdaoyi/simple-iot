@@ -29,6 +29,11 @@ public class ServiceResDecodeStrategy extends AbstractMessageDecodeStrategy<Mqtt
     }
 
     @Override
+    public Class<MqttServiceResMessage> bodyClass() {
+        return MqttServiceResMessage.class;
+    }
+
+    @Override
     public TypeReference<MqttMessage<MqttServiceResMessage>> typeReference() {
         return new TypeReference<>() {};
     }
