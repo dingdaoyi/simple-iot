@@ -131,13 +131,36 @@ async function onSubmitTask() {
   loadTasks()
 }
 
-async function onTaskDetail(id) {
-  const res = await otaTaskGetApi(id)
-  taskDetail.value = res.data
-  taskDetailVisible.value = true
+const firmwareName = computed(() => id => firmwareList.value.find(f => f.id === id)?.name || `#${id}`)
+
+const taskDetailTimer = { current: null }
+
+function onTaskDetail(id) {
+  otaTaskGetApi(id).then((res) => {
+    taskDetail.value = res.data
+    taskDetailVisible.value = true
+    // ponytail: auto-refresh if task is still running
+    if (res.data && res.data.status === 'RUNNING') {
+      if (taskDetailTimer.current)
+        clearInterval(taskDetailTimer.current)
+      taskDetailTimer.current = setInterval(async () => {
+        const r = await otaTaskGetApi(id)
+        taskDetail.value = r.data
+        if (!r.data || r.data.status !== 'RUNNING') {
+          clearInterval(taskDetailTimer.current)
+          taskDetailTimer.current = null
+        }
+      }, 3000)
+    }
+  })
 }
 
-const firmwareName = computed(() => id => firmwareList.value.find(f => f.id === id)?.name || `#${id}`)
+function onTaskDetailClose() {
+  if (taskDetailTimer.current) {
+    clearInterval(taskDetailTimer.current)
+    taskDetailTimer.current = null
+  }
+}
 
 onMounted(() => {
   loadProducts()
@@ -299,7 +322,7 @@ onMounted(() => {
     </el-dialog>
 
     <!-- Task Detail Dialog -->
-    <el-dialog v-model="taskDetailVisible" title="升级任务详情" width="600px" destroy-on-close>
+    <el-dialog v-model="taskDetailVisible" title="升级任务详情" width="600px" destroy-on-close @close="onTaskDetailClose">
       <el-descriptions :column="2" border>
         <el-descriptions-item label="固件">
           {{ firmwareName(taskDetail?.firmwareId) }}

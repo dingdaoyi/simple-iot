@@ -27,3 +27,7 @@ export function otaTaskGetApi(id) {
 export function otaTaskCreateApi(params) {
   return request({ url: '/ota/task', method: 'post', params })
 }
+
+export function otaTaskReportApi(id, params) {
+  return request({ url: `/ota/task/${id}/report`, method: 'post', params })
+}

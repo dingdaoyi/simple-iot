@@ -16,6 +16,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -133,6 +134,16 @@ public class OtaController {
             return BaseResult.fail("请指定目标设备或分组");
         }
 
+        // 校验设备与固件产品一致性
+        List<Device> devices = deviceMapper.selectBatchIds(targets);
+        List<Integer> mismatched = devices.stream()
+                .filter(d -> !fw.getProductId().equals(d.getProductId()))
+                .map(d -> d.getId())
+                .collect(Collectors.toList());
+        if (!mismatched.isEmpty()) {
+            return BaseResult.fail("以下设备不属于该固件关联的产品，无法升级: " + mismatched);
+        }
+
         OtaTask task = new OtaTask();
         task.setFirmwareId(firmwareId);
         task.setGroupId(groupId);
@@ -147,20 +158,74 @@ public class OtaController {
         otaTaskMapper.insert(task);
 
         // 异步下发升级指令到每个设备
-        List<Device> devices = deviceMapper.selectBatchIds(targets);
+        dispatchOtaUpgrade(task, fw, devices);
+
+        return BaseResult.success(task);
+    }
+
+    @PostMapping("task/{id}/report")
+    @Operation(summary = "设备上报OTA升级结果")
+    public BaseResult<Boolean> reportUpgradeResult(
+            @PathVariable Integer id,
+            @RequestParam String deviceKey,
+            @RequestParam String status, // SUCCESS / FAIL
+            @RequestParam(required = false) String message) {
+        OtaTask task = otaTaskMapper.selectById(id);
+        if (task == null) return BaseResult.fail("升级任务不存在");
+        if (!"RUNNING".equals(task.getStatus())) return BaseResult.fail("任务已结束");
+
+        Device device = deviceMapper.selectOne(
+                new QueryWrapper<Device>().eq("device_key", deviceKey));
+        if (device == null) return BaseResult.fail("设备不存在: " + deviceKey);
+
+        Map<String, String> progress = task.getProgress();
+        if (progress == null) {
+            progress = new HashMap<>();
+            task.setProgress(progress);
+        }
+
+        String current = progress.get(String.valueOf(device.getId()));
+        if (current == null || "UPGRADING".equals(current)) {
+            progress.put(String.valueOf(device.getId()), status + (message != null ? ":" + message : ""));
+
+            if ("SUCCESS".equals(status)) {
+                task.setSuccess((task.getSuccess() != null ? task.getSuccess() : 0) + 1);
+            } else {
+                task.setFail((task.getFail() != null ? task.getFail() : 0) + 1);
+            }
+
+            // 检查是否全部完成
+            int completed = (task.getSuccess() != null ? task.getSuccess() : 0)
+                          + (task.getFail() != null ? task.getFail() : 0);
+            if (completed >= task.getTotal()) {
+                task.setStatus("COMPLETED");
+            }
+
+            otaTaskMapper.updateById(task);
+            log.info("OTA回报: task={}, device={}, status={}", id, deviceKey, status);
+        }
+
+        return BaseResult.success(true);
+    }
+
+    // ponytail: 异步下发，不阻塞 HTTP 响应
+    @Async
+    void dispatchOtaUpgrade(OtaTask task, Firmware fw, List<Device> devices) {
+        Map<String, String> progress = task.getProgress();
         for (Device dev : devices) {
             try {
                 Map<String, Object> params = new HashMap<>();
                 params.put("firmwareUrl", fw.getFilePath());
                 params.put("version", fw.getVersion());
                 params.put("checksum", fw.getChecksum());
+                params.put("taskId", task.getId());
                 serviceHandler.sendMessage(dev.getDeviceKey(), "ota_upgrade", params);
             } catch (Exception e) {
                 log.warn("OTA下发失败 device={}: {}", dev.getDeviceKey(), e.getMessage());
-                progress.put(String.valueOf(dev.getId()), "FAIL");
+                progress.put(String.valueOf(dev.getId()), "FAIL:" + e.getMessage());
+                task.setFail((task.getFail() != null ? task.getFail() : 0) + 1);
             }
         }
         otaTaskMapper.updateById(task);
-        return BaseResult.success(task);
     }
 }
