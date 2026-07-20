@@ -1,5 +1,5 @@
 <script lang="jsx" setup>
-import { ref, watch } from 'vue'
+import { computed, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { deviceAddApi, deviceEditeApi, manufacturerListApi, productListApi } from '@/api'
 import { useForm } from '@/composables/useForm.js'
@@ -11,6 +11,10 @@ const { t } = useI18n()
 
 const manufacturerListOpt = ref([])
 const productListOpt = ref([])
+// ponytail: filter out disabled types (status!=1) so cascade doesn't break on empty types
+const activeProductTypes = computed(() =>
+  (props.productTypeList || []).filter(p => p.status === 1 || p.status === undefined),
+)
 
 const rules = ref({
   productTypeId: [{ required: true, message: t('validate.required_field', { field: t('product.product_type') }), trigger: 'change' }],
@@ -96,7 +100,7 @@ watch(() => props.datas, (val) => {
           @change="changeProductType"
         >
           <el-option
-            v-for="item in productTypeList"
+            v-for="item in activeProductTypes"
             :key="item.id"
             :label="item.name"
             :value="item.id"

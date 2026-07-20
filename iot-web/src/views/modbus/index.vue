@@ -37,12 +37,14 @@ async function loadData() {
 }
 
 async function loadDevices(productId) {
-  if (!productId) {
-    devices.value = []
-    return
+  if (productId) {
+    const res = await deviceListApi({ productId })
+    devices.value = res.data || []
+  } else {
+    // ponytail: no productId filter = load all, so the dropdown isn't empty on add
+    const res = await deviceListApi({})
+    devices.value = res.data || []
   }
-  const res = await deviceListApi({ productId })
-  devices.value = res.data || []
 }
 
 function getDeviceName(deviceId) {
@@ -62,6 +64,7 @@ function onAdd() {
     enabled: true,
     registerMapText: '[]',
   })
+  loadDevices()
   dialogVisible.value = true
 }
 
@@ -77,14 +80,7 @@ function onEdit(row) {
     enabled: row.enabled,
     registerMapText: JSON.stringify(row.registerMap || [], null, 2),
   })
-  if (row.deviceId) {
-    const device = list.value.find(c => c.deviceId === row.deviceId)
-    if (device) {
-      const product = products.value.find(p => p.id === device.productId)
-      if (product)
-        loadDevices(product.id)
-    }
-  }
+  loadDevices()
   dialogVisible.value = true
 }
 

@@ -173,7 +173,7 @@ onMounted(() => {
               @change="changeProductType"
             >
               <el-option
-                v-for="item in productTypeList"
+                v-for="item in productTypeList.filter(p => p.status === 1 || p.status === undefined)"
                 :key="item.id"
                 :label="item.name"
                 :value="item.id"
