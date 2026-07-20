@@ -35,6 +35,8 @@ import java.time.ZoneId;
 import java.util.*;
 import java.util.stream.Stream;
 
+import org.springframework.beans.factory.annotation.Autowired;
+
 /**
  * @author dingyunwei
  */
@@ -42,7 +44,8 @@ import java.util.stream.Stream;
 @Slf4j
 public class InfluxDataProcessor implements DataProcessor, DeviceDataService {
 
-    @Resource
+    @Autowired(required = false)
+    @org.springframework.lang.Nullable
     private InfluxDBClient influxDBClient;
 
     private IotConfigProperties.InfluxDbProperties properties;
@@ -87,6 +90,7 @@ public class InfluxDataProcessor implements DataProcessor, DeviceDataService {
                 .setField("rowData", rowData)
                 .setTimestamp(Instant.now());
         log.info("保存事件信息;{}|{}", deviceKey, JSONUtil.toJsonStr(eventData));
+        if (influxDBClient == null) return;
         influxDBClient.writePoint(point);
     }
 
@@ -128,6 +132,7 @@ public class InfluxDataProcessor implements DataProcessor, DeviceDataService {
             }
         }
         log.info("保存属性信息;deviceKey={}|productKey={}|data={}", deviceKey, productKey, JSONUtil.toJsonStr(dataList));
+        if (influxDBClient == null) return;
         influxDBClient.writePoint(point);
     }
 
@@ -155,6 +160,7 @@ public class InfluxDataProcessor implements DataProcessor, DeviceDataService {
         String measurement = properties.getPropDatabase() + "_" + productKey.toLowerCase(Locale.ROOT);
 
         // 为每个属性单独查询最新值
+        if (influxDBClient == null) return dataList;
         for (TslProperty property : propertyList) {
             String identifier = property.getIdentifier();
             String sql = "select last_value(\"" + identifier + "\") as \"" + identifier + "\" from \"" + measurement + "\" where \"deviceKey\"=$deviceKey";
@@ -198,6 +204,7 @@ public class InfluxDataProcessor implements DataProcessor, DeviceDataService {
         String sqlParams = "select \"" + identifier + "\", time from \"" + measurement + "\" where \"deviceKey\"=$deviceKey" +
                 " and time >= $beginTime and time <= $endTime order by time asc";
 
+        if (influxDBClient == null) return dataList;
         try (Stream<PointValues> stream = influxDBClient.queryPoints(sqlParams, Map.of(
                 "deviceKey", query.getDeviceKey(),
                 "beginTime", toInfluxSqlTimestamp(query.getBeginTime()),
@@ -224,6 +231,7 @@ public class InfluxDataProcessor implements DataProcessor, DeviceDataService {
         if (StringUtils.isNotBlank(query.getIdentifier())) {
             params.put("identifier", query.getIdentifier());
         }
+        if (influxDBClient == null) return List.of();
         try (Stream<PointValues> stream = influxDBClient.queryPoints(sqlParams, params, queryOptions)) {
             return stream.map(DeviceEventDataVo::fromPointValues).toList();
         } catch (Exception e) {
