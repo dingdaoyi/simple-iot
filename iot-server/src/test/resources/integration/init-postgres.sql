@@ -287,3 +287,16 @@ CREATE TABLE IF NOT EXISTS tb_modbus_config (
     create_time timestamp DEFAULT CURRENT_TIMESTAMP,
     update_time timestamp DEFAULT CURRENT_TIMESTAMP
 );
+
+-- Webhook ingress
+CREATE TABLE IF NOT EXISTS tb_webhook_ingress (
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(100) NOT NULL,
+    token VARCHAR(64) NOT NULL UNIQUE,
+    secret VARCHAR(64) NOT NULL,
+    device_id INTEGER NOT NULL,
+    enabled BOOLEAN NOT NULL DEFAULT true,
+    description VARCHAR(500),
+    create_time timestamp DEFAULT CURRENT_TIMESTAMP,
+    update_time timestamp DEFAULT CURRENT_TIMESTAMP
+);

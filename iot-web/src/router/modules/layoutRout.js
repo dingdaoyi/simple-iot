@@ -39,6 +39,7 @@ const dashboardList = () => import('@/views/dashboard/DashboardList.vue')
 const dashboardEditor = () => import('@/views/dashboard/DashboardEditor.vue')
 const ota = () => import('@/views/ota/index.vue')
 const modbus = () => import('@/views/modbus/index.vue')
+const webhook = () => import('@/views/webhook/index.vue')
 
 export default [
   {
@@ -261,6 +262,27 @@ export default [
               title: 'Modbus TCP',
               i18nKey: 'menu.modbusManagement',
               icon: Connection,
+            },
+          },
+        ],
+      },
+      {
+        path: '/webhook',
+        name: 'webhook',
+        meta: {
+          title: 'Webhook',
+          i18nKey: 'menu.webhook',
+          icon: Promotion,
+        },
+        children: [
+          {
+            path: '/webhook',
+            name: 'webhookManagement',
+            component: webhook,
+            meta: {
+              title: 'Webhook',
+              i18nKey: 'menu.webhookManagement',
+              icon: Promotion,
             },
           },
         ],
