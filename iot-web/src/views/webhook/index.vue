@@ -28,6 +28,7 @@ const form = reactive({
   enabled: true,
   description: '',
 })
+const selectedProductId = ref(null)
 
 async function loadData() {
   loading.value = true
@@ -41,11 +42,8 @@ async function loadData() {
 }
 
 async function loadDevices(productId) {
-  if (!productId) {
-    devices.value = []
-    return
-  }
-  const res = await deviceListApi({ productId })
+  // ponytail: no productId = load all devices, not return empty
+  const res = await deviceListApi(productId ? { productId } : {})
   devices.value = res.data || []
 }
 
@@ -63,6 +61,8 @@ function onAdd() {
     enabled: true,
     description: '',
   })
+  loadDevices()
+  selectedProductId.value = null
   dialogVisible.value = true
 }
 
@@ -75,6 +75,8 @@ function onEdit(row) {
     enabled: row.enabled,
     description: row.description || '',
   })
+  loadDevices()
+  selectedProductId.value = null
   dialogVisible.value = true
 }
 
@@ -184,10 +186,10 @@ onMounted(loadData)
           <el-input v-model="form.name" :placeholder="t('webhook.namePlaceholder')" />
         </el-form-item>
         <el-form-item :label="t('webhook.device')">
-          <el-select v-model="form.deviceId" :placeholder="t('webhook.devicePlaceholder')" filterable style="width: 100%">
-            <el-option v-for="p in products" :key="p.id" :label="p.model" :value="p.id" @click="loadDevices(p.id)" />
+          <el-select v-model="selectedProductId" :placeholder="t('webhook.devicePlaceholder')" filterable clearable style="width: 100%; margin-bottom: 8px" @change="loadDevices(selectedProductId)">
+            <el-option v-for="p in products" :key="p.id" :label="p.model" :value="p.id" />
           </el-select>
-          <el-select v-if="form.deviceId" v-model="form.deviceId" :placeholder="t('webhook.devicePlaceholder')" filterable style="width: 100%; margin-top: 8px">
+          <el-select v-model="form.deviceId" :placeholder="t('webhook.devicePlaceholder')" filterable clearable style="width: 100%">
             <el-option v-for="d in devices" :key="d.id" :label="`${d.deviceName} (${d.deviceKey})`" :value="d.id" />
           </el-select>
         </el-form-item>

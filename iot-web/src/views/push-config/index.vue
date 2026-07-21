@@ -286,7 +286,7 @@ onMounted(() => {
           :type="testResult.success ? 'success' : 'error'"
           show-icon
           :closable="false"
-          ::title="t('push_config.testresult_message_testresult_success')"
+          :title="testResult.success ? t('push_config.testresult_message_testresult_success') : t('push_config.push_test_failed')"
         >
           <template v-if="testResult.responseBody" #default>
             <pre>{{ testResult.responseBody }}</pre>

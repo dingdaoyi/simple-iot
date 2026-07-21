@@ -38,7 +38,8 @@ async function loadProducts() {
 
 async function loadProductTypes() {
   const res = await productTypeListApi({})
-  productTypes.value = res.data || []
+  // ponytail: filter out disabled types so cascade doesn't break
+  productTypes.value = (res.data || []).filter(t => t.status === 1)
 }
 
 async function loadFirmware() {
