@@ -31,7 +31,7 @@ public interface AlarmService extends IService<Alarm> {
     boolean clearAlarm(Integer alarmId, String clearBy);
 
     /**
-     * 查找活动的告警
+     * 查找活动的告警（含抑制窗口内已清除的）
      */
     Optional<Alarm> findActiveAlarm(String deviceKey, String alarmType);
 

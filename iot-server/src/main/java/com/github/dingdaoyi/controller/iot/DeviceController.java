@@ -74,4 +74,26 @@ public class DeviceController {
         return BaseResult.success(deviceService.list(productTypeId,productId,deviceKey));
     }
 
+    @GetMapping("export")
+    @Operation(summary = "导出设备列表Excel")
+    public void export(jakarta.servlet.http.HttpServletResponse response,
+                      @RequestParam(required = false) Integer productId,
+                      @RequestParam(required = false) Integer productTypeId) {
+        List<Device> devices = deviceService.list(productTypeId, productId, null);
+        cn.hutool.poi.excel.ExcelWriter writer = cn.hutool.poi.excel.ExcelUtil.getWriter(true);
+        writer.addHeaderAlias("id", "ID");
+        writer.addHeaderAlias("deviceName", "设备名称");
+        writer.addHeaderAlias("deviceKey", "设备Key");
+        writer.addHeaderAlias("productId", "产品ID");
+        writer.addHeaderAlias("createTime", "创建时间");
+        writer.write(devices, true);
+        response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+        response.setHeader("Content-Disposition", "attachment;filename=devices.xlsx");
+        try (java.io.OutputStream out = response.getOutputStream()) {
+            writer.flush(out, true);
+        } catch (java.io.IOException e) {
+            throw new com.github.dingdaoyi.core.exception.BusinessException(ResultCode.BAD_REQUEST, "导出失败");
+        }
+    }
+
 }

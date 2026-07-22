@@ -11,6 +11,7 @@ import com.github.dingdaoyi.rule.RuleNodeExecutor;
 import com.github.dingdaoyi.rule.config.AlarmCreateConfig;
 import com.github.dingdaoyi.rule.config.NodeConfig;
 import com.github.dingdaoyi.service.AlarmService;
+import com.github.dingdaoyi.config.WebSocketSessionManager;
 import jakarta.annotation.Resource;
 import org.springframework.stereotype.Component;
 
@@ -29,6 +30,9 @@ public class AlarmCreateNode implements RuleNodeExecutor {
 
     @Resource
     private AlarmService alarmService;
+
+    @Resource
+    private WebSocketSessionManager wsManager;
 
     private static final Pattern TEMPLATE_PATTERN = Pattern.compile("\\$\\{(\\w+)}");
 
@@ -98,6 +102,16 @@ public class AlarmCreateNode implements RuleNodeExecutor {
         alarm.setDetails(details);
 
         alarmService.save(alarm);
+
+        // ponytail: fire-and-forget WS broadcast, null-safe for unit tests
+        if (wsManager != null) {
+            wsManager.broadcast("alarm", Map.of(
+            "alarmType", alarm.getAlarmType(),
+            "alarmName", alarm.getAlarmName(),
+            "severity", alarm.getSeverity().getName(),
+            "deviceKey", context.getDeviceKey(),
+            "message", alarm.getMessage()));
+        }
 
         String detail = String.format("创建告警: %s [%s]", alarm.getAlarmName(), severity.getName());
         return RuleNodeExecutor.NodeResult.success(detail);

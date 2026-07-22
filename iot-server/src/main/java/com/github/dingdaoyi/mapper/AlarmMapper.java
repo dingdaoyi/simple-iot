@@ -23,8 +23,9 @@ public interface AlarmMapper extends BaseMapper<Alarm> {
     Page<AlarmPageVo> pageByQuery(Page<AlarmPageVo> page, @Param("query") AlarmPageQuery query);
 
     /**
-     * 查找活动的告警
+     * 查找活动的告警（含抑制窗口内已清除的）
      */
     Optional<Alarm> findActiveAlarm(@Param("deviceKey") String deviceKey,
-                                     @Param("alarmType") String alarmType);
+                                     @Param("alarmType") String alarmType,
+                                     @Param("suppressionSeconds") int suppressionSeconds);
 }
