@@ -10,6 +10,7 @@ import java.util.Optional;
  */
 public interface UserService extends IService<User>{
 
-
     Optional<User> getByUsername(String username);
+
+    boolean changePassword(Integer userId, String oldPassword, String newPassword);
 }

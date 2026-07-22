@@ -12,6 +12,15 @@ export function Index(data) {
   })
 }
 
+// 修改密码
+export function changePasswordApi(data) {
+  return request({
+    url: '/user/changePassword',
+    method: 'post',
+    data,
+  })
+}
+
 export function productTypeListApi(params) {
   return request({
     url: '/product/type',
