@@ -269,7 +269,7 @@ public class InfluxDataProcessor implements DataProcessor, DeviceDataService {
         if (deviceOptional.isEmpty()) {
             return new ArrayList<>();
         }
-        String productKey = deviceOptional.get().getProductKey();
+        String productKey = deviceOptional.get().getProductKey().trim();
         String measurement = properties.getPropDatabase() + "_" + productKey.toLowerCase(Locale.ROOT);
         String identifier = query.getIdentifier();
         String fn = query.getFunction() != null ? query.getFunction().toLowerCase() : "avg";
@@ -302,7 +302,7 @@ public class InfluxDataProcessor implements DataProcessor, DeviceDataService {
                 dataList.add(new KeyValue<>(TimeUtils.toDateTimeStr(ts), val));
             });
         } catch (Exception e) {
-            log.debug("聚合查询出错:{}", e.getMessage());
+            log.warn("聚合查询出错:{}", e.getMessage());
         }
         return dataList;
     }
