@@ -160,21 +160,28 @@ public class InfluxDataProcessor implements DataProcessor, DeviceDataService {
         // 按产品区分的 measurement
         String measurement = properties.getPropDatabase() + "_" + productKey.toLowerCase(Locale.ROOT);
 
-        // 为每个属性单独查询最新值
+        // ponytail: 一次查询所有属性的 last_value，避免 N+1
         if (influxDBClient == null) return dataList;
-        for (TslProperty property : propertyList) {
-            String identifier = property.getIdentifier();
-            String sql = "select last_value(\"" + identifier + "\") as \"" + identifier + "\" from \"" + measurement + "\" where \"deviceKey\"=$deviceKey";
-            try (Stream<PointValues> stream = influxDBClient.queryPoints(sql, Map.of("deviceKey", deviceKey), queryOptions)) {
-                stream.findFirst().ifPresent(row -> {
-                    Object value = row.getField(identifier);
+        // 收集所有属性标识符
+        List<String> identifiers = propertyList.stream().map(TslProperty::getIdentifier).toList();
+        if (identifiers.isEmpty()) return dataList;
+
+        // 构建批量查询: SELECT last_value("field1") as "field1", last_value("field2") as "field2", ... 
+        String fields = identifiers.stream()
+                .map(id -> "last_value(\"" + id + "\") as \"" + id + "\"")
+                .collect(java.util.stream.Collectors.joining(", "));
+        String sql = "select " + fields + " from \"" + measurement + "\" where \"deviceKey\"=$deviceKey";
+        try (Stream<PointValues> stream = influxDBClient.queryPoints(sql, Map.of("deviceKey", deviceKey), queryOptions)) {
+            stream.findFirst().ifPresent(row -> {
+                for (String id : identifiers) {
+                    Object value = row.getField(id);
                     if (value != null) {
-                        dataList.add(new KeyValue<>(identifier, value));
+                        dataList.add(new KeyValue<>(id, value));
                     }
-                });
-            } catch (Exception e) {
-                log.warn("查询属性 {} 出错:{}", identifier, e.getMessage());
-            }
+                }
+            });
+        } catch (Exception e) {
+            log.warn("批量查询属性出错:{}|measurement={}", e.getMessage(), measurement);
         }
         return dataList;
     }

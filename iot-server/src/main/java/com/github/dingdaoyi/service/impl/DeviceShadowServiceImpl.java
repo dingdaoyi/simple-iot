@@ -4,6 +4,8 @@ import cn.hutool.core.util.StrUtil;
 import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.github.dingdaoyi.core.enums.ResultCode;
+import com.github.dingdaoyi.core.exception.BusinessException;
 import com.github.dingdaoyi.entity.DeviceShadow;
 import com.github.dingdaoyi.mapper.DeviceShadowMapper;
 import com.github.dingdaoyi.service.DeviceShadowService;
@@ -29,9 +31,18 @@ public class DeviceShadowServiceImpl extends ServiceImpl<DeviceShadowMapper, Dev
         DeviceShadow shadow = getOrCreate(deviceId);
         JSONObject existing = parseJson(shadow.getDesiredState());
         existing.putAll(desired);
+        int oldVersion = shadow.getVersion();
+        boolean ok = lambdaUpdate()
+                .eq(DeviceShadow::getDeviceId, deviceId)
+                .eq(DeviceShadow::getVersion, oldVersion)
+                .set(DeviceShadow::getDesiredState, existing.toString())
+                .set(DeviceShadow::getVersion, oldVersion + 1)
+                .update();
+        if (!ok) {
+            throw new BusinessException(ResultCode.BAD_REQUEST, "影子版本冲突，请重试");
+        }
+        shadow.setVersion(oldVersion + 1);
         shadow.setDesiredState(existing.toString());
-        shadow.setVersion(shadow.getVersion() + 1);
-        updateById(shadow);
         log.info("设备影子 desired 更新;deviceId={}|version={}", deviceId, shadow.getVersion());
         return shadow;
     }
@@ -41,9 +52,18 @@ public class DeviceShadowServiceImpl extends ServiceImpl<DeviceShadowMapper, Dev
         DeviceShadow shadow = getOrCreate(deviceId);
         JSONObject existing = parseJson(shadow.getReportedState());
         existing.putAll(reported);
+        int oldVersion = shadow.getVersion();
+        boolean ok = lambdaUpdate()
+                .eq(DeviceShadow::getDeviceId, deviceId)
+                .eq(DeviceShadow::getVersion, oldVersion)
+                .set(DeviceShadow::getReportedState, existing.toString())
+                .set(DeviceShadow::getVersion, oldVersion + 1)
+                .update();
+        if (!ok) {
+            throw new BusinessException(ResultCode.BAD_REQUEST, "影子版本冲突，请重试");
+        }
+        shadow.setVersion(oldVersion + 1);
         shadow.setReportedState(existing.toString());
-        shadow.setVersion(shadow.getVersion() + 1);
-        updateById(shadow);
         return shadow;
     }
 
@@ -51,9 +71,16 @@ public class DeviceShadowServiceImpl extends ServiceImpl<DeviceShadowMapper, Dev
     public void clearDesired(Integer deviceId) {
         DeviceShadow shadow = getByDeviceId(deviceId).orElse(null);
         if (shadow != null) {
-            shadow.setDesiredState("{}");
-            shadow.setVersion(shadow.getVersion() + 1);
-            updateById(shadow);
+            int oldVersion = shadow.getVersion();
+            boolean ok = lambdaUpdate()
+                    .eq(DeviceShadow::getDeviceId, deviceId)
+                    .eq(DeviceShadow::getVersion, oldVersion)
+                    .set(DeviceShadow::getDesiredState, "{}")
+                    .set(DeviceShadow::getVersion, oldVersion + 1)
+                    .update();
+            if (!ok) {
+                throw new BusinessException(ResultCode.BAD_REQUEST, "影子版本冲突，请重试");
+            }
         }
     }
 

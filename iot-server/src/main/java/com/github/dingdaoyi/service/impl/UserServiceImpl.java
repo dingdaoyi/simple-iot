@@ -6,6 +6,7 @@ import com.github.dingdaoyi.core.exception.BusinessException;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
+import java.util.regex.Pattern;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.github.dingdaoyi.mapper.UserMapper;
@@ -38,21 +39,15 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         return updateById(user);
     }
 
+    private static final Pattern PWD_PATTERN =
+            Pattern.compile("^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d).{8,}$");
+
     /**
      * 密码复杂度校验: 8位+大小写+数字
      */
     public static void validatePassword(String password) {
-        if (password == null || password.length() < 8) {
-            throw new BusinessException(ResultCode.BAD_REQUEST, "密码至少8位");
-        }
-        if (!password.matches(".*[A-Z].*")) {
-            throw new BusinessException(ResultCode.BAD_REQUEST, "密码需包含大写字母");
-        }
-        if (!password.matches(".*[a-z].*")) {
-            throw new BusinessException(ResultCode.BAD_REQUEST, "密码需包含小写字母");
-        }
-        if (!password.matches(".*\\d.*")) {
-            throw new BusinessException(ResultCode.BAD_REQUEST, "密码需包含数字");
+        if (password == null || !PWD_PATTERN.matcher(password).matches()) {
+            throw new BusinessException(ResultCode.BAD_REQUEST, "密码需至少8位，包含大小写字母和数字");
         }
     }
 }
