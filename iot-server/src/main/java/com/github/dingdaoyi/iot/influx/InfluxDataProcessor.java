@@ -144,7 +144,7 @@ public class InfluxDataProcessor implements DataProcessor, DeviceDataService {
             return new ArrayList<>();
         }
         DeviceDTO deviceDTO = dtoOptional.get();
-        String productKey = deviceDTO.getProductKey();
+        String productKey = deviceDTO.getProductKey().trim();
 
         Optional<TslModel> optional = tslModelService.findByProductKey(productKey);
         if (optional.isEmpty()) {
@@ -173,7 +173,7 @@ public class InfluxDataProcessor implements DataProcessor, DeviceDataService {
                     }
                 });
             } catch (Exception e) {
-                log.debug("查询属性 {} 出错:{}", identifier, e.getMessage());
+                log.warn("查询属性 {} 出错:{}", identifier, e.getMessage());
             }
         }
         return dataList;
@@ -192,8 +192,7 @@ public class InfluxDataProcessor implements DataProcessor, DeviceDataService {
         if (deviceOptional.isEmpty()) {
             return new ArrayList<>();
         }
-        String productKey = deviceOptional.get().getProductKey();
-
+        String productKey = deviceOptional.get().getProductKey().trim();
         List<KeyValue<String, Object>> dataList = new ArrayList<>();
         QueryOptions queryOptions = new QueryOptions(properties.getDatabase(), QueryType.SQL);
 
@@ -213,7 +212,7 @@ public class InfluxDataProcessor implements DataProcessor, DeviceDataService {
 
             stream.forEach(row -> dataList.add(new KeyValue<>(TimeUtils.toDateTimeStr(row.getTimestamp()), row.getField(identifier))));
         } catch (Exception e) {
-            log.debug("查询出错:{}", e.getMessage());
+            log.warn("查询出错:{}", e.getMessage());
         }
         return dataList;
     }
@@ -297,9 +296,9 @@ public class InfluxDataProcessor implements DataProcessor, DeviceDataService {
                 "beginTime", toInfluxSqlTimestamp(query.getBeginTime()),
                 "endTime", toInfluxSqlTimestamp(query.getEndTime())), queryOptions)) {
             stream.forEach(row -> {
-                var ts = row.getTimestamp();
                 var val = row.getField("value");
-                dataList.add(new KeyValue<>(TimeUtils.toDateTimeStr(ts), val));
+                var bucket = row.getField("bucket");
+                dataList.add(new KeyValue<>(String.valueOf(bucket), val));
             });
         } catch (Exception e) {
             log.warn("聚合查询出错:{}", e.getMessage());
