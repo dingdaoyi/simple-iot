@@ -10,6 +10,7 @@ import com.github.dingdaoyi.core.enums.ResultCode;
 import com.github.dingdaoyi.core.exception.BusinessException;
 import com.github.dingdaoyi.model.query.DeviceDataQuery;
 import com.github.dingdaoyi.model.query.DeviceEventDataVo;
+import com.github.dingdaoyi.model.query.TelemetryAggQuery;
 import com.github.dingdaoyi.proto.model.DecodeResult;
 import com.github.dingdaoyi.proto.model.DeviceData;
 import com.github.dingdaoyi.proto.model.DeviceEventData;
@@ -260,5 +261,49 @@ public class InfluxDataProcessor implements DataProcessor, DeviceDataService {
             current = current.getCause();
         }
         return false;
+    }
+
+    @Override
+    public List<KeyValue<String, Object>> aggregate(TelemetryAggQuery query) {
+        Optional<DeviceDTO> deviceOptional = deviceService.getByDeviceKey(query.getDeviceKey());
+        if (deviceOptional.isEmpty()) {
+            return new ArrayList<>();
+        }
+        String productKey = deviceOptional.get().getProductKey();
+        String measurement = properties.getPropDatabase() + "_" + productKey.toLowerCase(Locale.ROOT);
+        String identifier = query.getIdentifier();
+        String fn = query.getFunction() != null ? query.getFunction().toLowerCase() : "avg";
+        // ponytail: whitelist to prevent SQL injection from user-provided function name
+        if (!java.util.Set.of("avg", "min", "max", "sum", "count").contains(fn)) {
+            fn = "avg";
+        }
+        String interval = query.getInterval();
+        // ponytail: whitelist interval to prevent injection
+        if (!java.util.Set.of("1m", "5m", "10m", "30m", "1h", "6h", "1d").contains(interval)) {
+            interval = "1h";
+        }
+
+        String sql = "select date_bin(INTERVAL '" + interval + "', time, TIMESTAMP '1970-01-01T00:00:00Z') as bucket, "
+                + fn + "(\"" + identifier + "\") as value "
+                + "from \"" + measurement + "\" "
+                + "where \"deviceKey\"=$deviceKey and time >= $beginTime and time <= $endTime "
+                + "group by bucket order by bucket asc";
+
+        List<KeyValue<String, Object>> dataList = new ArrayList<>();
+        QueryOptions queryOptions = new QueryOptions(properties.getDatabase(), QueryType.SQL);
+        if (influxDBClient == null) return dataList;
+        try (Stream<PointValues> stream = influxDBClient.queryPoints(sql, Map.of(
+                "deviceKey", query.getDeviceKey(),
+                "beginTime", toInfluxSqlTimestamp(query.getBeginTime()),
+                "endTime", toInfluxSqlTimestamp(query.getEndTime())), queryOptions)) {
+            stream.forEach(row -> {
+                var ts = row.getTimestamp();
+                var val = row.getField("value");
+                dataList.add(new KeyValue<>(TimeUtils.toDateTimeStr(ts), val));
+            });
+        } catch (Exception e) {
+            log.debug("聚合查询出错:{}", e.getMessage());
+        }
+        return dataList;
     }
 }

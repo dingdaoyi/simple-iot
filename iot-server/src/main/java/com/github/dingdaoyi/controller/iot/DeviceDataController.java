@@ -4,6 +4,7 @@ package com.github.dingdaoyi.controller.iot;
 import com.github.dingdaoyi.core.base.BaseResult;
 import com.github.dingdaoyi.model.query.DeviceDataQuery;
 import com.github.dingdaoyi.model.query.DeviceEventDataVo;
+import com.github.dingdaoyi.model.query.TelemetryAggQuery;
 import com.github.dingdaoyi.proto.model.KeyValue;
 import com.github.dingdaoyi.service.DeviceDataService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -44,5 +45,12 @@ public class DeviceDataController {
     public BaseResult<List<DeviceEventDataVo>> eventLog(@RequestBody DeviceDataQuery query) {
         List<DeviceEventDataVo> deviceEventDataVos = deviceDataService.eventLogs(query);
         return BaseResult.success(deviceEventDataVos);
+    }
+
+    @PostMapping("property/aggregate")
+    @Operation(summary = "设备属性聚合查询")
+    public BaseResult<List<KeyValue<String, Object>>> aggregate(@RequestBody @jakarta.validation.Valid TelemetryAggQuery query) {
+        List<KeyValue<String, Object>> result = deviceDataService.aggregate(query);
+        return BaseResult.success(result);
     }
 }
