@@ -1,228 +1,273 @@
 # Simple IoT 平台成熟度评估与迭代规划
 
-> 最后更新：2026-07-22  
-> 维护者：simple-iot 团队  
-> 评估视角：从物联网平台**完整能力矩阵**出发，不仅看已有 ROADMAP，而是对标成熟 IoT 平台（ThingsBoard / 消智云）的核心能力
+> 最后更新：2026-07-22 (Sprint 1 完成后)
+> 维护者：simple-iot 团队
+> 评估视角：从物联网平台**完整能力矩阵**出发，对标 ThingsBoard / 消智云 / KubeEdge
 
 ---
 
-## 📊 成熟度总览
+## 📊 当前平台资产盘点
 
-| 能力域 | 成熟度 | 说明 |
-|--------|--------|------|
-| 🟢 **设备接入** | 80% | MQTT/HTTP/Modbus TCP 已有，OPC UA/CoAP/LwM2M 缺失 |
-| 🟡 **设备管理** | 60% | 基础 CRUD + 分组/标签，缺**影子**、**拓扑**、**批量指令** |
-| 🟢 **物模型** | 85% | 属性/服务/事件完整，缺**子设备物模型**、**动态扩展** |
-| 🟢 **协议解析** | 90% | Java/JS/Groovy/Lua 热加载，缺**可视化脚本调试器** |
-| 🟡 **规则引擎** | 70% | 可视化编排 + 12 种节点，缺**定时触发**、**批处理节点** |
-| 🟢 **告警中心** | 75% | 四级告警 + 清除机制，缺**告警抑制**、**升级策略** |
-| 🟡 **时序存储** | 65% | InfluxDB 3 写入 + Caffeine 缓存，缺**聚合查询 API**、**降采样** |
-| 🔴 **可视化** | 30% | 仅统计卡片，缺**自定义仪表板**、**设备轨迹地图** |
-| 🟡 **通知推送** | 60% | 邮件/短信/HTTP，缺**钉钉/企微/飞书**、**语音通知** |
-| 🔴 **多租户** | 0% | 全局单租户，无 tenant_id / 配额隔离 |
-| 🟡 **权限控制** | 55% | Sa-Token RBAC，缺**数据权限**、**API 级限流** |
-| 🟢 **OTA升级** | 80% | 固件上传 + 分组推送，缺**差分包**、**断点续传** |
-| 🟡 **数据存储** | 60% | 时序 + RustFS S3，缺**冷热分离**、**自动归档** |
-| 🔴 **边缘计算** | 0% | 无边缘侧 agent / 本地规则引擎 |
-| 🟡 **运维监控** | 50% | Prometheus 指标，缺**链路追踪**、**慢查询分析** |
+### 代码规模
+| 维度 | 数量 |
+|------|------|
+| Java 文件 | 349 |
+| Vue/JS 文件 | 89 |
+| 数据库表 | 32 |
+| Controller | 33 (123 endpoints) |
+| Service 实现 | 24 |
+| 规则引擎节点 | 13 种 |
+| 前端页面 | 50 |
+| 协议驱动 | 4 (MQTT/HTTP/TCP/Modbus) |
+| 数据库迁移 | 12 个 |
+| 单元测试 | 179 (全部通过) |
 
-**总体评分：62%** — 已具备**轻量级 IoT 平台核心框架**，距离**生产级商业平台**还有 4-5 个迭代周期。
+### 已有能力矩阵
+
+| 能力域 | 成熟度 | 已实现 | 缺失 |
+|--------|--------|--------|------|
+| 🔵 **设备接入** | 80% | MQTT Broker、HTTP Webhook、TCP Server、Modbus TCP 轮询 | OPC UA、CoAP、LwM2M、MQTT TLS |
+| 🟢 **设备管理** | 70% | CRUD、分组、标签、设备影子(desired/reported) | 网关-子设备拓扑、批量指令、设备生命周期事件 |
+| 🟢 **物模型** | 85% | 属性/服务/事件、Java/JS/Groovy/Lua 协议解析 | 子设备物模型、物模型版本管理 |
+| 🟢 **规则引擎** | 72% | 可视化编排、13 种节点、调试日志、执行日志 | **定时触发节点**、批处理节点、规则链版本管理 |
+| 🟡 **告警中心** | 75% | 四级告警、创建/清除、告警评论 | **告警抑制**、升级策略、告警分组聚合 |
+| 🟡 **时序存储** | 70% | InfluxDB 3 写入、批量 last_value 查询、date_bin 聚合、Caffeine 实时缓存 | 降采样、冷热分离、数据归档 |
+| 🟡 **可视化** | 55% | **拖拽式仪表板编辑器**、5 种组件(折线图/柱状图/仪表盘/数值卡/数据表) | **实时推送(WebSocket/SSE)**、地图、视频流、组件市场 |
+| 🟡 **通知推送** | 55% | 邮件、短信、HTTP Webhook(HMAC 签名) | 钉钉/企微/飞书、语音通知、推送模板管理 |
+| 🟢 **OTA 升级** | 80% | 固件上传、OTA 任务、分组推送、RustFS S3 存储 | 差分包、断点续传、灰度发布 |
+| 🔴 **多租户** | 0% | 无 tenant_id、无数据隔离 | 完全缺失 |
+| 🟡 **认证授权** | 65% | Sa-Token、密码复杂度、首次改密、7天 Token | 数据权限、API 限流、审计日志 |
+| 🟢 **数据保留** | 65% | DataRetentionService(90天告警/30天日志) | InfluxDB TTL、按表配置、归档到 S3 |
+| 🔴 **边缘计算** | 0% | 无 | 完全缺失 |
+| 🟡 **运维监控** | 50% | Prometheus 指标、Docker Compose | 链路追踪、慢查询分析、健康检查面板 |
+
+**总体评分：65%** — Sprint 1 后提升 3 个百分点。核心框架已成型，但距离生产级商业部署还有 **3-4 个迭代周期**。
 
 ---
 
-## 🚨 关键缺失能力（按优先级）
+## 🚨 关键缺失能力（按 IoT 平台标准重新评估）
 
-### 🔴 P0 - 生产就绪阻塞项
+### 🔴 第一梯队：生产阻塞（不做不能上生产）
 
-| # | 能力 | 当前状态 | 影响 | 目标状态 |
-|---|------|----------|------|----------|
-| **P0-4** | 认证强化 | admin/123456 明文，无密码策略 | ⚠️ 生产部署必被入侵 | JWT 过期 + 首次登录强制改密 + 复杂度校验 |
-| **P0-8** | 设备影子 | 无 | 离线设备状态无法保持，移动网络场景不可用 | 设备期望状态 + 上报状态 + 差量下发 |
-| **P0-9** | 数据聚合 API | InfluxDB 只有原始写入，无查询封装 | 前端无法绘制趋势图 | `/device/{id}/telemetry/agg?interval=1h&fn=avg` |
+| # | 能力 | 当前状态 | 影响 | 工作量 |
+|---|------|----------|------|--------|
+| **R1** | **实时数据推送** | 仪表板 30s 轮询，无 WebSocket/SSE | 运维人员看不到实时告警，体验差 | 2天 |
+| **R2** | **API 限流 + 审计日志** | 无任何限流，无操作记录 | 接口可被刷爆，出问题无法追溯 | 2天 |
+| **R3** | **告警抑制** | 每条告警独立触发 | 掉线设备每秒一条告警，短信轰炸 | 1天 |
 
-### 🟡 P1 - 用户高频诉求
+### 🟡 第二梯队：用户高频诉求（不做不好用）
 
-| # | 能力 | 原 ROADMAP | 补充需求 |
-|---|------|-----------|----------|
-| **P1-1** | 多租户 | ✅ 已列入 | ⚠️ 需**数据权限引擎**（租户隔离 + 部门隔离） |
-| **P1-5** | 自定义仪表板 | ✅ 已列入 | 需**组件库**：折线图/仪表盘/地图/表格/视频流 |
-| **P1-7** | 移动端 UI | ✅ 已列入 | 需**响应式布局** + **PWA 离线** + **扫码绑定** |
-| **P1-9** | 批量指令 | ❌ 缺失 | 选中 100 台设备 → 一键重启/升级/配置下发 |
-| **P1-10** | 设备拓扑 | ❌ 缺失 | 网关-子设备树形关系，子设备通过网关通信 |
-| **P1-11** | 定时规则 | ❌ 缺失 | 定时触发规则链（如每晚 23:00 检查告警） |
+| # | 能力 | 当前状态 | 用户场景 | 工作量 |
+|---|------|----------|----------|--------|
+| **R4** | **批量设备指令** | 只能逐台操作 | 选中 100 台设备一键重启/配置下发 | 3天 |
+| **R5** | **定时规则触发** | 13 种节点无定时类型 | 每晚 23:00 检查离线设备、每小时统计 | 2天 |
+| **R6** | **设备拓扑(网关-子设备)** | ProductType.parentId 是分类树，不是拓扑树 | 网关下挂 10 个 Modbus 从站 | 4天 |
+| **R7** | **钉钉/企微/飞书推送** | 只有邮件/短信/HTTP webhook | 企业用户 90% 用钉钉/企微告警 | 2天 |
+| **R8** | **数据导出** | 无 | 导出设备列表 Excel、导出告警 CSV | 1天 |
 
-### 🟢 P2 - 协议与集成
-
-| # | 能力 | 原 ROADMAP | 补充需求 |
-|---|------|-----------|----------|
-| **P2-1** | Modbus TCP | ✅ 已实现 | ✅ 已验证可用 |
-| **P2-2** | OPC UA | ✅ 已列入 | Eclipse Milo 客户端 + 订阅机制 |
-| **P2-4** | HTTP Webhook | ✅ 已实现 | ✅ HMAC 签名验证已有 |
-| **P2-7** | 第三方推送 | ❌ 缺失 | 钉钉机器人 / 企业微信 / 飞书 webhook |
-| **P2-8** | 数据转发 | ❌ 缺失 | Kafka / MQTT Bridge / HTTP 批量推送 |
-
-### 🔵 P3 - 高级特性
+### 🟢 第三梯队：锦上添花（有更好，没有不影响用）
 
 | # | 能力 | 说明 |
 |---|------|------|
-| **P3-1** | 影子设备差量下发 | 只推送变更字段，节省流量 |
-| **P3-2** | 时序数据降采样 | 1年前数据自动按小时聚合 |
-| **P3-3** | 告警抑制规则 | 同设备同类型告警 5min 内只发一次 |
-| **P3-4** | 规则链性能分析 | 每个节点执行耗时统计 + 瓶颈标红 |
-| **P3-5** | 设备轨迹回放 | GPS 设备历史轨迹地图动画 |
-| **P3-6** | 边缘计算网关 | Go 写的轻量 agent，本地执行规则链 |
+| **R9** | 仪表板实时推送 | 用 WebSocket 替代 30s 轮询 |
+| **R10** | 设备轨迹地图 | GPS 设备轨迹回放 |
+| **R11** | 时序数据降采样 | 1年前数据自动按小时聚合 |
+| **R12** | OPC UA 协议 | Eclipse Milo 客户端 |
+| **R13** | CoAP 协议 | Californium 框架，NB-IoT 场景 |
+| **R14** | 数据转发 Kafka | 规则节点 KafkaOutputNode |
+| **R15** | 多租户 | tenant_id + TenantLineHandler |
 
 ---
 
-## 📋 重新规划的迭代路线
+## 📋 重新规划的迭代路线（Sprint 2-5）
 
-### 🎯 Sprint 1: 生产就绪补完（2周）
-**目标：让平台可以安全上生产**
+### 🎯 Sprint 2: 实时性与安全加固（1.5周）
 
-- [ ] **P0-4 认证强化**
-  - JWT refresh token + 7天过期
-  - 首次登录强制改密（User 表加 `force_change_pwd` 字段）
-  - 密码复杂度校验（8位+大小写+数字）
-  
-- [ ] **P0-8 设备影子基础版**
-  - 新表 `tb_device_shadow`（device_id, desired_state JSONB, reported_state JSONB, version, updated_at）
-  - API: `POST /device/{id}/shadow/desired` + `GET /device/{id}/shadow`
-  - MQTT topic: `shadow/{productKey}/{deviceKey}/update`
-  
-- [ ] **P0-9 时序数据聚合 API**
-  - `DeviceDataController.queryAggregated(deviceId, propertyKey, start, end, interval, function)`
-  - InfluxDB Flux 查询封装：`aggregateWindow(every: 1h, fn: mean)`
-  - 前端折线图组件对接
+**目标：让平台"活起来"——实时推送 + 安全闭环**
+
+#### R1: WebSocket 实时推送
+```
+后端:
+- WebSocketConfig + WebSocketHandler
+- /ws/telemetry — 设备属性变更推送
+- /ws/alarm — 告警实时推送
+- 规则引擎 InputPropertyNode 执行后广播到 WebSocket
+
+前端:
+- DashboardEditor WidgetRenderer: 替换 setInterval 为 WebSocket 订阅
+- 告警页面实时刷新
+```
+
+#### R2: API 限流 + 审计日志
+```
+限流:
+- Sa-Token 注解 @SaCheckSafe 或自定义 RateLimitInterceptor
+- 登录接口 5次/分钟，普通接口 100次/分钟
+- Bucket4j 内存令牌桶（不引 Redis，保持简单）
+
+审计:
+- 新表 tb_audit_log (user_id, action, resource, resource_id, detail, ip, create_time)
+- AOP 切面 @AuditLog 自动记录 Controller 操作
+- 审计日志查看页面
+```
+
+#### R3: 告警抑制
+```
+- AlarmCreateNode 修改: 创建前检查同设备+同类型+5min内已有活动告警
+- 配置项: alarm.suppression.window-seconds = 300
+- 告警升级: warning 级别 30min 未清除 -> 升级为 critical
+```
 
 **验收标准：**
-- ✅ 演示服务器改掉默认密码 admin/Admin@2026
-- ✅ 离线设备上线后拉取影子配置生效
-- ✅ 仪表板绘制温度 24h 趋势图
+- ✅ 仪表板组件数据延迟 < 2 秒
+- ✅ 暴力登录 5 次后被限流
+- ✅ 同设备连续掉线 5 分钟内只告警 1 次
 
 ---
 
-### 🎯 Sprint 2: 核心交互增强（2周）
-**目标：提升运维效率**
+### 🎯 Sprint 3: 运维效率提升（2周）
 
-- [ ] **P1-9 批量设备指令**
-  - 设备列表多选 → "批量操作" 下拉菜单
-  - 后端 `DeviceCommandService.batchSendCommand(List<Integer> deviceIds, String serviceKey, Map<String, Object> params)`
-  - 进度追踪表 `tb_batch_task`（状态：pending/running/success/failed）
-  
-- [ ] **P1-10 设备拓扑（网关-子设备）**
-  - Device 表加 `parent_id`（网关 ID）
-  - 新表 `tb_device_topology`（parent_id, child_id, bind_time）
-  - 子设备数据上报路径：网关设备协议脚本解析 → 路由到子设备
-  
-- [ ] **P1-11 定时规则触发**
-  - 新节点类型 `ScheduleTriggerNode`（cron 表达式）
-  - RuleChainEngine 启动时注册 ScheduledExecutorService
-  - 定时触发生成虚拟消息进入规则链
+**目标：让运维人员"少点击"——批量操作 + 定时规则 + IM 推送**
+
+#### R4: 批量设备指令
+```
+后端:
+- DeviceCommandService.batchSend(List<Integer> deviceIds, String serviceKey, Map params)
+- 新表 tb_batch_task (id, type, target_ids JSON, status, total, success, failed, create_time)
+- 异步执行 + 进度查询 API: GET /device/batch-task/{id}
+
+前端:
+- 设备列表多选框
+- 批量操作下拉: 重启 / 配置下发 / OTA 升级
+- 进度弹窗: 50/100 完成，3 失败
+```
+
+#### R5: 定时规则触发
+```
+- 新规则节点: ScheduleTriggerNode
+  - cron 表达式配置
+  - 触发后生成虚拟消息进入规则链
+- RuleChainEngine 启动时注册 ScheduledExecutorService
+- 前端规则编辑器: 节点配置面板增加 cron 选择器
+```
+
+#### R6: 设备拓扑（网关-子设备）
+```
+- Device 表加 parent_id (nullable, 网关设备 ID)
+- 新表 tb_device_topology (parent_id, child_id, bind_time, connection_type)
+- 网关协议脚本解析后路由到子设备: 子设备 deviceKey = 网关deviceKey + "/" + 子设备地址
+- 前端: 设备详情页增加"子设备"Tab
+```
+
+#### R7: 钉钉/企微/飞书推送
+```
+- 新表 tb_im_push_config (platform, webhook_url, secret, enabled)
+- ImPushService: 钉钉机器人 / 企微 / 飞书 webhook
+- 告警规则节点: 增加推送渠道选择
+- 前端: 系统设置 -> 推送配置 -> 新增 IM 推送 Tab
+```
+
+#### R8: 数据导出
+```
+- 后端: /device/export (Excel), /alarm/export (Excel/CSV)
+- 使用 Hutool ExcelWriter
+- 前端: 列表页增加"导出"按钮
+```
 
 **验收标准：**
-- ✅ 选中 50 台设备一键重启，进度条显示完成度
-- ✅ 一个网关下挂 10 个 Modbus 从站，数据正常上报
-- ✅ 每晚 23:00 自动检查所有设备离线状态并告警
+- ✅ 选中 50 台设备一键重启，进度条显示
+- ✅ 创建定时规则每晚 23:00 检查离线设备
+- ✅ 告警推送到钉钉群
+- ✅ 导出设备列表 Excel
 
 ---
 
-### 🎯 Sprint 3: 可视化与移动端（3周）
-**目标：让平台"看起来像个平台"**
+### 🎯 Sprint 4: 可视化增强 + 移动端（2周）
 
-- [ ] **P1-5 自定义仪表板 v1**
-  - 新表 `tb_dashboard`（name, layout JSON, widgets JSON）
-  - 组件库（前端 Vue）：
-    - 数值卡片（实时值 + 对比昨日）
-    - 折线图（ECharts + 时序聚合 API）
-    - 仪表盘（温度/压力/转速）
-    - 表格（设备列表 + 状态）
-  - 拖拽布局（grid-layout）
-  
-- [ ] **P1-7 移动端响应式**
-  - Element Plus 表格改为移动端卡片列表
-  - 侧边栏改抽屉
-  - 添加 PWA manifest.json + service worker
-  
-- [ ] **P3-5 设备轨迹地图（如果有 GPS 设备）**
-  - 高德地图 / Mapbox GL JS
-  - 播放控件：播放/暂停/速度调节
+**目标：让平台"看起来像个产品"**
+
+#### 仪表板增强
+```
+- 新增组件: 设备状态网格（绿/红圆点矩阵）
+- 新增组件: 告警列表（最近 10 条）
+- 新增组件: 设备地图（如果有 GPS 属性）
+- WebSocket 实时数据源（Sprint 2 基础上）
+- 组件标题自定义 + 颜色主题
+- 仪表板模板: 预置"设备总览""告警监控""车间大屏"模板
+```
+
+#### 移动端响应式
+```
+- Element Plus 表格 -> 移动端卡片列表
+- 侧边栏 -> 抽屉模式
+- PWA: manifest.json + service worker
+- 扫码绑定设备（可选）
+```
 
 **验收标准：**
 - ✅ 创建"车间监控"仪表板，6 个组件实时刷新
 - ✅ 手机浏览器访问，所有页面可操作
-- ✅ GPS 设备轨迹地图回放（如无 GPS 设备，降为 P4）
 
 ---
 
-### 🎯 Sprint 4: 企业级特性（3周）
+### 🎯 Sprint 5: 协议扩展 + 企业级（3周）
+
 **目标：支撑中小型商用部署**
 
-- [ ] **P1-1 多租户架构**
-  - 所有业务表加 `tenant_id BIGINT`
-  - MyBatis-Plus TenantLineHandler 自动注入 WHERE 条件
-  - 新表 `tb_tenant`（配额：max_devices, max_rules, storage_quota_gb）
-  - 超级管理员租户切换功能
-  
-- [ ] **P2-7 第三方推送集成**
-  - 钉钉机器人 / 企业微信 / 飞书 webhook
-  - 告警推送选择通道
-  
-- [ ] **P3-3 告警抑制**
-  - 同设备 + 同类型 + 5min 内 → 只发一次
-  - 告警升级：warning → 30min 未清除 → critical
+#### 协议扩展
+```
+- OPC UA 客户端 (Eclipse Milo)
+- CoAP 服务器 (Californium)
+- 数据转发: KafkaOutputNode 规则节点
+```
 
-**验收标准：**
-- ✅ 租户 A 看不到租户 B 的设备
-- ✅ 告警推送到钉钉群
-- ✅ 同设备连续掉线不会短信轰炸
+#### 多租户架构
+```
+- 所有业务表加 tenant_id BIGINT DEFAULT 1
+- MyBatis-Plus TenantLineHandler 自动注入 WHERE
+- 新表 tb_tenant (name, max_devices, max_rules, storage_quota_gb)
+- 超级管理员租户切换
+```
 
----
-
-### 🎯 Sprint 5: 协议与驱动扩展（2周）
-
-- [ ] **P2-2 OPC UA 客户端**
-  - Eclipse Milo 集成
-  - OPC UA 连接配置页面（endpoint / security policy）
-  - 节点订阅 → 数据上报到设备
-  
-- [ ] **P2-3 CoAP 服务器**
-  - Californium 框架
-  - CoAP POST `/telemetry` 接收数据
-  
-- [ ] **P2-8 数据转发 Kafka**
-  - 新规则节点 `KafkaOutputNode`
-  - 配置页面：bootstrap.servers / topic / 序列化格式
-
-**验收标准：**
-- ✅ 连接 KEPServerEX，读取 PLC 数据
-- ✅ NB-IoT 模组通过 CoAP 上报
-- ✅ 所有设备数据实时转发到 Kafka
-
----
-
-### 🎯 Sprint 6+: 长期演进
-
-- **边缘计算**：Go 写的边缘 agent，拉取规则链本地执行
-- **AI 集成**：异常检测模型（Prophet / LSTM）+ 预测性维护
-- **数据分析**：Spark / Flink 离线 / 实时分析任务
-- **SaaS 化**：付费套餐 + Stripe 集成 + 用量计费
+#### 时序数据降采样
+```
+- InfluxDB Continuous Query 或定时任务
+- 1年前数据自动按小时聚合
+- 原始数据归档到 RustFS
+```
 
 ---
 
 ## 🎬 下一步行动
 
-**立即启动 Sprint 1，目标 2 周内完成：**
+### 立即启动 Sprint 2（1.5 周）
 
-1. **P0-4 认证强化** — 今天开始，预计 3 天
-2. **P0-8 设备影子** — 第 4-8 天，核心功能
-3. **P0-9 时序聚合 API** — 第 9-12 天，前端对接
-4. 全部完成后 → 部署到演示服务器 → 写 CHANGELOG v0.2.0
+按优先级排序：
 
-**开工顺序：**
+1. **R3 告警抑制** — 1天，改动最小但效果最直接
+2. **R2 API 限流 + 审计日志** — 2天，安全基线
+3. **R1 WebSocket 实时推送** — 2天，体验提升最大
+4. **R8 数据导出** — 1天，顺手做
+
+### Sprint 2 开工
+
 ```bash
 cd ~/IdeaProjects/sample-iot
-git checkout -b feat/sprint1-production-ready
-# 先做 P0-4 认证强化（影响最小，快速见效）
+git checkout -b feat/sprint2-realtime-security
+# 先做 R3 告警抑制（改动集中在 AlarmCreateNode，1天内完成）
 ```
 
-需要我立即开始执行吗？
+---
+
+## 📝 Sprint 1 完成总结
+
+| 任务 | 状态 | 验证 |
+|------|------|------|
+| P0-4 认证强化 | ✅ 完成 | Admin@2026 + force_change_pwd + 7天 token |
+| P0-8 设备影子 | ✅ 完成 | desired/reported API + 乐观锁 |
+| P0-9 时序聚合 API | ✅ 完成 | date_bin 聚合，前端图表对接 |
+| P0 影子乐观锁修复 | ✅ 完成 | version in WHERE clause |
+| P1 InfluxDB N+1 修复 | ✅ 完成 | 批量 last_value 查询 |
+| P1 密码正则预编译 | ✅ 完成 | 单个 static Pattern |
+| init.sql 密码同步 | ✅ 完成 | force_change_pwd 列 + 正确 hash |
+| 部署验证 | ✅ 完成 | 179 测试通过，演示服务器在线 |
