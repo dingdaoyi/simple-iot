@@ -118,6 +118,8 @@ simple:
         topic-prefix: simpleiot
     demo:
       seed-enabled: ${SIMPLE_IOT_DEMO_SEED_ENABLED:false}
+      publisher-enabled: ${SIMPLE_IOT_DEMO_PUBLISHER_ENABLED:false}
+      publisher-interval-ms: ${SIMPLE_IOT_DEMO_PUBLISHER_INTERVAL_MS:15000}
     device-channel-type: single
     retention:
       alarm-days: 90

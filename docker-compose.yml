@@ -90,6 +90,9 @@ services:
       MANAGEMENT_HEALTH_MAIL_ENABLED: ${MANAGEMENT_HEALTH_MAIL_ENABLED:-false}
       # Optional demo telemetry seed for a populated first-run dashboard and MQTT smoke test
       SIMPLE_IOT_DEMO_SEED_ENABLED: ${SIMPLE_IOT_DEMO_SEED_ENABLED:-true}
+      # Optional demo telemetry publisher - periodically injects simulated data so the dashboard is live
+      SIMPLE_IOT_DEMO_PUBLISHER_ENABLED: ${SIMPLE_IOT_DEMO_PUBLISHER_ENABLED:-true}
+      SIMPLE_IOT_DEMO_PUBLISHER_INTERVAL_MS: ${SIMPLE_IOT_DEMO_PUBLISHER_INTERVAL_MS:-15000}
     ports:
       # 公网：仅 MQTT TCP，给 IoT 设备直连
       - "${MQTT_PORT:-1883}:1883"
