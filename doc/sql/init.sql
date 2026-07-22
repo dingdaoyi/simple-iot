@@ -694,7 +694,8 @@ CREATE TABLE "public"."tb_user" (
   "enabled" bool NOT NULL DEFAULT true,
   "account_non_expired" bool NOT NULL DEFAULT true,
   "account_non_locked" bool NOT NULL DEFAULT true,
-  "credentials_non_expired" bool NOT NULL DEFAULT true
+  "credentials_non_expired" bool NOT NULL DEFAULT true,
+  "force_change_pwd" bool NOT NULL DEFAULT true
 )
 ;
 ALTER TABLE "public"."tb_user" OWNER TO "postgres";
@@ -703,7 +704,7 @@ ALTER TABLE "public"."tb_user" OWNER TO "postgres";
 -- Records of tb_user
 -- ----------------------------
 BEGIN;
-INSERT INTO "public"."tb_user" ("id", "username", "password", "enabled", "account_non_expired", "account_non_locked", "credentials_non_expired") VALUES (1, 'admin', '$2a$10$2HnXpeo7MPQZdDKWca489uylXm1T1VS7OKSYR2jeFgdOFwuIKJJtq', 't', 't', 't', 't');
+INSERT INTO "public"."tb_user" ("id", "username", "password", "enabled", "account_non_expired", "account_non_locked", "credentials_non_expired", "force_change_pwd") VALUES (1, 'admin', '$2a$10$6g2lLkAoNyU3e7Dfx2yfRe1I185SG52q/h.eB8WmyT.PJIxn0i6we', 't', 't', 't', 't', 't');
 COMMIT;
 
 -- ----------------------------

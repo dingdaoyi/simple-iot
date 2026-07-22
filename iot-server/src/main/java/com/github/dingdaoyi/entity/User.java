@@ -43,6 +43,10 @@ public class User  {
     @Schema(description="")
     private Boolean credentialsNonExpired;
 
+    @TableField(value = "force_change_pwd")
+    @Schema(description="是否需要强制修改密码")
+    private Boolean forceChangePwd;
+
     public boolean isLocked() {
         return BooleanUtil.isFalse(accountNonLocked);
     }

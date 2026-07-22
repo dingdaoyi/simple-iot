@@ -6,6 +6,7 @@ import cn.dev33.satoken.stp.StpUtil;
 import com.github.dingdaoyi.entity.User;
 import com.github.dingdaoyi.core.base.BaseResult;
 import com.github.dingdaoyi.core.enums.ResultCode;
+import com.github.dingdaoyi.model.query.ChangePasswordQuery;
 import com.github.dingdaoyi.model.query.LoginQuery;
 import com.github.dingdaoyi.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -14,6 +15,8 @@ import jakarta.annotation.Resource;
 import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 
 /**
@@ -28,7 +31,7 @@ public class UserController {
 
     @PostMapping("login")
     @Operation(summary  = "登录")
-    public BaseResult<SaTokenInfo> doLogin(@RequestBody @Valid LoginQuery loginQuery) {
+    public BaseResult<Map<String, Object>> doLogin(@RequestBody @Valid LoginQuery loginQuery) {
         Optional<User> optional = userService.getByUsername(loginQuery.getUsername());
         if (optional.isPresent()) {
             User user = optional.get();
@@ -37,13 +40,24 @@ public class UserController {
             }
             if (BCrypt.checkpw(loginQuery.getPassword(), user.getPassword())) {
                 StpUtil.login(user.getId());
-                // 在登录时缓存 user 对象
                 StpUtil.getSession().set("user", user);
-                return BaseResult.success(StpUtil.getTokenInfo());
+                SaTokenInfo tokenInfo = StpUtil.getTokenInfo();
+                Map<String, Object> data = new HashMap<>();
+                data.put("tokenInfo", tokenInfo);
+                data.put("forceChangePwd", Boolean.TRUE.equals(user.getForceChangePwd()));
+                return BaseResult.success(data);
             }
             return BaseResult.fail(ResultCode.BAD_REQUEST.getCode(), "登录密码错误");
         }
         return BaseResult.fail(ResultCode.BAD_REQUEST.getCode(), "账号不存在");
     }
 
+    @PostMapping("changePassword")
+    @Operation(summary = "修改密码")
+    public BaseResult<Void> changePassword(@RequestBody @Valid ChangePasswordQuery query) {
+        Integer userId = Integer.parseInt(StpUtil.getLoginIdAsString());
+        userService.changePassword(userId, query.getOldPassword(), query.getNewPassword());
+        StpUtil.logout();
+        return BaseResult.success();
+    }
 }

@@ -12,6 +12,15 @@ export function Index(data) {
   })
 }
 
+// 修改密码
+export function changePasswordApi(data) {
+  return request({
+    url: '/user/changePassword',
+    method: 'post',
+    data,
+  })
+}
+
 export function productTypeListApi(params) {
   return request({
     url: '/product/type',
@@ -520,6 +529,43 @@ export function deviceEventLogsApi(data) {
     url: `/device/data/event/logs`,
     method: 'post',
     data,
+  })
+}
+
+/**
+ * 设备属性聚合查询
+ * @param data { deviceKey, identifier, beginTime, endTime, interval, function }
+ */
+export function deviceDataAggregateApi(data) {
+  return request({
+    url: `/device/data/property/aggregate`,
+    method: 'post',
+    data,
+  })
+}
+
+/**
+ * 设备影子
+ */
+export function deviceShadowApi(deviceId) {
+  return request({
+    url: `/device/shadow/${deviceId}`,
+    method: 'get',
+  })
+}
+
+export function deviceShadowUpdateDesiredApi(deviceId, data) {
+  return request({
+    url: `/device/shadow/${deviceId}/desired`,
+    method: 'post',
+    data,
+  })
+}
+
+export function deviceShadowClearDesiredApi(deviceId) {
+  return request({
+    url: `/device/shadow/${deviceId}/desired`,
+    method: 'delete',
   })
 }
 

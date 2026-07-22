@@ -10,6 +10,7 @@ import com.github.dingdaoyi.core.enums.ResultCode;
 import com.github.dingdaoyi.core.exception.BusinessException;
 import com.github.dingdaoyi.model.query.DeviceDataQuery;
 import com.github.dingdaoyi.model.query.DeviceEventDataVo;
+import com.github.dingdaoyi.model.query.TelemetryAggQuery;
 import com.github.dingdaoyi.proto.model.DecodeResult;
 import com.github.dingdaoyi.proto.model.DeviceData;
 import com.github.dingdaoyi.proto.model.DeviceEventData;
@@ -143,7 +144,7 @@ public class InfluxDataProcessor implements DataProcessor, DeviceDataService {
             return new ArrayList<>();
         }
         DeviceDTO deviceDTO = dtoOptional.get();
-        String productKey = deviceDTO.getProductKey();
+        String productKey = deviceDTO.getProductKey().trim();
 
         Optional<TslModel> optional = tslModelService.findByProductKey(productKey);
         if (optional.isEmpty()) {
@@ -159,21 +160,28 @@ public class InfluxDataProcessor implements DataProcessor, DeviceDataService {
         // 按产品区分的 measurement
         String measurement = properties.getPropDatabase() + "_" + productKey.toLowerCase(Locale.ROOT);
 
-        // 为每个属性单独查询最新值
+        // ponytail: 一次查询所有属性的 last_value，避免 N+1
         if (influxDBClient == null) return dataList;
-        for (TslProperty property : propertyList) {
-            String identifier = property.getIdentifier();
-            String sql = "select last_value(\"" + identifier + "\") as \"" + identifier + "\" from \"" + measurement + "\" where \"deviceKey\"=$deviceKey";
-            try (Stream<PointValues> stream = influxDBClient.queryPoints(sql, Map.of("deviceKey", deviceKey), queryOptions)) {
-                stream.findFirst().ifPresent(row -> {
-                    Object value = row.getField(identifier);
+        // 收集所有属性标识符
+        List<String> identifiers = propertyList.stream().map(TslProperty::getIdentifier).toList();
+        if (identifiers.isEmpty()) return dataList;
+
+        // 构建批量查询: SELECT last_value("field1") as "field1", last_value("field2") as "field2", ... 
+        String fields = identifiers.stream()
+                .map(id -> "last_value(\"" + id + "\") as \"" + id + "\"")
+                .collect(java.util.stream.Collectors.joining(", "));
+        String sql = "select " + fields + " from \"" + measurement + "\" where \"deviceKey\"=$deviceKey";
+        try (Stream<PointValues> stream = influxDBClient.queryPoints(sql, Map.of("deviceKey", deviceKey), queryOptions)) {
+            stream.findFirst().ifPresent(row -> {
+                for (String id : identifiers) {
+                    Object value = row.getField(id);
                     if (value != null) {
-                        dataList.add(new KeyValue<>(identifier, value));
+                        dataList.add(new KeyValue<>(id, value));
                     }
-                });
-            } catch (Exception e) {
-                log.debug("查询属性 {} 出错:{}", identifier, e.getMessage());
-            }
+                }
+            });
+        } catch (Exception e) {
+            log.warn("批量查询属性出错:{}|measurement={}", e.getMessage(), measurement);
         }
         return dataList;
     }
@@ -191,8 +199,7 @@ public class InfluxDataProcessor implements DataProcessor, DeviceDataService {
         if (deviceOptional.isEmpty()) {
             return new ArrayList<>();
         }
-        String productKey = deviceOptional.get().getProductKey();
-
+        String productKey = deviceOptional.get().getProductKey().trim();
         List<KeyValue<String, Object>> dataList = new ArrayList<>();
         QueryOptions queryOptions = new QueryOptions(properties.getDatabase(), QueryType.SQL);
 
@@ -212,7 +219,7 @@ public class InfluxDataProcessor implements DataProcessor, DeviceDataService {
 
             stream.forEach(row -> dataList.add(new KeyValue<>(TimeUtils.toDateTimeStr(row.getTimestamp()), row.getField(identifier))));
         } catch (Exception e) {
-            log.debug("查询出错:{}", e.getMessage());
+            log.warn("查询出错:{}", e.getMessage());
         }
         return dataList;
     }
@@ -260,5 +267,49 @@ public class InfluxDataProcessor implements DataProcessor, DeviceDataService {
             current = current.getCause();
         }
         return false;
+    }
+
+    @Override
+    public List<KeyValue<String, Object>> aggregate(TelemetryAggQuery query) {
+        Optional<DeviceDTO> deviceOptional = deviceService.getByDeviceKey(query.getDeviceKey());
+        if (deviceOptional.isEmpty()) {
+            return new ArrayList<>();
+        }
+        String productKey = deviceOptional.get().getProductKey().trim();
+        String measurement = properties.getPropDatabase() + "_" + productKey.toLowerCase(Locale.ROOT);
+        String identifier = query.getIdentifier();
+        String fn = query.getFunction() != null ? query.getFunction().toLowerCase() : "avg";
+        // ponytail: whitelist to prevent SQL injection from user-provided function name
+        if (!java.util.Set.of("avg", "min", "max", "sum", "count").contains(fn)) {
+            fn = "avg";
+        }
+        String interval = query.getInterval();
+        // ponytail: whitelist interval to prevent injection
+        if (!java.util.Set.of("1m", "5m", "10m", "30m", "1h", "6h", "1d").contains(interval)) {
+            interval = "1h";
+        }
+
+        String sql = "select date_bin(INTERVAL '" + interval + "', time, TIMESTAMP '1970-01-01T00:00:00Z') as bucket, "
+                + fn + "(\"" + identifier + "\") as value "
+                + "from \"" + measurement + "\" "
+                + "where \"deviceKey\"=$deviceKey and time >= $beginTime and time <= $endTime "
+                + "group by bucket order by bucket asc";
+
+        List<KeyValue<String, Object>> dataList = new ArrayList<>();
+        QueryOptions queryOptions = new QueryOptions(properties.getDatabase(), QueryType.SQL);
+        if (influxDBClient == null) return dataList;
+        try (Stream<PointValues> stream = influxDBClient.queryPoints(sql, Map.of(
+                "deviceKey", query.getDeviceKey(),
+                "beginTime", toInfluxSqlTimestamp(query.getBeginTime()),
+                "endTime", toInfluxSqlTimestamp(query.getEndTime())), queryOptions)) {
+            stream.forEach(row -> {
+                var val = row.getField("value");
+                var bucket = row.getField("bucket");
+                dataList.add(new KeyValue<>(String.valueOf(bucket), val));
+            });
+        } catch (Exception e) {
+            log.warn("聚合查询出错:{}", e.getMessage());
+        }
+        return dataList;
     }
 }
