@@ -20,6 +20,7 @@ import com.github.dingdaoyi.proto.model.tsl.TslProperty;
 import com.github.dingdaoyi.service.DeviceDataService;
 import com.github.dingdaoyi.service.DeviceService;
 import com.github.dingdaoyi.service.TslModelService;
+import com.github.dingdaoyi.config.WebSocketSessionManager;
 import com.influxdb.v3.client.InfluxDBClient;
 import com.influxdb.v3.client.Point;
 import com.influxdb.v3.client.PointValues;
@@ -56,6 +57,9 @@ public class InfluxDataProcessor implements DataProcessor, DeviceDataService {
 
     @Resource
     private DeviceService deviceService;
+
+    @Resource
+    private WebSocketSessionManager wsManager;
 
     @Resource
     public void setProperties(IotConfigProperties properties) {
@@ -135,6 +139,10 @@ public class InfluxDataProcessor implements DataProcessor, DeviceDataService {
         log.info("保存属性信息;deviceKey={}|productKey={}|data={}", deviceKey, productKey, JSONUtil.toJsonStr(dataList));
         if (influxDBClient == null) return;
         influxDBClient.writePoint(point);
+        // ponytail: fire-and-forget WS broadcast, null-safe for unit tests
+        if (wsManager != null) {
+            wsManager.broadcast("telemetry", Map.of("deviceKey", deviceKey, "properties", dataList));
+        }
     }
 
     @Override

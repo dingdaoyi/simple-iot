@@ -25,7 +25,8 @@
         SELECT * FROM tb_alarm
         WHERE device_key = #{deviceKey}
           AND alarm_type = #{alarmType}
-          AND status = 'ACTIVE'
+          AND (status = 'ACTIVE'
+               OR (status = 'CLEARED' AND clear_ts > NOW() - (#{suppressionSeconds} || ' seconds')::interval))
         ORDER BY start_ts DESC
         LIMIT 1
     </select>

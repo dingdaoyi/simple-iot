@@ -3,6 +3,7 @@ package com.github.dingdaoyi.controller.system;
 import cn.dev33.satoken.secure.BCrypt;
 import cn.dev33.satoken.stp.SaTokenInfo;
 import cn.dev33.satoken.stp.StpUtil;
+import com.github.dingdaoyi.config.AuditLog;
 import com.github.dingdaoyi.entity.User;
 import com.github.dingdaoyi.core.base.BaseResult;
 import com.github.dingdaoyi.core.enums.ResultCode;
@@ -31,6 +32,7 @@ public class UserController {
 
     @PostMapping("login")
     @Operation(summary  = "登录")
+    @AuditLog(action = "LOGIN", resource = "USER")
     public BaseResult<Map<String, Object>> doLogin(@RequestBody @Valid LoginQuery loginQuery) {
         Optional<User> optional = userService.getByUsername(loginQuery.getUsername());
         if (optional.isPresent()) {
@@ -54,6 +56,7 @@ public class UserController {
 
     @PostMapping("changePassword")
     @Operation(summary = "修改密码")
+    @AuditLog(action = "CHANGE_PASSWORD", resource = "USER")
     public BaseResult<Void> changePassword(@RequestBody @Valid ChangePasswordQuery query) {
         Integer userId = Integer.parseInt(StpUtil.getLoginIdAsString());
         userService.changePassword(userId, query.getOldPassword(), query.getNewPassword());

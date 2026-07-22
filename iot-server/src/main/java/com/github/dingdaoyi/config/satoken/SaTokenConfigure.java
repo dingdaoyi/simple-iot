@@ -2,6 +2,7 @@ package com.github.dingdaoyi.config.satoken;
 
 import cn.dev33.satoken.interceptor.SaInterceptor;
 import cn.dev33.satoken.stp.StpUtil;
+import com.github.dingdaoyi.config.RateLimitInterceptor;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Configuration;
@@ -41,10 +42,17 @@ public class SaTokenConfigure implements WebMvcConfigurer {
     @Resource
     private SsoProperties ssoProperties;
 
+    @Resource
+    private RateLimitInterceptor rateLimitInterceptor;
+
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
         SaInterceptor interceptor = new SaInterceptor(handle -> StpUtil.checkLogin());
         registry.addInterceptor(interceptor).addPathPatterns("/**")
+                .excludePathPatterns(DEFAULT_SKIP_URL)
+                .excludePathPatterns(ssoProperties.getSkipUrl());
+        // ponytail: 120 req/min per IP, in-memory. Redis bucket for multi-node.
+        registry.addInterceptor(rateLimitInterceptor).addPathPatterns("/**")
                 .excludePathPatterns(DEFAULT_SKIP_URL)
                 .excludePathPatterns(ssoProperties.getSkipUrl());
     }

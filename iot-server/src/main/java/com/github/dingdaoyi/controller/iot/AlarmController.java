@@ -1,6 +1,7 @@
 package com.github.dingdaoyi.controller.iot;
 
 import com.github.dingdaoyi.auth.AuthUtil;
+import com.github.dingdaoyi.config.AuditLog;
 import com.github.dingdaoyi.core.base.BaseResult;
 import com.github.dingdaoyi.core.base.PageResult;
 import com.github.dingdaoyi.core.enums.ResultCode;
@@ -73,6 +74,7 @@ public class AlarmController {
 
     @PutMapping("{id}/clear")
     @Operation(summary = "清除告警")
+    @AuditLog(action = "CLEAR", resource = "ALARM")
     public BaseResult<Boolean> clear(@PathVariable Integer id,
                                       @RequestBody(required = false) Map<String, String> body) {
         String clearBy = AuthUtil.getUsername();
@@ -90,6 +92,7 @@ public class AlarmController {
 
     @PutMapping("{id}/escalate")
     @Operation(summary = "升级告警严重程度")
+    @AuditLog(action = "ESCALATE", resource = "ALARM")
     public BaseResult<Boolean> escalate(@PathVariable Integer id,
                                          @RequestBody Map<String, String> body) {
         Alarm alarm = alarmService.getById(id);
@@ -144,5 +147,33 @@ public class AlarmController {
                 .map(s -> Map.of("value", s.name(), "label", s.getName()))
                 .toList()
         ));
+    }
+
+    @GetMapping("export")
+    @Operation(summary = "导出告警列表Excel")
+    public void export(jakarta.servlet.http.HttpServletResponse response) {
+        List<Alarm> alarms = alarmService.list(
+            new com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper<Alarm>()
+                .orderByDesc(Alarm::getStartTs)
+                .last("LIMIT 1000"));
+        cn.hutool.poi.excel.ExcelWriter writer = cn.hutool.poi.excel.ExcelUtil.getWriter(true);
+        writer.addHeaderAlias("id", "ID");
+        writer.addHeaderAlias("alarmType", "告警类型");
+        writer.addHeaderAlias("alarmName", "告警名称");
+        writer.addHeaderAlias("severity", "严重程度");
+        writer.addHeaderAlias("status", "状态");
+        writer.addHeaderAlias("message", "告警消息");
+        writer.addHeaderAlias("deviceKey", "设备Key");
+        writer.addHeaderAlias("deviceName", "设备名称");
+        writer.addHeaderAlias("startTs", "开始时间");
+        writer.addHeaderAlias("clearTs", "清除时间");
+        writer.write(alarms, true);
+        response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+        response.setHeader("Content-Disposition", "attachment;filename=alarms.xlsx");
+        try (java.io.OutputStream out = response.getOutputStream()) {
+            writer.flush(out, true);
+        } catch (java.io.IOException e) {
+            throw new com.github.dingdaoyi.core.exception.BusinessException(ResultCode.BAD_REQUEST, "导出失败");
+        }
     }
 }

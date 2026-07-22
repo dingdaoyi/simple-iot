@@ -65,6 +65,7 @@ sa-token:
       - /user/login
       - /dict/**
       - /webhook/**
+      - /ws/**
 
 mybatis-plus:
   configuration:
@@ -124,6 +125,9 @@ simple:
     retention:
       alarm-days: 90
       push-log-days: 30
+    alarm:
+      suppression-seconds: 300
+      escalation-minutes: 30
     influxdb:
       url: ${INFLUXDB_URL:http://127.0.0.1:8086}
       token: ${INFLUXDB_TOKEN:Evc2GMqMqWS}
