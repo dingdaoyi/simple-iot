@@ -15,6 +15,8 @@ public record RegisterMapping(
     double scale
 ) {
     public DataTypeEnum toDataType() {
+        // ponytail: any type with scale != 1.0 produces fractional values, must be DOUBLE
+        if (scale != 1.0) return DataTypeEnum.DOUBLE;
         return switch (dataType.toLowerCase()) {
             case "int", "int16", "int32" -> DataTypeEnum.INT;
             case "float", "float32" -> DataTypeEnum.FLOAT;

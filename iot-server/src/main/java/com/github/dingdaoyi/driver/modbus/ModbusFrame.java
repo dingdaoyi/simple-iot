@@ -41,7 +41,7 @@ public final class ModbusFrame {
     public static Object toValue(int[] regs, int offset, int count, String dataType, double scale) {
         return switch (dataType.toLowerCase()) {
             case "int16" -> scale(regs[offset], scale);
-            case "int32" -> scale(((regs[offset] & 0xFFFF) << 16) | (regs[offset+1] & 0xFFFF), scale);
+            case "int32" -> scale(((regs[offset+1] & 0xFFFF) << 16) | (regs[offset] & 0xFFFF), scale);
             case "float32" -> scale(Float.intBitsToFloat(((regs[offset] & 0xFFFF) << 16) | (regs[offset+1] & 0xFFFF)), scale);
             case "float64" -> scale(Double.longBitsToDouble(((long)(regs[offset] & 0xFFFF) << 48) | ((long)(regs[offset+1] & 0xFFFF) << 32) | ((long)(regs[offset+2] & 0xFFFF) << 16) | (regs[offset+3] & 0xFFFF)), scale);
             case "bool" -> regs[offset] != 0;

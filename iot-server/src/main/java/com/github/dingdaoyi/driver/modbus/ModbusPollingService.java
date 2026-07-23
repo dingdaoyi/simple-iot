@@ -142,7 +142,11 @@ public class ModbusPollingService {
                 // ponytail: 用 JSON 编码，复用 DefaultProtocolDecoder 的 JSON 解析路径
                 String json = encodeAsJson(dataList);
                 request.setData(json.getBytes());
-                dataProcessor.messageUp(request);
+                try {
+                    dataProcessor.messageUp(request);
+                } catch (Exception e) {
+                    log.warn("Modbus messageUp failed: device={}", device.getDeviceKey(), e);
+                }
             }
 
             // 标记上线

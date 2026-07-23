@@ -30,6 +30,7 @@ public class ModbusProtocolDecoder implements ProtocolDecoder, ApplicationListen
     @Override
     public DecodeResult decode(DeviceRequest request, TslModel tslModel) throws ProtocolException {
         DecodeResult result = new DecodeResult();
+        result.setMessageId(0); // ponytail: Modbus has no message ID, set default
         String json = new String(request.getData());
         var obj = cn.hutool.json.JSONUtil.parseObj(json);
         var params = obj.getJSONObject("params");

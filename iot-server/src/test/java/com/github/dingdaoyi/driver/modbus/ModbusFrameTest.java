@@ -51,8 +51,9 @@ class ModbusFrameTest {
     @Test
     void toValue_int32() {
         int[] regs = {0x0001, 0x0002};
+        // low word first: (0x0002 << 16) | 0x0001 = 131073
         Object val = ModbusFrame.toValue(regs, 0, 2, "int32", 1.0);
-        assertEquals(65538.0, val);
+        assertEquals(131073.0, val);
     }
 
     @Test
