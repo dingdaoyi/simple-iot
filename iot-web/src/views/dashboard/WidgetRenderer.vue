@@ -18,6 +18,29 @@ import { CanvasRenderer } from 'echarts/renderers'
 import { computed, onMounted, onUnmounted, ref, watch } from 'vue'
 import VChart from 'vue-echarts'
 import { fetchAlarmPage, fetchLatestData, fetchMetric, fetchDeviceList } from '@/api/dashboard'
+import { useAccountStore } from '@/store/modules/account'
+
+// ponytail: single WS connection shared by all widgets on the page.
+// In-memory ref, no reconnect logic. If WS fails, 30s polling still runs.
+let ws = null
+let wsListener = null
+function getWs() {
+  if (ws) return ws
+  const token = useAccountStore().authorization?.tokenValue
+  if (!token) return null
+  const proto = location.protocol === 'https:' ? 'wss' : 'ws'
+  ws = new WebSocket(`${proto}://${location.host}/iot/ws/iot?token=${token}`)
+  return ws
+}
+function onWsMessage(cb) {
+  const conn = getWs()
+  if (!conn) return () => {}
+  wsListener = (ev) => {
+    try { const msg = JSON.parse(ev.data); cb(msg) } catch {}
+  }
+  conn.addEventListener('message', wsListener)
+  return () => conn.removeEventListener('message', wsListener)
+}
 
 const props = defineProps({
   widget: { type: Object, required: true },
@@ -42,6 +65,7 @@ const latestTime = ref(null)
 const gridDevices = ref([])
 const alarmList = ref([])
 let timer = null
+let offWs = null
 
 const widgetType = computed(() => props.widget?.config?.type || props.widget?.type)
 const widgetConfig = computed(() => props.widget?.config || {})
@@ -156,13 +180,26 @@ const chartOption = computed(() => {
 
 onMounted(() => {
   loadData()
-  // ponytail: 30s 轮询, 实时推送后续可换 WebSocket
+  // ponytail: WS for instant updates, 30s poll as fallback
   timer = setInterval(loadData, 30000)
+  offWs = onWsMessage((msg) => {
+    if (msg.channel === 'telemetry' && widgetType.value === 'value-card') {
+      const d = msg.data
+      if (d && (!widgetConfig.value.deviceKey || d.deviceKey === widgetConfig.value.deviceKey)) {
+        latestValue.value = d.value
+        latestTime.value = dayjs().format('HH:mm:ss')
+      }
+    } else if (msg.channel === 'alarm' && widgetType.value === 'alarm-list') {
+      loadData() // refresh alarm list
+    } else if (msg.channel === 'telemetry' && widgetType.value === 'device-grid') {
+      loadData() // refresh grid
+    }
+  })
 })
 
 onUnmounted(() => {
-  if (timer)
-    clearInterval(timer)
+  if (timer) clearInterval(timer)
+  if (offWs) offWs()
 })
 
 watch(() => props.widget, loadData, { deep: true })

@@ -54,6 +54,15 @@ export default defineConfig({
                 { text: 'Deploy with Docker', link: '/guide/deploy' },
                 { text: 'MQTT Quick Test', link: '/guide/mqtt-test' },
                 { text: 'SMS Integration', link: '/guide/sms' },
+                { text: 'IM Push Config', link: '/guide/im-push' },
+                { text: 'Schedule Trigger', link: '/guide/schedule-trigger' },
+              ],
+            },
+            {
+              text: 'Device Management',
+              items: [
+                { text: 'Device Topology', link: '/guide/device-topology' },
+                { text: 'Batch Commands', link: '/guide/batch-command' },
               ],
             },
           ],
@@ -96,6 +105,15 @@ export default defineConfig({
                 { text: 'Docker 部署', link: '/zh/guide/deploy' },
                 { text: 'MQTT 快速测试', link: '/zh/guide/mqtt-test' },
                 { text: '短信集成', link: '/zh/guide/sms' },
+                { text: 'IM 推送配置', link: '/zh/guide/im-push' },
+                { text: '定时规则触发', link: '/zh/guide/schedule-trigger' },
+              ],
+            },
+            {
+              text: '设备管理',
+              items: [
+                { text: '设备拓扑', link: '/zh/guide/device-topology' },
+                { text: '批量设备指令', link: '/zh/guide/batch-command' },
               ],
             },
           ],
