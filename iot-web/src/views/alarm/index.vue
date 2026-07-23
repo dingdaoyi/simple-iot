@@ -1,5 +1,5 @@
 <script setup>
-import { Bell, Check, Close, RefreshRight, View } from '@element-plus/icons-vue'
+import { Bell, Check, Close, Download, RefreshRight, View } from '@element-plus/icons-vue'
 import { ElMessage } from 'element-plus'
 import { computed, onMounted, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
@@ -346,6 +346,9 @@ onMounted(() => {
           </el-button>
           <el-button :icon="RefreshRight" @click="onReset">
             {{ t('common.reset') }}
+          </el-button>
+          <el-button :icon="Download" @click="() => window.open('/iot/alarm/export')">
+            导出 Excel
           </el-button>
         </div>
       </el-form>

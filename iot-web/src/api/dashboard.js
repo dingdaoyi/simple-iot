@@ -37,3 +37,13 @@ export function fetchLatestData(deviceKey) {
 export function fetchMetric(data) {
   return request({ url: '/device/data/property/metric', method: 'post', data })
 }
+
+// 设备列表 (仪表板网格用)
+export function fetchDeviceList(params) {
+  return request({ url: '/device/list', method: 'get', params })
+}
+
+// 告警分页 (仪表板告警列表用)
+export function fetchAlarmPage(data) {
+  return request({ url: '/alarm/page', method: 'post', data })
+}

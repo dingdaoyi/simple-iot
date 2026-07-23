@@ -35,6 +35,8 @@ const widgetTypes = [
   { type: 'value-card', label: '数值卡', icon: '🔢' },
   { type: 'data-table', label: '数据表', icon: '📋' },
   { type: 'bar-chart', label: '柱状图', icon: '📊' },
+  { type: 'device-grid', label: '设备状态网格', icon: '🔲' },
+  { type: 'alarm-list', label: '告警列表', icon: '🚨' },
 ]
 
 const selectedWidget = computed(() => {
@@ -124,8 +126,8 @@ function addWidget(type) {
     i: `w-${Date.now()}`,
     x: (idx * 2) % colNum,
     y: Infinity, // 放到底部
-    w: type === 'value-card' ? 3 : 6,
-    h: type === 'value-card' ? 2 : 4,
+    w: type === 'value-card' ? 3 : (type === 'device-grid' || type === 'alarm-list' ? 6 : 6),
+    h: type === 'value-card' ? 2 : (type === 'device-grid' || type === 'alarm-list' ? 5 : 4),
     title: widgetTypes.find(w => w.type === type)?.label || type,
     config: {
       type,
@@ -398,6 +400,19 @@ onMounted(() => {
             </el-form-item>
             <el-form-item v-if="selectedWidget.config.type === 'gauge'" label="最大值">
               <el-input-number v-model="selectedWidget.config.max" :controls="false" style="width: 100%" />
+            </el-form-item>
+            <el-form-item v-if="selectedWidget.config.type === 'device-grid'" label="产品">
+              <el-select v-model="selectedWidget.config.productId" filterable clearable placeholder="全部产品" style="width: 100%">
+                <el-option v-for="p in products" :key="p.id" :label="`${p.manufacturer} ${p.model}`" :value="p.id" />
+              </el-select>
+            </el-form-item>
+            <el-form-item v-if="selectedWidget.config.type === 'alarm-list'" label="告警级别">
+              <el-select v-model="selectedWidget.config.severity" clearable placeholder="全部级别" style="width: 100%">
+                <el-option value="CRITICAL" label="严重" />
+                <el-option value="MAJOR" label="重要" />
+                <el-option value="MINOR" label="次要" />
+                <el-option value="WARNING" label="警告" />
+              </el-select>
             </el-form-item>
           </el-form>
         </template>

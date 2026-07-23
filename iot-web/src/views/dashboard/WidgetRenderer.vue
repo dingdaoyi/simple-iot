@@ -17,7 +17,7 @@ import { CanvasRenderer } from 'echarts/renderers'
  */
 import { computed, onMounted, onUnmounted, ref, watch } from 'vue'
 import VChart from 'vue-echarts'
-import { fetchLatestData, fetchMetric } from '@/api/dashboard'
+import { fetchAlarmPage, fetchLatestData, fetchMetric, fetchDeviceList } from '@/api/dashboard'
 
 const props = defineProps({
   widget: { type: Object, required: true },
@@ -39,6 +39,8 @@ const loading = ref(false)
 const chartData = ref([])
 const latestValue = ref(null)
 const latestTime = ref(null)
+const gridDevices = ref([])
+const alarmList = ref([])
 let timer = null
 
 const widgetType = computed(() => props.widget?.config?.type || props.widget?.type)
@@ -47,11 +49,10 @@ const title = computed(() => props.widget?.title || widgetConfig.value?.title ||
 
 async function loadData() {
   const cfg = widgetConfig.value
-  if (!cfg.deviceKey)
-    return
+  const type = widgetType.value
   loading.value = true
   try {
-    if (widgetType.value === 'value-card') {
+    if (type === 'value-card') {
       const res = await fetchLatestData(cfg.deviceKey)
       const items = res?.data || []
       const found = items.find(i => i.key === cfg.identifier)
@@ -59,6 +60,14 @@ async function loadData() {
         latestValue.value = found.value
         latestTime.value = dayjs().format('HH:mm:ss')
       }
+    }
+    else if (type === 'device-grid') {
+      const res = await fetchDeviceList({ productId: cfg.productId, page: 1, size: 200 })
+      gridDevices.value = res?.data?.records || res?.data || []
+    }
+    else if (type === 'alarm-list') {
+      const res = await fetchAlarmPage({ page: 1, size: 10, severity: cfg.severity })
+      alarmList.value = res?.data?.records || res?.data || []
     }
     else {
       const now = dayjs()
@@ -207,6 +216,36 @@ watch(() => props.widget, loadData, { deep: true })
     </div>
 
     <!-- 未知类型 -->
+    <div v-else-if="widgetType === 'device-grid'" class="device-grid-widget">
+      <div class="dgw-title">{{ title }}</div>
+      <div class="dgw-grid">
+        <div v-for="d in gridDevices" :key="d.id" class="dgw-cell" :class="{ online: d.online, offline: !d.online }">
+          <span class="dgw-dot" />
+          <span class="dgw-name">{{ d.deviceName }}</span>
+        </div>
+      </div>
+      <div v-if="gridDevices.length === 0" class="dgw-empty">暂无设备</div>
+    </div>
+
+    <div v-else-if="widgetType === 'alarm-list'" class="alarm-list-widget">
+      <div class="alw-title">{{ title }}</div>
+      <el-table :data="alarmList" size="small" max-height="200" style="width: 100%">
+        <el-table-column prop="alarmType" label="类型" width="100" />
+        <el-table-column prop="severity" label="级别" width="80">
+          <template #default="{ row }">
+            <el-tag :type="row.severity === 'CRITICAL' ? 'danger' : row.severity === 'MAJOR' ? 'warning' : 'info'" size="small">{{ row.severity }}</el-tag>
+          </template>
+        </el-table-column>
+        <el-table-column prop="deviceName" label="设备" show-overflow-tooltip />
+        <el-table-column prop="createTime" label="时间" width="140">
+          <template #default="{ row }">
+            {{ row.createTime ? dayjs(row.createTime).format('MM-DD HH:mm') : '' }}
+          </template>
+        </el-table-column>
+      </el-table>
+      <div v-if="alarmList.length === 0" class="alw-empty">暂无告警</div>
+    </div>
+
     <div v-else class="widget-unknown">
       <el-empty :description="`未知组件: ${widgetType}`" :image-size="40" />
     </div>
@@ -273,5 +312,32 @@ watch(() => props.widget, loadData, { deep: true })
   align-items: center;
   justify-content: center;
   height: 100%;
+}
+
+.device-grid-widget {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  padding: 4px;
+  overflow: hidden;
+
+  .dgw-title { font-size: 13px; font-weight: 600; margin-bottom: 4px; }
+  .dgw-grid { display: flex; flex-wrap: wrap; gap: 4px; overflow-y: auto; }
+  .dgw-cell { display: flex; align-items: center; gap: 4px; padding: 2px 6px; border-radius: 4px; font-size: 11px; background: #f0f0f0; }
+  .dgw-dot { width: 8px; height: 8px; border-radius: 50%; }
+  .dgw-cell.online .dgw-dot { background: #22c55e; }
+  .dgw-cell.offline .dgw-dot { background: #ef4444; }
+  .dgw-empty { text-align: center; color: #999; padding: 20px; font-size: 12px; }
+}
+
+.alarm-list-widget {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  padding: 4px;
+  overflow: hidden;
+
+  .alw-title { font-size: 13px; font-weight: 600; margin-bottom: 4px; }
+  .alw-empty { text-align: center; color: #999; padding: 20px; font-size: 12px; }
 }
 </style>

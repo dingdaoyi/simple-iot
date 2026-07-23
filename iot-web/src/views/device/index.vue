@@ -1,5 +1,5 @@
 <script setup>
-import { Cpu, Delete, Edit, Monitor, RefreshRight } from '@element-plus/icons-vue'
+import { Cpu, Delete, Download, Edit, Monitor, RefreshRight } from '@element-plus/icons-vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { computed, h, onMounted, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
@@ -271,6 +271,9 @@ onMounted(() => {
           </el-button>
           <el-button :icon="RefreshRight" @click="resetFilters">
             {{ t('common.reset') }}
+          </el-button>
+          <el-button :icon="Download" @click="() => window.open('/iot/device/export')">
+            导出 Excel
           </el-button>
           <el-button type="primary" @click="onAdd">
             <span class="btn-icon">+</span>
