@@ -45,3 +45,8 @@ async function setupApp() {
 }
 
 setupApp()
+
+// ponytail: register SW for PWA, no push/background sync
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('/sw.js').catch(() => {})
+}

@@ -1,0 +1,21 @@
+{
+  "name": "Simple IoT",
+  "short_name": "IoT",
+  "description": "轻量物联网平台",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#409eff",
+  "icons": [
+    {
+      "src": "/resource/290199744773455872.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/resource/290199744773455872.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
