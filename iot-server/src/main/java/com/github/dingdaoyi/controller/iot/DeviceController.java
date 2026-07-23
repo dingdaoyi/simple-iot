@@ -96,4 +96,11 @@ public class DeviceController {
         }
     }
 
+    @GetMapping("{id}/children")
+    @Operation(summary = "获取子设备列表(网关拓扑)")
+    public BaseResult<List<Device>> children(@PathVariable Integer id) {
+        return BaseResult.success(deviceService.lambdaQuery()
+            .eq(Device::getParentId, id)
+            .list());
+    }
 }

@@ -55,6 +55,10 @@ public class RuleChainServiceImpl extends ServiceImpl<RuleChainMapper, RuleChain
     @Resource
     private RuleChainEngine ruleChainEngine;
 
+    @Resource
+    @org.springframework.context.annotation.Lazy
+    private com.github.dingdaoyi.rule.ScheduleTriggerService scheduleTriggerService;
+
     @Override
     public PageResult<RuleChainPageVo> pageByQuery(RuleChainPageQuery query) {
         Page<RuleChainPageVo> page = PageHelper.page(query);
@@ -81,13 +85,17 @@ public class RuleChainServiceImpl extends ServiceImpl<RuleChainMapper, RuleChain
     @Override
     public boolean add(RuleChainAddQuery query) {
         RuleChain entity = query.toEntity();
-        return save(entity);
+        boolean ok = save(entity);
+        if (ok) scheduleTriggerService.registerAll();
+        return ok;
     }
 
     @Override
     public boolean updateByQuery(RuleChainUpdateQuery query) {
         RuleChain entity = query.toEntity();
-        return updateById(entity);
+        boolean ok = updateById(entity);
+        if (ok) scheduleTriggerService.registerAll();
+        return ok;
     }
 
     @Override
@@ -123,6 +131,12 @@ public class RuleChainServiceImpl extends ServiceImpl<RuleChainMapper, RuleChain
             .eq(RuleChain::getIsEnabled, true)
             .eq(RuleChain::getSourceType, RuleSourceType.PRODUCT)
             .eq(RuleChain::getSourceId, productId));
+    }
+
+    @Override
+    public List<RuleChain> listEnabled() {
+        return list(Wrappers.<RuleChain>lambdaQuery()
+            .eq(RuleChain::getIsEnabled, true));
     }
 
     @Override

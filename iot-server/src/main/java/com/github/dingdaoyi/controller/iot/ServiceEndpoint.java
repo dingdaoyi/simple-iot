@@ -10,7 +10,7 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Map;
+import java.util.*;
 
 /**
  * @author dwx
@@ -42,5 +42,55 @@ public class ServiceEndpoint {
             return BaseResult.fail(e.getMessage());
         }
         return BaseResult.success(message);
+    }
+
+    /**
+     * 批量下发设备指令
+     * @author dingyunwei
+     */
+    @PostMapping("/batch/{identifier}")
+    @Operation(summary = "批量下发设备指令")
+    public BaseResult<Map<String, Object>> batchSend(
+            @Parameter(name = "标识符") @PathVariable String identifier,
+            @RequestBody Map<String, Object> body) {
+
+        Object deviceKeysObj = body.get("deviceKeys");
+        if (!(deviceKeysObj instanceof List<?> rawList)) {
+            return BaseResult.fail("deviceKeys 必须是数组");
+        }
+        @SuppressWarnings("unchecked")
+        List<String> deviceKeys = (List<String>) (List<?>) rawList;
+        if (deviceKeys.isEmpty()) {
+            return BaseResult.fail("deviceKeys 不能为空");
+        }
+
+        @SuppressWarnings("unchecked")
+        Map<String, Object> paramMap = (Map<String, Object>) body.getOrDefault("params", new HashMap<>());
+
+        int success = 0, failed = 0;
+        List<Map<String, Object>> results = new ArrayList<>();
+
+        for (String dk : deviceKeys) {
+            Map<String, Object> r = new LinkedHashMap<>();
+            r.put("deviceKey", dk);
+            try {
+                Map<String, Object> msg = serviceHandler.sendMessage(dk, identifier, paramMap);
+                r.put("status", "SUCCESS");
+                r.put("data", msg);
+                success++;
+            } catch (Exception e) {
+                r.put("status", "FAILED");
+                r.put("error", e.getMessage());
+                failed++;
+            }
+            results.add(r);
+        }
+
+        Map<String, Object> summary = new LinkedHashMap<>();
+        summary.put("total", deviceKeys.size());
+        summary.put("success", success);
+        summary.put("failed", failed);
+        summary.put("results", results);
+        return BaseResult.success(summary);
     }
 }

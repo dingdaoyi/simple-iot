@@ -58,6 +58,11 @@ public interface RuleChainService extends IService<RuleChain> {
     List<RuleChain> getByProductId(Integer productId);
 
     /**
+     * 获取所有已启用的规则链
+     */
+    List<RuleChain> listEnabled();
+
+    /**
      * 校验规则链草稿结构。
      */
     RuleChainValidationResultVo validateDraft(RuleChain ruleChain);

@@ -48,4 +48,8 @@ public class Device extends BaseEntity {
     @TableField(value = "third_device_id")
     @Schema(description = "第三方设备id")
     private String thirdDeviceId;
+
+    @TableField(value = "parent_id")
+    @Schema(description = "父设备ID(网关)")
+    private Integer parentId;
 }

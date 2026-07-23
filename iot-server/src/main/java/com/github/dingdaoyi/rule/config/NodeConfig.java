@@ -19,6 +19,7 @@ import java.io.Serializable;
     @JsonSubTypes.Type(value = InputPropertyConfig.class, name = "INPUT_PROPERTY"),
     @JsonSubTypes.Type(value = InputEventConfig.class, name = "INPUT_EVENT"),
     @JsonSubTypes.Type(value = InputOnlineConfig.class, name = "INPUT_ONLINE"),
+    @JsonSubTypes.Type(value = InputScheduleConfig.class, name = "INPUT_SCHEDULE"),
     // 过滤节点
     @JsonSubTypes.Type(value = FilterPropertyConfig.class, name = "FILTER_PROPERTY"),
     @JsonSubTypes.Type(value = FilterEventTypeConfig.class, name = "FILTER_EVENT_TYPE"),

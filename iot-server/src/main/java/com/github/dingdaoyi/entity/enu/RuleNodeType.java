@@ -15,6 +15,7 @@ public enum RuleNodeType {
     INPUT_PROPERTY("属性上报", NodeCategory.INPUT, "设备上报属性数据"),
     INPUT_EVENT("事件上报", NodeCategory.INPUT, "设备上报事件"),
     INPUT_ONLINE("设备上下线", NodeCategory.INPUT, "设备上下线"),
+    INPUT_SCHEDULE("定时触发", NodeCategory.INPUT, "按 cron 表达式定时触发"),
 
     // ==================== 过滤节点 ====================
     FILTER_PROPERTY("属性条件", NodeCategory.FILTER, "基于物模型属性过滤"),
