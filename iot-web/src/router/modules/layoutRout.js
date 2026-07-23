@@ -40,6 +40,7 @@ const dashboardEditor = () => import('@/views/dashboard/DashboardEditor.vue')
 const ota = () => import('@/views/ota/index.vue')
 const modbus = () => import('@/views/modbus/index.vue')
 const webhook = () => import('@/views/webhook/index.vue')
+const imPush = () => import('@/views/im-push/index.vue')
 
 export default [
   {
@@ -283,6 +284,27 @@ export default [
               title: 'Webhook',
               i18nKey: 'menu.webhookManagement',
               icon: Promotion,
+            },
+          },
+        ],
+      },
+      {
+        path: '/im-push',
+        name: 'imPush',
+        meta: {
+          title: 'IM 推送',
+          i18nKey: 'menu.imPush',
+          icon: ChatDotRound,
+        },
+        children: [
+          {
+            path: '/im-push',
+            name: 'imPushConfig',
+            component: imPush,
+            meta: {
+              title: 'IM 推送配置',
+              i18nKey: 'menu.imPush',
+              icon: ChatDotRound,
             },
           },
         ],

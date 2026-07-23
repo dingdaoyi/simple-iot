@@ -1,9 +1,10 @@
 <script setup>
 import { Cpu, Delete, Edit, Monitor, RefreshRight } from '@element-plus/icons-vue'
+import { ElMessage, ElMessageBox } from 'element-plus'
 import { computed, h, onMounted, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useRouter } from 'vue-router'
-import { deviceDeleteApi, devicePageApi, manufacturerListApi, productListApi, productTypeListApi } from '@/api/index.js'
+import { batchDeviceServiceApi, deviceDeleteApi, devicePageApi, manufacturerListApi, productListApi, productTypeListApi } from '@/api/index.js'
 import IotTable from '@/components/IotTable.vue'
 import PageHeader from '@/components/PageHeader.vue'
 import { useTable } from '@/composables/useTable.js'
@@ -18,6 +19,10 @@ const manufacturerListOpt = ref([])
 const productListOpt = ref([])
 
 const column = computed(() => [
+  {
+    type: 'selection',
+    width: 55,
+  },
   {
     prop: 'productTypeName',
     label: t('product.product_type'),
@@ -100,6 +105,46 @@ function closeEdite() {
 
 function showDetails(row) {
   router.push(`/deviceDetails?id=${row.id}`)
+}
+
+// 批量指令
+const batchDialogVisible = ref(false)
+const batchForm = ref({ identifier: '', params: '{}' })
+const batchLoading = ref(false)
+const selectedRows = ref([])
+
+function onBatchCommand() {
+  if (selectedRows.value.length === 0) {
+    ElMessage.warning('请先勾选设备')
+    return
+  }
+  batchForm.value = { identifier: '', params: '{}' }
+  batchDialogVisible.value = true
+}
+
+async function onBatchSend() {
+  if (!batchForm.value.identifier) {
+    ElMessage.warning('请输入服务标识符')
+    return
+  }
+  let parsedParams = {}
+  try {
+    parsedParams = JSON.parse(batchForm.value.params)
+  } catch {
+    ElMessage.warning('参数 JSON 格式错误')
+    return
+  }
+  batchLoading.value = true
+  try {
+    const deviceKeys = selectedRows.value.map(r => r.deviceKey)
+    await batchDeviceServiceApi(batchForm.value.identifier, { deviceKeys, params: parsedParams })
+    ElMessage.success(`已向 ${deviceKeys.length} 台设备发送指令`)
+    batchDialogVisible.value = false
+  } catch (e) {
+    ElMessage.error('发送失败')
+  } finally {
+    batchLoading.value = false
+  }
 }
 
 function changeProductType() {
@@ -231,6 +276,9 @@ onMounted(() => {
             <span class="btn-icon">+</span>
             {{ t('device.add_device') }}
           </el-button>
+          <el-button type="warning" @click="onBatchCommand" :disabled="selectedRows.length === 0">
+            批量指令 ({{ selectedRows.length }})
+          </el-button>
         </div>
       </el-form>
     </div>
@@ -246,6 +294,7 @@ onMounted(() => {
         :loading="loading"
         @page-change="onPageChange"
         @size-change="onSizeChange"
+        @selection-change="(val) => selectedRows = val"
       >
         <template #cz="{ row }">
           <el-button type="primary" link :icon="Monitor" @click="showDetails(row)">
@@ -270,6 +319,25 @@ onMounted(() => {
       :datas="currentItem"
       @update="closeEdite"
     />
+
+    <!-- 批量指令对话框 -->
+    <el-dialog v-model="batchDialogVisible" title="批量设备指令" width="500px">
+      <el-form :model="batchForm" label-width="100px">
+        <el-form-item label="设备数量">
+          <el-text>{{ selectedRows.length }} 台设备</el-text>
+        </el-form-item>
+        <el-form-item label="服务标识符">
+          <el-input v-model="batchForm.identifier" placeholder="如：setSwitch" />
+        </el-form-item>
+        <el-form-item label="服务参数">
+          <el-input v-model="batchForm.params" type="textarea" :rows="4" placeholder='{"value": 1}' />
+        </el-form-item>
+      </el-form>
+      <template #footer>
+        <el-button @click="batchDialogVisible = false">取消</el-button>
+        <el-button type="primary" :loading="batchLoading" @click="onBatchSend">发送</el-button>
+      </template>
+    </el-dialog>
   </div>
 </template>
 

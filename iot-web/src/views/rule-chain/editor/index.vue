@@ -148,7 +148,7 @@ const upstreamInputNode = computed(() => {
 
 // 判断是否是输入节点
 function isInputNode(type) {
-  const inputTypes = ['INPUT_PROPERTY', 'INPUT_EVENT', 'INPUT_ONLINE']
+  const inputTypes = ['INPUT_PROPERTY', 'INPUT_EVENT', 'INPUT_ONLINE', 'INPUT_SCHEDULE']
   return inputTypes.includes(type)
 }
 

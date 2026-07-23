@@ -4,7 +4,7 @@ import { ElMessage } from 'element-plus'
 import { computed, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useRoute } from 'vue-router'
-import { deviceDataLast, deviceDetailApi } from '@/api/index.js'
+import { deviceChildrenApi, deviceDataLast, deviceDetailApi } from '@/api/index.js'
 import Breadcrumb from '@/components/Breadcrumb.vue'
 import { onlineOpts } from '@/utils/base.jsx'
 import DeviceEvent from '@/views/device/widget/deviceEvent.vue'
@@ -22,6 +22,9 @@ const propDialogShow = ref(false)
 const devicePropData = ref(null)
 const tslPropOpt = ref(null)
 const secretVisible = ref(false)
+
+const childDevices = ref([])
+const loadingChildren = ref(false)
 
 const breadcrumbs = computed(() => [
   { label: t('menu.device'), path: '/device' },
@@ -66,6 +69,17 @@ async function loadData() {
   }
   catch {
     devicePropData.value = []
+  }
+
+  // load child devices (topology)
+  loadingChildren.value = true
+  try {
+    const { data: children } = await deviceChildrenApi(id)
+    childDevices.value = children || []
+  } catch {
+    childDevices.value = []
+  } finally {
+    loadingChildren.value = false
   }
 }
 
@@ -243,6 +257,19 @@ loadData()
         </el-tab-pane>
         <el-tab-pane :label="t('device.device_control')" name="control">
           <DeviceService v-if="deviceDetail.deviceKey" :device-detail="deviceDetail" />
+        </el-tab-pane>
+        <el-tab-pane label="子设备" name="children">
+          <el-table :data="childDevices" v-loading="loadingChildren" style="width: 100%">
+            <el-table-column prop="deviceName" label="设备名称" />
+            <el-table-column prop="deviceKey" label="设备 Key" width="200" />
+            <el-table-column prop="online" label="在线状态" width="100">
+              <template #default="{ row }">
+                <el-tag :type="row.online ? 'success' : 'info'">{{ row.online ? '在线' : '离线' }}</el-tag>
+              </template>
+            </el-table-column>
+            <el-table-column prop="createTime" label="创建时间" width="180" />
+          </el-table>
+          <el-empty v-if="!loadingChildren && childDevices.length === 0" description="暂无子设备" />
         </el-tab-pane>
       </el-tabs>
     </div>

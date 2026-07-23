@@ -881,3 +881,33 @@ export function alarmStatisticsApi() {
     method: 'get',
   })
 }
+
+// ==================== IM 推送配置 API ====================
+
+export function imPushListApi() {
+  return request({ url: '/im-push/list', method: 'get' })
+}
+
+export function imPushAddApi(data) {
+  return request({ url: '/im-push', method: 'post', data })
+}
+
+export function imPushUpdateApi(data) {
+  return request({ url: '/im-push', method: 'put', data })
+}
+
+export function imPushDeleteApi(id) {
+  return request({ url: `/im-push/${id}`, method: 'delete' })
+}
+
+// ==================== 批量设备指令 API ====================
+
+export function batchDeviceServiceApi(identifier, data) {
+  return request({ url: `/service/batch/${identifier}`, method: 'post', data })
+}
+
+// ==================== 设备子设备 API ====================
+
+export function deviceChildrenApi(id) {
+  return request({ url: `/device/${id}/children`, method: 'get' })
+}

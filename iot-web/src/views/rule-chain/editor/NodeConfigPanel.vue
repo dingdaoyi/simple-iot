@@ -375,6 +375,20 @@ function onDeviceCascadeChange(value) {
         </el-form-item>
       </template>
 
+      <!-- 定时触发节点 -->
+      <template v-if="selectedNode.type === 'INPUT_SCHEDULE'">
+        <el-form-item label="Cron 表达式">
+          <el-input
+            :model-value="config.cron"
+            placeholder="0 */5 * * * ?"
+            @update:model-value="updateConfig('cron', $event)"
+          />
+          <div class="form-tip">
+            Quartz cron 格式，例如：<code>0 */5 * * * ?</code> 每5分钟触发一次
+          </div>
+        </el-form-item>
+      </template>
+
       <!-- ==================== 过滤节点配置 ==================== -->
 
       <!-- 属性条件过滤节点 -->
