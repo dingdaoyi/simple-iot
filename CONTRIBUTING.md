@@ -53,9 +53,10 @@ docs(readme): translate quick start to Spanish
 
 ### Code style
 
-- **Java** — standard Spring Boot conventions, Lombok allowed, Sonar default rules. Run `mvn package` before pushing.
-- **Vue / JS** — Composition API + `<script setup>`, ESLint config from `iot-web/.eslintrc.*`. Run `pnpm lint` before pushing.
-- **CSS** — use design tokens from `iot-web/src/styles/var.scss` and `global.scss`. No hard-coded colors.
+- **Java** - standard Spring Boot conventions, Lombok allowed. Run `JAVA_HOME=/path/to/jdk-25 ./mvnw test` before pushing.
+- **Vue / JS** - Composition API + `<script setup>`. Run `cd iot-web && pnpm lint && pnpm build` before pushing.
+- **CSS** - use design tokens from `iot-web/src/styles/var.scss` and `global.scss`. No hard-coded colors.
+- **Tests** - 190 unit tests. Add tests for new rule nodes, services, and non-trivial logic.
 
 ### Pull request checklist
 

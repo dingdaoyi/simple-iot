@@ -92,10 +92,13 @@ That's it. PostgreSQL, RustFS (S3-compatible), the backend and the frontend all 
 | **Visual Rule Engine** | Drag-and-drop chain editor with validation, debug paths, script filters and reusable nodes |
 | **Alarm Center** | Severity levels (info / warning / critical / urgent), active / cleared lifecycle |
 | **Data Ingestion** | InfluxDB 3 time-series storage, Caffeine in-process cache |
-| **Notifications** | Email & SMS push, HTTP callbacks, MQTT forward, device commands |
-| **Dashboard** | Device totals, online stats, system metrics (CPU / memory / disk), live alarms |
+| **Dashboard** | Device totals, online stats, system metrics (CPU / memory / disk), live alarms, WebSocket real-time, device-grid & alarm-list widgets |
+| **Notifications** | Email & SMS push, HTTP callbacks, MQTT forward, device commands, DingTalk / WeCom / Feishu IM push |
+| **Real-time** | WebSocket push for telemetry, alarms, and device status changes |
+| **Data Retention** | InfluxDB telemetry auto-purge (configurable, default 180 days) |
+| **Security** | API rate limiting (Bucket4j), audit logging (AOP), alarm suppression (5-min dedup) |
 | **Auth & Permissions** | Sa-Token based, fine-grained, role/menu/button level |
-| **International UI** | Modern Vue 3 console with `zh-CN` / `en-US`, light/dark/auto theme and responsive layouts |
+| **International UI** | Modern Vue 3 console with `zh-CN` / `en-US`, light/dark/auto theme, PWA support, responsive layouts |
 
 ---
 
