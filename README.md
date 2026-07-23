@@ -8,6 +8,7 @@
 
 [![CI](https://github.com/dingdaoyi/simple-iot/actions/workflows/ci.yml/badge.svg)](https://github.com/dingdaoyi/simple-iot/actions/workflows/ci.yml)
 [![License](https://img.shields.io/github/license/dingdaoyi/simple-iot?color=blue)](LICENSE)
+[![Tests](https://img.shields.io/badge/tests-190%20passing-brightgreen)](https://github.com/dingdaoyi/simple-iot)
 [![Java](https://img.shields.io/badge/Java-25-orange?logo=openjdk)](https://openjdk.org/)
 [![Spring Boot](https://img.shields.io/badge/Spring%20Boot-4.0.2-6DB33F?logo=springboot)](https://spring.io/projects/spring-boot)
 [![Vue](https://img.shields.io/badge/Vue-3.x-42b883?logo=vue.js)](https://vuejs.org/)
@@ -28,7 +29,20 @@ The project keeps the runtime intentionally compact: one Spring Boot application
 
 ## 🌟 Release Highlights
 
-This release focuses on making Simple IoT easier to try, operate and present:
+### v0.2.0 - Real-time + Operations (2026-07-23)
+
+| Area | What's new |
+|---|---|
+| **Real-time dashboard** | WebSocket push for telemetry & alarm channels, 2 new widget types (device status grid, alarm list). |
+| **Schedule triggers** | Cron-based rule chain execution via `INPUT_SCHEDULE` node. |
+| **IM push** | DingTalk, WeCom, Feishu webhook notifications with CRUD config UI. |
+| **Batch operations** | Multi-device command dispatch with per-device result tracking. |
+| **Device topology** | Parent-child device relationships for gateway-subdevice scenarios. |
+| **Data retention** | InfluxDB telemetry auto-purge (configurable, default 180 days). |
+| **Security** | API rate limiting (Bucket4j), audit logging (AOP), alarm suppression (5-min dedup). |
+| **Docs** | 8 new VitePress guide pages (zh + en). 190 unit tests. Platform maturity 75%. |
+
+### v0.1.1 - Usability (2026-06-25)
 
 | Area | What's new |
 |---|---|

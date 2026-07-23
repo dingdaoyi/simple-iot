@@ -7,6 +7,28 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.2.0] - 2026-07-23
+
+### Added
+- **WebSocket real-time push** - dashboard widgets now subscribe to WebSocket telemetry/alarm channels for instant updates (30s poll kept as fallback).
+- **Schedule trigger node** (`INPUT_SCHEDULE`) - cron-based rule chain execution with `ScheduleTriggerService`, auto-registers on rule chain CRUD.
+- **IM push notifications** - DingTalk, WeCom (WeChat Work), and Feishu webhook integration via `WebhookNotificationService` + per-platform payload builders. `tb_im_push_config` table with CRUD API and frontend config page.
+- **Batch device commands** - `POST /service/batch/{identifier}` endpoint, frontend batch selection dialog with per-device result reporting.
+- **Device topology** - `Device.parentId` field + `GET /device/{id}/children` API, frontend child-devices tab in device details.
+- **Data export** - Excel export buttons on device list and alarm list pages.
+- **Dashboard widgets** - 2 new widget types: `device-grid` (online/offline status matrix) and `alarm-list` (recent 10 alarms with severity tags).
+- **InfluxDB telemetry retention** - scheduled daily purge of telemetry data older than configurable 180 days (default).
+- **VitePress docs** - 8 new guide pages (4 zh + 4 en): device-topology, batch-command, im-push, schedule-trigger.
+- **API rate limiting + audit log** - Bucket4j token bucket + `tb_audit_log` table + AOP `@AuditLog` aspect.
+- **Alarm suppression** - 5-minute dedup window per device+type, prevents alarm storms on flapping devices.
+- **9 new unit tests** (190 total) - InputScheduleNode, InputScheduleConfig, ImPushPayload (DingTalk/WeCom/Feishu).
+
+### Changed
+- **Platform maturity** - raised from 65% to 75% (12 capability domains updated).
+- **NotificationType enum** - added `DINGTALK(3)`, `WECOM(4)`, `FEISHU(5)`.
+- **RuleNodeType enum** - added `INPUT_SCHEDULE` to INPUT category.
+- **WidgetRenderer** - WS subscription for `telemetry` and `alarm` channels, replaces pure 30s polling.
+
 ## [0.1.1] — 2026-06-25
 
 ### Added

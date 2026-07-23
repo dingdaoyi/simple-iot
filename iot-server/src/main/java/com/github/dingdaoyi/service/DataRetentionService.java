@@ -5,9 +5,12 @@ import com.github.dingdaoyi.entity.Alarm;
 import com.github.dingdaoyi.entity.PushLog;
 import com.github.dingdaoyi.mapper.AlarmMapper;
 import com.github.dingdaoyi.mapper.PushLogMapper;
+import com.influxdb.v3.client.InfluxDBClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.lang.Nullable;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
@@ -36,6 +39,19 @@ public class DataRetentionService {
     @Value("${simple.iot.retention.rule-exec-log-days:30}")
     private int ruleExecLogRetentionDays;
 
+    @Value("${simple.iot.retention.telemetry-days:180}")
+    private int telemetryRetentionDays;
+
+    @Autowired(required = false)
+    @Nullable
+    private InfluxDBClient influxDBClient;
+
+    @Value("${simple.iot.influxdb.database:iot}")
+    private String influxDatabase;
+
+    @Value("${simple.iot.influxdb.prop-database:telemetry}")
+    private String influxPropDatabase;
+
     public DataRetentionService(AlarmMapper alarmMapper, PushLogMapper pushLogMapper,
                                  RuleExecutionLogService ruleExecutionLogService) {
         this.alarmMapper = alarmMapper;
@@ -48,6 +64,7 @@ public class DataRetentionService {
         purgeClearedAlarms();
         purgeOldPushLogs();
         purgeOldRuleExecLogs();
+        purgeOldTelemetry();
     }
 
     private void purgeClearedAlarms() {
@@ -75,6 +92,24 @@ public class DataRetentionService {
         int deleted = ruleExecutionLogService.cleanOldLogs(ruleExecLogRetentionDays);
         if (deleted > 0) {
             log.info("Purged {} rule execution logs older than {} days", deleted, ruleExecLogRetentionDays);
+        }
+    }
+
+    // ponytail: InfluxDB v3 Java client has no execute(), use query() for DELETE. DML returns empty stream.
+    // No downsampling -- just hard delete. Add CQ or downsampling task when query perf degrades.
+    private void purgeOldTelemetry() {
+        if (influxDBClient == null) return;
+        try {
+            String cutoff = java.time.Instant.now()
+                .minus(java.time.Duration.ofDays(telemetryRetentionDays)).toString();
+            // ponytail: pattern-match all product telemetry measurements (prefix: propDatabase + "_")
+            String sql = "DELETE FROM \"" + influxPropDatabase + "_%\" WHERE time < $cutoff";
+            try (var stream = influxDBClient.query(sql, java.util.Map.of("cutoff", cutoff))) {
+                stream.close(); // consume to trigger execution
+            }
+            log.info("Purged InfluxDB telemetry older than {} days", telemetryRetentionDays);
+        } catch (Exception e) {
+            log.warn("InfluxDB telemetry purge failed: {}", e.getMessage());
         }
     }
 }
