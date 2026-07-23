@@ -1,7 +1,7 @@
 <script setup>
 import { Bell, Check, Close, Download, RefreshRight, View } from '@element-plus/icons-vue'
 import { ElMessage } from 'element-plus'
-import { computed, onMounted, ref } from 'vue'
+import { computed, onMounted, onUnmounted, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import {
   alarmAcknowledgeApi,
@@ -9,6 +9,7 @@ import {
   alarmPageApi,
   alarmStatisticsApi,
 } from '@/api/index.js'
+import { useAccountStore } from '@/store/modules/account'
 import IotTable from '@/components/IotTable.vue'
 import PageHeader from '@/components/PageHeader.vue'
 import { useTable } from '@/composables/useTable.js'
@@ -27,6 +28,7 @@ const currentAlarm = ref(null)
 
 const severityOpt = ref([])
 const statusOpt = ref([])
+let alarmWs = null
 
 const column = [
   {
@@ -279,7 +281,23 @@ const detailSections = computed(() => {
 onMounted(() => {
   updatePage()
   loadStatistics()
+  // ponytail: WS refresh on new alarm, debounced via setTimeout to avoid bursts
+  const token = useAccountStore().authorization?.tokenValue
+  if (!token) return
+  const proto = location.protocol === 'https:' ? 'wss' : 'ws'
+  alarmWs = new WebSocket(`${proto}://${location.host}/iot/ws/iot?token=${token}`)
+  let debounce = null
+  alarmWs.onmessage = (ev) => {
+    try {
+      const msg = JSON.parse(ev.data)
+      if (msg.channel === 'alarm') {
+        clearTimeout(debounce)
+        debounce = setTimeout(() => { updatePage(); loadStatistics() }, 500)
+      }
+    } catch {}
+  }
 })
+onUnmounted(() => { if (alarmWs) alarmWs.close() })
 </script>
 
 <template>

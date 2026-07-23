@@ -1,10 +1,11 @@
 <script setup>
 import { CopyDocument, Hide, Key, Link, View } from '@element-plus/icons-vue'
 import { ElMessage } from 'element-plus'
-import { computed, ref } from 'vue'
+import { computed, onMounted, onUnmounted, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useRoute } from 'vue-router'
 import { deviceChildrenApi, deviceDataLast, deviceDetailApi } from '@/api/index.js'
+import { useAccountStore } from '@/store/modules/account'
 import Breadcrumb from '@/components/Breadcrumb.vue'
 import { onlineOpts } from '@/utils/base.jsx'
 import DeviceEvent from '@/views/device/widget/deviceEvent.vue'
@@ -122,6 +123,30 @@ async function copyValue(value, label) {
 }
 
 loadData()
+
+// ponytail: WS for live property updates, no reconnect. Page refresh if WS drops.
+let ws = null
+onMounted(() => {
+  const token = useAccountStore().authorization?.tokenValue
+  if (!token) return
+  const proto = location.protocol === 'https:' ? 'wss' : 'ws'
+  ws = new WebSocket(`${proto}://${location.host}/iot/ws/iot?token=${token}`)
+  ws.onmessage = (ev) => {
+    try {
+      const msg = JSON.parse(ev.data)
+      if (msg.channel === 'telemetry' && msg.data?.deviceKey === deviceDetail.value.deviceKey) {
+        const props = msg.data.properties || []
+        if (!devicePropData.value) devicePropData.value = []
+        for (const p of props) {
+          const existing = devicePropData.value.find(item => item.key === p.identifier)
+          if (existing) existing.value = p.value
+          else devicePropData.value.push({ key: p.identifier, value: p.value })
+        }
+      }
+    } catch {}
+  }
+})
+onUnmounted(() => { if (ws) ws.close() })
 </script>
 
 <template>
