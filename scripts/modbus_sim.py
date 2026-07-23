@@ -1,45 +1,55 @@
 #!/usr/bin/env python3
-"""Modbus TCP slave simulator for simple-iot demo. pymodbus 3.14 API.
+"""Modbus TCP slave simulator for simple-iot demo.
 
-Holding registers (function=3, address 1-based in pymodbus):
-  1-2: temperature (int32, scale 0.1 -> e.g. 256 = 25.6C)
-  3:   humidity (int16, scale 1 -> e.g. 45 = 45%)
-  4:   pressure (int16, scale 0.1 -> e.g. 1013 = 101.3kPa)
-  5:   switch (bool, 0/1)
+Raw socket implementation - no pymodbus dependency needed.
+Responds to Read Holding Registers (function code 3) only.
 
-Note: simple-iot ModbusFrame uses 0-based addressing, so platform config
-should use address=0 for temp, address=2 for humidity, etc.
+Registers (0-based address):
+  0-1: temperature (int32 LE, scale 0.1 -> e.g. 256 = 25.6C)
+  2:   humidity (int16, scale 1 -> e.g. 45 = 45%)
+  3:   pressure (int16, scale 0.1 -> e.g. 1013 = 101.3kPa)
+  4:   switch (bool, 0/1)
 """
-import random, time, threading
-from pymodbus.server import StartTcpServer
-from pymodbus.datastore import ModbusServerContext, ModbusDeviceContext
-from pymodbus.datastore import ModbusSequentialDataBlock
+import random, struct, threading, time
+from socketserver import ThreadingTCPServer, BaseRequestHandler
 
-def run():
-    block = ModbusSequentialDataBlock(1, [256, 0, 45, 1013, 1] + [0]*100)
-    dev = ModbusDeviceContext(hr=block)
-    ctx = ModbusServerContext(devices={1: dev}, single=False)
+REGS = [256, 0, 45, 1013, 1] + [0]*100
 
-    print("Modbus simulator on 0.0.0.0:502, unit=1", flush=True)
-    print("Registers: addr1-2=temp(25.6C) addr3=hum(45%) addr4=press(101.3kPa) addr5=sw(1)", flush=True)
+def updater():
+    while True:
+        time.sleep(5)
+        temp = 200 + random.randint(0, 120)       # 20.0 - 32.0 C
+        hum = 30 + random.randint(0, 40)           # 30 - 70 %
+        press = 1000 + random.randint(0, 30)       # 100.0 - 103.0 kPa
+        sw = random.choice([0, 1])
+        REGS[0] = temp & 0xFFFF
+        REGS[1] = (temp >> 16) & 0xFFFF
+        REGS[2] = hum
+        REGS[3] = press
+        REGS[4] = sw
 
-    def updater():
-        while True:
-            time.sleep(5)
-            temp = 200 + random.randint(0, 120)       # 20.0 - 32.0 C
-            hum = 30 + random.randint(0, 40)           # 30 - 70 %
-            press = 1000 + random.randint(0, 30)       # 100.0 - 103.0 kPa
-            sw = random.choice([0, 1])
-            # pymodbus 3.14: simdata[0].values is the register list
-            v = block.simdata[0].values
-            v[0] = temp & 0xFFFF
-            v[1] = (temp >> 16) & 0xFFFF
-            v[2] = hum
-            v[3] = press
-            v[4] = sw
-
-    threading.Thread(target=updater, daemon=True).start()
-    StartTcpServer(context=ctx, address=("0.0.0.0", 5020))
+class Handler(BaseRequestHandler):
+    def handle(self):
+        try:
+            while True:
+                req = self.request.recv(12)
+                if len(req) < 12:
+                    break
+                tx_id, proto, length, unit, fc, addr, qty = struct.unpack(">HHHBBHH", req)
+                if fc != 3:
+                    # exception: illegal function
+                    resp = struct.pack(">HHHB BHH", tx_id, 0, 3, unit, 0x83, 1, 0)
+                    self.request.sendall(resp)
+                    continue
+                vals = REGS[addr:addr+qty]
+                byte_count = len(vals) * 2
+                header = struct.pack(">HHHBBB", tx_id, 0, 3+byte_count, unit, 3, byte_count)
+                body = b"".join(struct.pack(">H", v) for v in vals)
+                self.request.sendall(header + body)
+        except (ConnectionResetError, BrokenPipeError):
+            pass
 
 if __name__ == "__main__":
-    run()
+    threading.Thread(target=updater, daemon=True).start()
+    with ThreadingTCPServer(("0.0.0.0", 5020), Handler) as srv:
+        srv.serve_forever()
