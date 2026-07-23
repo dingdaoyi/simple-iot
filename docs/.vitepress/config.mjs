@@ -56,6 +56,8 @@ export default defineConfig({
                 { text: 'SMS Integration', link: '/guide/sms' },
                 { text: 'IM Push Config', link: '/guide/im-push' },
                 { text: 'Schedule Trigger', link: '/guide/schedule-trigger' },
+                { text: 'WebSocket Real-time', link: '/guide/websocket' },
+                { text: 'Data Retention', link: '/guide/data-retention' },
               ],
             },
             {
@@ -107,6 +109,8 @@ export default defineConfig({
                 { text: '短信集成', link: '/zh/guide/sms' },
                 { text: 'IM 推送配置', link: '/zh/guide/im-push' },
                 { text: '定时规则触发', link: '/zh/guide/schedule-trigger' },
+                { text: 'WebSocket 实时推送', link: '/zh/guide/websocket' },
+                { text: '数据保留策略', link: '/zh/guide/data-retention' },
               ],
             },
             {
