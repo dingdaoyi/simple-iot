@@ -62,8 +62,8 @@ public class IotDataProcessorImpl implements IotDataProcessor, IotCommandProcess
         ProtocolDecoder decoder = optional.get();
         try {
             DecodeResult result = decoder.decode(request,tslOptional.get());
-            // 处理结果
-            if (responseRegister.isResponse(result.getMessageId(), deviceKey)) {
+            // 处理结果（msgId 为 null 时跳过响应匹配，属性上报通常不带 msgId）
+            if (result.getMessageId() != null && responseRegister.isResponse(result.getMessageId(), deviceKey)) {
                 responseRegister.complete(result,deviceKey);
             }
             // 数据后续处理
