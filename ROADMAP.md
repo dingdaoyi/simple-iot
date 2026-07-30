@@ -15,7 +15,7 @@ This roadmap is the honest list of what is **missing**, **rough**, or **deserves
 | P0-1 | ✅ **Test coverage** - 173 tests across 34 test files, 12/12 rule-engine node types covered. | The platform handles real devices - silent regressions are unacceptable. |
 | P0-2 | ✅ **Integration test** harness with Testcontainers (Postgres container + embedded MQTT). Smoke test boots Spring context, verifies tb_user schema and OpenAPI docs endpoint. | Catches Docker / wiring breakage before release. |
 | P0-3 | ✅ **Open API spec** - springdoc-openapi 3.1.0 published at `/v3/api-docs`, Knife4j Swagger UI at `/iot/doc.html`. | API docs are now auto-generated, not hand-written. |
-| P0-4 | **Auth hardening** - JWT secret rotation, refresh-token revocation list, password complexity policy. | Default deployments expose admin/123456 - needs a forced change-password on first login. |
+| P0-4 | ✅ **Auth hardening** - `force_change_pwd` field + forced change-password dialog on login, BCrypt password hashing, password complexity policy (8+ chars, upper+lower+digit). | Default deployments expose admin/123456 - needs a forced change-password on first login. |
 | P0-5 | ✅ **Data retention** - `DataRetentionService` purges CLEARED alarms (>90d) and push logs (>30d) via daily cron. Retention period configurable. | Disks fill up silently today. |
 | P0-6 | ✅ **Backup / restore** scripts - `deploy.sh backup` and `deploy.sh restore` for Postgres + RustFS. | Required before anyone uses this in prod. |
 | P0-7 | ✅ **Observability** - Micrometer + Prometheus endpoint at `/actuator/prometheus`, JVM + HTTP + DB metrics exposed. Grafana dashboard JSON TBD. | Today there is no way to tell if the broker is dropping packets. |
@@ -28,7 +28,7 @@ This roadmap is the honest list of what is **missing**, **rough**, or **deserves
 | P1-2 | ✅ **Device groups & tags** - tree-structured groups, multi-tag system, bulk device assignment. | Hard to operate >1000 devices without grouping. |
 | P1-3 | ✅ **Alarm enhancements** - comments, escalate severity, acknowledge-with-note. | Current alarm is fire-and-forget. |
 | P1-4 | ✅ **Rule-engine v2** - sub-flows with cycle detection, persistent execution logs, replay from recorded payloads. | Complex flows should be easy to author and debug. |
-| P1-5 | **Custom dashboards** — drag-and-drop widget canvas (line, gauge, value card, map, table) bound to device telemetry. | Required to call this an "IoT platform" with a straight face. |
+| P1-5 | ✅ **Custom dashboards** - drag-and-drop widget canvas (line, gauge, value card, map, table) bound to device telemetry. | Required to call this an "IoT platform" with a straight face. |
 | ~~P1-6~~ | ✅ **OTA firmware** - upload firmware -> push to device groups -> progress tracking. | Most real IoT projects need OTA on day 1. |
 | P1-7 | **Mobile-friendly Web UI** — current admin is desktop-only; need a responsive read-only view for ops on the phone. | Tied to the UI overhaul (see "Frontend" below). |
 | P1-8 | ✅ **i18n foundation** — `zh-CN` / `en-US` UI, language switcher and Element Plus locale sync have landed; continue translating new pages as they are added. | Keeps the console usable for both Chinese and English users. |
