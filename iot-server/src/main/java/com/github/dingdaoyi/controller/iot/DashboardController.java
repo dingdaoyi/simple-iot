@@ -13,6 +13,9 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.File;
+import java.lang.management.ManagementFactory;
+import java.lang.management.OperatingSystemMXBean;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.LinkedHashMap;
@@ -56,6 +59,21 @@ public class DashboardController {
                 new QueryWrapper<Alarm>().ge("create_time", todayStart));
         stats.put("activeAlarms", activeAlarms);
         stats.put("todayAlarms", todayAlarms);
+
+        // 系统资源（容器内视角）
+        OperatingSystemMXBean os = ManagementFactory.getOperatingSystemMXBean();
+        double cpuUsage = 0;
+        if (os instanceof com.sun.management.OperatingSystemMXBean sunOs) {
+            cpuUsage = Math.round(sunOs.getSystemCpuLoad() * 1000) / 10.0;
+        }
+        long maxMem = Runtime.getRuntime().maxMemory();
+        long usedMem = Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory();
+        double memoryUsage = Math.round((double) usedMem / maxMem * 1000) / 10.0;
+        File root = new File("/");
+        double diskUsage = Math.round((double) (root.getTotalSpace() - root.getUsableSpace()) / root.getTotalSpace() * 1000) / 10.0;
+        stats.put("cpuUsage", cpuUsage);
+        stats.put("memoryUsage", memoryUsage);
+        stats.put("diskUsage", diskUsage);
 
         return BaseResult.success(stats);
     }
