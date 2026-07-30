@@ -71,7 +71,7 @@ public class IotDataProcessorImpl implements IotDataProcessor, IotCommandProcess
                 executorService.submit(() -> processingService.process(result,deviceKey,tslOptional.get()));
             }
         } catch (ProtocolException e) {
-            log.error("协议解析失败,原因:{}", e.getMessage());
+            log.error("协议解析失败,原因:{}", e.getMessage(), e);
             decoder.responseError(request.getConnection(),e);
         }
     }

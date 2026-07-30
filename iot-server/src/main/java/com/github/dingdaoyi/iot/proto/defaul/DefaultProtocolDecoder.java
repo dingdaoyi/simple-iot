@@ -47,6 +47,7 @@ public class DefaultProtocolDecoder implements ProtocolDecoder {
 
         MessageDecodeStrategy<?> strategy = strategyMap.get(request.getMessageType());
         if (strategy == null) {
+            log.warn("协议[{}]未注册消息类型[{}]的解码策略,已注册类型:{}", request.getProtoKey(), request.getMessageType(), strategyMap.keySet());
             throw new ProtocolException(request.getDeviceKey(), ExceptionType.INVALID_PARAM, -1);
         }
 
@@ -55,6 +56,7 @@ public class DefaultProtocolDecoder implements ProtocolDecoder {
             result.setRowData(jsonData);
             return result;
         } catch (IllegalArgumentException e) {
+            log.error("协议解析参数错误: deviceKey={}, json={}, 原因: {}", request.getDeviceKey(), jsonData, e.getMessage());
             throw new ProtocolException(request.getDeviceKey(), ExceptionType.INVALID_PARAM, -1);
         }
     }
