@@ -174,22 +174,20 @@ public class InfluxDataProcessor implements DataProcessor, DeviceDataService {
         List<String> identifiers = propertyList.stream().map(TslProperty::getIdentifier).toList();
         if (identifiers.isEmpty()) return dataList;
 
-        // 构建批量查询: SELECT last_value("field1") as "field1", last_value("field2") as "field2", ... 
-        String fields = identifiers.stream()
-                .map(id -> "last_value(\"" + id + "\") as \"" + id + "\"")
-                .collect(java.util.stream.Collectors.joining(", "));
-        String sql = "select " + fields + " from \"" + measurement + "\" where \"deviceKey\"=$deviceKey";
-        try (Stream<PointValues> stream = influxDBClient.queryPoints(sql, Map.of("deviceKey", deviceKey), queryOptions)) {
-            stream.findFirst().ifPresent(row -> {
-                for (String id : identifiers) {
+        // ponytail: InfluxDB v3 last_value() returns ingestion-order last, not time-newest.
+        // Use ORDER BY time DESC LIMIT 1 per property. Schema is dynamic, so query each individually.
+        for (String id : identifiers) {
+            String sql = "select \"" + id + "\" from \"" + measurement + "\" where \"deviceKey\"=$deviceKey order by time desc limit 1";
+            try (Stream<PointValues> stream = influxDBClient.queryPoints(sql, Map.of("deviceKey", deviceKey), queryOptions)) {
+                stream.findFirst().ifPresent(row -> {
                     Object value = row.getField(id);
                     if (value != null) {
                         dataList.add(new KeyValue<>(id, value));
                     }
-                }
-            });
-        } catch (Exception e) {
-            log.warn("批量查询属性出错:{}|measurement={}", e.getMessage(), measurement);
+                });
+            } catch (Exception e) {
+                log.debug("属性[{}]查询出错(可能尚未上报):{}|measurement={}", id, e.getMessage(), measurement);
+            }
         }
         return dataList;
     }
