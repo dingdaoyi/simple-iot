@@ -66,7 +66,6 @@ public class MqttDriver implements IMqttMessageListener, DeviceTransport {
         log.info("topic:{},clientId:{},message:{}", topic, clientId, message);
         DeviceDTO device = context.get("device");
         if (device == null) {
-            //TODO, 后续做自动注册,需要放开
             log.error("设备不存在,账号未校验通过");
             return;
         }

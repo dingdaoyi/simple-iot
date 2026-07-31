@@ -1,6 +1,7 @@
 package com.github.dingdaoyi.driver.mqtt;
 
 import com.github.dingdaoyi.config.base.IotConfigProperties;
+import com.github.dingdaoyi.entity.Device;
 import com.github.dingdaoyi.model.DTO.DeviceDTO;
 import com.github.dingdaoyi.service.DeviceService;
 import jakarta.annotation.Resource;
@@ -35,11 +36,41 @@ public class MqttServerAuthHandler implements IMqttServerAuthHandler {
         }
 
         Optional<DeviceDTO> optionalDevice = deviceService.getByDeviceKey(uniqueId);
+        // 自动注册
+        if (optionalDevice.isEmpty() && iotConfigProperties.isAutoRegister()) {
+            optionalDevice = autoRegister(uniqueId, password);
+        }
         optionalDevice.ifPresent(device -> context.set("device", device));
         return optionalDevice
                 .map(item -> (!iotConfigProperties.isEnableDeviceSecret())
                                           || StringUtils.equals(password, item.getDeviceSecret()))
                 .orElse(false);
+    }
+
+    /** 自动注册设备，返回新创建的 DeviceDTO */
+    private Optional<DeviceDTO> autoRegister(String deviceKey, String deviceSecret) {
+        Integer productId = iotConfigProperties.getAutoRegisterProductId();
+        if (productId == null) {
+            log.warn("自动注册失败: 未配置 simple.iot.auto-register-product-id, deviceKey={}", deviceKey);
+            return Optional.empty();
+        }
+        Device device = new Device();
+        device.setDeviceKey(deviceKey);
+        device.setDeviceName(deviceKey);
+        device.setProductId(productId);
+        device.setOnline(false);
+        device.setActiveStatus(false);
+        if (StringUtils.isNotBlank(deviceSecret)) {
+            device.setDeviceSecret(deviceSecret);
+        }
+        try {
+            deviceService.save(device);
+            log.info("自动注册设备成功: deviceKey={}, productId={}", deviceKey, productId);
+            return deviceService.getByDeviceKey(deviceKey);
+        } catch (Exception e) {
+            log.warn("自动注册设备失败: deviceKey={}", deviceKey, e);
+            return Optional.empty();
+        }
     }
 
     static String maskSecret(String secret) {

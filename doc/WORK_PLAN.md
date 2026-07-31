@@ -115,19 +115,13 @@
 
 ---
 
-### 2.3 ModbusPollingService.poll() 拆分
+### 2.3 ModbusPollingService.poll() 拆分 ✅
 
-- [ ] 完成
+- [x] 完成
 
-**位置:** `iot-server/src/main/java/com/github/dingdaoyi/driver/modbus/ModbusPollingService.java`
+**位置:** `ModbusPollingService.java`
 
-**问题:** 圈复杂度 12，认知复杂度 20，含嵌套循环 + 线性扫描。
-
-**重构方向:**
-1. 提取 `pollDevice(device)` 方法处理单设备轮询
-2. 提取 `parseRegisters(response, config)` 方法处理寄存器解析
-3. 提取 `buildDataPoints(parsedValues)` 方法构建数据点
-4. 主循环只保留调度逻辑
+**状态:** 已重构。`poll()` 拆为 `readRegister()` + `sendDeviceData()` + `markOnline()`，主循环只保留调度。
 
 ---
 
@@ -141,50 +135,33 @@
 
 ---
 
-### 2.5 InfluxDB 事件日志分页
+### 2.5 InfluxDB 事件日志分页 ✅
 
-- [ ] 完成
+- [x] 完成
 
-**位置:** `InfluxDataProcessor.eventLogs()` L235-260
+**位置:** `InfluxDataProcessor.eventLogs()` + `DeviceDataQuery` + `DeviceDataController`
 
-**当前:** `// TODO 需要解决分页等问题`
-
-**实现:**
-1. InfluxDB 3 用 `LIMIT` + `OFFSET` 或时间游标分页
-2. 返回 `PageResult<EventLog>` 格式
-3. 前端事件日志表格接入分页
+**状态:** 已实现。`DeviceDataQuery` 加 `page`/`size`，`eventLogs` 改返回 `PageResult`。count 查询用 `queryRows`，数据查询用 `LIMIT size OFFSET offset`。
 
 ---
 
-### 2.6 MQTT 设备自动注册
+### 2.6 MQTT 设备自动注册 ✅
 
-- [ ] 完成
+- [x] 完成
 
-**位置:** `MqttDriver.java` L69
+**位置:** `MqttServerAuthHandler` + `IotConfigProperties`
 
-**当前:** `// TODO, 后续做自动注册,需要放开`
-
-**实现:**
-1. 设备首次 MQTT 连接时，根据 clientId（deviceKey）查询设备
-2. 如果不存在，根据配置的默认产品自动创建设备
-3. 需要配置开关：`mqtt.auto-register=true/false`
-4. 自动注册的设备标记 `activeStatus=false`，需手动激活
+**状态:** 已实现。`simple.iot.auto-register=true` + `auto-register-product-id=N` 配置开关。设备不存在时 AuthHandler 自动创建（deviceName=deviceKey, online=false, activeStatus=false），认证通过后正常上报。
 
 ---
 
-### 2.7 物模型结构体字段兼容
+### 2.7 物模型结构体字段兼容 ✅
 
-- [ ] 完成
+- [x] 完成
 
-**位置:** `ModelPropertyServiceImpl.update()` L152-164
+**位置:** `ModelPropertyServiceImpl.update()` + `ModelPropertyUpdateQuery`
 
-**当前:** `// TODO 暂时未对于结构体字段的增加删除兼容`
-
-**实现:**
-1. 当属性 `dataType=STRUCT` 时，对比新旧子属性列表
-2. 新增的子属性：插入
-3. 删除的子属性：标记删除 + 清理 InfluxDB 对应字段
-4. 修改的子属性：更新
+**状态:** 已实现。`ModelPropertyUpdateQuery` 加 `children` 字段。`update()` 对 STRUCT 类型做 `syncStructChildren()` diff sync：以 identifier 为 key 新增/更新/删除子属性，`@Transactional` 保证一致性。
 
 ---
 
@@ -391,11 +368,11 @@
 - [ ] 1.5 核心模块测试
 - [x] 2.1 设备删除校验 ✅
 - [x] 2.2 指令下发日志 ✅
-- [ ] 2.3 Modbus poll() 拆分
+- [x] 2.3 Modbus poll() 拆分 ✅
 - [x] 2.4 产品类型树缓存 ✅
-- [ ] 2.5 事件日志分页
-- [ ] 2.6 MQTT 自动注册
-- [ ] 2.7 结构体字段兼容
+- [x] 2.5 事件日志分页 ✅
+- [x] 2.6 MQTT 自动注册 ✅
+- [x] 2.7 结构体字段兼容 ✅
 - [x] 2.8 通道激活校验 ✅
 - [ ] 3.1 前端页面迁移
 - [ ] 3.2 清理兼容代码

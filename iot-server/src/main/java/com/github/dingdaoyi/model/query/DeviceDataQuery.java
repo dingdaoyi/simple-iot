@@ -17,4 +17,10 @@ public class DeviceDataQuery extends TimeQuery{
 
     @Schema(description = "标识符")
     private String identifier;
+
+    @Schema(description = "当前页码，从1开始", defaultValue = "1")
+    private Integer page = 1;
+
+    @Schema(description = "每页数量", defaultValue = "20")
+    private Integer size = 20;
 }

@@ -22,6 +22,10 @@ import org.springframework.stereotype.Service;
 
 import java.io.Serializable;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.HashSet;
+import java.util.stream.Collectors;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.github.dingdaoyi.mapper.ModelPropertyMapper;
@@ -150,6 +154,7 @@ public class ModelPropertyServiceImpl extends ServiceImpl<ModelPropertyMapper, M
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public Boolean update(ModelPropertyUpdateQuery property) {
         ModelProperty modelProperty = getById(property.getId());
         if (modelProperty == null) {
@@ -157,10 +162,46 @@ public class ModelPropertyServiceImpl extends ServiceImpl<ModelPropertyMapper, M
         }
         boolean result = baseMapper.updateById(property.toEntity()) > 0;
         if (result) {
+            // 结构体类型: diff sync 子属性
+            if (modelProperty.getDataType() == DataTypeEnum.STRUCT) {
+                syncStructChildren(property.getId(), property.getChildren());
+            }
             cacheService.clearCache(TSL_MODEL_CACHE);
         }
-        //TODO 暂时未对于结构体字段的增加删除兼容
         return result;
+    }
+
+    /**
+     * 结构体子属性同步: 以 identifier 为 key, 新增/更新/删除
+     * ponytail: O(n*m) diff, 结构体子属性数量小(<50), 线性可接受
+     */
+    private void syncStructChildren(Integer parentId, List<StandardPropertyAddQuery> newChildren) {
+        List<ModelProperty> existing = listByParentId(parentId);
+        Map<String, ModelProperty> existingMap = existing.stream()
+                .collect(Collectors.toMap(ModelProperty::getIdentifier, p -> p, (a, b) -> a));
+        Set<String> newIds = new HashSet<>();
+        if (CollectionUtil.isNotEmpty(newChildren)) {
+            for (StandardPropertyAddQuery child : newChildren) {
+                ModelProperty entity = child.toEntity();
+                entity.setParentId(parentId);
+                ModelProperty old = existingMap.get(child.getIdentifier());
+                if (old == null) {
+                    // 新增
+                    baseMapper.insert(entity);
+                } else {
+                    // 更新
+                    entity.setId(old.getId());
+                    baseMapper.updateById(entity);
+                }
+                newIds.add(child.getIdentifier());
+            }
+        }
+        // 删除: 存在于旧列表但不在新列表中的
+        for (ModelProperty old : existing) {
+            if (!newIds.contains(old.getIdentifier())) {
+                removeById(old.getId());
+            }
+        }
     }
 
     @Override

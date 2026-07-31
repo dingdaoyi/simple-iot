@@ -106,6 +106,12 @@ public class ModelPropertyUpdateQuery implements ToEntity<ModelProperty> {
     @Schema(description = "枚举参对照表")
     private List<KeyValue<Integer,String>> enums;
 
+    /**
+     * 结构体子属性（仅 dataType=STRUCT 时使用）
+     */
+    @Schema(description = "结构体子属性")
+    private List<StandardPropertyAddQuery> children;
+
     @Override
     public ModelProperty toEntity() {
         ModelProperty modelProperty = new ModelProperty();

@@ -111,51 +111,65 @@ public class ModbusPollingService {
 
             List<DeviceData> dataList = new ArrayList<>();
             for (RegisterMapping m : mappings) {
-                try {
-                    byte[] req = ModbusFrame.readRequest(cfg.getUnitId(), m.function(), m.address(), m.count());
-                    out.write(req);
-                    out.flush();
-
-                    // ponytail: 简单读取，假设响应一次到达
-                    byte[] header = in.readNBytes(9);
-                    if (header.length < 9) continue;
-                    int byteCount = header[8] & 0xFF;
-                    byte[] payload = in.readNBytes(byteCount);
-                    byte[] full = new byte[9 + byteCount];
-                    System.arraycopy(header, 0, full, 0, 9);
-                    System.arraycopy(payload, 0, full, 9, byteCount);
-
-                    int[] regs = ModbusFrame.parseResponse(full);
-                    Object value = ModbusFrame.toValue(regs, 0, m.count(), m.dataType(), m.scale());
-                    dataList.add(new DeviceData(m.identifier(), m.toDataType(), value));
-                } catch (Exception e) {
-                    log.warn("Modbus read failed: device={}, mapping={}", device.getDeviceKey(), m.identifier(), e);
-                }
+                readRegister(in, out, cfg, m, device, product, dataList);
             }
 
             if (!dataList.isEmpty()) {
-                DeviceRequest request = new DeviceRequest();
-                request.setDeviceKey(device.getDeviceKey());
-                request.setProductKey(product.getProductKey());
-                request.setProtoKey("modbus-tcp");
-                request.setMessageType(ProtoMessageType.PROPERTY);
-                // ponytail: 用 JSON 编码，复用 DefaultProtocolDecoder 的 JSON 解析路径
-                String json = encodeAsJson(dataList);
-                request.setData(json.getBytes());
-                try {
-                    dataProcessor.messageUp(request);
-                } catch (Exception e) {
-                    log.warn("Modbus messageUp failed: device={}", device.getDeviceKey(), e);
-                }
+                sendDeviceData(dataList, device, product);
             }
 
-            // 标记上线
-            if (!Boolean.TRUE.equals(device.getOnline())) {
-                device.setOnline(true);
-                deviceMapper.updateById(device);
-            }
+            markOnline(device);
         } catch (Exception e) {
             log.warn("Modbus poll failed: device={}, host={}:{}", device.getDeviceKey(), cfg.getHost(), cfg.getPort(), e);
+        }
+    }
+
+    /** 读单个寄存器映射，成功则加入 dataList */
+    private void readRegister(DataInputStream in, DataOutputStream out, ModbusConfig cfg,
+                              RegisterMapping m, Device device, Product product, List<DeviceData> dataList) {
+        try {
+            byte[] req = ModbusFrame.readRequest(cfg.getUnitId(), m.function(), m.address(), m.count());
+            out.write(req);
+            out.flush();
+
+            // ponytail: 简单读取，假设响应一次到达
+            byte[] header = in.readNBytes(9);
+            if (header.length < 9) return;
+            int byteCount = header[8] & 0xFF;
+            byte[] payload = in.readNBytes(byteCount);
+            byte[] full = new byte[9 + byteCount];
+            System.arraycopy(header, 0, full, 0, 9);
+            System.arraycopy(payload, 0, full, 9, byteCount);
+
+            int[] regs = ModbusFrame.parseResponse(full);
+            Object value = ModbusFrame.toValue(regs, 0, m.count(), m.dataType(), m.scale());
+            dataList.add(new DeviceData(m.identifier(), m.toDataType(), value));
+        } catch (Exception e) {
+            log.warn("Modbus read failed: device={}, mapping={}", device.getDeviceKey(), m.identifier(), e);
+        }
+    }
+
+    /** 构建 DeviceRequest 并上报 */
+    private void sendDeviceData(List<DeviceData> dataList, Device device, Product product) {
+        DeviceRequest request = new DeviceRequest();
+        request.setDeviceKey(device.getDeviceKey());
+        request.setProductKey(product.getProductKey());
+        request.setProtoKey("modbus-tcp");
+        request.setMessageType(ProtoMessageType.PROPERTY);
+        // ponytail: 用 JSON 编码，复用 DefaultProtocolDecoder 的 JSON 解析路径
+        request.setData(encodeAsJson(dataList).getBytes());
+        try {
+            dataProcessor.messageUp(request);
+        } catch (Exception e) {
+            log.warn("Modbus messageUp failed: device={}", device.getDeviceKey(), e);
+        }
+    }
+
+    /** 离线设备标记上线 */
+    private void markOnline(Device device) {
+        if (!Boolean.TRUE.equals(device.getOnline())) {
+            device.setOnline(true);
+            deviceMapper.updateById(device);
         }
     }
 

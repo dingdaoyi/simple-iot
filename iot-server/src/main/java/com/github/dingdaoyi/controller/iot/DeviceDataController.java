@@ -2,6 +2,7 @@ package com.github.dingdaoyi.controller.iot;
 
 
 import com.github.dingdaoyi.core.base.BaseResult;
+import com.github.dingdaoyi.core.base.PageResult;
 import com.github.dingdaoyi.model.query.DeviceDataQuery;
 import com.github.dingdaoyi.model.query.DeviceEventDataVo;
 import com.github.dingdaoyi.model.query.TelemetryAggQuery;
@@ -42,9 +43,8 @@ public class DeviceDataController {
 
     @PostMapping("event/logs")
     @Operation(summary = "设备日志数据")
-    public BaseResult<List<DeviceEventDataVo>> eventLog(@RequestBody DeviceDataQuery query) {
-        List<DeviceEventDataVo> deviceEventDataVos = deviceDataService.eventLogs(query);
-        return BaseResult.success(deviceEventDataVos);
+    public PageResult<DeviceEventDataVo> eventLog(@RequestBody DeviceDataQuery query) {
+        return deviceDataService.eventLogs(query);
     }
 
     @PostMapping("property/aggregate")

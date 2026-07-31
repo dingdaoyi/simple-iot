@@ -8,6 +8,7 @@ import com.github.dingdaoyi.iot.DataProcessor;
 import com.github.dingdaoyi.model.DTO.DeviceDTO;
 import com.github.dingdaoyi.core.enums.ResultCode;
 import com.github.dingdaoyi.core.exception.BusinessException;
+import com.github.dingdaoyi.core.base.PageResult;
 import com.github.dingdaoyi.model.query.DeviceDataQuery;
 import com.github.dingdaoyi.model.query.DeviceEventDataVo;
 import com.github.dingdaoyi.model.query.TelemetryAggQuery;
@@ -231,12 +232,59 @@ public class InfluxDataProcessor implements DataProcessor, DeviceDataService {
     }
 
     @Override
-    public List<DeviceEventDataVo> eventLogs(DeviceDataQuery query) {
+    public PageResult<DeviceEventDataVo> eventLogs(DeviceDataQuery query) {
         QueryOptions queryOptions = new QueryOptions(properties.getDatabase(), QueryType.SQL);
-        //TODO 需要解决分页等问题
-        String sqlParams = "select * from \"" + properties.getEventDatabase() + "\" where \"deviceKey\"=$deviceKey" +
+        int page = Math.max(1, query.getPage() == null ? 1 : query.getPage());
+        int size = Math.max(1, Math.min(200, query.getSize() == null ? 20 : query.getSize()));
+        int offset = (page - 1) * size;
+
+        String whereClause = " where \"deviceKey\"=$deviceKey" +
                            (StringUtils.isNotBlank(query.getIdentifier()) ? " and \"identifier\"=$identifier" : "") +
-                           " and time >= $beginTime and time <= $endTime order by time desc limit 100";
+                           " and time >= $beginTime and time <= $endTime";
+
+        // count 查询
+        String countSql = "select count(*) from \"" + properties.getEventDatabase() + "\"" + whereClause;
+        long total = 0;
+        if (influxDBClient != null) {
+            try (Stream<Map<String, Object>> rows = influxDBClient.queryRows(countSql, buildParams(query))) {
+                var firstRow = rows.findFirst();
+                if (firstRow.isPresent()) {
+                    total = extractCount(firstRow.get());
+                }
+            } catch (Exception e) {
+                if (isMissingMeasurementError(e)) {
+                    log.warn("事件日志 measurement 不存在，按空数据返回: {}", properties.getEventDatabase());
+                    return PageResult.of(List.of(), 0L, (long) page, (long) size);
+                }
+                log.error("count 查询出错:{}", e.getMessage());
+                throw new BusinessException(ResultCode.BAD_REQUEST, "请求参数错误!");
+            }
+        }
+
+        if (total == 0) {
+            return PageResult.of(List.of(), 0L, (long) page, (long) size);
+        }
+
+        // 分页数据查询
+        String sql = "select * from \"" + properties.getEventDatabase() + "\"" + whereClause +
+                     " order by time desc limit " + size + " offset " + offset;
+        if (influxDBClient == null) {
+            return PageResult.of(List.of(), total, (long) page, (long) size);
+        }
+        try (Stream<PointValues> stream = influxDBClient.queryPoints(sql, buildParams(query), queryOptions)) {
+            List<DeviceEventDataVo> data = stream.map(DeviceEventDataVo::fromPointValues).toList();
+            return PageResult.of(data, total, (long) page, (long) size);
+        } catch (Exception e) {
+            if (isMissingMeasurementError(e)) {
+                log.warn("事件日志 measurement 不存在，按空数据返回: {}", properties.getEventDatabase());
+                return PageResult.of(List.of(), 0L, (long) page, (long) size);
+            }
+            log.error("查询出错:{}", e.getMessage());
+            throw new BusinessException(ResultCode.BAD_REQUEST, "请求参数错误!");
+        }
+    }
+
+    private Map<String, Object> buildParams(DeviceDataQuery query) {
         Map<String, Object> params = new HashMap<>();
         params.put("deviceKey", query.getDeviceKey());
         params.put("beginTime", toInfluxSqlTimestamp(query.getBeginTime()));
@@ -244,17 +292,18 @@ public class InfluxDataProcessor implements DataProcessor, DeviceDataService {
         if (StringUtils.isNotBlank(query.getIdentifier())) {
             params.put("identifier", query.getIdentifier());
         }
-        if (influxDBClient == null) return List.of();
-        try (Stream<PointValues> stream = influxDBClient.queryPoints(sqlParams, params, queryOptions)) {
-            return stream.map(DeviceEventDataVo::fromPointValues).toList();
-        } catch (Exception e) {
-            if (isMissingMeasurementError(e)) {
-                log.warn("事件日志 measurement 不存在，按空数据返回: {}", properties.getEventDatabase());
-                return List.of();
-            }
-            log.error("查询出错:{}", e.getMessage());
-            throw new BusinessException(ResultCode.BAD_REQUEST, "请求参数错误!");
-        }
+        return params;
+    }
+
+    /** InfluxDB count(*) 返回列名如 count_value / count_rowData, 取第一个 count 开头的列值 */
+    private long extractCount(Map<String, Object> row) {
+        return row.entrySet().stream()
+                .filter(e -> e.getKey().toLowerCase().startsWith("count"))
+                .map(Map.Entry::getValue)
+                .filter(v -> v instanceof Number)
+                .mapToLong(v -> ((Number) v).longValue())
+                .findFirst()
+                .orElse(0L);
     }
 
     private String toInfluxSqlTimestamp(LocalDateTime time) {

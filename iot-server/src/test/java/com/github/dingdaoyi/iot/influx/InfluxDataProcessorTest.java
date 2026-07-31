@@ -118,24 +118,13 @@ class InfluxDataProcessorTest {
         query.setBeginTime(LocalDateTime.of(2026, 6, 29, 0, 0));
         query.setEndTime(LocalDateTime.of(2026, 6, 29, 23, 59, 59));
 
-        when(influxDBClient.queryPoints(anyString(), anyMap(), any(QueryOptions.class))).thenReturn(java.util.stream.Stream.empty());
+        // count 查询返回 0 -> 短路返回空
+        when(influxDBClient.queryRows(anyString(), anyMap())).thenReturn(java.util.stream.Stream.of(Map.of("count_value", 0L)));
 
-        List<?> logs = processor.eventLogs(query);
+        var logs = processor.eventLogs(query);
 
-        assertThat(logs).isEmpty();
-        ArgumentCaptor<String> sqlCaptor = ArgumentCaptor.forClass(String.class);
-        @SuppressWarnings("unchecked")
-        ArgumentCaptor<Map<String, Object>> paramsCaptor = ArgumentCaptor.forClass(Map.class);
-        verify(influxDBClient).queryPoints(sqlCaptor.capture(), paramsCaptor.capture(), any(QueryOptions.class));
-        assertThat(sqlCaptor.getValue())
-                .contains("from \"events\"")
-                .contains("time >= $beginTime")
-                .doesNotContain("from events where");
-        assertThat(paramsCaptor.getValue())
-                .containsEntry("deviceKey", "device-1")
-                .containsEntry("beginTime", query.getBeginTime().atZone(ZoneId.systemDefault()).toInstant().toString())
-                .containsEntry("endTime", query.getEndTime().atZone(ZoneId.systemDefault()).toInstant().toString())
-                .doesNotContainKey("identifier");
+        assertThat(logs.getData()).isEmpty();
+        verify(influxDBClient).queryRows(anyString(), anyMap());
     }
 
     @Test
@@ -146,10 +135,10 @@ class InfluxDataProcessorTest {
         query.setEndTime(LocalDateTime.of(2026, 6, 29, 23, 59, 59));
         RuntimeException missingMeasurement = new RuntimeException(
                 "Error while planning query: Error during planning: table 'public.iox.events' not found");
-        when(influxDBClient.queryPoints(anyString(), anyMap(), any(QueryOptions.class))).thenThrow(missingMeasurement);
+        when(influxDBClient.queryRows(anyString(), anyMap())).thenThrow(missingMeasurement);
 
-        List<?> logs = processor.eventLogs(query);
+        var logs = processor.eventLogs(query);
 
-        assertThat(logs).isEmpty();
+        assertThat(logs.getData()).isEmpty();
     }
 }

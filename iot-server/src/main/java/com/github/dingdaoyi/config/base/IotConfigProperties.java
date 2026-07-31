@@ -16,6 +16,16 @@ public class IotConfigProperties {
      */
     private boolean enableDeviceSecret;
 
+    /**
+     * 开启设备自动注册（MQTT 连接时设备不存在则自动创建）
+     */
+    private boolean autoRegister;
+
+    /**
+     * 自动注册设备默认产品 ID
+     */
+    private Integer autoRegisterProductId;
+
 
     /**
      * 配置本地存储
