@@ -2,12 +2,20 @@
 
 Simple IoT can receive telemetry from third-party platforms (ERP, MES, weather APIs, etc.) via HTTP webhook with HMAC-SHA256 signature verification.
 
+![Webhook ingress list](../../doc/screenshots/webhook-list.png)
+
 ## How it works
 
-1. **Create a webhook config** in the console → associate it with a device.
-2. The system generates a unique `token` + `secret` pair.
-3. Third-party systems `POST` JSON to `/iot/webhook/{token}` with HMAC signature headers.
-4. The server verifies the signature, maps the JSON keys to device properties, and writes telemetry to InfluxDB.
+1. Create a webhook config in the console, associate it with a device. The system generates a unique `token` + `secret` pair.
+2. Third-party systems `POST` JSON to `/iot/webhook/{token}` with HMAC signature headers.
+3. The server verifies the signature, maps JSON keys to device properties, and writes telemetry to InfluxDB.
+
+## Create a webhook
+
+1. Go to **Webhook -> Webhook Ingress**, click **Add Ingress**.
+2. Fill in the name, select the associated device, and save.
+3. The system auto-generates `token` and `secret`. The dialog shows the endpoint URL, signature algorithm, and a ready-to-copy curl command.
+4. Copy the token and secret to your third-party system.
 
 ## Signature algorithm
 
@@ -40,7 +48,7 @@ curl -X POST "http://localhost:5010/iot/webhook/$TOKEN" \
 
 ## Request format
 
-The body is raw JSON — each top-level key maps to a device property identifier defined in the TSL model:
+The body is raw JSON - each top-level key maps to a device property identifier defined in the TSL model:
 
 ```json
 {
@@ -60,6 +68,8 @@ The server wraps each key-value pair into the standard protocol format and feeds
 | 404 | `webhook不存在` | Invalid token |
 | 500 | `设备未连接` | Device offline (webhook requires an online device) |
 
-## Frontend
+## Management
 
-The **Webhook** page in the console provides full CRUD. After creating a webhook, the secret dialog shows the endpoint URL, signature algorithm, and a ready-to-copy curl command with the actual token and secret filled in.
+- **Regenerate secret**: clicking "Regenerate" produces a new token + secret. The old credentials stop working immediately.
+- **Enable/Disable**: when disabled, the token rejects all requests.
+- **Usage guide**: after creating or regenerating, the dialog's curl command is pre-filled with the actual token and secret - copy and use directly.

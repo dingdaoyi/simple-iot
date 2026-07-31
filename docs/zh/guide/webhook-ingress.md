@@ -2,12 +2,20 @@
 
 Simple IoT 支持通过 HTTP Webhook 接收第三方平台（ERP、MES、天气 API 等）推送的遥测数据，使用 HMAC-SHA256 签名验证。
 
+![Webhook 接入列表](../../doc/screenshots/webhook-list.png)
+
 ## 工作原理
 
-1. 在控制台**创建 Webhook 接入**，关联一个设备。
-2. 系统生成唯一的 `token` + `secret` 密钥对。
-3. 第三方系统带 HMAC 签名头 `POST` JSON 到 `/iot/webhook/{token}`。
-4. 服务端验签后将 JSON 键值映射为设备属性，写入 InfluxDB。
+1. 在控制台创建 Webhook 接入，关联一个设备，系统生成唯一的 `token` + `secret`。
+2. 第三方系统带 HMAC 签名头 `POST` JSON 到 `/iot/webhook/{token}`。
+3. 服务端验签后将 JSON 每个键值对映射为设备属性，写入 InfluxDB。
+
+## 创建接入
+
+1. 进入 **Webhook -> Webhook Ingress** 页面，点击 **Add Ingress**。
+2. 填写名称、选择关联设备、保存。
+3. 系统自动生成 `token` 和 `secret`，弹窗展示端点 URL、签名算法和 curl 示例。
+4. 复制 token 和 secret 给第三方系统使用。
 
 ## 签名算法
 
@@ -60,6 +68,8 @@ Body 是裸 JSON，每个顶层 key 对应物模型中定义的属性标识符�
 | 404 | `webhook不存在` | token 无效 |
 | 500 | `设备未连接` | 设备离线（webhook 需要在线设备） |
 
-## 前端管理
+## 管理操作
 
-控制台的 **Webhook** 页面提供完整增删改查。创建接入后，密钥弹窗会展示端点 URL、签名算法和可直接复制的 curl 命令（已填入实际 token 和 secret）。
+- **重新生成密钥**：点击列表中的"重新生成"会产出新的 token + secret，旧密钥立即失效。
+- **启用/禁用**：禁用后该 token 不再接受请求。
+- **接入说明**：创建或重新生成密钥后，弹窗中的 curl 命令已填入实际 token 和 secret，可直接复制使用。
