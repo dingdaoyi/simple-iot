@@ -99,6 +99,10 @@ public class DefaultProtocolDecoder implements ProtocolDecoder {
 
     @Override
     public void responseError(DeviceConnection connection, ProtocolException e) {
+        if (connection == null) {
+            log.warn("协议解析失败(无连接,可能是webhook推送): deviceKey={}, 原因: {}", e.getMessageId(), e.getMessage());
+            return;
+        }
         try {
             HashMap<String, Object> params = new HashMap<>();
             params.put("topic", MqttTopicConstants.ERROR_RESPONSE_TOPIC);

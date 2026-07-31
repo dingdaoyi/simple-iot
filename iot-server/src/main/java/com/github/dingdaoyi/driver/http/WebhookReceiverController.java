@@ -19,6 +19,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
+import cn.hutool.json.JSONUtil;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -110,13 +111,34 @@ public class WebhookReceiverController {
             return;
         }
 
-        DeviceRequest deviceRequest = new DeviceRequest();
-        deviceRequest.setDeviceKey(device.getDeviceKey());
-        deviceRequest.setProductKey(product.getProductKey());
-        deviceRequest.setProtoKey("system-default");
-        deviceRequest.setMessageType(ProtoMessageType.PROPERTY);
-        deviceRequest.setData(body);
-        dataProcessor.messageUp(deviceRequest);
+        // 第三方推送的裸 JSON（如 {"temperature":25.5,"humidity":60}）
+        // 转成标准协议格式逐属性上报: {"header":{"identifier":"temperature"},"body":{"value":25.5}}
+        String rawBody = body == null ? "{}" : new String(body, StandardCharsets.UTF_8);
+        cn.hutool.json.JSONObject jsonBody;
+        try {
+            jsonBody = JSONUtil.parseObj(rawBody);
+        } catch (Exception e) {
+            writeJson(response, BaseResult.fail(ResultCode.BAD_REQUEST, "请求体不是有效的JSON"));
+            return;
+        }
+        for (String identifier : jsonBody.keySet()) {
+            Object value = jsonBody.get(identifier);
+            cn.hutool.json.JSONObject standardMsg = new cn.hutool.json.JSONObject();
+            cn.hutool.json.JSONObject header = new cn.hutool.json.JSONObject();
+            header.set("identifier", identifier);
+            standardMsg.set("header", header);
+            cn.hutool.json.JSONObject msgBody = new cn.hutool.json.JSONObject();
+            msgBody.set("value", value);
+            standardMsg.set("body", msgBody);
+
+            DeviceRequest deviceRequest = new DeviceRequest();
+            deviceRequest.setDeviceKey(device.getDeviceKey());
+            deviceRequest.setProductKey(product.getProductKey());
+            deviceRequest.setProtoKey("system-default");
+            deviceRequest.setMessageType(ProtoMessageType.PROPERTY);
+            deviceRequest.setData(standardMsg.toString().getBytes(StandardCharsets.UTF_8));
+            dataProcessor.messageUp(deviceRequest);
+        }
 
         writeJson(response, BaseResult.success());
     }
