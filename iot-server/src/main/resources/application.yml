@@ -71,7 +71,7 @@ mybatis-plus:
   configuration:
 
     default-enum-type-handler: com.baomidou.mybatisplus.core.handlers.CompositeEnumTypeHandler
-    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+    log-impl: org.apache.ibatis.logging.nologging.NoLoggingImpl
 mqtt:
   server:
     enabled: true

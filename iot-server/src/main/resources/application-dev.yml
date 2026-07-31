@@ -1,0 +1,6 @@
+# 开发环境 Profile - 开启 SQL 日志
+# 启动方式: java -jar app.jar --spring.profiles.active=dev
+# 或环境变量: SPRING_PROFILES_ACTIVE=dev
+mybatis-plus:
+  configuration:
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl

@@ -60,27 +60,13 @@
 
 ---
 
-### 1.4 关闭生产环境 SQL 日志
+### 1.4 关闭生产环境 SQL 日志 ✅
 
-- [ ] 完成
+- [x] 完成
 
 **位置:** `iot-server/src/main/resources/application.yml` L74
 
-**问题:** `log-impl: org.apache.ibatis.logging.stdout.StdOutImpl` 在生产环境打印所有 SQL 到 stdout。当前只有 `application.yml`，没有 `application-dev.yml` 做 profile 分离。
-
-**修复方案:**
-
-```yaml
-# application.yml (默认)
-mybatis-plus:
-  configuration:
-    log-impl: org.apache.ibatis.logging.nologging.NoLoggingImpl
-
-# application-dev.yml
-mybatis-plus:
-  configuration:
-    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
-```
+**状态:** 已修复。默认 `NoLoggingImpl`，新建 `application-dev.yml` 开 `StdOutImpl`，启动加 `--spring.profiles.active=dev`。
 
 ---
 
@@ -109,34 +95,23 @@ mybatis-plus:
 
 > 预计 3-5 天
 
-### 2.1 设备删除校验
+### 2.1 设备删除校验 ✅
 
-- [ ] 完成
+- [x] 完成
 
-**位置:** `DeviceServiceImpl.removeById()` L99-103
+**位置:** `DeviceServiceImpl.removeById()` 
 
-**当前:** `// TODO 判断子设备,是否可以删除`，直接 `super.removeById(id)`。
-
-**实现:**
-1. 查询是否有子设备（`parent_id = id`），有则拒绝
-2. 查询是否关联设备分组，有则提示先移除
-3. 查询是否有活跃告警，可选：拒绝或级联清除
-4. 删除关联的设备影子、物模型数据
+**状态:** 已实现。子设备存在则抛 `BusinessException("存在子设备，无法删除")`，删除成功后 `@Transactional` 级联清理设备影子 + 设备分组关联。
 
 ---
 
-### 2.2 指令下发日志完善
+### 2.2 指令下发日志完善 ✅
 
-- [ ] 完成
+- [x] 完成
 
-**位置:** `ServiceEndpoint.java` L27
+**位置:** `ServiceHandler.sendMessage()` + `CommandStatus` 枚举
 
-**当前:** `// TODO 指令下发记录日志如果错误需要知道原因`
-
-**实现:**
-1. 下发失败时记录：设备 ID、指令内容、失败原因（超时/设备离线/协议错误）
-2. 在 `ServiceHandler.sendMessage()` 中捕获异常并写入日志表
-3. 前端设备详情可查看指令下发历史
+**状态:** 已实现。`CommandStatus` 新增 `FAILED(3)`。`sendMessage()` 成功时标 `DONE`，失败时调 `markFailed()` 写 `resultData.error` + `WARN` 日志。
 
 ---
 
@@ -422,10 +397,10 @@ mybatis-plus:
 - [x] 1.1 DeviceShadow 乐观锁 ✅
 - [ ] 1.2 InfluxDB 批量查询（待定，当前方案有意为之）
 - [x] 1.3 密码正则优化 ✅
-- [ ] 1.4 关闭生产 SQL 日志
+- [x] 1.4 关闭生产 SQL 日志 ✅
 - [ ] 1.5 核心模块测试
-- [ ] 2.1 设备删除校验
-- [ ] 2.2 指令下发日志
+- [x] 2.1 设备删除校验 ✅
+- [x] 2.2 指令下发日志 ✅
 - [ ] 2.3 Modbus poll() 拆分
 - [ ] 2.4 产品类型树缓存
 - [ ] 2.5 事件日志分页

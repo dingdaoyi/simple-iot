@@ -74,14 +74,19 @@ public class ServiceHandler {
         CompletableFuture<CommandResponse> future = commandProcessor.messageDown(new CommandRequest(deviceCommand),tslModel);
         try {
             CommandResponse result = future.get();
+            deviceCommand.setStatus(CommandStatus.DONE);
+            commandService.updateById(deviceCommand);
             Map<String, Object> resultData = result.getResultData();
             if (CollectionUtil.isEmpty(resultData)) {
                 return Collections.emptyMap();
             }
             return new HashMap<>(resultData);
         } catch (InterruptedException e) {
+            markFailed(deviceCommand, "指令被中断: " + e.getMessage());
             throw new BusinessException(ResultCode.BAD_REQUEST, e.getMessage());
         } catch (ExecutionException e) {
+            String reason = e.getCause() != null ? e.getCause().getMessage() : e.getMessage();
+            markFailed(deviceCommand, reason);
             if (e.getCause() instanceof BusinessException se) {
                 throw se;
             }
@@ -90,6 +95,15 @@ public class ServiceHandler {
             }
             throw new BusinessException(ResultCode.BAD_REQUEST, e.getMessage());
         }
+    }
+
+    private void markFailed(DeviceCommand cmd, String reason) {
+        cmd.setStatus(CommandStatus.FAILED);
+        Map<String, Object> err = new HashMap<>();
+        err.put("error", reason);
+        cmd.setResultData(err);
+        commandService.updateById(cmd);
+        log.warn("指令下发失败|deviceKey={}|identifier={}|reason={}", cmd.getDeviceKey(), cmd.getIdentifier(), reason);
     }
 
     private void validParam(Map<String, Object> paramMap, TslService service) {

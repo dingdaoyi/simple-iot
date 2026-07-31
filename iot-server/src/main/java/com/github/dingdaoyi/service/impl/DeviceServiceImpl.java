@@ -11,12 +11,19 @@ import com.github.dingdaoyi.model.query.DevicePageQuery;
 import com.github.dingdaoyi.model.vo.DevicePageVo;
 import com.github.dingdaoyi.model.vo.DeviceVo;
 import com.github.dingdaoyi.model.vo.ProductVo;
+import com.github.dingdaoyi.core.enums.ResultCode;
+import com.github.dingdaoyi.core.exception.BusinessException;
+import com.github.dingdaoyi.entity.DeviceGroupRelation;
+import com.github.dingdaoyi.entity.DeviceShadow;
+import com.github.dingdaoyi.mapper.DeviceGroupRelationMapper;
 import com.github.dingdaoyi.proto.model.tsl.TslModel;
+import com.github.dingdaoyi.service.DeviceShadowService;
 import com.github.dingdaoyi.service.ProductService;
 import com.github.dingdaoyi.service.TslModelService;
 import com.github.dingdaoyi.utils.PageHelper;
 import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.io.Serializable;
 import java.util.List;
@@ -37,6 +44,12 @@ public class DeviceServiceImpl extends ServiceImpl<DeviceMapper, Device> impleme
 
     @Resource
     private TslModelService tslModelService;
+
+    @Resource
+    private DeviceShadowService shadowService;
+
+    @Resource
+    private DeviceGroupRelationMapper groupRelationMapper;
 
     @Override
     public Optional<DeviceVo> details(Integer id) {
@@ -97,9 +110,22 @@ public class DeviceServiceImpl extends ServiceImpl<DeviceMapper, Device> impleme
     }
 
     @Override
+    @Transactional
     public boolean removeById(Serializable id) {
-        //TODO 判断子设备,是否可以删除
-        return super.removeById(id);
+        Integer deviceId = (Integer) id;
+        // 子设备存在则拒绝删除
+        long childCount = count(Wrappers.<Device>lambdaQuery().eq(Device::getParentId, deviceId));
+        if (childCount > 0) {
+            throw new BusinessException(ResultCode.BAD_REQUEST, "存在子设备，无法删除");
+        }
+        boolean deleted = super.removeById(id);
+        if (deleted) {
+            // 级联清理：设备影子
+            shadowService.remove(Wrappers.<DeviceShadow>lambdaQuery().eq(DeviceShadow::getDeviceId, deviceId));
+            // 级联清理：设备分组关联
+            groupRelationMapper.delete(Wrappers.<DeviceGroupRelation>lambdaQuery().eq(DeviceGroupRelation::getDeviceId, deviceId));
+        }
+        return deleted;
     }
 
     @Override

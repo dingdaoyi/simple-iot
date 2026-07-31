@@ -4,7 +4,7 @@ import com.baomidou.mybatisplus.annotation.EnumValue;
 import com.fasterxml.jackson.annotation.JsonValue;
 
 public enum CommandStatus {
-    SAVED(0),DELIVERED(1), DONE(2),
+    SAVED(0),DELIVERED(1), DONE(2), FAILED(3),
     ;
 
     @JsonValue
