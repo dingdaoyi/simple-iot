@@ -1892,6 +1892,7 @@ export default {
     secretWarning: 'Save these credentials securely. The Secret is only shown once at creation time.',
     endpoint: 'Endpoint',
     empty: 'No webhook ingress yet. Click "Add Ingress" to create one.',
+    usageGuide: 'Usage Guide',
   },
   validate_structure: 'Validate Structure',
   value: 'Value',

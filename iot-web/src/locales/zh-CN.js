@@ -1892,6 +1892,7 @@ export default {
     secretWarning: '请妥善保存以下凭证，Secret 仅在创建时显示一次。',
     endpoint: '接入端点',
     empty: '暂无 Webhook 接入，点击「新增接入」创建',
+    usageGuide: '接入说明',
   },
   validate_structure: '校验结构',
   value: '值',

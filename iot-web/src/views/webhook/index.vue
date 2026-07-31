@@ -1,6 +1,6 @@
 <script setup>
 import { ElMessage, ElMessageBox } from 'element-plus'
-import { onMounted, reactive, ref } from 'vue'
+import { computed, onMounted, reactive, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { deviceListApi, productListApi } from '@/api/index'
 import {
@@ -123,6 +123,29 @@ function copyText(text) {
   ElMessage.success(t('common.copySuccess'))
 }
 
+const webhookUrl = computed(() => {
+  const origin = window.location.origin
+  return `${origin}/iot/webhook/${createdConfig.value?.token || '{token}'}`
+})
+
+const curlExample = computed(() => {
+  const token = createdConfig.value?.token || 'YOUR_TOKEN'
+  const secret = createdConfig.value?.secret || 'YOUR_SECRET'
+  const ts = Date.now()
+  const body = '{"temperature":25.5,"humidity":60}'
+  return `# 1. 计算签名
+TS=$(date +%s%3N)
+BODY='{"temperature":25.5,"humidity":60}'
+SIG=$(printf '%s.%s' "$TS" "$BODY" | openssl dgst -sha256 -hmac "${secret}" | awk '{print $NF}')
+
+# 2. 发送请求
+curl -X POST "${window.location.origin}/iot/webhook/${token}" \\
+  -H "Content-Type: application/json" \\
+  -H "X-Siot-Timestamp: $TS" \\
+  -H "X-Siot-Signature: $SIG" \\
+  -d "$BODY"`
+})
+
 onMounted(loadData)
 </script>
 
@@ -230,9 +253,22 @@ onMounted(loadData)
           </el-button>
         </el-descriptions-item>
         <el-descriptions-item :label="t('webhook.endpoint')">
-          <code class="mono-text">POST /iot/webhook/{token}</code>
+          <code class="mono-text">POST {{ webhookUrl }}</code>
         </el-descriptions-item>
       </el-descriptions>
+
+      <el-divider>
+        <span class="guide-title">{{ t('webhook.usageGuide') }}</span>
+      </el-divider>
+      <el-descriptions :column="1" border size="small">
+        <el-descriptions-item label="X-Siot-Signature">
+          <span class="mono-text">HMAC-SHA256(secret, timestamp + "." + body) hex</span>
+        </el-descriptions-item>
+        <el-descriptions-item label="X-Siot-Timestamp">
+          <span class="mono-text">毫秒级时间戳，5 分钟有效</span>
+        </el-descriptions-item>
+      </el-descriptions>
+      <pre class="code-example">{{ curlExample }}</pre>
       <template #footer>
         <el-button type="primary" @click="secretDialogVisible = false">
           {{ t('common.confirm') }}
@@ -253,5 +289,24 @@ onMounted(loadData)
 
 .copy-btn {
   margin-left: var(--space-sm);
+}
+
+.guide-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--iot-color-text-secondary);
+}
+
+.code-example {
+  margin-top: var(--space-md);
+  padding: var(--space-md);
+  background: var(--iot-color-bg-darker, #1a1a2e);
+  border-radius: var(--radius-md, 8px);
+  font-size: 12px;
+  line-height: 1.6;
+  color: #a5b3ce;
+  overflow-x: auto;
+  white-space: pre-wrap;
+  word-break: break-all;
 }
 </style>
