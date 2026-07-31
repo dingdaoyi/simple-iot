@@ -11,6 +11,8 @@ import {
   updateEmailConfig,
   updateEmailConfigStatus,
 } from '@/api/email'
+import PageHeader from '@/components/PageHeader.vue'
+import { Message, Plus } from '@element-plus/icons-vue'
 
 const { t } = useI18n()
 const listLoading = ref(true)
@@ -198,22 +200,21 @@ getList()
 </script>
 
 <template>
-  <div class="email-page">
-    <!-- 页面标题 -->
-    <div class="page-header">
-      <div class="header-content">
-        <h1 class="page-title">
-          <span class="title-icon">✉</span>
-          {{ t('system.email_config') }}
-        </h1>
-        <p class="page-subtitle">
-          {{ t('system.configure_smtp_email_service_system_notifications') }}
-        </p>
-      </div>
-    </div>
+  <div class="page-container">
+    <PageHeader
+      :title="t('system.email_config')"
+      :subtitle="t('system.configure_smtp_email_service_system_notifications')"
+      :icon="Message"
+    >
+      <template #actions>
+        <el-button type="primary" :icon="Plus" @click="handleCreate">
+          {{ t('system.add_config') }}
+        </el-button>
+      </template>
+    </PageHeader>
 
     <!-- 主内容 -->
-    <div class="main-content glass-card">
+    <div class="glass-card">
       <div class="filter-row">
         <el-input
           v-model="listQuery.name"
@@ -228,9 +229,6 @@ getList()
         </el-select>
         <el-button type="primary" @click="handleFilter">
           {{ t('common.search') }}
-        </el-button>
-        <el-button type="primary" @click="handleCreate">
-          {{ t('system.add_config') }}
         </el-button>
       </div>
 
@@ -291,6 +289,9 @@ getList()
             </el-button>
           </template>
         </el-table-column>
+        <template #empty>
+          <el-empty :description="t('system.no_email_config')" />
+        </template>
       </el-table>
     </div>
 
@@ -365,64 +366,6 @@ getList()
 </template>
 
 <style scoped lang="scss">
-.email-page {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-xl);
-  padding: var(--space-xl);
-  min-height: 100vh;
-}
-
-/* 页面标题 */
-.page-header {
-  .header-content {
-    background: var(--iot-glass-bg-dark);
-    backdrop-filter: blur(20px);
-    border: 1px solid var(--iot-glass-border);
-    border-radius: var(--radius-lg);
-    padding: var(--space-xl) var(--space-2xl);
-    box-shadow: var(--shadow-md);
-    position: relative;
-    overflow: hidden;
-
-    &::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      height: 4px;
-      background: linear-gradient(90deg, var(--iot-color-primary), var(--iot-color-accent));
-    }
-  }
-
-  .page-title {
-    font-size: 24px;
-    font-weight: 700;
-    margin: 0;
-    display: flex;
-    align-items: center;
-    gap: var(--space-sm);
-    color: var(--iot-color-text-primary);
-
-    .title-icon {
-      font-size: 28px;
-    }
-  }
-
-  .page-subtitle {
-    margin: var(--space-sm) 0 0 0;
-    font-size: 14px;
-    color: var(--iot-color-text-secondary);
-  }
-}
-
-/* 主内容 */
-.main-content {
-  flex: 1;
-  padding: var(--space-lg);
-}
-
 /* 筛选行 */
 .filter-row {
   display: flex;
@@ -440,10 +383,6 @@ getList()
 
 /* 响应式 */
 @media (max-width: 768px) {
-  .email-page {
-    padding: var(--space-md);
-  }
-
   .filter-row {
     flex-direction: column;
     align-items: stretch;
@@ -452,10 +391,6 @@ getList()
     .el-select {
       width: 100% !important;
     }
-  }
-
-  .page-title {
-    font-size: 20px !important;
   }
 }
 </style>

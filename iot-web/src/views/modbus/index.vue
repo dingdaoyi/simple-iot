@@ -3,6 +3,8 @@ import { ElMessage, ElMessageBox } from 'element-plus'
 import { onMounted, reactive, ref } from 'vue'
 import { deviceListApi, productListApi } from '@/api/index'
 import { modbusAddApi, modbusDeleteApi, modbusListApi, modbusTestApi, modbusUpdateApi } from '@/api/modbus'
+import PageHeader from '@/components/PageHeader.vue'
+import { Connection, Plus, Refresh } from '@element-plus/icons-vue'
 
 const loading = ref(false)
 const list = ref([])
@@ -131,24 +133,22 @@ onMounted(loadData)
 
 <template>
   <div class="page-container">
-    <div class="page-header">
-      <div class="header-content">
-        <h1 class="page-title">
-          Modbus TCP
-        </h1>
-        <p class="page-subtitle">
-          主从轮询：平台做 Master，定时读取寄存器映射到物模型属性
-        </p>
-      </div>
-    </div>
+    <PageHeader
+      title="Modbus TCP"
+      subtitle="主从轮询：平台做 Master，定时读取寄存器映射到物模型属性"
+      :icon="Connection"
+    >
+      <template #actions>
+        <el-button :icon="Refresh" @click="loadData">
+          刷新
+        </el-button>
+        <el-button type="primary" :icon="Plus" @click="onAdd">
+          新增配置
+        </el-button>
+      </template>
+    </PageHeader>
 
-    <div class="action-bar">
-      <el-button type="primary" @click="onAdd">
-        + 新增配置
-      </el-button>
-    </div>
-
-    <div class="table-wrapper glass-card">
+    <div class="glass-card">
       <el-table v-loading="loading" :data="list" border>
         <el-table-column label="设备" min-width="140">
           <template #default="{ row }">
@@ -184,6 +184,9 @@ onMounted(loadData)
             </el-button>
           </template>
         </el-table-column>
+        <template #empty>
+          <el-empty description="暂无 Modbus 配置，点击「新增配置」添加" />
+        </template>
       </el-table>
     </div>
 
@@ -216,7 +219,7 @@ onMounted(loadData)
             :rows="10"
             placeholder="[{&quot;identifier&quot;:&quot;temperature&quot;,&quot;function&quot;:3,&quot;address&quot;:0,&quot;count&quot;:1,&quot;dataType&quot;:&quot;int16&quot;,&quot;scale&quot;:0.1}]"
           />
-          <div style="margin-top: 4px; font-size: 12px; color: #909399;">
+          <div class="form-tip">
             JSON 数组，每项: identifier(物模型标识符), function(3=保持/4=输入), address(起始地址), count(寄存器数), dataType(int16/int32/float32/float64/bool), scale(缩放系数)
           </div>
         </el-form-item>
@@ -232,3 +235,11 @@ onMounted(loadData)
     </el-dialog>
   </div>
 </template>
+
+<style scoped lang="scss">
+.form-tip {
+  margin-top: var(--space-xs);
+  font-size: 12px;
+  color: var(--iot-color-text-muted);
+}
+</style>

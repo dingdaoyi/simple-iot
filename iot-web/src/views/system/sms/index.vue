@@ -311,24 +311,25 @@ getTemplateTypes()
 </script>
 
 <template>
-  <div class="app-container">
+  <div class="page-container">
     <el-tabs v-model="activeTab" type="card">
       <el-tab-pane :label="t('system.sms_config')" name="config">
-        <div class="filter-container">
-          <el-input
-            v-model="listQuery.name"
-            :placeholder="t('push_config.config_name')"
-            style="width: 200px;"
-            class="filter-item"
-            @keyup.enter="handleFilter"
-          />
-          <el-button class="filter-item" type="primary" @click="handleFilter">
-            {{ t('common.search') }}
-          </el-button>
-          <el-button class="filter-item" style="margin-left: 10px;" type="primary" @click="handleCreate">
-            {{ t('system.sms_system_sms_add') }}
-          </el-button>
-        </div>
+        <div class="glass-card">
+          <div class="filter-row">
+            <el-input
+              v-model="listQuery.name"
+              :placeholder="t('push_config.config_name')"
+              style="width: 200px;"
+              clearable
+              @keyup.enter="handleFilter"
+            />
+            <el-button type="primary" @click="handleFilter">
+              {{ t('common.search') }}
+            </el-button>
+            <el-button type="primary" @click="handleCreate">
+              {{ t('system.sms_system_sms_add') }}
+            </el-button>
+          </div>
 
         <el-table
           v-loading="listLoading"
@@ -387,7 +388,11 @@ getTemplateTypes()
               </el-button>
             </template>
           </el-table-column>
+          <template #empty>
+            <el-empty :description="t('system.no_sms_config')" />
+          </template>
         </el-table>
+        </div>
       </el-tab-pane>
 
       <el-tab-pane :label="t('system.sms_send_sms')" name="send">
@@ -578,3 +583,12 @@ getTemplateTypes()
     </el-dialog>
   </div>
 </template>
+
+<style scoped lang="scss">
+.filter-row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+  margin-bottom: var(--space-lg);
+}
+</style>

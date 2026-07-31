@@ -91,7 +91,7 @@ loadDetails()
 
 .tsl-content {
   flex: 1;
-  padding: 16px 20px;
+  padding: var(--space-lg) var(--space-xl);
   overflow: auto;
   background: var(--iot-glass-bg);
   border-radius: var(--radius-lg);

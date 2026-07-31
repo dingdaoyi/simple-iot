@@ -10,6 +10,8 @@ import {
   webhookRegenerateSecretApi,
   webhookUpdateApi,
 } from '@/api/webhook'
+import PageHeader from '@/components/PageHeader.vue'
+import { Link, Plus, Refresh } from '@element-plus/icons-vue'
 
 const { t } = useI18n()
 const loading = ref(false)
@@ -126,24 +128,22 @@ onMounted(loadData)
 
 <template>
   <div class="page-container">
-    <div class="page-header">
-      <div class="header-content">
-        <h1 class="page-title">
-          {{ t('webhook.title') }}
-        </h1>
-        <p class="page-subtitle">
-          {{ t('webhook.subtitle') }}
-        </p>
-      </div>
-    </div>
+    <PageHeader
+      :title="t('webhook.title')"
+      :subtitle="t('webhook.subtitle')"
+      :icon="Link"
+    >
+      <template #actions>
+        <el-button :icon="Refresh" @click="loadData">
+          {{ t('common.refresh') }}
+        </el-button>
+        <el-button type="primary" :icon="Plus" @click="onAdd">
+          {{ t('webhook.add') }}
+        </el-button>
+      </template>
+    </PageHeader>
 
-    <div class="action-bar">
-      <el-button type="primary" @click="onAdd">
-        + {{ t('webhook.add') }}
-      </el-button>
-    </div>
-
-    <div class="table-wrapper glass-card">
+    <div class="glass-card">
       <el-table v-loading="loading" :data="list" border>
         <el-table-column prop="name" :label="t('webhook.name')" min-width="120" />
         <el-table-column :label="t('webhook.device')" min-width="140">
@@ -153,7 +153,7 @@ onMounted(loadData)
         </el-table-column>
         <el-table-column prop="token" label="Token" min-width="200">
           <template #default="{ row }">
-            <code style="font-size: 12px;">{{ row.token }}</code>
+            <code class="mono-text">{{ row.token }}</code>
           </template>
         </el-table-column>
         <el-table-column :label="t('common.status')" width="70">
@@ -176,6 +176,9 @@ onMounted(loadData)
             </el-button>
           </template>
         </el-table-column>
+        <template #empty>
+          <el-empty :description="t('webhook.empty')" />
+        </template>
       </el-table>
     </div>
 
@@ -212,22 +215,22 @@ onMounted(loadData)
 
     <!-- Secret display dialog (after create or regenerate) -->
     <el-dialog v-model="secretDialogVisible" :title="t('webhook.secretTitle')" width="600px" :close-on-click-modal="false">
-      <el-alert :title="t('webhook.secretWarning')" type="warning" :closable="false" show-icon style="margin-bottom: 16px" />
+      <el-alert :title="t('webhook.secretWarning')" type="warning" :closable="false" show-icon class="secret-alert" />
       <el-descriptions :column="1" border>
         <el-descriptions-item label="Token">
-          <code>{{ createdConfig?.token }}</code>
-          <el-button link type="primary" size="small" style="margin-left: 8px" @click="copyText(createdConfig?.token)">
+          <code class="mono-text">{{ createdConfig?.token }}</code>
+          <el-button link type="primary" size="small" class="copy-btn" @click="copyText(createdConfig?.token)">
             {{ t('common.copy') }}
           </el-button>
         </el-descriptions-item>
         <el-descriptions-item label="Secret">
-          <code>{{ createdConfig?.secret }}</code>
-          <el-button link type="primary" size="small" style="margin-left: 8px" @click="copyText(createdConfig?.secret)">
+          <code class="mono-text">{{ createdConfig?.secret }}</code>
+          <el-button link type="primary" size="small" class="copy-btn" @click="copyText(createdConfig?.secret)">
             {{ t('common.copy') }}
           </el-button>
         </el-descriptions-item>
         <el-descriptions-item :label="t('webhook.endpoint')">
-          <code>POST /iot/webhook/{token}</code>
+          <code class="mono-text">POST /iot/webhook/{token}</code>
         </el-descriptions-item>
       </el-descriptions>
       <template #footer>
@@ -238,3 +241,17 @@ onMounted(loadData)
     </el-dialog>
   </div>
 </template>
+
+<style scoped lang="scss">
+.mono-text {
+  font-size: 12px;
+}
+
+.secret-alert {
+  margin-bottom: var(--space-md);
+}
+
+.copy-btn {
+  margin-left: var(--space-sm);
+}
+</style>

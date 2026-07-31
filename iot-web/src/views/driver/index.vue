@@ -5,6 +5,8 @@ import { onMounted, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { getConnectionTypeEnum, getDriverTypeEnum } from '@/api/dict'
 import { addDriver, deleteDriver, getDriverList, updateDriver } from '@/api/driver'
+import PageHeader from '@/components/PageHeader.vue'
+import { Plus, Refresh } from '@element-plus/icons-vue'
 
 const { t } = useI18n()
 const driverList = ref([])
@@ -127,31 +129,23 @@ watch(dialogVisible, (visible) => {
 
 <template>
   <div class="page-container">
-    <!-- 页面标题 -->
-    <div class="page-header">
-      <div class="header-content">
-        <h1 class="page-title">
-          <el-icon :size="24" class="title-icon">
-            <Lightning />
-          </el-icon>
-          {{ t('driver.driver') }}
-        </h1>
-        <p class="page-subtitle">
-          {{ t('driver.manage_configure_device_communication_drivers') }}
-        </p>
-      </div>
-    </div>
-
-    <!-- 操作栏 -->
-    <div class="action-bar">
-      <el-button type="primary" @click="handleAdd">
-        <span class="btn-icon">+</span>
-        {{ t('driver.add_driver') }}
-      </el-button>
-    </div>
+    <PageHeader
+      :title="t('driver.driver')"
+      :subtitle="t('driver.manage_configure_device_communication_drivers')"
+      :icon="Lightning"
+    >
+      <template #actions>
+        <el-button :icon="Refresh" @click="loadDrivers">
+          {{ t('common.refresh') }}
+        </el-button>
+        <el-button type="primary" :icon="Plus" @click="handleAdd">
+          {{ t('driver.add_driver') }}
+        </el-button>
+      </template>
+    </PageHeader>
 
     <!-- 数据表格 -->
-    <div class="table-wrapper glass-card">
+    <div class="glass-card">
       <el-table :data="driverList" style="width: 100%">
         <el-table-column prop="driverId" label="ID" width="80" />
         <el-table-column prop="name" :label="t('driver.driver_name')" />
@@ -186,6 +180,9 @@ watch(dialogVisible, (visible) => {
             </el-button>
           </template>
         </el-table-column>
+        <template #empty>
+          <el-empty :description="t('driver.empty')" />
+        </template>
       </el-table>
     </div>
 
@@ -240,67 +237,10 @@ watch(dialogVisible, (visible) => {
 </template>
 
 <style scoped lang="scss">
-.page-container {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-xl);
-  padding: var(--space-xl);
-  min-height: 100vh;
-}
-
-.action-bar {
-  display: flex;
-  justify-content: flex-end;
-}
-
-.table-wrapper {
-  flex: 1;
-
-  .el-table {
-    background: transparent;
-
-    :deep(.el-table__header-wrapper) {
-      th {
-        background: rgba(99, 102, 241, 0.08);
-        color: var(--iot-color-text-primary);
-        font-weight: 600;
-        font-family: 'Fira Code', monospace;
-        border-bottom: 1px solid rgba(99, 102, 241, 0.15);
-      }
-    }
-
-    :deep(.el-table__body-wrapper) {
-      .el-table__row {
-        transition: all var(--transition-fast);
-
-        &:hover {
-          background: rgba(99, 102, 241, 0.06);
-        }
-      }
-    }
-  }
-}
-
 .form-tip {
   font-size: 12px;
   color: var(--iot-color-text-muted);
   margin-top: var(--space-xs);
   line-height: 1.4;
-}
-
-.title-icon {
-  color: var(--iot-color-primary);
-  margin-right: var(--space-sm);
-}
-
-/* 响应式 */
-@media (max-width: 768px) {
-  .page-container {
-    padding: var(--space-md);
-  }
-
-  .page-title {
-    font-size: 20px !important;
-  }
 }
 </style>

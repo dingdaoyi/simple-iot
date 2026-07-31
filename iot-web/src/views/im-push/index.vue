@@ -74,9 +74,9 @@ onMounted(loadList)
 </script>
 
 <template>
-  <div class="im-push-page">
+  <div class="page-container">
     <PageHeader title="IM 推送配置" subtitle="钉钉 / 企业微信 / 飞书 Webhook 推送" :icon="ChatDotRound" />
-    <div class="table-wrapper glass-card">
+    <div class="glass-card">
       <div class="table-toolbar">
         <el-button type="primary" :icon="Plus" @click="onAdd">新增配置</el-button>
       </div>
@@ -99,6 +99,9 @@ onMounted(loadList)
             <el-button link type="danger" :icon="Delete" @click="onDelete(row)">删除</el-button>
           </template>
         </el-table-column>
+        <template #empty>
+          <el-empty description="暂无推送配置，点击「新增配置」添加" />
+        </template>
       </el-table>
     </div>
 
@@ -128,13 +131,6 @@ onMounted(loadList)
 </template>
 
 <style scoped lang="scss">
-.im-push-page {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-xl);
-  padding: var(--space-xl);
-  min-height: 100vh;
-}
 .table-toolbar {
   margin-bottom: var(--space-md);
 }

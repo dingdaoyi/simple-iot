@@ -4,6 +4,8 @@ import { computed, onMounted, ref, watch } from 'vue'
 import { deviceGroupTreeApi } from '@/api/deviceGroup'
 import { deviceListApi, productListApi, productTypeListApi } from '@/api/index'
 import { firmwareDeleteApi, firmwareListApi, firmwarePublishApi, firmwareUploadApi, otaTaskCreateApi, otaTaskGetApi, otaTaskListApi } from '@/api/ota'
+import PageHeader from '@/components/PageHeader.vue'
+import { Upload, UploadFilled, Refresh } from '@element-plus/icons-vue'
 
 const activeTab = ref('firmware')
 const loading = ref(false)
@@ -31,17 +33,6 @@ const taskDetail = ref(null)
 const groups = ref([])
 const devices = ref([])
 
-async function loadProducts() {
-  const res = await productListApi({})
-  products.value = res.data || []
-}
-
-async function loadProductTypes() {
-  const res = await productTypeListApi({})
-  // ponytail: filter out disabled types so cascade doesn't break
-  productTypes.value = (res.data || []).filter(t => t.status === 1)
-}
-
 async function loadFirmware() {
   loading.value = true
   const res = await firmwareListApi()
@@ -49,44 +40,42 @@ async function loadFirmware() {
   loading.value = false
 }
 
+async function loadProducts() {
+  const res = await productListApi()
+  products.value = res.data || []
+}
+
+async function loadProductTypes() {
+  const res = await productTypeListApi()
+  productTypes.value = res.data || []
+}
+
 async function loadGroups() {
   const res = await deviceGroupTreeApi()
   groups.value = res.data || []
 }
 
-async function loadDevices(productId) {
-  if (!productId) {
-    devices.value = []
-    return
-  }
-  const res = await deviceListApi({ productId })
-  devices.value = res.data || []
+async function loadDevices() {
+  const res = await deviceListApi({ page: 1, size: 9999 })
+  devices.value = res.data?.records || []
 }
-
-// ponytail: load devices for task dialog when firmware product changes
-const selectedFirmware = computed(() => firmwareList.value.find(f => f.id === taskForm.value.firmwareId))
-watch(() => taskForm.value.firmwareId, () => {
-  if (selectedFirmware.value)
-    loadDevices(selectedFirmware.value.productId)
-})
 
 function onUploadFile(file) {
   uploadForm.value.file = file.raw
-  return false
 }
 
 async function onSubmitUpload() {
-  if (!uploadForm.value.file || !uploadForm.value.productId || !uploadForm.value.name || !uploadForm.value.version) {
-    ElMessage.warning('请填写完整信息并选择文件')
+  if (!uploadForm.value.productId || !uploadForm.value.name || !uploadForm.value.version || !uploadForm.value.file) {
+    ElMessage.warning('请填写完整信息')
     return
   }
-  const fd = new FormData()
-  fd.append('file', uploadForm.value.file)
-  fd.append('productId', uploadForm.value.productId)
-  fd.append('name', uploadForm.value.name)
-  fd.append('version', uploadForm.value.version)
-  fd.append('description', uploadForm.value.description || '')
-  await firmwareUploadApi(fd)
+  const formData = new FormData()
+  formData.append('file', uploadForm.value.file)
+  formData.append('productId', uploadForm.value.productId)
+  formData.append('name', uploadForm.value.name)
+  formData.append('version', uploadForm.value.version)
+  formData.append('description', uploadForm.value.description || '')
+  await firmwareUploadApi(formData)
   ElMessage.success('上传成功')
   uploadVisible.value = false
   uploadForm.value = { productId: null, name: '', version: '', description: '', file: null }
@@ -163,27 +152,45 @@ function onTaskDetailClose() {
   }
 }
 
+watch(activeTab, (v) => {
+  if (v === 'task')
+    loadTasks()
+})
+
 onMounted(() => {
   loadProducts()
   loadProductTypes()
   loadFirmware()
   loadTasks()
   loadGroups()
+  loadDevices()
 })
 </script>
 
 <template>
-  <div class="ota-page">
-    <el-tabs v-model="activeTab" class="glass-card">
+  <div class="page-container ota-page">
+    <PageHeader
+      title="OTA 升级"
+      subtitle="固件管理与设备升级任务"
+      :icon="UploadFilled"
+    >
+      <template #actions>
+        <el-button :icon="Refresh" @click="activeTab === 'firmware' ? loadFirmware() : loadTasks()">
+          刷新
+        </el-button>
+      </template>
+    </PageHeader>
+
+    <el-tabs v-model="activeTab" class="glass-card ota-tabs">
       <!-- Firmware Tab -->
       <el-tab-pane label="固件管理" name="firmware">
-        <div style="margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center;">
-          <span style="font-size: 14px; color: var(--iot-color-text-muted);">固件包列表</span>
-          <el-button type="primary" size="small" @click="uploadVisible = true">
+        <div class="tab-toolbar">
+          <span class="tab-label">固件包列表</span>
+          <el-button type="primary" :icon="Upload" @click="uploadVisible = true">
             上传固件
           </el-button>
         </div>
-        <el-table v-loading="loading" :data="firmwareList" stripe>
+        <el-table v-loading="loading" :data="firmwareList" stripe class="iot-table">
           <el-table-column prop="name" label="名称" min-width="120" />
           <el-table-column prop="version" label="版本" width="80" />
           <el-table-column label="产品" width="120">
@@ -217,12 +224,15 @@ onMounted(() => {
               </el-button>
             </template>
           </el-table-column>
+          <template #empty>
+            <el-empty description="暂无固件，点击「上传固件」添加" />
+          </template>
         </el-table>
       </el-tab-pane>
 
       <!-- Task Tab -->
       <el-tab-pane label="升级任务" name="task">
-        <el-table v-loading="loading" :data="taskList" stripe>
+        <el-table v-loading="loading" :data="taskList" stripe class="iot-table">
           <el-table-column label="固件" width="120">
             <template #default="{ row }">
               {{ firmwareName(row.firmwareId) }}
@@ -246,6 +256,9 @@ onMounted(() => {
               </el-button>
             </template>
           </el-table-column>
+          <template #empty>
+            <el-empty description="暂无升级任务" />
+          </template>
         </el-table>
       </el-tab-pane>
     </el-tabs>
@@ -278,7 +291,7 @@ onMounted(() => {
               选择文件
             </el-button>
             <template #tip>
-              <div style="font-size: 12px; color: var(--iot-color-text-muted);">
+              <div class="upload-tip">
                 支持 .bin .hex .img 等格式
               </div>
             </template>
@@ -344,8 +357,8 @@ onMounted(() => {
           {{ taskDetail?.createTime }}
         </el-descriptions-item>
       </el-descriptions>
-      <div v-if="taskDetail?.progress" style="margin-top: 12px;">
-        <div style="font-size: 13px; margin-bottom: 8px;">
+      <div v-if="taskDetail?.progress" class="task-progress">
+        <div class="task-progress-label">
           设备进度
         </div>
         <el-table :data="Object.entries(taskDetail.progress).map(([k, v]) => ({ deviceId: k, status: v }))" stripe size="small">
@@ -364,8 +377,34 @@ onMounted(() => {
 </template>
 
 <style scoped lang="scss">
-.ota-page {
-  padding: 8px;
-  height: 100%;
+.ota-tabs {
+  padding: var(--space-lg);
+}
+
+.tab-toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--space-md);
+}
+
+.tab-label {
+  font-size: 14px;
+  color: var(--iot-color-text-muted);
+}
+
+.upload-tip {
+  font-size: 12px;
+  color: var(--iot-color-text-muted);
+}
+
+.task-progress {
+  margin-top: var(--space-md);
+
+  &-label {
+    font-size: 13px;
+    margin-bottom: var(--space-sm);
+    color: var(--iot-color-text-secondary);
+  }
 }
 </style>
