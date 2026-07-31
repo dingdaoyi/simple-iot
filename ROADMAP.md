@@ -40,7 +40,7 @@ This roadmap is the honest list of what is **missing**, **rough**, or **deserves
 | P2-1 | **Modbus TCP/RTU** driver | most-requested industrial protocol |
 | P2-2 | **OPC UA** client driver | factory / SCADA integrations |
 | P2-3 | **CoAP** server | low-power devices |
-| P2-4 | **HTTP webhook** ingress with HMAC verification | third-party platforms push to us |
+| P2-4 | **HTTP webhook** ingress with HMAC verification ✅ | third-party platforms push to us |
 | P2-5 | **LwM2M** driver | mobile / NB-IoT modules |
 | P2-6 | Driver SDK + Maven archetype `simple-iot-driver-archetype` | so contributors can publish drivers without forking |
 
