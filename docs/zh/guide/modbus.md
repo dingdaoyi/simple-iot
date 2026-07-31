@@ -2,7 +2,7 @@
 
 Simple IoT 内置 Modbus TCP 轮询驱动，支持按设备定时读取寄存器并自动上报为遥测数据。
 
-![Modbus 配置列表](../../doc/screenshots/modbus-list.png)
+![Modbus 配置列表](../../../doc/screenshots/modbus-list.png)
 
 ## 工作原理
 
@@ -16,7 +16,7 @@ Simple IoT 内置 Modbus TCP 轮询驱动，支持按设备定时读取寄存器
 4. 填写寄存器映射 JSON（见下方说明）。
 5. 设置轮询间隔，保存即可。
 
-![Modbus 配置编辑](../../doc/screenshots/modbus-config.png)
+![Modbus 配置编辑](../../../doc/screenshots/modbus-config.png)
 
 ## 配置字段说明
 

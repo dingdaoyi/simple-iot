@@ -2,7 +2,7 @@
 
 Simple IoT 支持通过 HTTP Webhook 接收第三方平台（ERP、MES、天气 API 等）推送的遥测数据，使用 HMAC-SHA256 签名验证。
 
-![Webhook 接入列表](../../doc/screenshots/webhook-list.png)
+![Webhook 接入列表](../../../doc/screenshots/webhook-list.png)
 
 ## 工作原理
 

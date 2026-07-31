@@ -46,7 +46,7 @@ Docker Compose 会拉起完整技术栈：
 
 登录后即可看到仪表盘——系统资源、快捷操作、最近设备、告警动态：
 
-![仪表盘](../../doc/screenshots/dashboard-home.png)
+![仪表盘](../../../doc/screenshots/dashboard-home.png)
 
 ## 4. 体验实时数据
 
@@ -74,7 +74,7 @@ Modbus 模拟器（`modbus-thp-001`）会自动轮询上报，无需手动操作
 4. 用任意 MQTT 客户端连接 `tcp://<host>:1883`，`clientId=simple_{deviceKey}`，用户名=`{deviceKey}`，密码=`{设备密钥}`。
 5. 在 **设备 -> 遥测** 页签查看实时数据流。
 
-![设备列表](../../doc/screenshots/device-list-v2.png)
+![设备列表](../../../doc/screenshots/device-list-v2.png)
 
 ## 6. 创建规则
 
@@ -83,7 +83,7 @@ Modbus 模拟器（`modbus-thp-001`）会自动轮询上报，无需手动操作
 3. Action 选择"发送邮件"/"MQTT 转发"/"设备指令"。
 4. 保存并启用。
 
-![规则引擎编辑器](../../doc/screenshots/rule-chain-editor.png)
+![规则引擎编辑器](../../../doc/screenshots/rule-chain-editor.png)
 
 保存的那一刻规则就生效了。
 
