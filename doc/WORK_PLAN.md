@@ -131,18 +131,13 @@
 
 ---
 
-### 2.4 产品类型树缓存
+### 2.4 产品类型树缓存 ✅
 
-- [ ] 完成
+- [x] 完成
 
-**位置:** `ProductTypeServiceImpl.listByParentId()` L26-36
+**位置:** `ProductTypeServiceImpl.listByParentId()`
 
-**当前:** `// TODO 换成内存方式`，每次查库。
-
-**实现:**
-1. 用 Caffeine 缓存产品类型树，key = `product_type_tree`
-2. 增删改产品类型时主动失效缓存
-3. 项目已有 Caffeine 依赖（`spring.cache.type=caffeine`），直接用 `@Cacheable`
+**状态:** 已实现。`@Cacheable("productTypeTree")` 缓存整棵树（仅 parentId=-1+withChildren+无 name 时），`add/updateById/removeById/updateStatusById` 均 `@CacheEvict(allEntries=true)`。复用已配置的 Caffeine。
 
 ---
 
@@ -193,18 +188,13 @@
 
 ---
 
-### 2.8 通道激活状态校验
+### 2.8 通道激活状态校验 ✅
 
-- [ ] 完成
+- [x] 完成
 
-**位置:** `ServiceHandler.sendMessage()` L45
+**位置:** `ServiceHandler.sendMessage()`
 
-**当前:** `// TODO 判断通道是否激活`
-
-**实现:**
-1. 下发指令前查询设备所属产品 → 驱动 → 通道状态
-2. 通道未激活时返回明确错误：`"驱动通道未激活，无法下发指令"`
-3. 在 `ResultCode` 中增加 `DRIVER_INACTIVE` 状态码
+**状态:** 已实现。下发前查 `ProtocolService.getByProtoKey()`，未启用抛 `BusinessException("协议通道未启用")`，不存在抛 `PROTO_NOT_EXIST`。复用现有 `Protocol.isEnabled()`。
 
 ---
 
@@ -402,11 +392,11 @@
 - [x] 2.1 设备删除校验 ✅
 - [x] 2.2 指令下发日志 ✅
 - [ ] 2.3 Modbus poll() 拆分
-- [ ] 2.4 产品类型树缓存
+- [x] 2.4 产品类型树缓存 ✅
 - [ ] 2.5 事件日志分页
 - [ ] 2.6 MQTT 自动注册
 - [ ] 2.7 结构体字段兼容
-- [ ] 2.8 通道激活校验
+- [x] 2.8 通道激活校验 ✅
 - [ ] 3.1 前端页面迁移
 - [ ] 3.2 清理兼容代码
 - [ ] 3.3 前端测试

@@ -32,17 +32,27 @@ public class ServiceHandler {
     private final TslModelService tslModelService;
     private final DeviceCommandService commandService;
     private final IotCommandProcessor commandProcessor;
+    private final ProtocolService protocolService;
     public Map<String, Object> sendMessage(String deviceKey, String identifier, Map<String, Object> paramMap)
             throws BusinessException {
         if (CollectionUtil.isEmpty(paramMap)) {
             paramMap = new HashMap<>();
         }
         final Optional<DeviceDTO> optional = deviceService.getByDeviceKey(deviceKey);
+
         if (optional.isEmpty()) {
             throw new BusinessException(ResultCode.BAD_REQUEST, "device not found: " + deviceKey);
         }
         DeviceDTO device = optional.get();
-        //TODO 判断通道是否激活
+        // 协议通道激活校验
+        protocolService.getByProtoKey(device.getProtoKey()).ifPresentOrElse(
+            proto -> {
+                if (!proto.isEnabled()) {
+                    throw new BusinessException(ResultCode.BAD_REQUEST, "协议通道未启用，无法下发指令: " + device.getProtoKey());
+                }
+            },
+            () -> { throw new BusinessException(ResultCode.PROTO_NOT_EXIST, "协议不存在: " + device.getProtoKey()); }
+        );
         Optional<TslModel> tslModelOptional = tslModelService.findByProductKey(device.getProductKey());
         if (tslModelOptional.isEmpty()) {
             throw new BusinessException(ResultCode.BAD_REQUEST, "tsl model not found: " + deviceKey);
