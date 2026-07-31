@@ -29,6 +29,15 @@ The project keeps the runtime intentionally compact: one Spring Boot application
 
 ## 🌟 Release Highlights
 
+### v0.3.0 - Drivers + Ingress (2026-07-31)
+
+| Area | What's new |
+|---|---|
+| **Webhook Ingress** | HMAC-SHA256 signed HTTP endpoint for third-party push. Per-webhook token + secret, replay protection, frontend CRUD with curl guide. |
+| **Modbus TCP** | Per-device polling, register mapping, multi-function-code read, scale + data-type conversion. Demo `modbus-sim` included. |
+| **System monitoring** | Real CPU / memory / disk metrics on dashboard (replaces placeholder zeros). |
+| **UI audit** | 8 pages unified to PageHeader + glass-card + el-empty empty states, -40 lines duplicate CSS. |
+
 ### v0.2.0 - Real-time + Operations (2026-07-23)
 
 | Area | What's new |

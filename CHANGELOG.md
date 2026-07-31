@@ -7,6 +7,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.3.0] - 2026-07-31
+
+### Added
+- **Webhook Ingress** (`P2-4`) - HMAC-SHA256 signed HTTP ingress for third-party platforms. Per-webhook token + secret, timestamp window replay protection, CRUD config API and frontend management page with curl usage guide. Raw JSON `{"temp":25.5}` auto-wrapped to standard protocol format per-property.
+- **Modbus TCP driver** (`P2-1`) - `ModbusPollingService` with per-device scheduled polling, register mapping config, multi-function-code read (FC 1/2/3/4), scale + data-type conversion. `modbus-tcp` protocol decoder registered. Frontend config page. Demo `modbus-sim` container included.
+- **System resource monitoring** - Dashboard now shows real CPU%, memory%, disk% via `OperatingSystemMXBean` (replaces placeholder zeros).
+- **UI component audit** (`P3`) - 8 pages unified to `PageHeader` + `glass-card` + `el-empty` empty states, inline styles removed, 40 lines of duplicate CSS deleted.
+
+### Fixed
+- **Device latest data API** - `ORDER BY time DESC LIMIT 1` per-property replaces `last_value()` (InfluxDB v3 returns write-order, not time-order, for `last_value()`).
+- **Webhook NPE** - `DefaultProtocolDecoder.responseError` now null-checks `DeviceConnection` (webhook pushes have no connection).
+- **MQTT msgId NPE** - property reports without `msgId` no longer trigger NPE in `responseRegister`.
+
+### Changed
+- **Platform maturity** - raised to 80%.
+- **ROADMAP** - P2-1 Modbus and P2-4 Webhook marked complete.
+
 ## [0.2.0] - 2026-07-23
 
 ### Added

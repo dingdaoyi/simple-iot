@@ -37,7 +37,7 @@ This roadmap is the honest list of what is **missing**, **rough**, or **deserves
 
 | # | Item | Notes |
 |---|---|---|
-| P2-1 | **Modbus TCP/RTU** driver | most-requested industrial protocol |
+| P2-1 | **Modbus TCP/RTU** driver ✅ | most-requested industrial protocol |
 | P2-2 | **OPC UA** client driver | factory / SCADA integrations |
 | P2-3 | **CoAP** server | low-power devices |
 | P2-4 | **HTTP webhook** ingress with HMAC verification ✅ | third-party platforms push to us |

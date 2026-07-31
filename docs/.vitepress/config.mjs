@@ -67,6 +67,13 @@ export default defineConfig({
                 { text: 'Batch Commands', link: '/guide/batch-command' },
               ],
             },
+            {
+              text: 'Data Ingestion',
+              items: [
+                { text: 'Webhook Ingress', link: '/guide/webhook-ingress' },
+                { text: 'Modbus TCP', link: '/guide/modbus' },
+              ],
+            },
           ],
           '/api/': [
             {
@@ -118,6 +125,13 @@ export default defineConfig({
               items: [
                 { text: '设备拓扑', link: '/zh/guide/device-topology' },
                 { text: '批量设备指令', link: '/zh/guide/batch-command' },
+              ],
+            },
+            {
+              text: '数据接入',
+              items: [
+                { text: 'Webhook 接入', link: '/zh/guide/webhook-ingress' },
+                { text: 'Modbus TCP', link: '/zh/guide/modbus' },
               ],
             },
           ],

@@ -58,6 +58,19 @@ docs(readme): translate quick start to Spanish
 - **CSS** - use design tokens from `iot-web/src/styles/var.scss` and `global.scss`. No hard-coded colors.
 - **Tests** - 190 unit tests. Add tests for new rule nodes, services, and non-trivial logic.
 
+### Writing a protocol driver
+
+Simple IoT uses a `ProtocolDecoder` SPI for device protocols. To add a new protocol:
+
+1. **Implement `ProtocolDecoder`** - register a unique `protocolKey()`, implement `decode()` to parse raw bytes into `DecodeResult` (a list of `DeviceData` keyed by TSL property identifier).
+2. **Register on startup** - either via `ProtocolFactory.DECODERS.put(key, this)` in an `ApplicationReadyEvent` listener (see `ModbusProtocolDecoder`), or via Spring component scanning if the decoder is a `@Component`/`@Service`.
+3. **Wire to the product** - set the product's `protoKey` to your `protocolKey()` in the console. The `messageUp` pipeline will route to your decoder automatically.
+4. **Polling (optional)** - for pull-based protocols (Modbus, OPC UA), implement a `ScheduledExecutorService` that reads the device and calls `dataProcessor.messageUp()` with a `DeviceRequest`. See `ModbusPollingService` for the pattern.
+
+Reference implementations:
+- `system-default` (`DefaultProtocolDecoder`) - JSON over MQTT, strategy-based message type dispatch.
+- `modbus-tcp` (`ModbusProtocolDecoder` + `ModbusPollingService`) - TCP socket polling with register mapping.
+
 ### Pull request checklist
 
 - [ ] My code follows the existing style of this project.
@@ -127,6 +140,19 @@ docs(readme): 补充西班牙语快速开始
 - **Java** — 标准 Spring Boot 规范，可用 Lombok，Sonar 默认规则。提交前先 `mvn package` 通过。
 - **Vue / JS** — Composition API + `<script setup>`，遵循 `iot-web/.eslintrc.*`。提交前 `pnpm lint`。
 - **CSS** — 用 `iot-web/src/styles/var.scss` / `global.scss` 里的设计 Token，禁止硬编码颜色。
+
+### 编写协议驱动
+
+Simple IoT 通过 `ProtocolDecoder` SPI 扩展设备协议。添加新协议的步骤：
+
+1. **实现 `ProtocolDecoder`** - 注册唯一的 `protocolKey()`，实现 `decode()` 把原始字节解析为 `DecodeResult`（一组 `DeviceData`，按物模型属性标识符关联）。
+2. **启动注册** - 在 `ApplicationReadyEvent` 监听器中 `ProtocolFactory.DECODERS.put(key, this)`（见 `ModbusProtocolDecoder`），或直接用 Spring `@Component` 扫描。
+3. **关联产品** - 在控制台把产品的 `protoKey` 设为你的 `protocolKey()`，`messageUp` 管道会自动路由到你的解码器。
+4. **轮询（可选）** - 拉取型协议（Modbus、OPC UA）用 `ScheduledExecutorService` 定时读设备，调 `dataProcessor.messageUp()` 传 `DeviceRequest`。参考 `ModbusPollingService`。
+
+参考实现：
+- `system-default`（`DefaultProtocolDecoder`）- MQTT JSON，策略模式分派消息类型。
+- `modbus-tcp`（`ModbusProtocolDecoder` + `ModbusPollingService`）- TCP Socket 轮询 + 寄存器映射。
 
 ### PR 检查清单
 
