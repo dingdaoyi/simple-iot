@@ -22,71 +22,41 @@
 
 > 预计 1-2 天，优先级最高
 
-### 1.1 修复 DeviceShadow 乐观锁（P0）
+### 1.1 修复 DeviceShadow 乐观锁（P0）✅
 
-- [ ] 完成
+- [x] 完成
 
-**位置:** `iot-server/src/main/java/com/github/dingdaoyi/service/impl/DeviceShadowServiceImpl.java` — `updateDesired()`
+**位置:** `iot-server/src/main/java/com/github/dingdaoyi/service/impl/DeviceShadowServiceImpl.java` - `updateDesired()` / `updateReported()`
 
-**问题:** version 自增但不在 WHERE 条件中，两个并发请求都能成功，后者覆盖前者。
+**状态:** 已修复。`updateDesired()` 和 `updateReported()` 均已在 WHERE 条件中带上 `eq(DeviceShadow::getVersion, oldVersion)`，更新失败抛 `BusinessException("影子版本冲突，请重试")`。
 
-**修复方案:**
-
-```java
-boolean ok = lambdaUpdate()
-    .eq(DeviceShadow::getDeviceId, deviceId)
-    .eq(DeviceShadow::getVersion, oldVersion)  // 真正的乐观锁
-    .set(DeviceShadow::getDesiredState, newState)
-    .set(DeviceShadow::getVersion, oldVersion + 1)
-    .update();
-if (!ok) throw new BusinessException("版本冲突，请重试");
-```
-
-**验证:** 写一个并发测试，两个线程同时 updateDesired，断言只有一个成功。
+**剩余:** 无并发测试守护，见 1.5。
 
 ---
 
-### 1.2 InfluxDB 批量查询（P1）
+### 1.2 InfluxDB 批量查询（P1）ℹ️ 待定
 
 - [ ] 完成
 
-**位置:** `iot-server/src/main/java/com/github/dingdaoyi/iot/influx/InfluxDataProcessor.java` — `last()` 方法 L165 附近
+**位置:** `iot-server/src/main/java/com/github/dingdaoyi/iot/influx/InfluxDataProcessor.java` - `getLatestData()` L149
 
-**问题:** 每个属性单独查一次 InfluxDB，10 个属性 = 10 次网络往返。
+**现状:** 当前是**逐属性** `ORDER BY time DESC LIMIT 1` 查询。这是有意为之——InfluxDB v3 的 `last_value()` 返回写入顺序而非时间最新的值（已验证踩坑），所以不能用单次 `last_value(*)` 替代。
 
-**修复方案:**
+**可优化方向（低优先级）:** 如果属性数量多且成为性能瓶颈，可考虑：
+1. 用 InfluxDB v3 的 `LAST(value, field)` 聚合函数配合子查询
+2. 或在上层加 Caffeine 缓存（设备最新值，短 TTL 如 5s）
 
-```sql
--- 一次查所有字段的最新值
-SELECT last_value(*) FROM "{measurement}" WHERE "deviceKey" = $deviceKey
-```
-
-将 for 循环改为单次 Flux 查询，结果映射回各属性。
-
-**验证:** 对比修改前后的查询次数（日志或 InfluxDB metrics）。
+**注意:** 当前方案正确性 > 性能，不要为了减少查询次数回退到 `last_value(*)`。
 
 ---
 
-### 1.3 密码正则优化（P1）
+### 1.3 密码正则优化（P1）✅
 
-- [ ] 完成
+- [x] 完成
 
-**位置:** `iot-server/src/main/java/com/github/dingdaoyi/service/impl/UserServiceImpl.java` — `validatePassword()`
+**位置:** `iot-server/src/main/java/com/github/dingdaoyi/service/impl/UserServiceImpl.java` - `validatePassword()`
 
-**问题:** 每次调用 `String.matches()` 都重新编译 3 个正则。
-
-**修复方案:**
-
-```java
-private static final Pattern PWD_PATTERN =
-    Pattern.compile("^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d).{8,}$");
-
-private void validatePassword(String pwd) {
-    if (!PWD_PATTERN.matcher(pwd).matches()) {
-        throw new BusinessException("密码需包含大小写字母和数字，至少8位");
-    }
-}
-```
+**状态:** 已修复。已用 `private static final Pattern PWD_PATTERN = Pattern.compile(...)` 预编译，`PWD_PATTERN.matcher(password).matches()`。
 
 ---
 
@@ -94,11 +64,11 @@ private void validatePassword(String pwd) {
 
 - [ ] 完成
 
-**位置:** `iot-server/src/main/resources/application.yml`
+**位置:** `iot-server/src/main/resources/application.yml` L74
 
-**问题:** `log-impl: org.apache.ibatis.logging.stdout.StdOutImpl` 在生产环境打印所有 SQL 到 stdout。
+**问题:** `log-impl: org.apache.ibatis.logging.stdout.StdOutImpl` 在生产环境打印所有 SQL 到 stdout。当前只有 `application.yml`，没有 `application-dev.yml` 做 profile 分离。
 
-**修复方案:** 用 Spring Profile 控制：
+**修复方案:**
 
 ```yaml
 # application.yml (默认)
@@ -118,7 +88,7 @@ mybatis-plus:
 
 - [ ] 完成
 
-当前 40 个测试文件 / 369 个主代码文件 ≈ 10.8% 文件覆盖率。规则引擎覆盖好，但核心业务模块裸奔。
+当前 40 个测试文件 / 369 个主代码文件 ≈ 10.8% 文件覆盖率，160 个 `@Test` 用例。规则引擎覆盖好，但核心业务模块裸奔。
 
 **需要补测试的模块（按优先级）:**
 
@@ -278,18 +248,21 @@ mybatis-plus:
 - ✅ protocol/index.vue
 - ✅ layout、dashboard
 
-**未迁移（155 处原生 el-table）:**
+**未迁移（11 个文件用原生 el-table）:**
 
 | 页面 | 文件 |
 |------|------|
 | Modbus 管理 | `views/modbus/index.vue` |
 | OTA 升级 | `views/ota/index.vue` |
 | Webhook | `views/webhook/index.vue` |
-| 推送配置 | `views/push-config/index.vue` |
-| IM 推送 | `views/im-push/index.vue` |
 | 驱动管理 | `views/driver/index.vue` |
-| 系统管理 | `views/system/*.vue` |
-| 告警管理 | `views/alarm/index.vue` |
+| IM 推送 | `views/im-push/index.vue` |
+| 设备分组 | `views/device-group/index.vue` |
+| 短信配置 | `views/system/sms/index.vue` |
+| 邮件配置 | `views/system/email/index.vue` |
+| 仪表盘组件 | `views/dashboard/WidgetRenderer.vue` |
+| 设备详情组件 | `views/device/widget/details.vue` |
+| 物模型组件 | `views/tslModel/widget/paramShow.vue` |
 
 **迁移步骤（参考 REFACTOR_GUIDE.md）:**
 1. 替换 `el-table` 为 `IotTable` 组件
@@ -329,18 +302,11 @@ mybatis-plus:
 
 > 按 ROADMAP 优先级排列，每项为独立特性
 
-### 4.1 多租户（ROADMAP P1-1）
+### 4.1 多租户（ROADMAP P1-1）⏭️ 跳过
 
-- [ ] 完成
+- [x] 跳过
 
-**范围:**
-1. 所有业务表增加 `tenant_id` 字段
-2. MyBatis-Plus 拦截器自动注入 tenant_id
-3. Sa-Token 登录时绑定租户
-4. 数据隔离：行级安全（PostgreSQL RLS 或应用层过滤）
-5. 租户配额：设备数上限、用户数上限
-
-**注意:** 这是大特性，建议先出设计文档再动手。
+**状态:** 用户明确跳过多租户特性，当前单租户模式满足需求。
 
 ---
 
@@ -412,7 +378,7 @@ mybatis-plus:
 
 ## 附录 B：测试覆盖缺口
 
-**已有测试（40 文件，~179 用例）:**
+**已有测试（40 文件，160 个 `@Test`）:**
 - ✅ 规则引擎 12/12 节点类型
 - ✅ 协议脚本解码/编码（ProtocolControllerScriptTest, ProtocolServiceScriptTest）
 - ✅ Modbus 帧解析（ModbusFrameTest）
@@ -453,9 +419,9 @@ mybatis-plus:
 
 完成一项后打勾，方便追踪进度：
 
-- [ ] 1.1 DeviceShadow 乐观锁
-- [ ] 1.2 InfluxDB 批量查询
-- [ ] 1.3 密码正则优化
+- [x] 1.1 DeviceShadow 乐观锁 ✅
+- [ ] 1.2 InfluxDB 批量查询（待定，当前方案有意为之）
+- [x] 1.3 密码正则优化 ✅
 - [ ] 1.4 关闭生产 SQL 日志
 - [ ] 1.5 核心模块测试
 - [ ] 2.1 设备删除校验
@@ -469,7 +435,7 @@ mybatis-plus:
 - [ ] 3.1 前端页面迁移
 - [ ] 3.2 清理兼容代码
 - [ ] 3.3 前端测试
-- [ ] 4.1 多租户
+- [x] 4.1 多租户 ⏭️ 跳过
 - [ ] 4.2 Driver SDK
 - [ ] 4.3 移动端适配
 - [ ] 4.4 Helm Chart
