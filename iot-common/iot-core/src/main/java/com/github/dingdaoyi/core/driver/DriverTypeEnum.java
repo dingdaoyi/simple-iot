@@ -14,6 +14,7 @@ public enum DriverTypeEnum {
     TCP("TCP", "TCP驱动"),
     UDP("UDP", "UDP驱动"),
     HTTP("HTTP", "HTTP驱动"),
+    OPCUA("OPCUA", "OPC UA驱动"),
     CUSTOM("CUSTOM", "自定义驱动");
 
     @EnumValue
