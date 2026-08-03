@@ -63,7 +63,6 @@ sa-token:
   sso:
     skip-url:
       - /user/login
-      - /dict/**
       - /webhook/**
       - /ws/**
 

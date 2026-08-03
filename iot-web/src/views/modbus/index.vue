@@ -1,9 +1,10 @@
 <script setup>
 import { ElMessage, ElMessageBox } from 'element-plus'
-import { onMounted, reactive, ref } from 'vue'
+import { computed, onMounted, reactive, ref } from 'vue'
 import { deviceListApi, productListApi } from '@/api/index'
 import { modbusAddApi, modbusDeleteApi, modbusListApi, modbusTestApi, modbusUpdateApi } from '@/api/modbus'
 import PageHeader from '@/components/PageHeader.vue'
+import IotTable from '@/components/IotTable.vue'
 import { Connection, Plus, Refresh } from '@element-plus/icons-vue'
 
 const loading = ref(false)
@@ -24,6 +25,32 @@ const form = reactive({
   registerMapText: '[]',
 })
 
+const columns = computed(() => [
+  {
+    prop: 'deviceId',
+    label: '设备',
+    minWidth: 140,
+    render({ row }) { return getDeviceName(row.deviceId) },
+  },
+  { prop: 'host', label: '主机', width: 140 },
+  { prop: 'port', label: '端口', width: 70 },
+  { prop: 'unitId', label: '单元ID', width: 70 },
+  { prop: 'intervalMs', label: '间隔(ms)', width: 90 },
+  {
+    prop: 'registerMap',
+    label: '映射数',
+    width: 70,
+    render({ row }) { return (row.registerMap || []).length },
+  },
+  {
+    prop: 'enabled',
+    label: '状态',
+    width: 70,
+    slot: 'enabled',
+  },
+  { prop: 'cz', slot: 'cz', width: 180, label: '操作', fixed: 'right' },
+])
+
 async function loadData() {
   loading.value = true
   const [cfgRes, prodRes] = await Promise.all([
@@ -43,7 +70,6 @@ async function loadDevices(productId) {
     const res = await deviceListApi({ productId })
     devices.value = res.data || []
   } else {
-    // ponytail: no productId filter = load all, so the dropdown isn't empty on add
     const res = await deviceListApi({})
     devices.value = res.data || []
   }
@@ -148,47 +174,29 @@ onMounted(loadData)
       </template>
     </PageHeader>
 
-    <div class="glass-card">
-      <el-table v-loading="loading" :data="list" border>
-        <el-table-column label="设备" min-width="140">
-          <template #default="{ row }">
-            {{ getDeviceName(row.deviceId) }}
-          </template>
-        </el-table-column>
-        <el-table-column prop="host" label="主机" width="140" />
-        <el-table-column prop="port" label="端口" width="70" />
-        <el-table-column prop="unitId" label="单元ID" width="70" />
-        <el-table-column prop="intervalMs" label="间隔(ms)" width="90" />
-        <el-table-column label="映射数" width="70">
-          <template #default="{ row }">
-            {{ (row.registerMap || []).length }}
-          </template>
-        </el-table-column>
-        <el-table-column label="状态" width="70">
-          <template #default="{ row }">
-            <el-tag :type="row.enabled ? 'success' : 'info'" size="small">
-              {{ row.enabled ? '启用' : '禁用' }}
-            </el-tag>
-          </template>
-        </el-table-column>
-        <el-table-column label="操作" width="180" fixed="right">
-          <template #default="{ row }">
-            <el-button link size="small" type="primary" @click="onEdit(row)">
-              编辑
-            </el-button>
-            <el-button link size="small" type="success" @click="onTest(row.id)">
-              测试
-            </el-button>
-            <el-button link size="small" type="danger" @click="onDelete(row.id)">
-              删除
-            </el-button>
-          </template>
-        </el-table-column>
-        <template #empty>
-          <el-empty description="暂无 Modbus 配置，点击「新增配置」添加" />
-        </template>
-      </el-table>
-    </div>
+    <IotTable
+      :columns="columns"
+      :data="list"
+      :loading="loading"
+      :is-page="false"
+    >
+      <template #enabled="{ row }">
+        <el-tag :type="row.enabled ? 'success' : 'info'" size="small">
+          {{ row.enabled ? '启用' : '禁用' }}
+        </el-tag>
+      </template>
+      <template #cz="{ row }">
+        <el-button link size="small" type="primary" @click="onEdit(row)">
+          编辑
+        </el-button>
+        <el-button link size="small" type="success" @click="onTest(row.id)">
+          测试
+        </el-button>
+        <el-button link size="small" type="danger" @click="onDelete(row.id)">
+          删除
+        </el-button>
+      </template>
+    </IotTable>
 
     <el-dialog v-model="dialogVisible" :title="editing ? '编辑配置' : '新增配置'" width="700px" destroy-on-close>
       <el-form label-width="100px">
@@ -217,7 +225,7 @@ onMounted(loadData)
             v-model="form.registerMapText"
             type="textarea"
             :rows="10"
-            placeholder="[{&quot;identifier&quot;:&quot;temperature&quot;,&quot;function&quot;:3,&quot;address&quot;:0,&quot;count&quot;:1,&quot;dataType&quot;:&quot;int16&quot;,&quot;scale&quot;:0.1}]"
+            placeholder='[{"identifier":"temperature","function":3,"address":0,"count":1,"dataType":"int16","scale":0.1}]'
           />
           <div class="form-tip">
             JSON 数组，每项: identifier(物模型标识符), function(3=保持/4=输入), address(起始地址), count(寄存器数), dataType(int16/int32/float32/float64/bool), scale(缩放系数)
@@ -237,6 +245,14 @@ onMounted(loadData)
 </template>
 
 <style scoped lang="scss">
+.page-container {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xl);
+  padding: var(--space-xl);
+  min-height: 100vh;
+}
+
 .form-tip {
   margin-top: var(--space-xs);
   font-size: 12px;
