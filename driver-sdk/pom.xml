@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <!--
+        Simple IoT Driver SDK - 示例 archetype
+        外部开发者用此模板快速创建自定义驱动项目
+        mvn archetype:generate -DarchetypeCatalog=local
+        或直接复制此目录修改 groupId/artifactId
+    -->
+
+    <groupId>com.github.dingdaoyi</groupId>
+    <artifactId>driver-sdk-example</artifactId>
+    <version>0.0.1-SNAPSHOT</version>
+    <packaging>jar</packaging>
+
+    <properties>
+        <maven.compiler.source>25</maven.compiler.source>
+        <maven.compiler.target>25</maven.compiler.target>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <iot.version>0.0.1-SNAPSHOT</iot.version>
+    </properties>
+
+    <dependencies>
+        <!-- SDK 核心接口, 只需依赖这两个 -->
+        <dependency>
+            <groupId>com.github.dingdaoyi</groupId>
+            <artifactId>iot-core</artifactId>
+            <version>${iot.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.github.dingdaoyi</groupId>
+            <artifactId>iot-protocol-core</artifactId>
+            <version>${iot.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <version>1.18.34</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>cn.hutool</groupId>
+            <artifactId>hutool-json</artifactId>
+            <version>5.8.32</version>
+        </dependency>
+    </dependencies>
+</project>
