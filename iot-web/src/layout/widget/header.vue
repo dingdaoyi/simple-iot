@@ -13,7 +13,7 @@ const store = useAccountStore()
 const { t } = useI18n()
 const userName = computed(() => t('header.profile'))
 const { theme, setTheme, resolvedTheme } = useTheme()
-const { isCollapsed, toggle } = useSidebar()
+const { isCollapsed, toggle, isMobileOpen, toggleMobile } = useSidebar()
 
 function outLogin() {
   store.clearToken()
@@ -41,10 +41,16 @@ function getThemeIcon() {
 <template>
   <div class="header-box">
     <div class="header-left">
-      <!-- 折叠按钮 -->
-      <div class="collapse-btn" @click="toggle">
+      <!-- 折叠按钮: 桌面端折叠, 移动端抽屉 -->
+      <div class="collapse-btn desktop-only" @click="toggle">
         <el-icon :size="20">
           <Expand v-if="isCollapsed" />
+          <Fold v-else />
+        </el-icon>
+      </div>
+      <div class="collapse-btn mobile-only" @click="toggleMobile">
+        <el-icon :size="20">
+          <Expand v-if="!isMobileOpen" />
           <Fold v-else />
         </el-icon>
       </div>
@@ -323,5 +329,15 @@ function getThemeIcon() {
       color: var(--iot-color-primary);
     }
   }
+}
+
+/* 移动端适配 */
+.mobile-only { display: none; }
+
+@media (max-width: 768px) {
+  .desktop-only { display: none; }
+  .mobile-only { display: flex; }
+  .header-right .theme-label { display: none; }
+  .logo-text { font-size: 14px; }
 }
 </style>

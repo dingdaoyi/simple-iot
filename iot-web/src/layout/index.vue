@@ -1,6 +1,9 @@
 <script lang="jsx" setup>
 import headers from './widget/header.vue'
 import slider from './widget/slider'
+import { useSidebar } from '@/composables/useSidebar.js'
+
+const { isMobileOpen, closeMobile } = useSidebar()
 </script>
 
 <template>
@@ -8,6 +11,8 @@ import slider from './widget/slider'
     <headers />
     <div class="layout-content">
       <slider />
+      <!-- 移动端遮罩 -->
+      <div v-if="isMobileOpen" class="mobile-overlay" @click="closeMobile" />
       <div class="layout-main">
         <router-view v-slot="{ Component, route }">
           <div class="view-container">
@@ -25,9 +30,15 @@ import slider from './widget/slider'
   flex-direction: column;
   width: 100%;
   height: 100%;
-  min-width: 1024px;
   background: var(--iot-color-background);
   transition: background var(--transition-fast);
+}
+
+/* ponytail: 桌面端保留最小宽度, 移动端去掉 */
+@media (min-width: 769px) {
+  .layout-container {
+    min-width: 1024px;
+  }
 }
 
 .layout-content {
@@ -49,5 +60,23 @@ import slider from './widget/slider'
   flex-direction: column;
   height: 100%;
   overflow: auto;
+}
+
+/* 移动端遮罩 */
+.mobile-overlay {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  .mobile-overlay {
+    display: block;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 2000;
+  }
 }
 </style>

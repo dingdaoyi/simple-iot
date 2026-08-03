@@ -7,7 +7,7 @@ import { useSidebar } from '@/composables/useSidebar.js'
 const route = useRoute()
 const router = useRouter()
 const { t, te } = useI18n()
-const { isCollapsed } = useSidebar()
+const { isCollapsed, isMobileOpen, closeMobile } = useSidebar()
 
 const menuTree = computed(() => {
   const allRoutes = router.options.routes
@@ -24,13 +24,14 @@ function menuLabel(item) {
 
 function handleMenuItem(path) {
   router.push(path)
+  closeMobile()
 }
 
 const currRoute = computed(() => route.path)
 </script>
 
 <template>
-  <div class="sidebar-container" :class="{ collapsed: isCollapsed }">
+  <div class="sidebar-container" :class="{ collapsed: isCollapsed, 'mobile-open': isMobileOpen }">
     <el-scrollbar>
       <el-menu
         :default-active="currRoute"
@@ -240,10 +241,20 @@ const currRoute = computed(() => route.path)
 // 响应式
 @media (max-width: 768px) {
   .sidebar-container {
-    width: 200px;
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 2001;
+    height: 100vh;
+    transform: translateX(-100%);
+    box-shadow: 2px 0 12px rgba(0, 0, 0, 0.3);
+
+    &.mobile-open {
+      transform: translateX(0);
+    }
 
     &.collapsed {
-      width: 56px;
+      width: 240px;
     }
   }
 

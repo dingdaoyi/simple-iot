@@ -969,3 +969,49 @@ a,
     background: rgba(99, 102, 241, 0.06);
   }
 }
+
+/* ============================================
+   移动端适配 (≤768px)
+   ponytail: 表格横向滚动, 表单单列, 隐藏次要列
+   ============================================ */
+@media (max-width: 768px) {
+  /* 表格横向滚动 */
+  .el-table {
+    width: 100% !important;
+  }
+
+  /* 弹窗全宽 */
+  .el-dialog {
+    width: 95% !important;
+    margin: 5vh auto !important;
+  }
+
+  /* 表单单列 */
+  .el-form-item {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .el-form-item__label {
+    text-align: left;
+    padding-bottom: 4px;
+  }
+
+  /* 分页居中 */
+  .el-pagination {
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  /* 搜索栏堆叠 */
+  .iot-search-bar,
+  .search-bar {
+    flex-direction: column;
+    gap: 8px;
+
+    .el-input,
+    .el-select {
+      width: 100%;
+    }
+  }
+}
