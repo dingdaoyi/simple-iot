@@ -1,0 +1,60 @@
+{{- if .Values.influxdb.enabled -}}
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ .Release.Name }}-influxdb
+  labels:
+    {{- include "simple-iot.labels" . | nindent 4 }}
+    app.kubernetes.io/component: influxdb
+spec:
+  serviceName: {{ .Release.Name }}-influxdb
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/component: influxdb
+      app.kubernetes.io/instance: {{ .Release.Name }}
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/component: influxdb
+        app.kubernetes.io/instance: {{ .Release.Name }}
+    spec:
+      containers:
+        - name: influxdb
+          image: {{ .Values.influxdb.image }}
+          env:
+            - name: INFLUXDB_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Release.Name }}-db-secret
+                  key: INFLUXDB_TOKEN
+            - name: INFLUXDB_DATABASE
+              value: {{ .Values.influxdb.database | quote }}
+          ports:
+            - containerPort: 8181
+          volumeMounts:
+            - name: data
+              mountPath: /var/lib/influxdb3
+  volumeClaimTemplates:
+    - metadata:
+        name: data
+      spec:
+        accessModes: ["ReadWriteOnce"]
+        resources:
+          requests:
+            storage: {{ .Values.influxdb.storage }}
+        {{- if .Values.influxdb.storageClass }}
+        storageClassName: {{ .Values.influxdb.storageClass }}
+        {{- end }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Release.Name }}-influxdb
+spec:
+  selector:
+    app.kubernetes.io/component: influxdb
+    app.kubernetes.io/instance: {{ .Release.Name }}
+  ports:
+    - port: 8181
+{{- end -}}

@@ -1,0 +1,16 @@
+apiVersion: v2
+name: simple-iot
+description: Simple IoT Platform - 企业级物联网平台 Helm Chart
+type: application
+version: 0.1.0
+appVersion: "0.0.1"
+keywords:
+  - iot
+  - mqtt
+  - opcua
+  - modbus
+  - influxdb
+  - postgres
+maintainers:
+  - name: dingdaoyi
+    url: https://github.com/dingdaoyi/simple-iot

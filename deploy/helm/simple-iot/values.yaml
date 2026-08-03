@@ -1,0 +1,73 @@
+# Simple IoT Platform Helm Values
+# 全局镜像 registry, 留空用本地 build
+global:
+  imageRegistry: ""
+
+# PostgreSQL
+postgres:
+  enabled: true
+  image: postgres:16-alpine
+  storage: 10Gi
+  storageClass: ""
+  user: postgres
+  password: "change-me-in-prod"
+  database: simple
+
+# RustFS (S3 兼容对象存储)
+rustfs:
+  enabled: true
+  image: rustfs/rustfs:latest
+  storage: 20Gi
+  storageClass: ""
+  accessKey: rustfsadmin
+  secretKey: "change-me-in-prod"
+  bucket: iot-bucket
+
+# InfluxDB 3.0 Core (时序数据)
+influxdb:
+  enabled: true
+  image: influxdb:3-core
+  storage: 50Gi
+  storageClass: ""
+  token: "change-me-in-prod"
+  database: simple
+
+# iot-server (后端)
+server:
+  image: simple-iot/iot-server:latest
+  replicas: 1
+  resources:
+    requests:
+      cpu: 250m
+      memory: 512Mi
+    limits:
+      cpu: 1000m
+      memory: 1Gi
+  # JVM 参数
+  javaOpts: "--add-opens=java.base/java.nio=org.apache.arrow.memory.core,ALL-UNNAMED --sun-misc-unsafe-memory-access=allow"
+  mqttPort: 1883
+  mqttWsPort: 8083
+  apiPort: 5010
+  demoSeed: true
+
+# iot-web (前端 nginx)
+web:
+  image: simple-iot/iot-web:latest
+  replicas: 2
+  resources:
+    requests:
+      cpu: 50m
+      memory: 64Mi
+    limits:
+      cpu: 200m
+      memory: 128Mi
+  port: 80
+
+# Ingress
+ingress:
+  enabled: true
+  className: nginx
+  host: iot.example.com
+  tls:
+    enabled: false
+    secretName: ""
