@@ -11,6 +11,7 @@ import {
   webhookUpdateApi,
 } from '@/api/webhook'
 import PageHeader from '@/components/PageHeader.vue'
+import IotTable from '@/components/IotTable.vue'
 import { Link, Plus, Refresh } from '@element-plus/icons-vue'
 
 const { t } = useI18n()
@@ -147,6 +148,14 @@ curl -X POST "${window.location.origin}/iot/webhook/${token}" \\
 })
 
 onMounted(loadData)
+
+const columns = computed(() => [
+  { prop: 'name', label: t('webhook.name'), minWidth: 120 },
+  { prop: 'deviceId', label: t('webhook.device'), minWidth: 140, render: ({ row }) => getDeviceName(row.deviceId) },
+  { prop: 'token', label: 'Token', minWidth: 200, slot: 'token' },
+  { prop: 'enabled', label: t('common.status'), width: 70, slot: 'enabled' },
+  { prop: 'cz', slot: 'cz', width: 220, label: t('common.actions'), fixed: 'right' },
+])
 </script>
 
 <template>
@@ -167,42 +176,27 @@ onMounted(loadData)
     </PageHeader>
 
     <div class="glass-card">
-      <el-table v-loading="loading" :data="list" border>
-        <el-table-column prop="name" :label="t('webhook.name')" min-width="120" />
-        <el-table-column :label="t('webhook.device')" min-width="140">
-          <template #default="{ row }">
-            {{ getDeviceName(row.deviceId) }}
-          </template>
-        </el-table-column>
-        <el-table-column prop="token" label="Token" min-width="200">
-          <template #default="{ row }">
-            <code class="mono-text">{{ row.token }}</code>
-          </template>
-        </el-table-column>
-        <el-table-column :label="t('common.status')" width="70">
-          <template #default="{ row }">
-            <el-tag :type="row.enabled ? 'success' : 'info'" size="small">
-              {{ row.enabled ? t('common.enabled') : t('common.disabled') }}
-            </el-tag>
-          </template>
-        </el-table-column>
-        <el-table-column :label="t('common.actions')" width="220" fixed="right">
-          <template #default="{ row }">
-            <el-button link size="small" type="primary" @click="onEdit(row)">
-              {{ t('common.edit') }}
-            </el-button>
-            <el-button link size="small" type="warning" @click="onRegenerateSecret(row.id)">
-              {{ t('webhook.regenerateSecret') }}
-            </el-button>
-            <el-button link size="small" type="danger" @click="onDelete(row.id)">
-              {{ t('common.delete') }}
-            </el-button>
-          </template>
-        </el-table-column>
-        <template #empty>
-          <el-empty :description="t('webhook.empty')" />
+      <IotTable :columns="columns" :data="list" :loading="loading" :is-page="false">
+        <template #token="{ row }">
+          <code class="mono-text">{{ row.token }}</code>
         </template>
-      </el-table>
+        <template #enabled="{ row }">
+          <el-tag :type="row.enabled ? 'success' : 'info'" size="small">
+            {{ row.enabled ? t('common.enabled') : t('common.disabled') }}
+          </el-tag>
+        </template>
+        <template #cz="{ row }">
+          <el-button link size="small" type="primary" @click="onEdit(row)">
+            {{ t('common.edit') }}
+          </el-button>
+          <el-button link size="small" type="warning" @click="onRegenerateSecret(row.id)">
+            {{ t('webhook.regenerateSecret') }}
+          </el-button>
+          <el-button link size="small" type="danger" @click="onDelete(row.id)">
+            {{ t('common.delete') }}
+          </el-button>
+        </template>
+      </IotTable>
     </div>
 
     <!-- Add/Edit dialog -->

@@ -7,6 +7,7 @@ import { useRoute } from 'vue-router'
 import { deviceChildrenApi, deviceDataLast, deviceDetailApi } from '@/api/index.js'
 import { useAccountStore } from '@/store/modules/account'
 import Breadcrumb from '@/components/Breadcrumb.vue'
+import IotTable from '@/components/IotTable.vue'
 import { onlineOpts } from '@/utils/base.jsx'
 import DeviceEvent from '@/views/device/widget/deviceEvent.vue'
 import DeviceService from '@/views/device/widget/deviceService.vue'
@@ -147,6 +148,13 @@ onMounted(() => {
   }
 })
 onUnmounted(() => { if (ws) ws.close() })
+
+const childColumns = computed(() => [
+  { prop: 'deviceName', label: '设备名称' },
+  { prop: 'deviceKey', label: '设备 Key', width: 200 },
+  { prop: 'online', label: '在线状态', width: 100, slot: 'online' },
+  { prop: 'createTime', label: '创建时间', width: 180 },
+])
 </script>
 
 <template>
@@ -284,17 +292,11 @@ onUnmounted(() => { if (ws) ws.close() })
           <DeviceService v-if="deviceDetail.deviceKey" :device-detail="deviceDetail" />
         </el-tab-pane>
         <el-tab-pane label="子设备" name="children">
-          <el-table :data="childDevices" v-loading="loadingChildren" style="width: 100%">
-            <el-table-column prop="deviceName" label="设备名称" />
-            <el-table-column prop="deviceKey" label="设备 Key" width="200" />
-            <el-table-column prop="online" label="在线状态" width="100">
-              <template #default="{ row }">
-                <el-tag :type="row.online ? 'success' : 'info'">{{ row.online ? '在线' : '离线' }}</el-tag>
-              </template>
-            </el-table-column>
-            <el-table-column prop="createTime" label="创建时间" width="180" />
-          </el-table>
-          <el-empty v-if="!loadingChildren && childDevices.length === 0" description="暂无子设备" />
+          <IotTable :columns="childColumns" :data="childDevices" :loading="loadingChildren" :is-page="false">
+            <template #online="{ row }">
+              <el-tag :type="row.online ? 'success' : 'info'">{{ row.online ? '在线' : '离线' }}</el-tag>
+            </template>
+          </IotTable>
         </el-tab-pane>
       </el-tabs>
     </div>

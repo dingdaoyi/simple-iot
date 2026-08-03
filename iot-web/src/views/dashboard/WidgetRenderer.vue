@@ -19,6 +19,7 @@ import { computed, onMounted, onUnmounted, ref, watch } from 'vue'
 import VChart from 'vue-echarts'
 import { fetchAlarmPage, fetchLatestData, fetchMetric, fetchDeviceList } from '@/api/dashboard'
 import { useAccountStore } from '@/store/modules/account'
+import IotTable from '@/components/IotTable.vue'
 
 // ponytail: single WS connection shared by all widgets on the page.
 // In-memory ref, no reconnect logic. If WS fails, 30s polling still runs.
@@ -203,6 +204,18 @@ onUnmounted(() => {
 })
 
 watch(() => props.widget, loadData, { deep: true })
+
+const dataTableColumns = computed(() => [
+  { prop: 'time', label: '时间', width: 120, render: ({ row }) => row.time ? dayjs(row.time).format('HH:mm:ss') : '' },
+  { prop: 'value', label: '值' },
+])
+
+const alarmColumns = computed(() => [
+  { prop: 'alarmType', label: '类型', width: 100 },
+  { prop: 'severity', label: '级别', width: 80, slot: 'severity' },
+  { prop: 'deviceName', label: '设备', showOverflowTooltip: true },
+  { prop: 'createTime', label: '时间', width: 140, render: ({ row }) => row.createTime ? dayjs(row.createTime).format('MM-DD HH:mm') : '' },
+])
 </script>
 
 <template>
@@ -242,14 +255,7 @@ watch(() => props.widget, loadData, { deep: true })
       <div class="dtw-title">
         {{ title }}
       </div>
-      <el-table :data="chartData" size="small" max-height="200" style="width: 100%">
-        <el-table-column prop="time" label="时间" width="120">
-          <template #default="{ row }">
-            {{ row.time ? dayjs(row.time).format('HH:mm:ss') : '' }}
-          </template>
-        </el-table-column>
-        <el-table-column prop="value" label="值" />
-      </el-table>
+      <IotTable :columns="dataTableColumns" :data="chartData" :is-page="false" density="compact" />
     </div>
 
     <!-- 未知类型 -->
@@ -266,20 +272,11 @@ watch(() => props.widget, loadData, { deep: true })
 
     <div v-else-if="widgetType === 'alarm-list'" class="alarm-list-widget">
       <div class="alw-title">{{ title }}</div>
-      <el-table :data="alarmList" size="small" max-height="200" style="width: 100%">
-        <el-table-column prop="alarmType" label="类型" width="100" />
-        <el-table-column prop="severity" label="级别" width="80">
-          <template #default="{ row }">
-            <el-tag :type="row.severity === 'CRITICAL' ? 'danger' : row.severity === 'MAJOR' ? 'warning' : 'info'" size="small">{{ row.severity }}</el-tag>
-          </template>
-        </el-table-column>
-        <el-table-column prop="deviceName" label="设备" show-overflow-tooltip />
-        <el-table-column prop="createTime" label="时间" width="140">
-          <template #default="{ row }">
-            {{ row.createTime ? dayjs(row.createTime).format('MM-DD HH:mm') : '' }}
-          </template>
-        </el-table-column>
-      </el-table>
+      <IotTable :columns="alarmColumns" :data="alarmList" :is-page="false" density="compact">
+        <template #severity="{ row }">
+          <el-tag :type="row.severity === 'CRITICAL' ? 'danger' : row.severity === 'MAJOR' ? 'warning' : 'info'" size="small">{{ row.severity }}</el-tag>
+        </template>
+      </IotTable>
       <div v-if="alarmList.length === 0" class="alw-empty">暂无告警</div>
     </div>
 

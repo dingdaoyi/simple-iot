@@ -1,10 +1,11 @@
 <script setup>
 import { Delete, Edit, Plus } from '@element-plus/icons-vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
-import { onMounted, ref } from 'vue'
+import { computed, onMounted, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { imPushAddApi, imPushDeleteApi, imPushListApi, imPushUpdateApi } from '@/api/index.js'
 import PageHeader from '@/components/PageHeader.vue'
+import IotTable from '@/components/IotTable.vue'
 import { ChatDotRound } from '@element-plus/icons-vue'
 
 const { t } = useI18n()
@@ -19,6 +20,14 @@ const platformOptions = [
   { label: '企业微信', value: 'WECOM' },
   { label: '飞书', value: 'FEISHU' },
 ]
+
+const columns = computed(() => [
+  { prop: 'name', label: '名称' },
+  { prop: 'platform', label: '平台', width: 120, slot: 'platform' },
+  { prop: 'webhookUrl', label: 'Webhook URL', showOverflowTooltip: true },
+  { prop: 'enabled', label: '状态', width: 80, slot: 'enabled' },
+  { prop: 'cz', slot: 'cz', width: 160, label: '操作' },
+])
 
 async function loadList() {
   loading.value = true
@@ -80,29 +89,18 @@ onMounted(loadList)
       <div class="table-toolbar">
         <el-button type="primary" :icon="Plus" @click="onAdd">新增配置</el-button>
       </div>
-      <el-table :data="list" v-loading="loading" style="width: 100%">
-        <el-table-column prop="name" label="名称" />
-        <el-table-column prop="platform" label="平台" width="120">
-          <template #default="{ row }">
-            <el-tag>{{ platformOptions.find(p => p.value === row.platform)?.label || row.platform }}</el-tag>
-          </template>
-        </el-table-column>
-        <el-table-column prop="webhookUrl" label="Webhook URL" show-overflow-tooltip />
-        <el-table-column prop="enabled" label="状态" width="80">
-          <template #default="{ row }">
-            <el-tag :type="row.enabled ? 'success' : 'info'">{{ row.enabled ? '启用' : '禁用' }}</el-tag>
-          </template>
-        </el-table-column>
-        <el-table-column label="操作" width="160">
-          <template #default="{ row }">
-            <el-button link type="primary" :icon="Edit" @click="onEdit(row)">编辑</el-button>
-            <el-button link type="danger" :icon="Delete" @click="onDelete(row)">删除</el-button>
-          </template>
-        </el-table-column>
-        <template #empty>
-          <el-empty description="暂无推送配置，点击「新增配置」添加" />
+      <IotTable :columns="columns" :data="list" :loading="loading" :is-page="false">
+        <template #platform="{ row }">
+          <el-tag>{{ platformOptions.find(p => p.value === row.platform)?.label || row.platform }}</el-tag>
         </template>
-      </el-table>
+        <template #enabled="{ row }">
+          <el-tag :type="row.enabled ? 'success' : 'info'">{{ row.enabled ? '启用' : '禁用' }}</el-tag>
+        </template>
+        <template #cz="{ row }">
+          <el-button link type="primary" :icon="Edit" @click="onEdit(row)">编辑</el-button>
+          <el-button link type="danger" :icon="Delete" @click="onDelete(row)">删除</el-button>
+        </template>
+      </IotTable>
     </div>
 
     <el-dialog v-model="dialogVisible" :title="editing ? '编辑配置' : '新增配置'" width="520px">
@@ -131,6 +129,14 @@ onMounted(loadList)
 </template>
 
 <style scoped lang="scss">
+.page-container {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xl);
+  padding: var(--space-xl);
+  min-height: 100vh;
+}
+
 .table-toolbar {
   margin-bottom: var(--space-md);
 }

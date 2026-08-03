@@ -4,6 +4,7 @@ import { computed, nextTick, reactive, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { getSmsSupplier, getSmsTemplateType } from '@/api/dict'
 import { addSmsConfig, addSmsTemplate, deleteSmsConfig, deleteSmsTemplate, getSmsConfigList, getSmsTemplateList, sendSms, sendSmsWithTemplate, setDefaultConfig, updateConfigStatus, updateSmsConfig, updateSmsTemplate } from '@/api/sms'
+import IotTable from '@/components/IotTable.vue'
 
 const { t } = useI18n()
 const activeTab = ref('config')
@@ -308,6 +309,24 @@ async function sendSmsMessage() {
 getList()
 getSuppliers()
 getTemplateTypes()
+
+const configColumns = computed(() => [
+  { prop: 'id', label: 'ID', width: 95, align: 'center' },
+  { prop: 'name', label: t('push_config.config_name'), slot: 'name' },
+  { prop: 'supplier', label: t('system.provider'), width: 110, align: 'center', render: ({ row }) => getSupplierName(row.supplier) },
+  { prop: 'signName', label: t('system.signature'), width: 110, align: 'center' },
+  { prop: 'status', label: t('common.status'), width: 110, align: 'center', slot: 'status' },
+  { prop: 'cz', slot: 'cz', label: t('common.operation'), align: 'center', width: 280 },
+])
+
+const templateColumns = computed(() => [
+  { prop: 'templateType', label: t('system.template_type'), width: 120, render: ({ row }) => getTemplateTypeName(row.templateType) },
+  { prop: 'templateName', label: t('system.template_name') },
+  { prop: 'templateId', label: t('system.template_id') },
+  { prop: 'templateContent', label: t('system.template_content') },
+  { prop: 'status', label: t('common.status'), width: 80, slot: 'tplStatus' },
+  { prop: 'cz', slot: 'tplCz', label: t('common.operation'), width: 150 },
+])
 </script>
 
 <template>
@@ -331,67 +350,41 @@ getTemplateTypes()
             </el-button>
           </div>
 
-        <el-table
-          v-loading="listLoading"
+        <IotTable
+          :columns="configColumns"
           :data="list"
-          element-loading-text="Loading"
-          border
-          fit
-          highlight-current-row
+          :loading="listLoading"
+          :is-page="false"
         >
-          <el-table-column align="center" label="ID" width="95">
-            <template #default="scope">
-              {{ scope.row.id }}
-            </template>
-          </el-table-column>
-          <el-table-column :label="t('push_config.config_name')">
-            <template #default="scope">
-              {{ scope.row.name }}
-              <el-tag v-if="scope.row.isDefault" type="success" size="small">
-                {{ t('system.default_2') }}
-              </el-tag>
-            </template>
-          </el-table-column>
-          <el-table-column :label="t('system.provider')" width="110" align="center">
-            <template #default="scope">
-              <span>{{ getSupplierName(scope.row.supplier) }}</span>
-            </template>
-          </el-table-column>
-          <el-table-column :label="t('system.signature')" width="110" align="center">
-            <template #default="scope">
-              {{ scope.row.signName }}
-            </template>
-          </el-table-column>
-          <el-table-column :label="t('common.status')" width="110" align="center">
-            <template #default="scope">
-              <el-switch
-                v-model="scope.row.status"
-                :active-value="1"
-                :inactive-value="2"
-                @change="handleStatusChange(scope.row)"
-              />
-            </template>
-          </el-table-column>
-          <el-table-column :label="t('common.operation')" align="center" width="280" class-name="small-padding fixed-width">
-            <template #default="scope">
-              <el-button type="primary" size="small" @click="handleUpdate(scope.row)">
-                {{ t('common.edit') }}
-              </el-button>
-              <el-button type="info" size="small" @click="handleTemplate(scope.row)">
-                {{ t('system.template') }}
-              </el-button>
-              <el-button v-if="!scope.row.isDefault" type="success" size="small" @click="handleSetDefault(scope.row)">
-                {{ t('system.set_default_2') }}
-              </el-button>
-              <el-button v-if="!scope.row.isDefault" size="small" type="danger" @click="handleDelete(scope.row)">
-                {{ t('common.delete') }}
-              </el-button>
-            </template>
-          </el-table-column>
-          <template #empty>
-            <el-empty :description="t('system.no_sms_config')" />
+          <template #name="{ row }">
+            {{ row.name }}
+            <el-tag v-if="row.isDefault" type="success" size="small">
+              {{ t('system.default_2') }}
+            </el-tag>
           </template>
-        </el-table>
+          <template #status="{ row }">
+            <el-switch
+              v-model="row.status"
+              :active-value="1"
+              :inactive-value="2"
+              @change="handleStatusChange(row)"
+            />
+          </template>
+          <template #cz="{ row }">
+            <el-button type="primary" size="small" @click="handleUpdate(row)">
+              {{ t('common.edit') }}
+            </el-button>
+            <el-button type="info" size="small" @click="handleTemplate(row)">
+              {{ t('system.template') }}
+            </el-button>
+            <el-button v-if="!row.isDefault" type="success" size="small" @click="handleSetDefault(row)">
+              {{ t('system.set_default_2') }}
+            </el-button>
+            <el-button v-if="!row.isDefault" size="small" type="danger" @click="handleDelete(row)">
+              {{ t('common.delete') }}
+            </el-button>
+          </template>
+        </IotTable>
         </div>
       </el-tab-pane>
 
@@ -512,33 +505,21 @@ getTemplateTypes()
           {{ t('system.add_template') }}
         </el-button>
       </div>
-      <el-table :data="templateList" border>
-        <el-table-column :label="t('system.template_type')" width="120">
-          <template #default="scope">
-            {{ getTemplateTypeName(scope.row.templateType) }}
-          </template>
-        </el-table-column>
-        <el-table-column :label="t('system.template_name')" prop="templateName" />
-        <el-table-column :label="t('system.template_id')" prop="templateId" />
-        <el-table-column :label="t('system.template_content')" prop="templateContent" />
-        <el-table-column :label="t('common.status')" width="80">
-          <template #default="scope">
-            <el-tag :type="scope.row.status === 1 ? 'success' : 'danger'">
-              {{ scope.row.status === 1 ? t('common.enable') : t('system.sms_disable') }}
-            </el-tag>
-          </template>
-        </el-table-column>
-        <el-table-column :label="t('common.operation')" width="150">
-          <template #default="scope">
-            <el-button size="small" @click="handleEditTemplate(scope.row)">
-              {{ t('common.edit') }}
-            </el-button>
-            <el-button size="small" type="danger" @click="handleDeleteTemplate(scope.row)">
-              {{ t('common.delete') }}
-            </el-button>
-          </template>
-        </el-table-column>
-      </el-table>
+      <IotTable :columns="templateColumns" :data="templateList" :is-page="false">
+        <template #tplStatus="{ row }">
+          <el-tag :type="row.status === 1 ? 'success' : 'danger'">
+            {{ row.status === 1 ? t('common.enable') : t('system.sms_disable') }}
+          </el-tag>
+        </template>
+        <template #tplCz="{ row }">
+          <el-button size="small" @click="handleEditTemplate(row)">
+            {{ t('common.edit') }}
+          </el-button>
+          <el-button size="small" type="danger" @click="handleDeleteTemplate(row)">
+            {{ t('common.delete') }}
+          </el-button>
+        </template>
+      </IotTable>
     </el-dialog>
 
     <!-- 模板编辑对话框 -->

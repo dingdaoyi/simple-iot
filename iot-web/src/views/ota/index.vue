@@ -5,6 +5,7 @@ import { deviceGroupTreeApi } from '@/api/deviceGroup'
 import { deviceListApi, productListApi, productTypeListApi } from '@/api/index'
 import { firmwareDeleteApi, firmwareListApi, firmwarePublishApi, firmwareUploadApi, otaTaskCreateApi, otaTaskGetApi, otaTaskListApi } from '@/api/ota'
 import PageHeader from '@/components/PageHeader.vue'
+import IotTable from '@/components/IotTable.vue'
 import { Upload, UploadFilled, Refresh } from '@element-plus/icons-vue'
 
 const activeTab = ref('firmware')
@@ -165,6 +166,31 @@ onMounted(() => {
   loadGroups()
   loadDevices()
 })
+
+const firmwareColumns = computed(() => [
+  { prop: 'name', label: '名称', minWidth: 120 },
+  { prop: 'version', label: '版本', width: 80 },
+  { prop: 'productId', label: '产品', width: 120, render: ({ row }) => products.value.find(p => p.id === row.productId)?.model || row.productId },
+  { prop: 'fileSize', label: '大小', width: 80, render: ({ row }) => row.fileSize ? `${(row.fileSize / 1024).toFixed(0)}KB` : '-' },
+  { prop: 'status', label: '状态', width: 80, slot: 'fwStatus' },
+  { prop: 'createTime', label: '创建时间', width: 160 },
+  { prop: 'cz', slot: 'fwCz', label: '操作', width: 200, fixed: 'right' },
+])
+
+const taskColumns = computed(() => [
+  { prop: 'firmwareId', label: '固件', width: 120, render: ({ row }) => firmwareName(row.firmwareId) },
+  { prop: 'status', label: '状态', width: 100, slot: 'taskStatus' },
+  { prop: 'total', label: '总数', width: 60 },
+  { prop: 'success', label: '成功', width: 60 },
+  { prop: 'fail', label: '失败', width: 60 },
+  { prop: 'createTime', label: '创建时间', width: 160 },
+  { prop: 'cz', slot: 'taskCz', label: '操作', width: 100, fixed: 'right' },
+])
+
+const progressColumns = computed(() => [
+  { prop: 'deviceId', label: '设备ID', width: 100 },
+  { prop: 'status', label: '状态', slot: 'progStatus' },
+])
 </script>
 
 <template>
@@ -190,76 +216,40 @@ onMounted(() => {
             上传固件
           </el-button>
         </div>
-        <el-table v-loading="loading" :data="firmwareList" stripe class="iot-table">
-          <el-table-column prop="name" label="名称" min-width="120" />
-          <el-table-column prop="version" label="版本" width="80" />
-          <el-table-column label="产品" width="120">
-            <template #default="{ row }">
-              {{ products.find(p => p.id === row.productId)?.model || row.productId }}
-            </template>
-          </el-table-column>
-          <el-table-column prop="fileSize" label="大小" width="80">
-            <template #default="{ row }">
-              {{ row.fileSize ? `${(row.fileSize / 1024).toFixed(0)}KB` : '-' }}
-            </template>
-          </el-table-column>
-          <el-table-column prop="status" label="状态" width="80">
-            <template #default="{ row }">
-              <el-tag :type="row.status === 'PUBLISHED' ? 'success' : 'info'" size="small">
-                {{ row.status }}
-              </el-tag>
-            </template>
-          </el-table-column>
-          <el-table-column prop="createTime" label="创建时间" width="160" />
-          <el-table-column label="操作" width="200" fixed="right">
-            <template #default="{ row }">
-              <el-button v-if="row.status !== 'PUBLISHED'" link size="small" type="primary" @click="onPublish(row.id)">
-                发布
-              </el-button>
-              <el-button v-if="row.status === 'PUBLISHED'" link size="small" type="success" @click="openCreateTask(row.id)">
-                推送升级
-              </el-button>
-              <el-button link size="small" type="danger" @click="onDelete(row.id)">
-                删除
-              </el-button>
-            </template>
-          </el-table-column>
-          <template #empty>
-            <el-empty description="暂无固件，点击「上传固件」添加" />
+        <IotTable :columns="firmwareColumns" :data="firmwareList" :loading="loading" :is-page="false">
+          <template #fwStatus="{ row }">
+            <el-tag :type="row.status === 'PUBLISHED' ? 'success' : 'info'" size="small">
+              {{ row.status }}
+            </el-tag>
           </template>
-        </el-table>
+          <template #fwCz="{ row }">
+            <el-button v-if="row.status !== 'PUBLISHED'" link size="small" type="primary" @click="onPublish(row.id)">
+              发布
+            </el-button>
+            <el-button v-if="row.status === 'PUBLISHED'" link size="small" type="success" @click="openCreateTask(row.id)">
+              推送升级
+            </el-button>
+            <el-button link size="small" type="danger" @click="onDelete(row.id)">
+              删除
+            </el-button>
+          </template>
+        </IotTable>
       </el-tab-pane>
 
       <!-- Task Tab -->
       <el-tab-pane label="升级任务" name="task">
-        <el-table v-loading="loading" :data="taskList" stripe class="iot-table">
-          <el-table-column label="固件" width="120">
-            <template #default="{ row }">
-              {{ firmwareName(row.firmwareId) }}
-            </template>
-          </el-table-column>
-          <el-table-column prop="status" label="状态" width="100">
-            <template #default="{ row }">
-              <el-tag :type="row.status === 'COMPLETED' ? 'success' : row.status === 'RUNNING' ? 'warning' : 'info'" size="small">
-                {{ row.status }}
-              </el-tag>
-            </template>
-          </el-table-column>
-          <el-table-column prop="total" label="总数" width="60" />
-          <el-table-column prop="success" label="成功" width="60" />
-          <el-table-column prop="fail" label="失败" width="60" />
-          <el-table-column prop="createTime" label="创建时间" width="160" />
-          <el-table-column label="操作" width="100" fixed="right">
-            <template #default="{ row }">
-              <el-button link size="small" type="primary" @click="onTaskDetail(row.id)">
-                详情
-              </el-button>
-            </template>
-          </el-table-column>
-          <template #empty>
-            <el-empty description="暂无升级任务" />
+        <IotTable :columns="taskColumns" :data="taskList" :loading="loading" :is-page="false">
+          <template #taskStatus="{ row }">
+            <el-tag :type="row.status === 'COMPLETED' ? 'success' : row.status === 'RUNNING' ? 'warning' : 'info'" size="small">
+              {{ row.status }}
+            </el-tag>
           </template>
-        </el-table>
+          <template #taskCz="{ row }">
+            <el-button link size="small" type="primary" @click="onTaskDetail(row.id)">
+              详情
+            </el-button>
+          </template>
+        </IotTable>
       </el-tab-pane>
     </el-tabs>
 
@@ -361,16 +351,13 @@ onMounted(() => {
         <div class="task-progress-label">
           设备进度
         </div>
-        <el-table :data="Object.entries(taskDetail.progress).map(([k, v]) => ({ deviceId: k, status: v }))" stripe size="small">
-          <el-table-column prop="deviceId" label="设备ID" width="100" />
-          <el-table-column prop="status" label="状态">
-            <template #default="{ row }">
-              <el-tag :type="row.status === 'SUCCESS' ? 'success' : row.status === 'FAIL' ? 'danger' : 'warning'" size="small">
-                {{ row.status }}
-              </el-tag>
-            </template>
-          </el-table-column>
-        </el-table>
+        <IotTable :columns="progressColumns" :data="Object.entries(taskDetail.progress).map(([k, v]) => ({ deviceId: k, status: v }))" :is-page="false" density="compact">
+          <template #progStatus="{ row }">
+            <el-tag :type="row.status === 'SUCCESS' ? 'success' : row.status === 'FAIL' ? 'danger' : 'warning'" size="small">
+              {{ row.status }}
+            </el-tag>
+          </template>
+        </IotTable>
       </div>
     </el-dialog>
   </div>

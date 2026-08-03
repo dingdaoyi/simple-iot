@@ -1,11 +1,12 @@
 <script setup>
 import { Lightning } from '@element-plus/icons-vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
-import { onMounted, ref, watch } from 'vue'
+import { computed, onMounted, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { getConnectionTypeEnum, getDriverTypeEnum } from '@/api/dict'
 import { addDriver, deleteDriver, getDriverList, updateDriver } from '@/api/driver'
 import PageHeader from '@/components/PageHeader.vue'
+import IotTable from '@/components/IotTable.vue'
 import { Plus, Refresh } from '@element-plus/icons-vue'
 
 const { t } = useI18n()
@@ -125,6 +126,17 @@ watch(dialogVisible, (visible) => {
     formRef.value?.clearValidate()
   }
 })
+
+const columns = computed(() => [
+  { prop: 'driverId', label: 'ID', width: 80 },
+  { prop: 'name', label: t('driver.driver_name') },
+  { prop: 'type', label: t('common.type'), slot: 'type' },
+  { prop: 'connectionType', label: t('driver.connection_type') },
+  { prop: 'port', label: t('common.port'), width: 100, render: ({ row }) => row.port || '-' },
+  { prop: 'description', label: t('common.description') },
+  { prop: 'status', label: t('common.status'), width: 100, slot: 'status' },
+  { prop: 'cz', slot: 'cz', width: 200, label: t('common.operation') },
+])
 </script>
 
 <template>
@@ -135,7 +147,7 @@ watch(dialogVisible, (visible) => {
       :icon="Lightning"
     >
       <template #actions>
-        <el-button :icon="Refresh" @click="loadDrivers">
+        <el-button :icon="Refresh" @click="fetchList">
           {{ t('common.refresh') }}
         </el-button>
         <el-button type="primary" :icon="Plus" @click="handleAdd">
@@ -145,46 +157,26 @@ watch(dialogVisible, (visible) => {
     </PageHeader>
 
     <!-- 数据表格 -->
-    <div class="glass-card">
-      <el-table :data="driverList" style="width: 100%">
-        <el-table-column prop="driverId" label="ID" width="80" />
-        <el-table-column prop="name" :label="t('driver.driver_name')" />
-        <el-table-column prop="type" :label="t('common.type')">
-          <template #default="{ row }">
-            <el-tag :type="row.type === 'TCP' ? 'primary' : row.type === 'UDP' ? 'success' : 'warning'">
-              {{ row.type }}
-            </el-tag>
-          </template>
-        </el-table-column>
-        <el-table-column prop="connectionType" :label="t('driver.connection_type')" />
-        <el-table-column prop="port" :label="t('common.port')" width="100">
-          <template #default="{ row }">
-            {{ row.port || '-' }}
-          </template>
-        </el-table-column>
-        <el-table-column prop="description" :label="t('common.description')" />
-        <el-table-column prop="status" :label="t('common.status')" width="100">
-          <template #default="{ row }">
-            <el-tag :type="row.status === 1 ? 'success' : 'info'">
-              {{ row.status === 1 ? t('common.enable') : t('driver.disable') }}
-            </el-tag>
-          </template>
-        </el-table-column>
-        <el-table-column :label="t('common.operation')" width="200">
-          <template #default="{ row }">
-            <el-button size="small" link type="primary" @click="handleEdit(row)">
-              {{ t('common.edit') }}
-            </el-button>
-            <el-button size="small" link type="danger" @click="handleDelete(row)">
-              {{ t('common.delete') }}
-            </el-button>
-          </template>
-        </el-table-column>
-        <template #empty>
-          <el-empty :description="t('driver.empty')" />
-        </template>
-      </el-table>
-    </div>
+    <IotTable :columns="columns" :data="driverList" :is-page="false">
+      <template #type="{ row }">
+        <el-tag :type="row.type === 'TCP' ? 'primary' : row.type === 'UDP' ? 'success' : 'warning'">
+          {{ row.type }}
+        </el-tag>
+      </template>
+      <template #status="{ row }">
+        <el-tag :type="row.status === 1 ? 'success' : 'info'">
+          {{ row.status === 1 ? t('common.enable') : t('driver.disable') }}
+        </el-tag>
+      </template>
+      <template #cz="{ row }">
+        <el-button size="small" link type="primary" @click="handleEdit(row)">
+          {{ t('common.edit') }}
+        </el-button>
+        <el-button size="small" link type="danger" @click="handleDelete(row)">
+          {{ t('common.delete') }}
+        </el-button>
+      </template>
+    </IotTable>
 
     <!-- 编辑对话框 -->
     <el-dialog v-model="dialogVisible" :title="dialogTitle" width="600px">

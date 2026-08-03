@@ -1,6 +1,7 @@
 <script lang="jsx" setup>
-import { ref } from 'vue'
+import { computed, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
+import IotTable from '@/components/IotTable.vue'
 
 const props = defineProps(['datas', 'properties'])
 const { t } = useI18n()
@@ -12,6 +13,16 @@ function findItem(id) {
 }
 inputParam.value = props.datas?.inputParamIds?.map(id => findItem(id)) || []
 outPutParam.value = props.datas?.outputParamIds?.map(id => findItem(id)) || []
+
+const outputColumns = computed(() => [
+  { prop: 'name', label: t('common.name') },
+  { prop: 'identifier', label: t('tsl.identifier') },
+])
+
+const inputColumns = computed(() => [
+  { prop: 'name', label: t('common.name') },
+  { prop: 'identifier', label: t('tsl.identifier') },
+])
 </script>
 
 <template>
@@ -25,24 +36,14 @@ outPutParam.value = props.datas?.outputParamIds?.map(id => findItem(id)) || []
           {{ t('tsl.output_params_3') }}
         </div>
         <el-divider />
-        <div>
-          <el-table :data="outPutParam" style="width: 100%">
-            <el-table-column prop="name" :label="t('common.name')" />
-            <el-table-column prop="identifier" :label="t('tsl.identifier')" />
-          </el-table>
-        </div>
+        <IotTable :columns="outputColumns" :data="outPutParam" :is-page="false" />
       </div>
       <div v-if="inputParam.length > 0" class="flex flex-col w-full">
         <div class="text-16px">
           {{ t('tsl.input_params_2') }}
         </div>
         <el-divider />
-        <div>
-          <el-table :data="inputParam" style="width: 100%">
-            <el-table-column prop="name" :label="t('common.name')" />
-            <el-table-column prop="identifier" :label="t('tsl.identifier')" />
-          </el-table>
-        </div>
+        <IotTable :columns="inputColumns" :data="inputParam" :is-page="false" />
       </div>
     </div>
   </el-dialog>

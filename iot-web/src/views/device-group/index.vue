@@ -6,7 +6,7 @@
  * 底部: 标签管理区
  */
 import { ElMessage, ElMessageBox } from 'element-plus'
-import { onMounted, ref } from 'vue'
+import { computed, onMounted, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import {
   deviceGroupAddApi,
@@ -22,6 +22,7 @@ import {
   deviceTagDevicesApi,
   deviceTagEditApi,
 } from '@/api/deviceGroup'
+import IotTable from '@/components/IotTable.vue'
 import { deviceListApi } from '@/api/index'
 
 const { t } = useI18n()
@@ -246,6 +247,13 @@ onMounted(() => {
   loadGroups()
   loadTags()
 })
+
+const assignedColumns = computed(() => [
+  { prop: 'deviceName', label: '设备名称', minWidth: 120 },
+  { prop: 'deviceKey', label: '设备标识', minWidth: 140 },
+  { prop: 'online', label: '在线状态', width: 100, slot: 'online' },
+  { prop: 'cz', slot: 'cz', width: 80, label: '操作', align: 'center' },
+])
 </script>
 
 <template>
@@ -342,31 +350,23 @@ onMounted(() => {
           </el-button>
         </div>
 
-        <el-table
-          v-loading="assignedLoading"
+        <IotTable
+          :columns="assignedColumns"
           :data="assignedDevices"
-          size="default"
-          stripe
-          style="width: 100%"
-          :empty-text="selectedGroupId || selectedTagId ? '暂无已分配设备' : '请先选择分组或标签'"
+          :loading="assignedLoading"
+          :is-page="false"
         >
-          <el-table-column prop="deviceName" label="设备名称" min-width="120" />
-          <el-table-column prop="deviceKey" label="设备标识" min-width="140" />
-          <el-table-column label="在线状态" width="100">
-            <template #default="{ row }">
-              <el-tag :type="row.online ? 'success' : 'info'" size="small">
-                {{ row.online ? '在线' : '离线' }}
-              </el-tag>
-            </template>
-          </el-table-column>
-          <el-table-column label="操作" width="80" align="center">
-            <template #default="{ row }">
-              <el-button link type="danger" size="small" @click="onRemoveDevice(row.id)">
-                移除
-              </el-button>
-            </template>
-          </el-table-column>
-        </el-table>
+          <template #online="{ row }">
+            <el-tag :type="row.online ? 'success' : 'info'" size="small">
+              {{ row.online ? '在线' : '离线' }}
+            </el-tag>
+          </template>
+          <template #cz="{ row }">
+            <el-button link type="danger" size="small" @click="onRemoveDevice(row.id)">
+              移除
+            </el-button>
+          </template>
+        </IotTable>
       </div>
     </div>
 

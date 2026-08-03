@@ -1,6 +1,6 @@
 <script setup>
 import { ElMessage, ElMessageBox } from 'element-plus'
-import { nextTick, reactive, ref } from 'vue'
+import { computed, nextTick, reactive, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import {
   addEmailConfig,
@@ -12,6 +12,7 @@ import {
   updateEmailConfigStatus,
 } from '@/api/email'
 import PageHeader from '@/components/PageHeader.vue'
+import IotTable from '@/components/IotTable.vue'
 import { Message, Plus } from '@element-plus/icons-vue'
 
 const { t } = useI18n()
@@ -197,6 +198,17 @@ async function sendTestEmailMessage() {
 
 // 初始化
 getList()
+
+const columns = computed(() => [
+  { prop: 'id', label: 'ID', width: 80, align: 'center' },
+  { prop: 'name', label: t('push_config.config_name'), slot: 'name' },
+  { prop: 'host', label: t('system.smtp_server') },
+  { prop: 'port', label: t('common.port'), width: 80, align: 'center' },
+  { prop: 'username', label: t('system.sender_email') },
+  { prop: 'sslEnabled', label: 'SSL', width: 80, align: 'center', slot: 'ssl' },
+  { prop: 'status', label: t('common.status'), width: 100, align: 'center', slot: 'status' },
+  { prop: 'cz', slot: 'cz', label: t('common.operation'), align: 'center', width: 280 },
+])
 </script>
 
 <template>
@@ -232,67 +244,46 @@ getList()
         </el-button>
       </div>
 
-      <el-table
-        v-loading="listLoading"
+      <IotTable
+        :columns="columns"
         :data="list"
-        element-loading-text="Loading"
-        border
-        fit
-        highlight-current-row
+        :loading="listLoading"
+        :is-page="false"
       >
-        <el-table-column align="center" label="ID" width="80">
-          <template #default="scope">
-            {{ scope.row.id }}
-          </template>
-        </el-table-column>
-        <el-table-column :label="t('push_config.config_name')">
-          <template #default="scope">
-            {{ scope.row.name }}
-            <el-tag v-if="scope.row.isDefault" type="success" size="small">
-              {{ t('system.default') }}
-            </el-tag>
-          </template>
-        </el-table-column>
-        <el-table-column :label="t('system.smtp_server')" prop="host" />
-        <el-table-column :label="t('common.port')" width="80" align="center" prop="port" />
-        <el-table-column :label="t('system.sender_email')" prop="username" />
-        <el-table-column label="SSL" width="80" align="center">
-          <template #default="scope">
-            <el-tag :type="scope.row.sslEnabled ? 'success' : 'info'" size="small">
-              {{ scope.row.sslEnabled ? t('system.email_system_email_page_16') : t('system.off') }}
-            </el-tag>
-          </template>
-        </el-table-column>
-        <el-table-column :label="t('common.status')" width="100" align="center">
-          <template #default="scope">
-            <el-switch
-              v-model="scope.row.status"
-              :active-value="1"
-              :inactive-value="2"
-              @change="handleStatusChange(scope.row)"
-            />
-          </template>
-        </el-table-column>
-        <el-table-column :label="t('common.operation')" align="center" width="280">
-          <template #default="scope">
-            <el-button type="primary" link size="small" @click="handleUpdate(scope.row)">
-              {{ t('common.edit') }}
-            </el-button>
-            <el-button type="info" link size="small" @click="handleTestEmail(scope.row)">
-              {{ t('system.email_test') }}
-            </el-button>
-            <el-button v-if="!scope.row.isDefault" type="success" link size="small" @click="handleSetDefault(scope.row)">
-              {{ t('system.set_default') }}
-            </el-button>
-            <el-button v-if="!scope.row.isDefault" type="danger" link size="small" @click="handleDelete(scope.row)">
-              {{ t('common.delete') }}
-            </el-button>
-          </template>
-        </el-table-column>
-        <template #empty>
-          <el-empty :description="t('system.no_email_config')" />
+        <template #name="{ row }">
+          {{ row.name }}
+          <el-tag v-if="row.isDefault" type="success" size="small">
+            {{ t('system.default') }}
+          </el-tag>
         </template>
-      </el-table>
+        <template #ssl="{ row }">
+          <el-tag :type="row.sslEnabled ? 'success' : 'info'" size="small">
+            {{ row.sslEnabled ? t('system.email_system_email_page_16') : t('system.off') }}
+          </el-tag>
+        </template>
+        <template #status="{ row }">
+          <el-switch
+            v-model="row.status"
+            :active-value="1"
+            :inactive-value="2"
+            @change="handleStatusChange(row)"
+          />
+        </template>
+        <template #cz="{ row }">
+          <el-button type="primary" link size="small" @click="handleUpdate(row)">
+            {{ t('common.edit') }}
+          </el-button>
+          <el-button type="info" link size="small" @click="handleTestEmail(row)">
+            {{ t('system.email_test') }}
+          </el-button>
+          <el-button v-if="!row.isDefault" type="success" link size="small" @click="handleSetDefault(row)">
+            {{ t('system.set_default') }}
+          </el-button>
+          <el-button v-if="!row.isDefault" type="danger" link size="small" @click="handleDelete(row)">
+            {{ t('common.delete') }}
+          </el-button>
+        </template>
+      </IotTable>
     </div>
 
     <!-- 配置对话框 -->
